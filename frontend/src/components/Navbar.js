@@ -14,7 +14,7 @@ export default class Navbar {
           <nav class="hidden lg:flex items-center gap-7 font-interface font-medium text-[11px] uppercase tracking-widest text-stone-300" id="nav-links">
             <a href="#/" class="hover:text-white transition-colors duration-300 py-1" id="link-home">Home</a>
             <a href="#/about" class="hover:text-white transition-colors duration-300 py-1" id="link-about">About Us</a>
-            <a href="#programs" class="hover:text-white transition-colors duration-300 py-1">Programs</a>
+            <a href="#/programs" class="hover:text-white transition-colors duration-300 py-1" id="link-programs">Programs</a>
             <a href="#community" class="hover:text-white transition-colors duration-300 py-1">Community</a>
             <a href="#volunteer-form" class="hover:text-white transition-colors duration-300 py-1">Volunteer</a>
             <a href="#verify-certificate" class="hover:text-white transition-colors duration-300 py-1">Verify Certificate</a>
@@ -39,7 +39,7 @@ export default class Navbar {
           <nav class="flex flex-col gap-6 font-interface font-semibold text-sm uppercase tracking-widest text-stone-300 mt-4">
             <a href="#/" class="mobile-nav-link hover:text-white transition-colors">Home</a>
             <a href="#/about" class="mobile-nav-link hover:text-white transition-colors">About Us</a>
-            <a href="#programs" class="mobile-nav-link hover:text-white transition-colors">Programs</a>
+            <a href="#/programs" class="mobile-nav-link hover:text-white transition-colors">Programs</a>
             <a href="#community" class="mobile-nav-link hover:text-white transition-colors">Community</a>
             <a href="#volunteer-form" class="mobile-nav-link hover:text-white transition-colors">Volunteer</a>
             <a href="#verify-certificate" class="mobile-nav-link hover:text-white transition-colors">Verify Certificate</a>
@@ -69,6 +69,9 @@ export default class Navbar {
     const hash = window.location.hash || '#/';
     if (hash === '#/about') {
       const link = document.getElementById('link-about');
+      if (link) link.classList.add('active-nav');
+    } else if (hash === '#/programs') {
+      const link = document.getElementById('link-programs');
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/' || hash === '') {
       const link = document.getElementById('link-home');

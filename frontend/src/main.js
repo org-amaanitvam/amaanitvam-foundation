@@ -1,12 +1,14 @@
 import './style.css';
 import HomePage from './pages/HomePage.js';
 import AboutPage from './pages/AboutPage.js';
+import ProgramsPage from './pages/ProgramsPage.js';
 
 const appElement = document.querySelector('#app');
 
 const routes = {
   '#/': HomePage,
   '#/about': AboutPage,
+  '#/programs': ProgramsPage,
 };
 
 function router() {
@@ -17,10 +19,12 @@ function router() {
   
   if (hash === '#/about') {
     PageClass = AboutPage;
+  } else if (hash === '#/programs') {
+    PageClass = ProgramsPage;
   } else if (hash === '#/' || hash === '') {
     PageClass = HomePage;
   } else if (hash.startsWith('#') && !hash.startsWith('#/')) {
-    // Standard homepage scroll anchors (like #programs, #community, #volunteer-form, etc.)
+    // Standard homepage scroll anchors (like #community, #volunteer-form, etc.)
     PageClass = HomePage;
     targetAnchor = hash;
   } else {
@@ -28,7 +32,7 @@ function router() {
   }
   
   const previousPage = appElement.dataset.currentPage;
-  const newPageName = PageClass === HomePage ? 'home' : 'about';
+  const newPageName = PageClass === HomePage ? 'home' : (PageClass === AboutPage ? 'about' : 'programs');
   
   if (previousPage !== newPageName) {
     window.scrollTo(0, 0);
