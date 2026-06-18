@@ -2270,3 +2270,215 @@ h1, h2, h3, h4, h5, h6 {
 .legal-page strong{
     color:#16284a;
 }
+/* ===== AMAANITVAM PDF THEME OVERRIDE ===== */
+
+:root{
+  --primary:#5d0f2d;
+  --secondary:#c46b87;
+  --accent:#d8a15f;
+  --bg:#f5efe6;
+  --card:#ead8c7;
+  --text:#3d2b2b;
+  --white:#ffffff;
+
+  --navy:#5d0f2d;
+  --navy-light:#7a1d44;
+  --beige:#f5efe6;
+  --surface:#fffaf3;
+  --border:#dcc8b6;
+  --muted:#6b5b55;
+  --gold:#d8a15f;
+  --gold-dark:#b98243;
+  --purple:#c46b87;
+}
+
+/* Page backgrounds */
+body,
+.section-alt,
+.mobile-menu{
+  background:#f5efe6 !important;
+}
+
+.section-white{
+  background:#fffaf3 !important;
+}
+
+/* Navbar */
+.site-header,
+.site-nav,
+.site-nav.is-solid,
+.site-nav.is-transparent{
+  background:#5d0f2d !important;
+}
+
+.nav-link,
+.nav-link.dropdown-trigger,
+.brand-name{
+  color:#ffffff !important;
+}
+
+.brand-subtitle{
+  color:#d8a15f !important;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link.is-active,
+.nav-link[aria-current="page"],
+.nav-link.dropdown-trigger:hover,
+.nav-item.has-dropdown:hover > .dropdown-trigger,
+.nav-link.dropdown-trigger.is-active{
+  color:#ffffff !important;
+  background:rgba(255,255,255,0.12) !important;
+}
+
+/* Dropdown */
+.dropdown-menu{
+  background:#fffaf3 !important;
+  border-color:#dcc8b6 !important;
+}
+
+.dropdown-menu::before{
+  background:#fffaf3 !important;
+}
+
+.dropdown-item{
+  color:#3d2b2b !important;
+}
+
+.dropdown-item:hover{
+  background:#ead8c7 !important;
+  color:#5d0f2d !important;
+}
+
+.dropdown-icon{
+  background:#ead8c7 !important;
+  color:#5d0f2d !important;
+}
+
+/* Headings */
+.section-title,
+h1,h2,h3,h4,h5,h6{
+  color:#5d0f2d !important;
+}
+
+.section-label{
+  color:#b98243 !important;
+}
+
+.section-desc,
+.text-muted,
+p{
+  color:#6b5b55;
+}
+
+/* Buttons */
+.btn-primary,
+.hero-actions .btn{
+  background:#5d0f2d !important;
+  color:#ffffff !important;
+  box-shadow:0 8px 22px rgba(93,15,45,0.25) !important;
+}
+
+.btn-primary:hover,
+.hero-actions .btn:hover{
+  background:#7a1d44 !important;
+}
+
+.btn-secondary{
+  background:#c46b87 !important;
+  color:#ffffff !important;
+}
+
+.btn-secondary:hover{
+  background:#b15a75 !important;
+}
+
+.btn-outline{
+  border-color:#c46b87 !important;
+  color:#5d0f2d !important;
+  background:transparent !important;
+}
+
+.btn-outline:hover{
+  background:#ead8c7 !important;
+}
+
+/* Cards */
+.card,
+.news-card,
+.featured-card,
+.donation-card{
+  background:#fffaf3 !important;
+  border:1px solid #dcc8b6 !important;
+  color:#3d2b2b !important;
+}
+
+.card h3,
+.donation-card h3{
+  color:#5d0f2d !important;
+}
+
+.card span,
+.text-primary,
+.text-purple{
+  color:#5d0f2d !important;
+}
+
+.text-gold{
+  color:#b98243 !important;
+}
+
+/* Donate section */
+.donate-section{
+  background:linear-gradient(135deg,#5d0f2d,#7a1d44) !important;
+  color:#ffffff !important;
+}
+
+.donate-section .section-title,
+.donate-section p{
+  color:#ffffff !important;
+}
+
+.donate-section .section-label{
+  color:#d8a15f !important;
+}
+
+.donate-section .btn-primary{
+  background:#d8a15f !important;
+  color:#3d2b2b !important;
+}
+
+.donate-section .btn-outline{
+  border-color:#d8a15f !important;
+  color:#ffffff !important;
+}
+
+/* Footer */
+.site-footer{
+  background:#5d0f2d !important;
+  color:#ffffff !important;
+}
+
+.footer-heading{
+  color:#d8a15f !important;
+}
+
+.footer-description,
+.footer-link,
+.footer-contact-item,
+.footer-link-inline,
+.footer-bottom{
+  color:#ffffff !important;
+}
+
+.footer-link:hover,
+.footer-link-inline:hover{
+  color:#d8a15f !important;
+}
+
+/* Floating donate */
+.floating-donate{
+  background:#d8a15f !important;
+  color:#3d2b2b !important;
+}
