@@ -145,16 +145,45 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .brand{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    flex-shrink:0;
     background:transparent !important;
     padding:0 !important;
     box-shadow:none !important;
     border:none !important;
 }
 
-.brand-logo-footer {
-  height: 72px;
-  max-width: 220px;
-  background: transparent;
+.brand-logo-footer{
+    height:55px;
+    width:auto;
+    max-width:160px;
+    display:block;
+    background:transparent !important;
+    padding:0 !important;
+    margin:0;
+    border:none !important;
+    box-shadow:none !important;
+}
+
+.brand-name{
+    font-family:'Montserrat',sans-serif;
+    font-size:1.8rem;
+    font-weight:800;
+    letter-spacing:1px;
+    color:#ffffff;
+    text-transform:uppercase;
+}
+
+.brand-subtitle{
+    font-family:'Montserrat',sans-serif;
+    font-size:0.9rem;
+    font-weight:600;
+    letter-spacing:3px;
+    color:#d8a15f;
+    text-transform:uppercase;
 }
 
 /* ── Desktop nav links container ── */
