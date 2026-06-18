@@ -2188,15 +2188,15 @@ h1, h2, h3, h4, h5, h6 {
 .floating-socials a{
     background:#1b1b1b;
 }
+
 /* WHY US - arrangement, color, design */
-.section.section-white{
-  background:#fff7f8 !important;
+.section.section-white {
+  background: #fff7f8 !important;
+  padding: 80px 20px; /* Generous vertical spacing for a clean look */
+  text-align: center;
 }
 
-.section.section-white .section-header{
-  max-width:760px !important;
-  margin:0 auto 45px !important;
-}
+
 
 .section.section-white .grid-3{
   display:grid !important;
@@ -2258,6 +2258,30 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow:0 22px 45px rgba(107,62,71,.16) !important;
 }
 
+/* Add the modern gold/tan pill container styling */
+.section.section-white .section-label-badge {
+  display: inline-block !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.5px !important;
+  color: #bd9f6d !important; /* Elegant tan accent color */
+  padding: 6px 18px !important;
+  border: 1px solid rgba(189, 159, 109, 0.4) !important; /* Thin custom gold border */
+  border-radius: 50px !important; /* Perfect capsule curvature */
+  background: rgba(189, 159, 109, 0.05) !important; /* Slight tint fill */
+  margin-bottom: 20px !important;
+}
+
+/* 2. Update header to stack elements correctly */
+.section.section-white .section-header {
+  max-width: 760px !important;
+  margin: 0 auto 45px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important; /* Centers the pill badge above the text */
+}
 @media(max-width:900px){
   .section.section-white .grid-3{
     grid-template-columns:1fr !important;
