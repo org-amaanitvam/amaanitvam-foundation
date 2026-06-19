@@ -21,10 +21,20 @@
 }
 
 .collab-hero{
-  background:linear-gradient(135deg,#6f1235,#8d4f6b);
+  background:linear-gradient(135deg, rgba(86, 5, 26, 0.97) 0%, rgba(58, 10, 35, 0.92) 50%, rgba(26, 34, 56, 0.95) 100%);
   color:#fff;
   padding:120px 20px;
   text-align:center;
+}
+
+.collab-hero .hero-label{
+  display:block;
+  color:var(--gold);
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  font-size:.9rem;
+  margin-bottom:1rem;
 }
 
 .collab-hero h1{
@@ -143,10 +153,37 @@
   max-width:1100px;
   margin:0 auto 100px;
   padding:50px;
-  background:linear-gradient(135deg,#6f1235,#8d4f6b);
+  background:linear-gradient(135deg, rgba(86, 5, 26, 0.97) 0%, rgba(58, 10, 35, 0.92) 50%, rgba(26, 34, 56, 0.95) 100%);
   color:white;
   border-radius:30px;
   text-align:center;
+}
+
+.partnership-box .cta-label{
+  display:block;
+  color:var(--gold);
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  font-size:.9rem;
+  margin-bottom:1rem;
+}
+
+.collab-btn{
+  display:inline-block;
+  margin-top:1.5rem;
+  text-decoration:none;
+  background:var(--gold);
+  color:#3d0f1f;
+  padding:14px 28px;
+  border-radius:999px;
+  font-weight:700;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+
+.collab-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
 }
 
 .partnership-box h2{
@@ -378,6 +415,7 @@
 
 
 <section class="collab-hero">
+  <span class="hero-label">Get Involved</span>
   <h1>Collaborations & Partnerships</h1>
 
   <p>
@@ -467,6 +505,7 @@
 
 <section class="partnership-box">
 
+  <span class="cta-label">Support Our Mission</span>
   <h2>Let's Create Impact Together</h2>
 
   <p>
@@ -476,14 +515,11 @@
     group or community leader, we'd love to connect and
     explore opportunities to work together.
   </p>
-  <section class="partnership-box">
 
-    <!-- ADD THIS HERE -->
-    <a href="mailto:amaanitvamfoundation@gmail.com" class="collab-btn">
-        Reach Out To Us
-    </a>
+  <a href="mailto:amaanitvamfoundation@gmail.com" class="collab-btn">
+      Reach Out To Us
+  </a>
 
-</section>
 </section>
 
 <div id="footer"></div>

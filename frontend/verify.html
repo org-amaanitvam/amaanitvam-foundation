@@ -54,6 +54,32 @@
       }
     }
   </style>
+  <style>
+    /* ── Fix: Verification card label/icon overflowing card bounds ── */
+    body[data-page="verify"] .card {
+      overflow: hidden;
+      position: relative;
+    }
+    body[data-page="verify"] .card .section-header {
+      position: relative;
+      text-align: left;
+    }
+    body[data-page="verify"] .card .section-header .section-label {
+      position: static;
+      display: inline-block;
+      max-width: 100%;
+      background: none;
+      padding: 0;
+      margin: 0 0 0.5rem;
+      white-space: nowrap;
+      overflow: visible;
+    }
+    body[data-page="verify"] .card .section-header .section-label::before,
+    body[data-page="verify"] .card .section-header .section-label::after {
+      content: none;
+      display: none;
+    }
+  </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body data-page="verify">
@@ -217,11 +243,20 @@
 </header>
 
 <main id="main-content">
-    <header class="page-hero has-image" data-hero>
-      <div class="container">
-        <span class="section-label">Official Portal</span>
-        <h1 class="section-title" style="font-size: clamp(2rem, 5vw, 3rem);">Verify Certificates With Confidence</h1>
-        <p class="section-desc" style="max-width: 640px; margin: 0;">Instantly authenticate official certificates for internships, volunteering, and training programs issued by Amaanitvam Foundation.</p>
+    <header class="page-hero has-image" data-hero
+      style="position: relative;
+      background: linear-gradient(135deg, rgba(86, 5, 26, 0.97) 0%, rgba(58, 10, 35, 0.92) 50%, rgba(26, 34, 56, 0.95) 100%);
+      padding: 6rem 0;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;">
+      <div class="container" style="display: flex; justify-content: center; text-align: center; width: 100%;">
+        <div style="max-width: 960px;">
+          <span class="section-label" style="color: var(--gold);">Official Portal</span>
+          <h1 class="section-title" style="font-size: clamp(2rem, 5vw, 3rem); color: #ffffff !important; opacity: 1;">Verify Certificates With Confidence</h1>
+          <p class="section-desc" style="max-width: 640px; margin: 0 auto; color: #ffffff; opacity: 1;">Instantly authenticate official certificates for internships, volunteering, and training programs issued by Amaanitvam Foundation.</p>
+        </div>
       </div>
     </header>
 
