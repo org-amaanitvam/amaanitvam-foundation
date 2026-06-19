@@ -13,22 +13,6 @@
 
 <link rel="icon" href="assets/images/logo.jpg" type="image/jpg">
   <link rel="stylesheet" href="css/styles.css">
-<style>
-    @media (min-width: 768px) {
-      .grid-hero { 
-        grid-template-columns: 1fr 1fr !important; 
-      }
-      .grid-2-col { 
-        grid-template-columns: 1fr 1fr !important; 
-      }
-      .origins-img { 
-        order: 1 !important; 
-      }
-      .origins-text { 
-        order: 2 !important; 
-      }
-    }
-  </style>
   <style>
     /* Floating Donate CTA */
     .floating-donate {
@@ -284,69 +268,92 @@
 
 <main id="main-content">
 
-    <!-- Hero -->
-    <section class="page-hero has-image section" data-hero aria-labelledby="about-hero-title">
-      <div class="container grid-hero" style="display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center;">
-        <div style="max-width: 560px;">
-          <span class="section-label" style="color: var(--gold);">FAQ</span>
-          <h1 id="about-hero-title" class="section-title" style="font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1.25rem;">
-            Frequently Asked Questions
-          </h1>
-          <p class="section-desc">
-           Find answers to common questions about volunteering, internships, certificates, donations, and foundation activities.
-          </p>
+    <!-- Hero — matches verify.html centered gradient hero -->
+    <header class="page-hero has-image" data-hero
+      style="position: relative;
+      background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url('assets/images/hero.png'); background-size: cover; background-position: center; background-repeat: no-repeat;
+      padding: 4rem 0;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      isolation: isolate;">
+      <div class="container" style="display: flex; justify-content: center; text-align: center; width: 100%;">
+        <div style="max-width: 960px;">
+          <span class="section-label" style="color: var(--gold);">Resources</span>
+          <h1 id="faq-hero-title" class="section-title" style="font-size: clamp(2rem, 5vw, 3rem); color: #ffffff !important; opacity: 1;">Frequently Asked Questions</h1>
+          <p class="section-desc" style="max-width: 640px; margin: 0 auto; color: #ffffff; opacity: 1;">Find answers to common questions about volunteering, internships, certificates, donations, and foundation activities.</p>
         </div>
-        <div style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); aspect-ratio: 4/3;">
-          <img src="assets/images/about.png"alt="Community volunteers teaching and interacting with local school children outdoors"width="800"
-  height="600"style="width: 100%; height: 100%; object-fit: cover; display: block;"loading="eager">
+      </div>
+    </header>
+
+    <!-- FAQ Section — matches verify.html FAQ accordion style -->
+    <section class="section section-alt" aria-labelledby="faq-heading">
+      <div class="container" style="max-width: 800px;">
+        <div class="section-header">
+          <span class="section-label">FAQ</span>
+          <h2 id="faq-heading" class="section-title">Common Questions</h2>
+        </div>
+        <div role="region" aria-label="Frequently asked questions">
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-1">
+              What is Amaanitvam Foundation?
+              <span class="material-symbols-outlined faq-icon" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-answer" id="faq-1" role="region">Amaanitvam Foundation is a student-led non-profit organization focused on education, empowerment, and community development.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-2">
+              How can I volunteer?
+              <span class="material-symbols-outlined faq-icon" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-answer" id="faq-2" role="region">You can apply through the <a href="volunteer.html">Volunteer</a> page and join our ongoing initiatives.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-3">
+              Do interns receive certificates?
+              <span class="material-symbols-outlined faq-icon" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-answer" id="faq-3" role="region">Yes. Eligible interns receive verified certificates after successful completion.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-4">
+              How can I donate?
+              <span class="material-symbols-outlined faq-icon" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-answer" id="faq-4" role="region">You can support our programs through the <a href="contact.html#donate">donation section</a>.</div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-5">
+              How do I contact the foundation?
+              <span class="material-symbols-outlined faq-icon" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="faq-answer" id="faq-5" role="region">You can reach us through the <a href="contact.html">Contact Us</a> page or the details provided in the footer.</div>
+          </div>
+
         </div>
       </div>
     </section>
 
-    <section class="section section-white">
-  <div class="container">
-
-    <h2 class="section-title">Frequently Asked Questions</h2>
-
-    <div class="card" style="margin-bottom:1rem;">
-      <h3>What is Amaanitvam Foundation?</h3>
-      <p>Amaanitvam Foundation is a student-led non-profit organization focused on education, empowerment, and community development.</p>
-    </div>
-
-    <div class="card" style="margin-bottom:1rem;">
-      <h3>How can I volunteer?</h3>
-      <p>You can apply through the Volunteer page and join our ongoing initiatives.</p>
-    </div>
-
-    <div class="card" style="margin-bottom:1rem;">
-      <h3>Do interns receive certificates?</h3>
-      <p>Yes. Eligible interns receive verified certificates after successful completion.</p>
-    </div>
-
-    <div class="card" style="margin-bottom:1rem;">
-      <h3>How can I donate?</h3>
-      <p>You can support our programs through the donation section.</p>
-    </div>
-
-    <div class="card">
-      <h3>How do I contact the foundation?</h3>
-      <p>You can reach us through the Contact Us page or the details provided in the footer.</p>
-    </div>
-
-  </div>
-</section>
-    <!-- CTA -->
-    <section class="section section-navy" aria-labelledby="about-cta-title" style="text-align: center;">
-      <div class="container" style="max-width: 720px;">
-        <span class="section-label" style="color: var(--gold);">Support Our Mission</span>
-        <h2 id="about-cta-title" class="section-title" style="color: #fff; margin-bottom: 1rem;">Be the Change You Wish to See</h2>
-        <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; margin-bottom: 1rem;">
-          Join our mission to empower lives through education, compassion, and community action.
-        </p>
-        <p style="color: var(--gold); font-size: 0.9rem; font-weight: 600; margin-bottom: 2rem;">Registered under 12A &amp; 80G — tax-deductible for Indian donors</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
-          <a href="contact.html#donate" class="btn btn-primary">Donate Now</a>
-          <a href="impact.html" class="btn btn-outline" style="color: #fff; border-color: rgba(255,255,255,0.4);">See Our Impact</a>
+    <!-- Donation CTA — matches verify.html section-alt donate-section -->
+    <section class="section section-alt" aria-labelledby="faq-donate-cta-title">
+      <div class="container">
+        <div class="donate-section">
+          <span class="section-label" style="color:var(--gold);">Support Our Mission</span>
+          <h2 id="faq-donate-cta-title" class="section-title" style="color:#fff;margin-bottom:1rem;">Be the Change You Wish to See</h2>
+          <p style="color:rgba(255,255,255,0.8);max-width:560px;margin:0 auto 1rem;font-size:1.05rem;">
+            Join our mission to empower lives through education, compassion, and community action.
+          </p>
+          <p style="color:var(--gold);font-size:0.9rem;font-weight:600;margin-bottom:2rem;">Registered under 12A &amp; 80G — tax-deductible for Indian donors</p>
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+            <a href="contact.html#donate" class="btn btn-primary">Donate Now</a>
+            <a href="impact.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.4);color:#fff;">See Our Impact</a>
+          </div>
         </div>
       </div>
     </section>
