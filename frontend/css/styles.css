@@ -1709,3 +1709,45 @@ span{
     padding:60px 16px;
   }
 }
+
+
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a.btn,
+a.btn-donate,
+a.nav-donate-btn,
+a.collab-btn {
+  border: 2px solid #FFD700 !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease !important;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+a.btn:hover,
+a.btn-donate:hover,
+a.nav-donate-btn:hover,
+a.collab-btn:hover {
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+/* Keep the global gold button treatment out of the site navigation. */
+.site-header .nav-link,
+.site-header .mobile-group-toggle {
+  border:0 !important;
+  box-shadow:none !important;
+}
+.site-header .menu-toggle {
+  border:1px solid var(--border) !important;
+  box-shadow:none !important;
+}
+.site-header .nav-link:hover,
+.site-header .mobile-group-toggle:hover,
+.site-header .menu-toggle:hover {
+  box-shadow:none !important;
+  transform:none;
+}
