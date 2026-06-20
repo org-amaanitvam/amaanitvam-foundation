@@ -9,66 +9,65 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-
-  <!-- Fonts -->
-<!-- Icons & CSS -->
   <link rel="icon" href="assets/images/logo.jpg" type="image/jpg">
   <link rel="stylesheet" href="css/styles.css">
+
 <style>
-    .home-hero{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      padding-top:var(--nav-h);
-      position:relative;
-      background-image:
-        url('assets/images/hero.jpeg');
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-attachment: scroll;
-    }
+   .home-hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    padding-top:var(--nav-h);
+    position:relative;
 
-    .hero-grid{
-      width:100%;
-      position:relative;
-      z-index:1;
-      padding-top:0;
-    }
+    background-image:url('assets/images/hero.jpg');
+    background-size:cover;
+    background-position:center 15%; 
+    background-repeat:no-repeat;
+    background-attachment:scroll;
+}
 
-    .hero-grid > div{
-      max-width:720px;
-      margin-left:20px;
-      transform:translateY(25px);
-    }
+.hero-grid{
+    width:100%;
+    position:relative;
+    z-index:1;
+    padding-top:0;
+}
 
-    .hero-title{
-      font-family:'Cormorant Garamond', serif;
-      font-size:clamp(3.4rem, 5.5vw, 5.2rem);
-      font-weight:600;
-      line-height:1.08;
-      color:#ffffff !important;
-      max-width:760px;
-      margin-bottom:1rem;
-      text-align:left;
-      letter-spacing:-0.5px;
-    }
+.hero-grid > div{
+    max-width:720px;
+    margin-left:20px;
+    transform:translateY(40px);
+}
 
-    .hero-desc{
-      color:rgba(255,255,255,.95) !important;
-      max-width:650px;
-      font-family:'Inter', sans-serif;
-      font-size:1.05rem;
-      line-height:1.75;
-      margin-bottom:2rem;
-    }
+.hero-title{
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(3.4rem, 5.5vw, 5.2rem);
+    font-weight:600;
+    line-height:1.08;
+    color:#ffffff !important;
+    max-width:760px;
+    margin-bottom:1rem;
+    text-align:left;
+    letter-spacing:-0.5px;
+}
 
-    .hero-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:1.1rem;
-      justify-content:flex-start;
-    }
+.hero-desc{
+    color:#F8F4EF !important;
+    text-shadow:0 2px 8px rgba(0,0,0,0.85);
+    max-width:650px;
+    font-family:'Inter', sans-serif;
+    font-size:1.05rem;
+    line-height:1.75;
+    margin-bottom:2rem;
+}
+
+.hero-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1.1rem;
+    justify-content:flex-start;
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
