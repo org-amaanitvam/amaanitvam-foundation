@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Explore Amaanitvam Foundation programs — education, community development, volunteering, internships, and certificate programs.">
+  <meta name="description"
+    content="Explore Amaanitvam Foundation programs — education, community development, volunteering, internships, and certificate programs.">
   <title>Programs &amp; Initiatives — Amaanitvam Foundation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Montserrat:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
   <link rel="icon" href="assets/images/logo.jpg" type="image/jpg">
   <link rel="stylesheet" href="css/styles.css">
-<style>
+  <style>
     @media (min-width: 768px) {
-      .grid-2-col { 
-        grid-template-columns: 1fr 1fr !important; 
+      .grid-2-col {
+        grid-template-columns: 1fr 1fr !important;
       }
-      .grid-hero { 
-        grid-template-columns: 1fr 1fr !important; 
+
+      .grid-hero {
+        grid-template-columns: 1fr 1fr !important;
       }
-      .story-grid { 
-        grid-template-columns: 1fr 1fr !important; 
+
+      .story-grid {
+        grid-template-columns: 1fr 1fr !important;
       }
-      .origins-img { 
-        order: 1 !important; 
+
+      .origins-img {
+        order: 1 !important;
       }
-      .origins-text { 
-        order: 2 !important; 
+
+      .origins-text {
+        order: 2 !important;
       }
     }
+
     .program-metric {
       display: flex;
       align-items: center;
@@ -40,10 +50,12 @@
       font-weight: 600;
       color: var(--navy);
     }
-    .program-metric .stat-value { 
-      font-size: 1.1rem; 
-      margin-right: 0.25rem; 
+
+    .program-metric .stat-value {
+      font-size: 1.1rem;
+      margin-right: 0.25rem;
     }
+
     .story-quote {
       border-left: 4px solid var(--primary);
       padding-left: 1.5rem;
@@ -65,7 +77,7 @@
     }
 
     /* Reduce section padding to match about.html */
-    body[data-page="programs"] main#main-content > section.section {
+    body[data-page="programs"] main#main-content>section.section {
       padding: 2.75rem 0 !important;
     }
 
@@ -85,11 +97,13 @@
         grid-template-columns: repeat(3, 1fr) !important;
       }
     }
+
     @media (max-width: 640px) {
       body[data-page="programs"] .programs-5col {
         grid-template-columns: repeat(2, 1fr) !important;
       }
     }
+
     @media (max-width: 400px) {
       body[data-page="programs"] .programs-5col {
         grid-template-columns: 1fr !important;
@@ -118,20 +132,24 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
     .floating-donate:hover,
     .floating-donate:focus-visible {
       transform: translateY(-3px);
       box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
       color: #1a2238;
     }
+
     .floating-donate .material-symbols-outlined {
       font-size: 1.2rem;
     }
+
     @media (max-width: 540px) {
       .floating-donate {
         padding: 0.85rem;
         border-radius: 50%;
       }
+
       .floating-donate-text {
         display: none;
       }
@@ -139,221 +157,225 @@
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+
 <body data-page="programs">
 
-<header class="site-header" id="site-header">
-  <nav class="site-nav" id="site-nav" aria-label="Main navigation">
-    <div class="nav-inner">
+  <header class="site-header" id="site-header">
+    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+      <div class="nav-inner">
 
-      <a href="index.html" class="brand" aria-label="Amaanitvam Foundation home">
-        <img src="assets/images/logo.jpg" alt="Amaanitvam Foundation" class="brand-logo">
-        <div class="brand-text">
-          <span class="brand-name">AMAANITVAM</span>
-          <span class="brand-subtitle">FOUNDATION</span>
-        </div>
-      </a>
+        <a href="index.html" class="brand" aria-label="Amaanitvam Foundation home">
+          <img src="assets/images/logo.jpg" alt="Amaanitvam Foundation" class="brand-logo">
+          <div class="brand-text">
+            <span class="brand-name">AMAANITVAM</span>
+            <span class="brand-subtitle">FOUNDATION</span>
+          </div>
+        </a>
 
-      <div class="nav-links" id="nav-links" role="navigation">
-        <a href="index.html" class="nav-link">Home</a>
+        <div class="nav-links" id="nav-links" role="navigation">
+          <a href="index.html" class="nav-link">Home</a>
 
-        <div class="nav-item has-dropdown">
-          <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-            About Us
-            <span class="nav-chevron" aria-hidden="true">
-              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
-                <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </button>
+          <div class="nav-item has-dropdown">
+            <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+              About Us
+              <span class="nav-chevron" aria-hidden="true">
+                <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </span>
+            </button>
 
-          <div class="dropdown-menu" role="menu">
-            <a href="about.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">info</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>About Foundation</strong>
-                <small>Our story & values</small>
-              </span>
-            </a>
+            <div class="dropdown-menu" role="menu">
+              <a href="about.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">info</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>About Foundation</strong>
+                  <small>Our story & values</small>
+                </span>
+              </a>
 
-            <a href="impact.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">bar_chart</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Impact</strong>
-                <small>What we've achieved</small>
-              </span>
-            </a>
+              <a href="impact.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">bar_chart</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Impact</strong>
+                  <small>What we've achieved</small>
+                </span>
+              </a>
 
-            <a href="programs.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">apps</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Programs</strong>
-                <small>Our initiatives & impact areas</small>
-              </span>
-            </a>
+              <a href="programs.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">apps</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Programs</strong>
+                  <small>Our initiatives & impact areas</small>
+                </span>
+              </a>
 
-            <a href="gallery.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">photo_library</span>
+              <a href="gallery.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">photo_library</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Gallery</strong>
+                  <small>Photos & moments</small>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-item has-dropdown">
+            <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+              Get Involved
+              <span class="nav-chevron" aria-hidden="true">
+                <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <span class="dropdown-text">
-                <strong>Gallery</strong>
-                <small>Photos & moments</small>
+            </button>
+
+            <div class="dropdown-menu" role="menu">
+              <a href="volunteer.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">volunteer_activism</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Volunteer</strong>
+                  <small>Join our volunteer network</small>
+                </span>
+              </a>
+
+              <a href="internship.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">work</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Internship</strong>
+                  <small>Apply for internship</small>
+                </span>
+              </a>
+
+              <a href="contact.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">mail</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Contact Us</strong>
+                  <small>Get in touch</small>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-item has-dropdown">
+            <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+              Resources
+              <span class="nav-chevron" aria-hidden="true">
+                <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-            </a>
+            </button>
+
+            <div class="dropdown-menu" role="menu">
+              <a href="collaborations.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">diversity_3</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Collaborations & Partnerships</strong>
+                  <small>Our partners & collaborations</small>
+                </span>
+              </a>
+
+              <a href="verify.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">verified</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>Verify Certificate</strong>
+                  <small>Check your certificate</small>
+                </span>
+              </a>
+
+              <a href="faq.html" class="dropdown-item" role="menuitem">
+                <span class="dropdown-icon">
+                  <span class="material-symbols-outlined">help</span>
+                </span>
+                <span class="dropdown-text">
+                  <strong>FAQ</strong>
+                  <small>Common questions answered</small>
+                </span>
+              </a>
+            </div>
           </div>
         </div>
 
-        <div class="nav-item has-dropdown">
-          <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-            Get Involved
-            <span class="nav-chevron" aria-hidden="true">
-              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
-                <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
+        <div class="nav-actions">
+          <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation menu" aria-expanded="false"
+            aria-controls="mobile-menu">
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
           </button>
-
-          <div class="dropdown-menu" role="menu">
-            <a href="volunteer.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">volunteer_activism</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Volunteer</strong>
-                <small>Join our volunteer network</small>
-              </span>
-            </a>
-
-            <a href="internship.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">work</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Internship</strong>
-                <small>Apply for internship</small>
-              </span>
-            </a>
-
-            <a href="contact.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">mail</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Contact Us</strong>
-                <small>Get in touch</small>
-              </span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-item has-dropdown">
-          <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
-            Resources
-            <span class="nav-chevron" aria-hidden="true">
-              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
-                <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </button>
-
-          <div class="dropdown-menu" role="menu">
-            <a href="collaborations.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">diversity_3</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Collaborations & Partnerships</strong>
-                <small>Our partners & collaborations</small>
-              </span>
-            </a>
-
-            <a href="verify.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">verified</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>Verify Certificate</strong>
-                <small>Check your certificate</small>
-              </span>
-            </a>
-
-            <a href="faq.html" class="dropdown-item" role="menuitem">
-              <span class="dropdown-icon">
-                <span class="material-symbols-outlined">help</span>
-              </span>
-              <span class="dropdown-text">
-                <strong>FAQ</strong>
-                <small>Common questions answered</small>
-              </span>
-            </a>
-          </div>
         </div>
       </div>
+    </nav>
 
-      <div class="nav-actions">
-        <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
-          <span class="hamburger-bar"></span>
-          <span class="hamburger-bar"></span>
-          <span class="hamburger-bar"></span>
-        </button>
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <div class="mobile-menu-inner">
+
+        <a href="index.html" class="mobile-link" style="padding:1rem 0.25rem;font-weight:600;display:block;">Home</a>
+
+        <div class="mobile-section">
+          <button class="mobile-group-toggle" aria-expanded="false">
+            About Us <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+          </button>
+          <div class="mobile-group-links">
+            <a href="about.html" class="mobile-link">About Foundation</a>
+            <a href="impact.html" class="mobile-link">Impact</a>
+            <a href="programs.html" class="mobile-link">Programs</a>
+            <a href="gallery.html" class="mobile-link">Gallery</a>
+          </div>
+        </div>
+
+        <div class="mobile-section">
+          <button class="mobile-group-toggle" aria-expanded="false">
+            Get Involved <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+          </button>
+          <div class="mobile-group-links">
+            <a href="volunteer.html" class="mobile-link">Volunteer</a>
+            <a href="internship.html" class="mobile-link">Internship</a>
+            <a href="contact.html" class="mobile-link">Contact Us</a>
+          </div>
+        </div>
+
+        <div class="mobile-section">
+          <button class="mobile-group-toggle" aria-expanded="false">
+            Resources <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+          </button>
+          <div class="mobile-group-links">
+            <a href="collaborations.html" class="mobile-link">Collaborations & Partnerships</a>
+            <a href="verify.html" class="mobile-link">Verify Certificate</a>
+            <a href="faq.html" class="mobile-link">FAQ</a>
+          </div>
+        </div>
+
       </div>
     </div>
-  </nav>
+  </header>
 
-  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-    <div class="mobile-menu-inner">
-
-      <a href="index.html" class="mobile-link" style="padding:1rem 0.25rem;font-weight:600;display:block;">Home</a>
-
-      <div class="mobile-section">
-        <button class="mobile-group-toggle" aria-expanded="false">
-          About Us <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
-        </button>
-        <div class="mobile-group-links">
-          <a href="about.html" class="mobile-link">About Foundation</a>
-          <a href="impact.html" class="mobile-link">Impact</a>
-          <a href="programs.html" class="mobile-link">Programs</a>
-          <a href="gallery.html" class="mobile-link">Gallery</a>
-        </div>
-      </div>
-
-      <div class="mobile-section">
-        <button class="mobile-group-toggle" aria-expanded="false">
-          Get Involved <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
-        </button>
-        <div class="mobile-group-links">
-          <a href="volunteer.html" class="mobile-link">Volunteer</a>
-          <a href="internship.html" class="mobile-link">Internship</a>
-          <a href="contact.html" class="mobile-link">Contact Us</a>
-        </div>
-      </div>
-
-      <div class="mobile-section">
-        <button class="mobile-group-toggle" aria-expanded="false">
-          Resources <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
-        </button>
-        <div class="mobile-group-links">
-          <a href="collaborations.html" class="mobile-link">Collaborations & Partnerships</a>
-          <a href="verify.html" class="mobile-link">Verify Certificate</a>
-          <a href="faq.html" class="mobile-link">FAQ</a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</header>
-
-<main id="main-content">
+  <main id="main-content">
 
     <!-- Hero -->
-    <section class="page-hero has-image section" data-hero aria-labelledby="programs-hero-title"
-      style="position: relative;
+    <section class="page-hero has-image section" data-hero aria-labelledby="programs-hero-title" style="position: relative;
       background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url('assets/images/hero.png'); background-size: cover; background-position: center; background-repeat: no-repeat;
       padding: 6rem 0;
       min-height: 480px;
@@ -367,8 +389,10 @@
             margin-bottom: 1.25rem; color: #ffffff !important; opacity: 1;">
             Programs Creating Pathways To Change
           </h1>
-          <p class="section-desc" style="max-width: 960px; margin: 0 auto; color: #ffffff; opacity: 1; font-size: 1.25rem;">
-            Explore our initiatives empowering communities through education, awareness, mentorship, and meaningful action.
+          <p class="section-desc"
+            style="max-width: 960px; margin: 0 auto; color: #ffffff; opacity: 1; font-size: 1.25rem;">
+            Explore our initiatives empowering communities through education, awareness, mentorship, and meaningful
+            action.
           </p>
         </div>
       </div>
@@ -380,7 +404,8 @@
         <header class="section-header">
           <span class="section-label">What We Do</span>
           <h2 id="programs-categories-title" class="section-title">Core Program Areas</h2>
-          <p class="section-desc">Our holistic approach addresses community needs through structured, sustainable interventions.</p>
+          <p class="section-desc">Our holistic approach addresses community needs through structured, sustainable
+            interventions.</p>
         </header>
         <div class="programs-5col" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
 
@@ -392,51 +417,60 @@
             <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
               School admissions &amp; learning support for underserved children.
             </p>
-            <a href="impact.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">View Impact</a>
+            <a href="impact.html" class="btn btn-outline"
+              style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">View Impact</a>
           </article>
 
           <article id="community" class="card" style="text-align: center; padding: 1.25rem 1rem;">
             <div class="card-icon card-icon-purple" style="margin: 0 auto 0.75rem;">
               <span class="material-symbols-outlined icon-fill" aria-hidden="true">groups</span>
             </div>
-            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Community Development</h3>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Community
+              Development</h3>
             <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
               Counselling, awareness &amp; mentorship for stronger communities.
             </p>
-            <a href="impact.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">View Impact</a>
+            <a href="impact.html" class="btn btn-outline"
+              style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">View Impact</a>
           </article>
 
           <article id="volunteer" class="card" style="text-align: center; padding: 1.25rem 1rem;">
             <div class="card-icon card-icon-gold" style="margin: 0 auto 0.75rem;">
               <span class="material-symbols-outlined icon-fill" aria-hidden="true">volunteer_activism</span>
             </div>
-            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Volunteer Network</h3>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Volunteer
+              Network</h3>
             <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
               Passionate individuals driving on-ground community impact.
             </p>
-            <a href="volunteer.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Join Network</a>
+            <a href="volunteer.html" class="btn btn-outline"
+              style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Join Network</a>
           </article>
 
           <article id="internships" class="card" style="text-align: center; padding: 1.25rem 1rem;">
             <div class="card-icon card-icon-navy" style="margin: 0 auto 0.75rem;">
               <span class="material-symbols-outlined icon-fill" aria-hidden="true">work</span>
             </div>
-            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Internships</h3>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Internships
+            </h3>
             <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
               Real-world experience &amp; skill-building for changemakers.
             </p>
-            <a href="internship.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Apply Now</a>
+            <a href="internship.html" class="btn btn-outline"
+              style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Apply Now</a>
           </article>
 
           <article id="certificates" class="card" style="text-align: center; padding: 1.25rem 1rem;">
             <div class="card-icon card-icon-purple" style="margin: 0 auto 0.75rem;">
               <span class="material-symbols-outlined icon-fill" aria-hidden="true">verified</span>
             </div>
-            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Certificate Programs</h3>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Certificate
+              Programs</h3>
             <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
               Verified, publicly verifiable credentials for completions.
             </p>
-            <a href="verify.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Verify Certificate</a>
+            <a href="verify.html" class="btn btn-outline"
+              style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Verify Certificate</a>
           </article>
 
         </div>
@@ -444,63 +478,318 @@
     </section>
 
     <!-- Featured Initiatives -->
-    <section class="section section-white" aria-labelledby="initiatives-title">
-      <div class="container">
-        <header class="section-header">
-          <span class="section-label">On the Ground</span>
-          <h2 id="initiatives-title" class="section-title">Core Initiatives &amp; Projects</h2>
-          <p class="section-desc">Our flagship programs delivering education support, youth empowerment, and personal development for children and adolescents.</p>
+    <section class="section" aria-labelledby="initiatives-title"
+      style="background: var(--bg); padding-top: 5rem; padding-bottom: 5rem;">
+      <style>
+        .elegant-header {
+          text-align: left;
+          max-width: 650px;
+          margin-bottom: 6rem;
+        }
+
+        .elegant-label {
+          display: block;
+          font-family: var(--font-ui);
+          font-size: 0.8rem;
+          color: #9c3f3f;
+          letter-spacing: 0.15em;
+          font-weight: 700;
+          text-transform: uppercase;
+          margin-bottom: 1rem;
+        }
+
+        .elegant-title {
+          font-family: var(--font-heading);
+          font-size: clamp(2.5rem, 4vw, 3rem);
+          color: var(--text);
+          margin-bottom: 1.5rem;
+          font-weight: 600;
+          line-height: 1.1;
+        }
+
+        .elegant-desc {
+          font-size: 1.15rem;
+          color: var(--muted);
+          line-height: 1.7;
+        }
+
+        .project-showcase {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 4rem;
+          margin-bottom: 8rem;
+          align-items: start;
+        }
+
+        @media (min-width: 900px) {
+          .project-showcase {
+            grid-template-columns: 5fr 6fr;
+            gap: 6rem;
+          }
+        }
+
+        .project-image-wrapper {
+          position: relative;
+        }
+
+        .project-image-wrapper img {
+          width: 100%;
+          aspect-ratio: 3/4;
+          object-fit: cover;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .project-image-caption {
+          position: absolute;
+          bottom: -2rem;
+          left: 0;
+          background: var(--surface);
+          padding: 1.25rem 2rem;
+          border: 1px solid var(--border);
+          width: 80%;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .caption-label {
+          display: block;
+          font-family: var(--font-ui);
+          font-size: 0.75rem;
+          color: #9c3f3f;
+          letter-spacing: 0.15em;
+          font-weight: 700;
+          text-transform: uppercase;
+          margin-bottom: 0.25rem;
+        }
+
+        .caption-title {
+          font-family: var(--font-heading);
+          font-size: 1.4rem;
+          color: var(--text);
+          margin: 0;
+          font-weight: 600;
+        }
+
+        .project-content {
+          padding-top: 1rem;
+        }
+
+        .project-content-label {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-family: var(--font-ui);
+          font-size: 0.8rem;
+          color: var(--muted);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          margin-bottom: 1.5rem;
+          font-weight: 600;
+        }
+
+        .project-content-title {
+          font-family: var(--font-heading);
+          font-size: clamp(2rem, 3.5vw, 2.5rem);
+          color: var(--text);
+          margin-bottom: 1.5rem;
+          line-height: 1.1;
+          font-weight: 600;
+        }
+
+        .project-text {
+          font-size: 1.05rem;
+          color: var(--muted);
+          line-height: 1.75;
+          margin-bottom: 1.25rem;
+        }
+
+        .project-btn-group {
+          display: flex;
+          gap: 1rem;
+          margin-top: 2.5rem;
+          flex-wrap: wrap;
+        }
+
+        .btn-rect {
+          padding: 1rem 1.75rem;
+          font-family: var(--font-ui);
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          border-radius: 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+          text-decoration: none;
+        }
+
+        .btn-rect-dark {
+          background: #0d1a14;
+          color: #fff !important;
+          border: 1px solid #0d1a14;
+        }
+
+        .btn-rect-dark:hover {
+          background: var(--primary);
+          border-color: var(--primary);
+        }
+
+        .btn-rect-light {
+          background: transparent;
+          color: var(--text) !important;
+          border: 1px solid var(--border);
+        }
+
+        .btn-rect-light:hover {
+          background: var(--surface);
+        }
+
+        .project-divider {
+          height: 1px;
+          background: var(--border);
+          width: 100%;
+          margin: 4rem 0 6rem 0;
+          opacity: 0.5;
+        }
+      </style>
+
+      <div class="container" style="max-width: 1100px;">
+        <header class="elegant-header">
+          <span class="elegant-label">ON THE GROUND</span>
+          <h2 id="initiatives-title" class="elegant-title">Core Initiatives &amp; Projects</h2>
+          <p class="elegant-desc">Our flagship programs delivering education support, youth empowerment, and personal
+            development for children and adolescents.</p>
         </header>
 
-        <div style="display: flex; flex-direction: column; gap: 3rem;">
-
-          <article id="shiksha">
-            <img src="assets/images/project-shiksha.png" alt="Project Shiksha — school admission support and education for children" class="project-poster" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem;" width="600" height="400" loading="lazy">
-            <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem;">Project Shiksha</h3>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
-              Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community support, and dedicated volunteers, the project has now impacted more than <strong>50 children</strong>.
+        <!-- Project Shiksha -->
+        <article id="shiksha" class="project-showcase">
+          <div class="project-image-wrapper">
+            <img src="assets/images/project_shiksha1.jpeg"
+              alt="Project Shiksha — school admission support and education for children">
+            <div class="project-image-caption">
+              <span class="caption-label">PROJECT 01</span>
+              <h4 class="caption-title">Shiksha</h4>
+            </div>
+          </div>
+          <div class="project-content">
+            <span class="project-content-label">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">school</span>
+              EDUCATION SUPPORT
+            </span>
+            <h3 class="project-content-title">Project Shiksha</h3>
+            <p class="project-text">
+              Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community
+              support, and dedicated volunteers, the project has now impacted more than <strong>50 children</strong>.
             </p>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
-              Many children were unable to secure admission in government schools due to a lack of proper documentation and guidance. The foundation supported these children and their families by assisting with school admission procedures, preparing and arranging required documents, guiding parents through the admission process, and ensuring children gained access to quality education.
+            <p class="project-text">
+              Many children were unable to secure admission in government schools due to a lack of proper documentation
+              and guidance. The foundation supported these children and their families by assisting with school
+              admission procedures, preparing and arranging required documents, guiding parents through the admission
+              process, and ensuring children gained access to quality education.
             </p>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7;">
+            <p class="project-text">
               Today, these children are continuing their education and moving toward a brighter future.
             </p>
-          </article>
+            <div class="project-btn-group">
+              <a href="contact.html#donate" class="btn-rect btn-rect-dark">
+                <span class="material-symbols-outlined"
+                  style="font-size: 1.1rem; margin-right: 0.2rem;">volunteer_activism</span>
+                DONATE NOW
+              </a>
+              <a href="impact.html" class="btn-rect btn-rect-light">
+                VIEW IMPACT
+              </a>
+            </div>
+          </div>
+        </article>
 
-          <hr style="border: none; border-top: 1px solid var(--border); margin: 0;">
+        <div class="project-divider"></div>
 
-          <article id="manthan">
-            <img src="assets/images/project-manthan.png" alt="Project Manthan — counselling and awareness for children and adolescents" class="project-poster" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem;" width="600" height="400" loading="lazy">
-            <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem;">Project Manthan</h3>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
-              Under Project Manthan, Amaanitvam Foundation worked with children and adolescents to address negative habits and personal challenges through awareness sessions and counselling.
+        <!-- Project Manthan -->
+        <article id="manthan" class="project-showcase">
+          <div class="project-image-wrapper">
+            <img src="assets/images/project-manthan.png"
+              alt="Project Manthan — counselling and awareness for children and adolescents">
+            <div class="project-image-caption">
+              <span class="caption-label">PROJECT 02</span>
+              <h4 class="caption-title">Manthan</h4>
+            </div>
+          </div>
+          <div class="project-content">
+            <span class="project-content-label">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">psychology</span>
+              COUNSELLING &amp; AWARENESS
+            </span>
+            <h3 class="project-content-title">Project Manthan</h3>
+            <p class="project-text">
+              Under Project Manthan, Amaanitvam Foundation worked with children and adolescents to address negative
+              habits and personal challenges through awareness sessions and counselling.
             </p>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
-              Initiatives included counselling and mentorship sessions, guidance on positive life choices, awareness regarding harmful habits and their consequences, personality development activities, confidence-building sessions, and encouraging education, discipline, and social responsibility.
+            <p class="project-text">
+              Initiatives included counselling and mentorship sessions, guidance on positive life choices, awareness
+              regarding harmful habits and their consequences, personality development activities, confidence-building
+              sessions, and encouraging education, discipline, and social responsibility.
             </p>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7;">
-              Through these efforts, many children demonstrated positive behavioural changes and developed a stronger focus on their education and future goals.
+            <p class="project-text">
+              Through these efforts, many children demonstrated positive behavioural changes and developed a stronger
+              focus on their education and future goals.
             </p>
-          </article>
+            <div class="project-btn-group">
+              <a href="contact.html#donate" class="btn-rect btn-rect-dark">
+                <span class="material-symbols-outlined"
+                  style="font-size: 1.1rem; margin-right: 0.2rem;">volunteer_activism</span>
+                DONATE NOW
+              </a>
+              <a href="impact.html" class="btn-rect btn-rect-light">
+                LEARN MORE
+              </a>
+            </div>
+          </div>
+        </article>
 
-          <hr style="border: none; border-top: 1px solid var(--border); margin: 0;">
+        <div class="project-divider"></div>
 
-          <article id="pravah">
-            <img src="assets/images/hero.png" alt="Project Pravah — youth empowerment initiative in Hisar, Haryana" class="project-poster" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem;" width="600" height="400" loading="lazy">
-            <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem;">Project Pravah</h3>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
-              Project Pravah is our pilot initiative launched in Hisar, Haryana — aimed at creating opportunities, spreading awareness, and building a brighter future for children and youth.
+        <!-- Project Pravah -->
+        <article id="pravah" class="project-showcase" style="margin-bottom: 0;">
+          <div class="project-image-wrapper">
+            <img src="assets/images/hero.png" alt="Project Pravah — youth empowerment initiative in Hisar, Haryana">
+            <div class="project-image-caption">
+              <span class="caption-label">PROJECT 03</span>
+              <h4 class="caption-title">Pravah</h4>
+            </div>
+          </div>
+          <div class="project-content">
+            <span class="project-content-label">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">groups</span>
+              YOUTH EMPOWERMENT
+            </span>
+            <h3 class="project-content-title">Project Pravah</h3>
+            <p class="project-text">
+              Project Pravah is our pilot initiative launched in Hisar, Haryana — aimed at creating opportunities,
+              spreading awareness, and building a brighter future for children and youth.
             </p>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
-              Key focus areas include opportunity creation for rural youth, awareness drives on education &amp; health, and grassroots community engagement beyond Delhi.
+            <p class="project-text">
+              Key focus areas include opportunity creation for rural youth, awareness drives on education &amp; health,
+              and grassroots community engagement beyond Delhi.
             </p>
-            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7;">
-              Expanding our reach beyond Delhi, Project Pravah brings grassroots action to rural communities and empowers the next generation with knowledge, access, and hope.
+            <p class="project-text">
+              Expanding our reach beyond Delhi, Project Pravah brings grassroots action to rural communities and
+              empowers the next generation with knowledge, access, and hope.
             </p>
-          </article>
+            <div class="project-btn-group">
+              <a href="contact.html#donate" class="btn-rect btn-rect-dark">
+                <span class="material-symbols-outlined"
+                  style="font-size: 1.1rem; margin-right: 0.2rem;">volunteer_activism</span>
+                DONATE NOW
+              </a>
+              <a href="impact.html" class="btn-rect btn-rect-light">
+                DISCOVER
+              </a>
+            </div>
+          </div>
+        </article>
 
-        </div>
       </div>
     </section>
 
@@ -509,155 +798,159 @@
       <div class="container">
         <div class="donate-section">
           <span class="section-label" style="color:var(--gold);">Support Our Mission</span>
-          <h2 id="donate-cta-title" class="section-title" style="color:#fff;margin-bottom:1rem;">Be the Change You Wish to See</h2>
+          <h2 id="donate-cta-title" class="section-title" style="color:#fff;margin-bottom:1rem;">Be the Change You Wish
+            to See</h2>
           <p style="color:rgba(255,255,255,0.8);max-width:560px;margin:0 auto 1rem;font-size:1.05rem;">
             Join our mission to empower lives through education, compassion, and community action.
           </p>
-          <p style="color:var(--gold);font-size:0.9rem;font-weight:600;margin-bottom:2rem;">Registered under 12A &amp; 80G — tax-deductible for Indian donors</p>
+          <p style="color:var(--gold);font-size:0.9rem;font-weight:600;margin-bottom:2rem;">Registered under 12A &amp;
+            80G — tax-deductible for Indian donors</p>
           <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
             <a href="contact.html#donate" class="btn btn-primary">Donate Now</a>
-            <a href="impact.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.4);color:#fff;">See Our Impact</a>
+            <a href="impact.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.4);color:#fff;">See Our
+              Impact</a>
           </div>
         </div>
       </div>
     </section>
 
   </main>
-<!-- Floating Donate CTA -->
+  <!-- Floating Donate CTA -->
 
-<div id="footer"></div>
+  <div id="footer"></div>
 
-<a href="contact.html#donate" class="floating-donate">
-  ❤ Donate Now
-</a>
-
-<div class="floating-socials">
-  <a href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/" target="_blank" aria-label="Facebook">
-    <i class="fa-brands fa-facebook-f"></i>
+  <a href="contact.html#donate" class="floating-donate">
+    ❤ Donate Now
   </a>
-  <a href="https://www.instagram.com/amaanitvamfoundation" target="_blank" aria-label="Instagram">
-    <i class="fa-brands fa-instagram"></i>
-  </a>
-  <a href="https://x.com/AmaanitvamOrg" target="_blank" aria-label="X">
-    <i class="fa-brands fa-x-twitter"></i>
-  </a>
-  <a href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank" aria-label="LinkedIn">
-    <i class="fa-brands fa-linkedin-in"></i>
-  </a>
-</div>
 
-<script src="js/main.js"></script>
-<script>
-  (function () {
-    const nav = document.getElementById('site-nav');
-    const menuToggle = document.getElementById('menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
+  <div class="floating-socials">
+    <a href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/" target="_blank"
+      aria-label="Facebook">
+      <i class="fa-brands fa-facebook-f"></i>
+    </a>
+    <a href="https://www.instagram.com/amaanitvamfoundation" target="_blank" aria-label="Instagram">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+    <a href="https://x.com/AmaanitvamOrg" target="_blank" aria-label="X">
+      <i class="fa-brands fa-x-twitter"></i>
+    </a>
+    <a href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank" aria-label="LinkedIn">
+      <i class="fa-brands fa-linkedin-in"></i>
+    </a>
+  </div>
 
-    if (nav) {
-      function onScroll() {
-        nav.classList.toggle('is-solid', window.scrollY > 60);
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-    }
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      const nav = document.getElementById('site-nav');
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
 
-    const pageMap = {
-      about: 0,
-      impact: 0,
-      programs: 0,
-      gallery: 0,
-      volunteer: 1,
-      internship: 1,
-      contact: 1,
-      collaborations: 2,
-      verify: 2,
-      faq: 2,
-      resources: 2,
-      guidelines: 2,
-      circulars: 2
-    };
-
-    const page = document.body.dataset.page;
-    if (page && pageMap[page] !== undefined) {
-      const triggers = document.querySelectorAll('.nav-link.dropdown-trigger');
-      if (triggers[pageMap[page]]) {
-        triggers[pageMap[page]].classList.add('is-active');
-      }
-    }
-
-    document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
-      const trigger = item.querySelector('.dropdown-trigger');
-      const menu = item.querySelector('.dropdown-menu');
-
-      function open() {
-        trigger.setAttribute('aria-expanded', 'true');
-        menu.classList.add('is-open');
+      if (nav) {
+        function onScroll() {
+          nav.classList.toggle('is-solid', window.scrollY > 60);
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
       }
 
-      function close() {
-        trigger.setAttribute('aria-expanded', 'false');
-        menu.classList.remove('is-open');
+      const pageMap = {
+        about: 0,
+        impact: 0,
+        programs: 0,
+        gallery: 0,
+        volunteer: 1,
+        internship: 1,
+        contact: 1,
+        collaborations: 2,
+        verify: 2,
+        faq: 2,
+        resources: 2,
+        guidelines: 2,
+        circulars: 2
+      };
+
+      const page = document.body.dataset.page;
+      if (page && pageMap[page] !== undefined) {
+        const triggers = document.querySelectorAll('.nav-link.dropdown-trigger');
+        if (triggers[pageMap[page]]) {
+          triggers[pageMap[page]].classList.add('is-active');
+        }
       }
 
-      item.addEventListener('mouseenter', open);
-      item.addEventListener('mouseleave', close);
+      document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
+        const trigger = item.querySelector('.dropdown-trigger');
+        const menu = item.querySelector('.dropdown-menu');
 
-      trigger.addEventListener('click', function () {
-        trigger.getAttribute('aria-expanded') === 'true' ? close() : open();
-      });
+        function open() {
+          trigger.setAttribute('aria-expanded', 'true');
+          menu.classList.add('is-open');
+        }
 
-      trigger.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') close();
-      });
-    });
+        function close() {
+          trigger.setAttribute('aria-expanded', 'false');
+          menu.classList.remove('is-open');
+        }
 
-    if (menuToggle && mobileMenu) {
-      menuToggle.addEventListener('click', function () {
-        const isOpen = mobileMenu.classList.toggle('is-open');
-        menuToggle.setAttribute('aria-expanded', isOpen);
-        mobileMenu.setAttribute('aria-hidden', !isOpen);
-        menuToggle.classList.toggle('is-active', isOpen);
-      });
-    }
+        item.addEventListener('mouseenter', open);
+        item.addEventListener('mouseleave', close);
 
-    document.querySelectorAll('.mobile-group-toggle').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        const section = btn.closest('.mobile-section');
-        const links = section.querySelector('.mobile-group-links');
-        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-
-        document.querySelectorAll('.mobile-section').forEach(function (s) {
-          s.querySelector('.mobile-group-toggle').setAttribute('aria-expanded', 'false');
-          s.querySelector('.mobile-group-links').classList.remove('is-open');
+        trigger.addEventListener('click', function () {
+          trigger.getAttribute('aria-expanded') === 'true' ? close() : open();
         });
 
-        if (!isExpanded) {
-          btn.setAttribute('aria-expanded', 'true');
-          links.classList.add('is-open');
+        trigger.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') close();
+        });
+      });
+
+      if (menuToggle && mobileMenu) {
+        menuToggle.addEventListener('click', function () {
+          const isOpen = mobileMenu.classList.toggle('is-open');
+          menuToggle.setAttribute('aria-expanded', isOpen);
+          mobileMenu.setAttribute('aria-hidden', !isOpen);
+          menuToggle.classList.toggle('is-active', isOpen);
+        });
+      }
+
+      document.querySelectorAll('.mobile-group-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const section = btn.closest('.mobile-section');
+          const links = section.querySelector('.mobile-group-links');
+          const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+          document.querySelectorAll('.mobile-section').forEach(function (s) {
+            s.querySelector('.mobile-group-toggle').setAttribute('aria-expanded', 'false');
+            s.querySelector('.mobile-group-links').classList.remove('is-open');
+          });
+
+          if (!isExpanded) {
+            btn.setAttribute('aria-expanded', 'true');
+            links.classList.add('is-open');
+          }
+        });
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest('.nav-item.has-dropdown')) {
+          document.querySelectorAll('.dropdown-trigger').forEach(function (t) {
+            t.setAttribute('aria-expanded', 'false');
+          });
+          document.querySelectorAll('.dropdown-menu').forEach(function (m) {
+            m.classList.remove('is-open');
+          });
         }
       });
-    });
+    })();
 
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.nav-item.has-dropdown')) {
-        document.querySelectorAll('.dropdown-trigger').forEach(function (t) {
-          t.setAttribute('aria-expanded', 'false');
-        });
-        document.querySelectorAll('.dropdown-menu').forEach(function (m) {
-          m.classList.remove('is-open');
-        });
-      }
-    });
-  })();
-
-  fetch('footer.html')
-    .then(function (response) { return response.text(); })
-    .then(function (data) {
-      const footer = document.getElementById('footer');
-      if (footer) footer.innerHTML = data;
-    });
-</script>
+    fetch('footer.html')
+      .then(function (response) { return response.text(); })
+      .then(function (data) {
+        const footer = document.getElementById('footer');
+        if (footer) footer.innerHTML = data;
+      });
+  </script>
 
 </body>
+
 </html>
- 
