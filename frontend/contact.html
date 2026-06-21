@@ -467,148 +467,110 @@
       </div>
     </section>
 
-    <section id="donate" class="donation-section"></section>
+    <section id="donate" class="donation-section" aria-labelledby="donation-heading">
+      <div class="donation-container">
 
-  <div class="donation-container">
+        <div class="donation-form-card">
+          <h2 id="donation-heading" class="donation-heading">
+            <span aria-hidden="true">❤️</span> Donation Details
+          </h2>
 
-    <!-- LEFT SIDE -->
-    <div class="donation-form-card">
+          <label for="donorName">Full Name</label>
+          <input type="text" id="donorName" placeholder="Enter your full name" required>
 
-      <h2 class="donation-heading">
-        <span>❤️</span> Donation Details
-      </h2>
+          <label for="donorEmail">Email Address</label>
+          <input type="email" id="donorEmail" placeholder="your.email@example.com" required>
 
-      <label>Full Name</label>
-      <input type="text" id="donorName" placeholder="Enter your full name" required>
+          <label for="donorPhone">Phone Number</label>
+          <input type="tel" id="donorPhone" placeholder="10-digit phone number" pattern="\d{10}" maxlength="10">
 
-      <label>Email Address</label>
-      <input type="email" id="donorEmail" placeholder="your.email@example.com" required>
+          <label>Select Amount</label>
+          <div class="amount-buttons">
+            <button type="button" class="amount-btn" data-amount="500">₹500</button>
+            <button type="button" class="amount-btn" data-amount="1000">₹1,000</button>
+            <button type="button" class="amount-btn" data-amount="2500">₹2,500</button>
+            <button type="button" class="amount-btn" data-amount="5000">₹5,000</button>
+          </div>
 
-      <label>Phone Number</label>
-      <input type="tel" id="donorPhone" placeholder="10-digit phone number" pattern="\d{10}" maxlength="10">
+          <div class="custom-amount-wrapper">
+            <input type="number" id="customAmount" min="10" placeholder="Enter custom amount">
+          </div>
 
-      <label>Select Amount</label>
+          <p class="minimum-note">ℹ Minimum donation: ₹10</p>
 
-      <div class="amount-buttons">
+          <div class="security-badges">
+            <span>🔒 256-bit SSL</span>
+            <span>🛡 PCI DSS Compliant</span>
+            <span>💜 Razorpay Verified</span>
+          </div>
 
-        <button class="amount-btn" data-amount="500">₹500</button>
+          <button type="button" id="payButton" class="pay-button">Proceed to Pay Securely</button>
+          <div id="donate-status" style="margin-top: 0.75rem; text-align: center; font-weight: 600;"></div>
 
-        <button class="amount-btn" data-amount="1000">₹1,000</button>
+          <p class="payment-note">🔒 Your payment information is encrypted and never stored on our servers</p>
+        </div>
 
-        <button class="amount-btn" data-amount="2500">₹2,500</button>
+        <div class="donation-info">
+          <div class="impact-card">
+            <h3>✨ Your Impact</h3>
 
-        <button class="amount-btn" data-amount="5000">₹5,000</button>
+            <div class="impact-item">
+              <div class="impact-icon">📚</div>
+              <div class="impact-content">
+                <strong>₹500</strong>
+                <p>Meals for a child for 1 month</p>
+              </div>
+            </div>
+
+            <div class="impact-item">
+              <div class="impact-icon">📖</div>
+              <div class="impact-content">
+                <strong>₹1,000</strong>
+                <p>School supplies & books</p>
+              </div>
+            </div>
+
+            <div class="impact-item">
+              <div class="impact-icon">🏥</div>
+              <div class="impact-content">
+                <strong>₹2,500</strong>
+                <p>Health check-up for 5 children</p>
+              </div>
+            </div>
+
+            <div class="impact-item">
+              <div class="impact-icon">🎓</div>
+              <div class="impact-content">
+                <strong>₹5,000</strong>
+                <p>Education support for 1 month</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="tax-card">
+            <h3>📜 Tax Benefits</h3>
+            <p>
+              All donations are eligible for tax deduction under
+              <strong>Section 80G</strong> of the Income Tax Act.
+              You'll receive an official receipt via email.
+            </p>
+          </div>
+
+          <div class="secure-card">
+            <h3>🛡 100% Secure Donation</h3>
+            <ul>
+              <li>✓ Bank-grade 256-bit SSL encryption</li>
+              <li>✓ Payment data never stored on our servers</li>
+              <li>✓ Powered by RBI-licensed Razorpay</li>
+            </ul>
+          </div>
+        </div>
 
       </div>
-
-      <div class="custom-amount-wrapper">
-       
-
-        <input
-          type="number"
-          id="customAmount"
-          min="10"
-          placeholder="Enter custom amount">
-      </div>
-
-      <p class="minimum-note">
-        ℹ Minimum donation: ₹10
-      </p>
-
-      <div class="security-badges">
-        <span>🔒 256-bit SSL</span>
-        <span>🛡 PCI DSS Compliant</span>
-        <span>💜 Razorpay Verified</span>
-      </div>
-
-      <button id="payButton" class="pay-button">
-        Proceed to Pay Securely
-      </button>
-      <div id="donate-status" style="margin-top: 0.75rem; text-align: center; font-weight: 600;"></div>
-     <p style="
-  margin-top:20px;
-  text-align:center;
-  color:#5f6368 !important;
-  font-size:15px !important;
-  font-weight:500 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:8px !important;
-  opacity:1 !important;
-  visibility:visible !important;
-">
-  🔒 Your payment information is encrypted and never stored on our servers
-</p>
-    </div>
-
-    <!-- RIGHT SIDE -->
-    <div class="donation-info">
-
-      <div class="impact-card">
-        <h3>✨ Your Impact</h3>
-
-        <div class="impact-item">
-  <div class="impact-icon">📚</div>
-  <div class="impact-content">
-    <strong>₹500</strong>
-    <p>Meals for a child for 1 month</p>
-  </div>
-</div>
-
-<div class="impact-item">
-  <div class="impact-icon">📖</div>
-  <div class="impact-content">
-    <strong>₹1,000</strong>
-    <p>School supplies & books</p>
-  </div>
-</div>
-
-<div class="impact-item">
-  <div class="impact-icon">🏥</div>
-  <div class="impact-content">
-    <strong>₹2,500</strong>
-    <p>Health check-up for 5 children</p>
-  </div>
-</div>
-
-<div class="impact-item">
-  <div class="impact-icon">🎓</div>
-  <div class="impact-content">
-    <strong>₹5,000</strong>
-    <p>Education support for 1 month</p>
-  </div>
-</div>
-</div>
-      <div class="tax-card">
-        <h3>📜 Tax Benefits</h3>
-
-        <p>
-          All donations are eligible for tax deduction under
-          <strong>Section 80G</strong> of the Income Tax Act.
-          You'll receive an official receipt via email.
-        </p>
-      </div>
-
-      <div class="secure-card">
-        <h3>🛡 100% Secure Donation</h3>
-
-        <ul>
-          <li>✓ Bank-grade 256-bit SSL encryption</li>
-          <li>✓ Payment data never stored on our servers</li>
-          <li>✓ Powered by RBI-licensed Razorpay</li>
-        </ul>
-      </div>
-
-    </div>
-
-  </div>
-   
-
-</section>
+    </section>
 
     <!-- DONATION CTA -->
-  <section class="section section-alt" aria-labelledby="donate-title">
+  <section class="section section-white" aria-labelledby="donate-title">
     <div class="container">
       <div class="donate-section">
         <span class="section-label">Support Our Mission</span>
