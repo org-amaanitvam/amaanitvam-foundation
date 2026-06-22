@@ -12,7 +12,7 @@
   <link rel="icon" href="assets/images/logo.jpg" type="image/jpg">
   <link rel="stylesheet" href="css/styles.css">
 <style>
-    /* Floating Donate CTA */
+  
     .floating-donate {
       position: fixed;
       bottom: 1.5rem;
@@ -51,7 +51,7 @@
         display: none;
       }
     }
-    /* Remove yellow border from FAQ section */
+   
     .faq-item,
     .faq-question {
       border-color: transparent !important;
@@ -569,7 +569,6 @@
       </div>
     </section>
 
-    <!-- DONATION CTA -->
   <section class="section section-white" aria-labelledby="donate-title">
     <div class="container">
       <div class="donate-section">
@@ -591,7 +590,6 @@
   </section>
 
   </main>
-<!-- Floating Donate CTA -->
 
 <div id="footer"></div>
 
@@ -618,7 +616,7 @@
 <script src="js/main.js"></script>
 <script>
 (function() {
-  // Amount selection logic
+  
   let selectedAmount = 0;
   const amountBtns = document.querySelectorAll('.amount-btn');
   const customAmountInput = document.getElementById('customAmount');
@@ -639,7 +637,6 @@
     });
   }
 
-  // Pay button handler
   var payButton = document.getElementById('payButton');
   var donateStatus = document.getElementById('donate-status');
 
@@ -666,7 +663,7 @@
       donateStatus.textContent = '';
 
       try {
-        // Step 1: Create order on backend
+       
         var response = await fetch('http://localhost:5000/api/donate/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -682,7 +679,6 @@
           return;
         }
 
-        // Step 2: Open Razorpay Checkout
         var options = {
           key: data.key,
           amount: data.order.amount,
@@ -699,7 +695,7 @@
             color: '#56051a'
           },
           handler: async function(paymentResponse) {
-            // Step 3: Verify payment on backend
+          
             try {
               var verifyRes = await fetch('http://localhost:5000/api/donate/verify', {
                 method: 'POST',
@@ -715,7 +711,7 @@
               if (verifyRes.ok && verifyData.success) {
                 donateStatus.textContent = '✅ ' + (verifyData.message || 'Payment successful! Thank you!');
                 donateStatus.style.color = '#22c55e';
-                // Reset form
+              
                 document.getElementById('donorName').value = '';
                 document.getElementById('donorEmail').value = '';
                 document.getElementById('donorPhone').value = '';
