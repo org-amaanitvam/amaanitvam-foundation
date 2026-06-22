@@ -1322,7 +1322,8 @@ h6,
 .donate-section .section-label {
   color: var(--gold) !important;
   letter-spacing: .45em !important;
-  margin-bottom: 1.2rem !important
+  margin-bottom: 1.2rem !important;
+  font-size: 1.2rem !important
 }
 
 .donate-section .section-title {
@@ -1347,10 +1348,14 @@ h6,
 }
 
 .donate-section .btn-primary {
-  background: var(--gold) !important;
-  color: #4a0b23 !important;
-  border: 2px solid var(--gold) !important;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .18) !important
+    background: var(--gold) !important;
+    color: #4a0b23 !important;
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .18) !important;
+
+    font-size: 1.8rem !important;   
+    padding: 20px 50px !important;  
+    margin-top: 30px !important;
 }
 
 .donate-section .btn-primary:hover {
