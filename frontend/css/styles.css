@@ -3186,8 +3186,6 @@ body[data-page="about"] .page-hero .section-label{
   opacity: 0.5;
 }
 
-/* verify(1).html | data-page="verify" */
-/* ── Fix: Verification card label/icon overflowing card bounds ── */
 body[data-page="verify"] .section-white {
   position: relative;
   z-index: 2;
@@ -3228,10 +3226,6 @@ body[data-page="verify"] .card .section-header .section-label::after {
   display: none;
 }
 
-/* =========================================================
-   INLINE STYLE ATTRIBUTES MOVED FROM HTML FILES
-   Auto-generated utility classes. Keep CSS centralized here.
-   ========================================================= */
 .moved-inline-style-001 {
   padding: 1rem 0.25rem;
   font-weight: 600;
