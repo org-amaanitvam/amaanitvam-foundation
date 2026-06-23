@@ -232,8 +232,7 @@
             reflects the power of small actions, shared responsibility, and the hope created through community support.
           </p>
           <div class="hero-actions" style="justify-content: center;">
-            <a href="programs.html" class="btn btn-outline"
-              style="border-color:rgba(255,255,255,0.4);color:#fff;">Explore Our Programs</a>
+            <a href="programs.html" class="btn btn-primary">Explore Our Programs</a>
             <a href="volunteer.html" class="btn btn-primary">Become a Volunteer</a>
           </div>
         </div>
@@ -276,301 +275,100 @@
               in Hisar, Haryana</p>
           </article>
         </div>
-        <style>
-          @media (max-width: 900px) {
-            .impact-points-row {
-              grid-template-columns: repeat(2, 1fr) !important;
-            }
-          }
-
-          @media (max-width: 540px) {
-            .impact-points-row {
-              grid-template-columns: 1fr !important;
-            }
-          }
-        </style>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="stories-title"
-      style="background: var(--bg); padding-top: 5rem; padding-bottom: 5rem;">
-      <style>
-        .elegant-header {
-          text-align: left;
-          max-width: 650px;
-          margin-bottom: 6rem;
-        }
+    <div class="container" style="max-width: 1100px;">
+      <header class="elegant-header">
+        <span class="elegant-label">SUCCESS STORIES</span>
+        <h2 id="stories-title" class="elegant-title">Stories of Transformation</h2>
+        <p class="elegant-desc">Real stories from the individuals and communities at the heart of our mission.</p>
+      </header>
 
-        .elegant-label {
-          display: block;
-          font-family: var(--font-ui);
-          font-size: 0.8rem;
-          color: #9c3f3f;
-          letter-spacing: 0.15em;
-          font-weight: 700;
-          text-transform: uppercase;
-          margin-bottom: 1rem;
-        }
-
-        .elegant-title {
-          font-family: var(--font-heading);
-          font-size: clamp(2.5rem, 4vw, 3rem);
-          color: var(--text);
-          margin-bottom: 1.5rem;
-          font-weight: 600;
-          line-height: 1.1;
-        }
-
-        .elegant-desc {
-          font-size: 1.15rem;
-          color: var(--muted);
-          line-height: 1.7;
-        }
-
-        .project-showcase {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 4rem;
-          margin-bottom: 8rem;
-          align-items: start;
-        }
-
-        @media (min-width: 900px) {
-          .project-showcase {
-            grid-template-columns: 5fr 6fr;
-            gap: 6rem;
-          }
-        }
-
-        .project-image-wrapper {
-          position: relative;
-        }
-
-        .project-image-wrapper img {
-          width: 100%;
-          aspect-ratio: 3/4;
-          object-fit: cover;
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-        }
-
-        .project-image-caption {
-          position: absolute;
-          bottom: -2rem;
-          left: 0;
-          background: var(--surface);
-          padding: 1.25rem 2rem;
-          border: 1px solid var(--border);
-          width: 80%;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-        }
-
-        .caption-label {
-          display: block;
-          font-family: var(--font-ui);
-          font-size: 0.75rem;
-          color: #9c3f3f;
-          letter-spacing: 0.15em;
-          font-weight: 700;
-          text-transform: uppercase;
-          margin-bottom: 0.25rem;
-        }
-
-        .caption-title {
-          font-family: var(--font-heading);
-          font-size: 1.4rem;
-          color: var(--text);
-          margin: 0;
-          font-weight: 600;
-        }
-
-        .project-content {
-          padding-top: 1rem;
-        }
-
-        .project-content-label {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-family: var(--font-ui);
-          font-size: 0.8rem;
-          color: var(--muted);
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          margin-bottom: 1.5rem;
-          font-weight: 600;
-        }
-
-        .project-content-title {
-          font-family: var(--font-heading);
-          font-size: clamp(2rem, 3.5vw, 2.5rem);
-          color: var(--text);
-          margin-bottom: 1.5rem;
-          line-height: 1.1;
-          font-weight: 600;
-        }
-
-        .project-text {
-          font-size: 1.05rem;
-          color: var(--muted);
-          line-height: 1.75;
-          margin-bottom: 1.25rem;
-        }
-
-        .project-btn-group {
-          display: flex;
-          gap: 1rem;
-          margin-top: 2.5rem;
-          flex-wrap: wrap;
-        }
-
-        .btn-rect {
-          padding: 1rem 1.75rem;
-          font-family: var(--font-ui);
-          font-size: 0.8rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          border-radius: 0;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          transition: all 0.3s ease;
-          text-decoration: none;
-        }
-
-        .btn-rect-dark {
-          background: #0d1a14;
-          color: #fff !important;
-          border: 1px solid #0d1a14;
-        }
-
-        .btn-rect-dark:hover {
-          background: var(--primary);
-          border-color: var(--primary);
-        }
-
-        .btn-rect-light {
-          background: transparent;
-          color: var(--text) !important;
-          border: 1px solid var(--border);
-        }
-
-        .btn-rect-light:hover {
-          background: var(--surface);
-        }
-
-        .project-divider {
-          height: 1px;
-          background: var(--border);
-          width: 100%;
-          margin: 4rem 0 6rem 0;
-          opacity: 0.5;
-        }
-
-        .styled-list {
-          padding-left: 1.25rem;
-          line-height: 1.7;
-          margin: 0 0 1.25rem;
-          font-size: 1.05rem;
-          color: var(--muted);
-        }
-
-        .styled-list li {
-          margin-bottom: 0.5rem;
-        }
-      </style>
-
-      <div class="container" style="max-width: 1100px;">
-        <header class="elegant-header">
-          <span class="elegant-label">SUCCESS STORIES</span>
-          <h2 id="stories-title" class="elegant-title">Stories of Transformation</h2>
-          <p class="elegant-desc">Real stories from the individuals and communities at the heart of our mission.</p>
-        </header>
-
-        <!-- Story 1: Shiksha -->
-        <article class="project-showcase">
-          <div class="project-image-wrapper">
-            <img src="assets/images/project_shiksha1.jpeg" alt="Project Shiksha">
-            <div class="project-image-caption">
-              <span class="caption-label">PROJECT 01</span>
-              <h4 class="caption-title">Shiksha</h4>
-            </div>
+      <!-- Story 1: Shiksha -->
+      <article class="project-showcase">
+        <div class="project-image-wrapper">
+          <img src="assets/images/project_shiksha1.jpeg" alt="Project Shiksha">
+          <div class="project-image-caption">
+            <span class="caption-label">PROJECT 01</span>
+            <h4 class="caption-title">Shiksha</h4>
           </div>
-          <div class="project-content">
-            <span class="project-content-label">
-              <span class="material-symbols-outlined" style="font-size: 1.1rem;">school</span>
-              EDUCATION SUPPORT
-            </span>
-            <h3 class="project-content-title">From 2 Students to 50+ Children</h3>
-            <p class="project-text">
-              Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community
-              support, and dedicated volunteers, the project has now impacted more than <strong>50 children</strong>.
-            </p>
-            <p class="project-text">
-              Many children were unable to secure admission in government schools due to a lack of proper documentation
-              and guidance. The foundation supported these children and their families by:
-            </p>
-            <ul class="styled-list">
-              <li>Assisting with school admission procedures</li>
-              <li>Preparing and arranging required documents</li>
-              <li>Guiding parents through the admission process</li>
-              <li>Ensuring children gained access to quality education</li>
-            </ul>
-            <p class="project-text">
-              Today, these children are continuing their education and moving toward a brighter future.
-            </p>
-            <div class="project-btn-group">
-              <a href="programs.html#shiksha" class="btn-rect btn-rect-dark">
-                LEARN MORE
-              </a>
-            </div>
+        </div>
+        <div class="project-content">
+          <span class="project-content-label">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">school</span>
+            EDUCATION SUPPORT
+          </span>
+          <h3 class="project-content-title">From 2 Students to 50+ Children</h3>
+          <p class="project-text">
+            Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community
+            support, and dedicated volunteers, the project has now impacted more than <strong>50 children</strong>.
+          </p>
+          <p class="project-text">
+            Many children were unable to secure admission in government schools due to a lack of proper documentation
+            and guidance. The foundation supported these children and their families by:
+          </p>
+          <ul class="styled-list">
+            <li>Assisting with school admission procedures</li>
+            <li>Preparing and arranging required documents</li>
+            <li>Guiding parents through the admission process</li>
+            <li>Ensuring children gained access to quality education</li>
+          </ul>
+          <p class="project-text">
+            Today, these children are continuing their education and moving toward a brighter future.
+          </p>
+          <div class="project-btn-group">
+            <a href="programs.html#shiksha" class="btn-rect btn-rect-dark">
+              LEARN MORE
+            </a>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <div class="project-divider"></div>
+      <div class="project-divider"></div>
 
-        <!-- Story 2: Manthan -->
-        <article class="project-showcase" style="margin-bottom: 0;">
-          <div class="project-image-wrapper">
-            <img src="assets/images/project-shiksha-final.jpg" alt="Project Manthan">
-            <div class="project-image-caption">
-              <span class="caption-label">PROJECT 02</span>
-              <h4 class="caption-title">Manthan</h4>
-            </div>
+      <!-- Story 2: Manthan -->
+      <article class="project-showcase" style="margin-bottom: 0;">
+        <div class="project-image-wrapper">
+          <img src="assets/images/project-shiksha-final.jpg" alt="Project Manthan">
+          <div class="project-image-caption">
+            <span class="caption-label">PROJECT 02</span>
+            <h4 class="caption-title">Manthan</h4>
           </div>
-          <div class="project-content">
-            <span class="project-content-label">
-              <span class="material-symbols-outlined" style="font-size: 1.1rem;">psychology</span>
-              COUNSELLING &amp; AWARENESS
-            </span>
-            <h3 class="project-content-title">Guidance, Counselling &amp; Positive Change</h3>
-            <p class="project-text">
-              Under Project Manthan, Amaanitvam Foundation worked with children and adolescents to address negative
-              habits and personal challenges through awareness sessions and counselling.
-            </p>
-            <p class="project-text">
-              Initiatives included:
-            </p>
-            <ul class="styled-list">
-              <li>Counselling and mentorship sessions</li>
-              <li>Guidance on positive life choices</li>
-              <li>Awareness regarding harmful habits and their consequences</li>
-              <li>Personality development activities</li>
-              <li>Confidence-building sessions</li>
-              <li>Encouraging education, discipline, and social responsibility</li>
-            </ul>
-            <p class="project-text">
-              Through these efforts, many children demonstrated positive behavioural changes and developed a stronger
-              focus on their education and future goals.
-            </p>
-            <div class="project-btn-group">
-              <a href="programs.html#manthan" class="btn-rect btn-rect-dark">
-                LEARN MORE
-              </a>
-            </div>
+        </div>
+        <div class="project-content">
+          <span class="project-content-label">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">psychology</span>
+            COUNSELLING &amp; AWARENESS
+          </span>
+          <h3 class="project-content-title">Guidance, Counselling &amp; Positive Change</h3>
+          <p class="project-text">
+            Under Project Manthan, Amaanitvam Foundation worked with children and adolescents to address negative
+            habits and personal challenges through awareness sessions and counselling.
+          </p>
+          <p class="project-text">
+            Initiatives included:
+          </p>
+          <ul class="styled-list">
+            <li>Counselling and mentorship sessions</li>
+            <li>Guidance on positive life choices</li>
+            <li>Awareness regarding harmful habits and their consequences</li>
+            <li>Personality development activities</li>
+            <li>Confidence-building sessions</li>
+            <li>Encouraging education, discipline, and social responsibility</li>
+          </ul>
+          <p class="project-text">
+            Through these efforts, many children demonstrated positive behavioural changes and developed a stronger
+            focus on their education and future goals.
+          </p>
+          <div class="project-btn-group">
+            <a href="programs.html#manthan" class="btn-rect btn-rect-dark">
+              LEARN MORE
+            </a>
           </div>
-        </article>
-      </div>
+        </div>
+      </article>
+    </div>
     </section>
 
     <!-- Program Impact Metrics -->
@@ -615,27 +413,8 @@
         </div>
       </div>
     </section>
-
-    <!-- Donation CTA -->
-    <section aria-labelledby="donate-title" class="section section-alt">
-      <div class="container">
-        <div class="donate-section">
-          <br /><br />
-          <span !important;="" class="section-label moved-inline-style-046">Support Our Mission</span>
-          <h2 class="section-title moved-inline-style-047" id="donate-title">Be the Change You Wish to See </h2>
-          <p class="moved-inline-style-048">
-            Join our mission to empower lives through education, compassion, and community action.
-          </p>
-          <p class="moved-inline-style-049">
-            Registered under 12A &amp; 80G — tax-deductible for Indian donors</p>
-          <div class="moved-inline-style-050">
-            <a class="btn btn-primary" href="contact.html#donate">Donate Now</a>
-
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
+
   <div id="footer"></div>
   <a aria-label="Donate to Amaanitvam Foundation" class="floating-donate" href="contact.html#donate">
     <span aria-hidden="true" class="material-symbols-outlined">volunteer_activism</span>
