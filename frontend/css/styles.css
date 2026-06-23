@@ -522,7 +522,7 @@ button {
   overflow: hidden;
   background-image: url('assets/images/hero.jpg');
   background-size: contain;
-  background-position: center bottom;
+  background-position: center 110% !important;
   background-repeat: no-repeat;
 }
 
@@ -2209,6 +2209,8 @@ body[data-page="collaborations"] .partnership-box p {
   text-decoration: none !important;
   transition: .3s ease !important;
   border: none !important;
+
+  margin-top: 20px !important; /* niche lane ke liye */
 }
 
 .donation-btn:hover {
