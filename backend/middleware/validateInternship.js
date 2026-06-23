@@ -4,10 +4,13 @@ const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
 
 const VALID_TRACKS = [
-    "Project Management",
-    "Community Development",
-    "Research & Documentation",
-    "Marketing & Outreach"
+    "Creative",
+    "Graphics",
+    "Social media",
+    "Marketing",
+    "Frontend",
+    "Backend",
+    "Full stack"
 ];
 
 export const validateInternshipApplication = (req, res, next) => {
@@ -32,14 +35,14 @@ export const validateInternshipApplication = (req, res, next) => {
     if (!isValidEmail(email)) {
         return res.status(400).json({
             success: false,
-            message: "All required fields must be filled."
+            message: "Invalid email format."
         });
     }
 
     if (!VALID_TRACKS.includes(track)) {
         return res.status(400).json({
             success: false,
-            message: "All required fields must be filled."
+            message: `Invalid internship domain selected: ${track}. Please select a valid domain.`
         });
     }
 

@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .sidebar-nav-link {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm text-slate-400 rounded-lg transition-all duration-200 hover:bg-white/5 hover:text-white;
+  }
+  .sidebar-nav-link.active {
+    @apply bg-white/10 text-white font-medium;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}

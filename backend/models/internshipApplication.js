@@ -26,10 +26,13 @@ const internshipApplicationSchema = new mongoose.Schema(
             required: true,
             trim: true,
             enum: [
-                "Project Management",
-                "Community Development",
-                "Research & Documentation",
-                "Marketing & Outreach"
+                "Creative",
+                "Graphics",
+                "Social media",
+                "Marketing",
+                "Frontend",
+                "Backend",
+                "Full stack"
             ]
         },
         university: {
