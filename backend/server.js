@@ -5,12 +5,17 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 
 import connectDB from "./config/db.js";
+
 import contactRoutes from "./routes/contactRoutes.js";
 import internshipRoutes from "./routes/internshipRoutes.js";
 import volunteerRoutes from "./routes/volunteerRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
 import donationRoutes from "./routes/donationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import announcementRouter from "./routes/announcementRoutes.js";
+import meetingRouter from "./routes/meetingRoutes.js";
+import taskRouter from "./routes/TasksRoutes.js";
+import projectRouter from "./routes/projectRoutes.js";
 
 
 dotenv.config();
@@ -63,6 +68,11 @@ app.use("/api/volunteer", volunteerRoutes);
 app.use("/api/webhook", webhookRoutes);
 app.use("/api/donate", donationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/announcement", announcementRouter);
+app.use('/api/meeting', meetingRouter);
+app.use('/api/task',taskRouter);
+app.use('/api/project',projectRouter);
+
 
 app.get("/", (req, res) => {
     res.send("Backend Running");
