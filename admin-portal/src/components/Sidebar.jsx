@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Sidebar() {
@@ -76,6 +76,10 @@ export default function Sidebar() {
             <NavLink to="/content" className={navLinkClass}>
               <Globe className="w-[18px] h-[18px] opacity-70" />
               Website Content
+            </NavLink>
+            <NavLink to="/gallery" className={navLinkClass}>
+              <Image className="w-[18px] h-[18px] opacity-70" />
+              Gallery Images
             </NavLink>
           </>
         )}

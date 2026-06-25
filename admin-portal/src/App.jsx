@@ -8,6 +8,7 @@ import Members from './pages/Members';
 import Donations from './pages/Donations';
 import Certificates from './pages/Certificates';
 import Content from './pages/Content';
+import Gallery from './pages/Gallery';
 import Tasks from './pages/Tasks';
 import Attendance from './pages/Attendance';
 import MyCertificates from './pages/MyCertificates';
@@ -72,6 +73,16 @@ export default function App() {
           <ProtectedRoute>
             <AdminLayout>
               <Content />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gallery"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Gallery />
             </AdminLayout>
           </ProtectedRoute>
         }

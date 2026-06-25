@@ -126,6 +126,9 @@ export default function Candidates() {
           <option value="Frontend">Frontend</option>
           <option value="Backend">Backend</option>
           <option value="Full stack">Full stack</option>
+          <option value="HR">HR</option>
+          <option value="Project Manager">Project Manager</option>
+          <option value="Content">Content</option>
         </select>
         <select
           value={statusFilter}

@@ -4,7 +4,8 @@ const certificateSchema = new mongoose.Schema({
     certificateId: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        uppercase: true
     },
     issuedTo: {
         type: String,
@@ -14,6 +15,11 @@ const certificateSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        trim: true,
+        lowercase: true
+    },
+    phone: {
+        type: String,
         trim: true
     },
     type: {
@@ -25,9 +31,23 @@ const certificateSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    duration: {
+        type: String,
+        trim: true
+    },
+    startDate: {
+        type: Date
+    },
+    endDate: {
+        type: Date
+    },
     issueDate: {
         type: Date,
         default: Date.now
+    },
+    issuedBy: {
+        type: String,
+        default: 'Amaanitvam Foundation'
     },
     isValid: {
         type: Boolean,

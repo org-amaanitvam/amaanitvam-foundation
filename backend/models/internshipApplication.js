@@ -32,7 +32,10 @@ const internshipApplicationSchema = new mongoose.Schema(
                 "Marketing",
                 "Frontend",
                 "Backend",
-                "Full stack"
+                "Full stack",
+                "HR",
+                "Project Manager",
+                "Content"
             ]
         },
         university: {

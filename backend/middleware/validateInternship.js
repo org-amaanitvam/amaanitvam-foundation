@@ -10,7 +10,10 @@ const VALID_TRACKS = [
     "Marketing",
     "Frontend",
     "Backend",
-    "Full stack"
+    "Full stack",
+    "HR",
+    "Project Manager",
+    "Content"
 ];
 
 export const validateInternshipApplication = (req, res, next) => {
