@@ -4341,3 +4341,64 @@ body[data-page="refund"] .legal-page h1,
     margin-top: 40px !important;
     margin-bottom: 40px !important;
 }
+/* Project Udaan Layout */
+#udaan{
+    display: grid;
+    grid-template-columns: 480px 1fr;
+    gap: 80px;
+    align-items: flex-start;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 80px 0;
+}
+
+#udaan .project-image-wrapper{
+    position: sticky;
+    top: 110px;
+    width: 100%;
+    max-width: 480px;
+    height: 620px;
+    overflow: hidden;
+    border-radius: 24px;
+}
+
+#udaan .project-image-wrapper img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+#udaan .project-content{
+    max-height:620px;
+    overflow-y:auto;
+    padding-right:20px;
+}
+/* ===== Project Udaan Alignment Fix ===== */
+
+#udaan.project-showcase{
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 70px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#udaan .project-image-wrapper{
+    width: 420px;
+    margin: 0;
+}
+
+#udaan .project-content{
+    width: 100%;
+    padding-top: 15px;
+}
+
+#udaan .project-content-title{
+    margin-top: 8px;
+}
+
+#udaan .project-text{
+    max-width: 720px;
+    line-height: 1.9;
+}
