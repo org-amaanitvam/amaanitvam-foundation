@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Shield, User, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,17 +12,45 @@ export default function Login() {
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
+  const [orgName, setOrgName] = useState('Amaanitvam Foundation');
+  
+  const [is2FARequired, setIs2FARequired] = useState(false);
+  const [show2FA, setShow2FA] = useState(false);
+  const [code2fa, setCode2fa] = useState('');
+  const [tempCredentials, setTempCredentials] = useState(null);
 
   const { user, login, resetPassword } = useAuth();
   const navigate = useNavigate();
 
-  if (user) {
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/public/settings`);
+        if (res.data.settings) {
+          setIs2FARequired(res.data.settings.enable2FA);
+          if (res.data.settings.orgName) setOrgName(res.data.settings.orgName);
+        }
+      } catch (err) {
+        console.error('Could not fetch public settings', err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  if (user && !show2FA) {
     return <Navigate to="/" replace />;
   }
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    
+    if (is2FARequired) {
+      setTempCredentials({ email, password });
+      setShow2FA(true);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -29,6 +58,24 @@ export default function Login() {
       navigate('/');
     } catch (err) {
       setError(err.message || 'Failed to sign in. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    try {
+      if (code2fa === '123456') { // Mock SMS verification code
+        await login(tempCredentials.email, tempCredentials.password);
+        navigate('/');
+      } else {
+        setError('Invalid verification code.');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to sign in.');
     } finally {
       setIsLoading(false);
     }

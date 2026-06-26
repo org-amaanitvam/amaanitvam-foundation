@@ -1,4 +1,6 @@
 import taskModel from "../models/task.js";
+import Notification from "../models/notification.js";
+import { sendSMSNotification } from "../services/smsService.js";
 
 // Create Task
 export const createTask = async(req, res) => {
@@ -23,6 +25,19 @@ export const createTask = async(req, res) => {
         const task = await newTask.save();
         const populatedTask = await taskModel.findById(task._id).populate("assignedTo", "name email");
         
+        if (assignedTo) {
+            await Notification.create({
+                userId: assignedTo,
+                title: "New Task Assigned",
+                message: `You have been assigned a new task: ${title}`,
+                type: "info"
+            });
+            
+            if (populatedTask.assignedTo && populatedTask.assignedTo.phone) {
+                await sendSMSNotification(populatedTask.assignedTo.phone, `Amaanitvam: You have been assigned a new task '${title}'. Log in to your dashboard to view details.`);
+            }
+        }
+
         res.status(201).json({ success: true, message: "Task created successfully", task: populatedTask });
     } catch (error) {
         console.log("Create Task Error:", error);

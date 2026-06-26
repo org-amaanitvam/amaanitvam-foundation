@@ -23,7 +23,7 @@ export default function TasksPage() {
       setTasks(data.tasks || []);
       if (isAdmin) {
         const res = await api.get('/admin/members');
-        setUsers(res.data.users || []);
+        setUsers(res.data.members || []);
       }
     } catch { toast.error('Failed to load tasks'); }
     finally { setLoading(false); }

@@ -3,6 +3,8 @@ import InternshipApplication from '../models/internshipApplication.js';
 import VolunteerApplication from '../models/volunteerApplication.js';
 import Donation from '../models/donation.js';
 import Certificate from '../models/certificate.js';
+import Setting from '../models/setting.js';
+import AuditLog from '../models/auditLog.js';
 
 // GET /api/admin/me
 export const getMe = async (req, res) => {
@@ -75,6 +77,13 @@ export const updateCandidateStatus = async (req, res) => {
             if (!candidate) {
                 return res.status(404).json({ success: false, message: 'Candidate not found.' });
             }
+            await AuditLog.create({
+                userId: req.user._id,
+                action: 'reject_candidate',
+                details: `Rejected candidate ${candidate.email}`,
+                ipAddress: req.ip
+            });
+
             return res.json({ success: true, message: 'Candidate rejected and deleted.' });
         }
 
@@ -96,7 +105,14 @@ export const updateCandidateStatus = async (req, res) => {
                 });
                 await newIntern.save();
             }
-            return res.json({ success: true, message: 'Candidate shortlisted and moved to Members.' });
+            await AuditLog.create({
+                userId: req.user._id,
+                action: 'shortlist_candidate',
+                details: `Shortlisted candidate ${candidate.email}`,
+                ipAddress: req.ip
+            });
+
+            return res.json({ success: true, message: 'Candidate shortlisted and moved to interns.' });
         }
 
         // For any other status updates (like 'accepted' or reverting to 'pending' if ever needed)
@@ -141,6 +157,13 @@ export const addMember = async (req, res) => {
         const member = new User({ name, email, phone, role: role || 'member', department });
         await member.save();
 
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'add_member',
+            details: `Added new member: ${email} (${role})`,
+            ipAddress: req.ip
+        });
+
         res.status(201).json({ success: true, member });
     } catch (error) {
         console.error('Add member error:', error);
@@ -163,6 +186,14 @@ export const updateMemberRole = async (req, res) => {
         );
 
         if (!member) return res.status(404).json({ success: false, message: 'Member not found.' });
+
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'update_member_role',
+            details: `Updated role of ${member.email} to ${role}`,
+            ipAddress: req.ip
+        });
+
         res.json({ success: true, member });
     } catch (error) {
         console.error('Update role error:', error);
@@ -180,6 +211,14 @@ export const deactivateMember = async (req, res) => {
         );
 
         if (!member) return res.status(404).json({ success: false, message: 'Member not found.' });
+
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'deactivate_member',
+            details: `Deactivated member ${member.email}`,
+            ipAddress: req.ip
+        });
+
         res.json({ success: true, member });
     } catch (error) {
         console.error('Deactivate error:', error);
@@ -192,6 +231,14 @@ export const deleteMember = async (req, res) => {
     try {
         const member = await User.findByIdAndDelete(req.params.id);
         if (!member) return res.status(404).json({ success: false, message: 'Member not found.' });
+
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'delete_member',
+            details: `Deleted member ${member.email}`,
+            ipAddress: req.ip
+        });
+
         res.json({ success: true, message: 'Member deleted successfully.' });
     } catch (error) {
         console.error('Delete member error:', error);
@@ -235,6 +282,13 @@ export const generateCertificate = async (req, res) => {
         const certificate = new Certificate({ certificateId, issuedTo, email, type, domain });
         await certificate.save();
 
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'generate_certificate',
+            details: `Generated ${type} certificate for ${issuedTo} (${email})`,
+            ipAddress: req.ip
+        });
+
         res.status(201).json({ success: true, certificate });
     } catch (error) {
         console.error('Generate certificate error:', error);
@@ -253,9 +307,70 @@ export const revokeCertificate = async (req, res) => {
         );
 
         if (!certificate) return res.status(404).json({ success: false, message: 'Certificate not found.' });
+
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'revoke_certificate',
+            details: `Revoked certificate ${certificate.certificateId}. Reason: ${reason || 'None'}`,
+            ipAddress: req.ip
+        });
+
         res.json({ success: true, certificate });
     } catch (error) {
         console.error('Revoke certificate error:', error);
         res.status(500).json({ success: false, message: 'Failed to revoke certificate.' });
+    }
+};
+
+// GET /api/admin/settings
+export const getSettings = async (req, res) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) {
+            settings = await Setting.create({});
+        }
+        res.json({ success: true, settings });
+    } catch (error) {
+        console.error('Get settings error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch settings.' });
+    }
+};
+
+// PUT /api/admin/settings
+export const updateSettings = async (req, res) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) {
+            settings = await Setting.create({});
+        }
+        
+        const updated = await Setting.findByIdAndUpdate(
+            settings._id,
+            req.body,
+            { new: true }
+        );
+
+        await AuditLog.create({
+            userId: req.user._id,
+            action: 'update_settings',
+            details: `Updated global system settings`,
+            ipAddress: req.ip
+        });
+
+        res.json({ success: true, settings: updated });
+    } catch (error) {
+        console.error('Update settings error:', error);
+        res.status(500).json({ success: false, message: 'Failed to update settings.' });
+    }
+};
+
+// GET /api/admin/audit-logs
+export const getAuditLogs = async (req, res) => {
+    try {
+        const logs = await AuditLog.find().populate('userId', 'name email role').sort({ createdAt: -1 }).limit(100);
+        res.json({ success: true, logs });
+    } catch (error) {
+        console.error('Audit logs error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch audit logs.' });
     }
 };

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import announcementModel from "../models/announcement.js";
+import Notification from "../models/notification.js";
 
 // Create Announcement
 export const createAnnouncement = async(req, res) => {
@@ -38,6 +39,12 @@ export const createAnnouncement = async(req, res) => {
         const announcement = await newAnnouncement.save();
         const populatedAnnouncement = await announcementModel.findById(announcement._id).populate("createdBy", "name email");
         
+        await Notification.create({
+            title: "New Announcement",
+            message: title,
+            type: priority === "High" ? "emergency" : "info"
+        });
+
         res.status(201).json({ success: true, message: "Announcement created successfully", announcement: populatedAnnouncement });
     } catch (error) {
         console.log("Create Announcement Error:", error);

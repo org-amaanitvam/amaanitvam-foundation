@@ -1,4 +1,5 @@
 import meetingModel from "../models/meeting.js";
+import Notification from "../models/notification.js";
 
 // Create Meeting
 export const createMeeting = async(req, res) => {
@@ -20,6 +21,23 @@ export const createMeeting = async(req, res) => {
         });
 
         const meeting = await newMeeting.save();
+        
+        if (attendees && attendees.length > 0) {
+            const notifications = attendees.map(userId => ({
+                userId,
+                title: "New Meeting Scheduled",
+                message: `You are invited to a new meeting '${title}' on ${new Date(meetingDate).toLocaleString()}`,
+                type: "info"
+            }));
+            await Notification.insertMany(notifications);
+        } else {
+            await Notification.create({
+                title: "New Meeting Scheduled",
+                message: `A new meeting '${title}' has been scheduled for ${new Date(meetingDate).toLocaleString()}`,
+                type: "info"
+            });
+        }
+
         res.status(201).json({ success: true, meeting });
     } catch (error) {
         console.log("Create Meeting Error:", error);

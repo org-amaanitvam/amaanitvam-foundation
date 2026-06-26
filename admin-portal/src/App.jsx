@@ -12,6 +12,8 @@ import Gallery from './pages/Gallery';
 import Tasks from './pages/Tasks';
 import Attendance from './pages/Attendance';
 import MyCertificates from './pages/MyCertificates';
+import Settings from './pages/Settings';
+import CMS from './pages/CMS';
 
 export default function App() {
   return (
@@ -113,6 +115,26 @@ export default function App() {
           <ProtectedRoute>
             <AdminLayout>
               <MyCertificates />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Settings />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cms"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <CMS />
             </AdminLayout>
           </ProtectedRoute>
         }

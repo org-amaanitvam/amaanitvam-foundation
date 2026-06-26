@@ -1,4 +1,5 @@
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
 import { Toaster } from 'react-hot-toast';
 
 export default function DashboardLayout({ children }) {
@@ -6,6 +7,7 @@ export default function DashboardLayout({ children }) {
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
       <main className="flex-1 ml-64 p-6 lg:p-8">
+        <TopBar />
         {children}
       </main>
       <Toaster

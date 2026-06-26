@@ -1,4 +1,5 @@
 import VolunteerApplication from "../models/volunteerApplication.js";
+import Setting from "../models/setting.js";
 import { 
     sendVolunteerConfirmationEmail, sendVolunteerAdminEmail 
 } 
@@ -8,6 +9,11 @@ import { sendWhatsAppNotification } from "../services/whatsappService.js";
 export const createVolunteerApplication = async (req, res) => {
 
     try {
+        const settings = await Setting.findOne();
+        if (settings && settings.maintenanceMode) {
+            return res.status(503).json({ success: false, message: "System is under maintenance. We are currently not accepting new applications. Please try again later." });
+        }
+
         const { name, email, phone, role, availability, skills, motivation } = req.validatedVolunteer;
 
         const newApplication = new VolunteerApplication({

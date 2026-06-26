@@ -8,7 +8,9 @@ export default function MeetingsPage() {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '', meetingDate: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', meetingDate: '', attendees: [] });
+  const [users, setUsers] = useState([]);
+  const { userProfile } = useAuth();
   const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
   useEffect(() => { fetchMeetings(); }, []);
@@ -17,6 +19,11 @@ export default function MeetingsPage() {
     try {
       const { data } = await api.get('/meetings');
       setMeetings(data.meetings || []);
+      
+      if (isAdmin) {
+        const res = await api.get('/admin/members');
+        setUsers(res.data.members || []);
+      }
     } catch { toast.error('Failed to load meetings'); }
     finally { setLoading(false); }
   };
@@ -27,7 +34,7 @@ export default function MeetingsPage() {
       await api.post('/meetings/create', formData);
       toast.success('Meeting created');
       setShowCreate(false);
-      setFormData({ title: '', description: '', meetingDate: '' });
+      setFormData({ title: '', description: '', meetingDate: '', attendees: [] });
       fetchMeetings();
     } catch {
       toast.error('Failed to create meeting');
@@ -60,6 +67,13 @@ export default function MeetingsPage() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div><label className="block text-sm font-medium mb-1">Title</label><input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
               <div><label className="block text-sm font-medium mb-1">Date & Time</label><input type="datetime-local" required value={formData.meetingDate} onChange={e => setFormData({...formData, meetingDate: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Attendees (Leave empty for everyone)</label>
+                <select multiple value={formData.attendees} onChange={e => setFormData({...formData, attendees: Array.from(e.target.selectedOptions, option => option.value)})} className="w-full px-3 py-2 border rounded-xl text-sm h-24">
+                  {users.map(u => <option key={u._id} value={u._id}>{u.name} ({u.role})</option>)}
+                </select>
+                <p className="text-xs text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple</p>
+              </div>
               <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" rows="3"></textarea></div>
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>

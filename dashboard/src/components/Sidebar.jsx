@@ -1,10 +1,13 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, CalendarDays, ClipboardList, Megaphone, FolderKanban, CalendarCheck, Shield, UserCircle, LogOut, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import api from '../config/api';
 
 export default function Sidebar() {
   const { userProfile, logout } = useAuth();
   const navigate = useNavigate();
+  const [orgName, setOrgName] = useState('Amaanitvam');
 
   const handleLogout = async () => {
     try {
@@ -14,6 +17,20 @@ export default function Sidebar() {
       console.error('Logout failed:', error);
     }
   };
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await api.get('/admin/settings');
+        if (res.data.settings?.orgName) {
+          setOrgName(res.data.settings.orgName);
+        }
+      } catch (err) {
+        console.error('Failed to load org name');
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const navLinkClass = ({ isActive }) =>
     `sidebar-nav-link ${isActive ? 'active' : ''}`;
@@ -31,10 +48,12 @@ export default function Sidebar() {
           </div>
           <div>
             <h1 className="text-lg font-bold text-white tracking-tight">
-              Amaanitvam
+              {orgName.split(' ')[0] || 'Amaanitvam'}
               <span className="inline-block w-1.5 h-1.5 bg-[#56051a] rounded-full ml-0.5 -translate-y-1"></span>
             </h1>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-medium -mt-0.5">Dashboard</p>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-medium -mt-0.5">
+              {orgName.split(' ').slice(1).join(' ') || 'Dashboard'}
+            </p>
           </div>
         </div>
       </div>
@@ -116,8 +135,8 @@ export default function Sidebar() {
             {userProfile?.name?.charAt(0)?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">
-              {userProfile?.name || 'User'}
+            <p className="text-sm font-semibold text-white truncate" title={userProfile?.name}>
+              {userProfile?.name?.split(' ')[0] || 'User'}
             </p>
             <span className="inline-block mt-0.5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide bg-slate-700/60 text-slate-300 rounded-full">
               {userProfile?.role || 'member'}

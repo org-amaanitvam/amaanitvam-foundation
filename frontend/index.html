@@ -188,7 +188,7 @@
           <h1 class="hero-title" id="hero-title">
             What Are We, If Not for One Another?
           </h1>
-          <p class="hero-desc">
+          <p class="hero-desc" id="hero-desc">
             Empowering Lives Through Education, Compassion, and Collective Action. A student-led movement inspiring
             learning, responsibility, and positive change for a stronger society.
           </p>
@@ -245,7 +245,7 @@
         <div class="grid-2 moved-inline-style-098">
           <div>
             <h3 class="moved-inline-style-099">Mission Statement</h3>
-            <p class="text-muted moved-inline-style-100">
+            <p class="text-muted moved-inline-style-100" id="mission-text">
               At Amaanitvam Foundation, we strive to inspire compassion, responsibility, and active citizenship.
               Through education, mentorship, awareness, and community engagement, we empower individuals to create
               meaningful change and contribute to a more inclusive, equitable, and compassionate society where everyone
@@ -254,7 +254,7 @@
           </div>
           <div>
             <h3 class="moved-inline-style-099">Vision Statement</h3>
-            <p class="text-muted moved-inline-style-100">
+            <p class="text-muted moved-inline-style-100" id="vision-text">
               Amaanitvam Foundation envisions a brighter and more inclusive India where every individual has access to
               opportunities for learning, growth, and self-development.
               Through education, mentorship, and community-driven action, we aim to nurture confident, responsible, and
@@ -391,12 +391,33 @@
       });
     })();
 
-    fetch('footer.html')
+      fetch('footer.html')
       .then(function (response) { return response.text(); })
       .then(function (data) {
         const footer = document.getElementById('footer');
         if (footer) footer.innerHTML = data;
       });
+
+      // Fetch CMS Content
+      fetch('http://localhost:5000/api/cms')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.content) {
+            const cms = data.content.homepage;
+            const aboutCms = data.content.aboutUs;
+            
+            const heroTitle = document.getElementById('hero-title');
+            const heroDesc = document.getElementById('hero-desc');
+            const missionText = document.getElementById('mission-text');
+            const visionText = document.getElementById('vision-text');
+            
+            if (heroTitle && cms?.heroTitle) heroTitle.innerText = cms.heroTitle;
+            if (heroDesc && cms?.heroSubtitle) heroDesc.innerText = cms.heroSubtitle;
+            if (missionText && aboutCms?.mission) missionText.innerText = aboutCms.mission;
+            if (visionText && aboutCms?.vision) visionText.innerText = aboutCms.vision;
+          }
+        })
+        .catch(err => console.error('Error fetching CMS:', err));
   </script>
 </body>
 

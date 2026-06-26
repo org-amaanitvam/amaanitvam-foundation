@@ -1,10 +1,13 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import api from '../config/api';
 
 export default function Sidebar() {
   const { userProfile, logout } = useAuth();
   const navigate = useNavigate();
+  const [orgName, setOrgName] = useState('Amaanitvam');
 
   const handleLogout = async () => {
     try {
@@ -15,6 +18,20 @@ export default function Sidebar() {
     }
   };
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await api.get('/admin/settings');
+        if (res.data.settings?.orgName) {
+          setOrgName(res.data.settings.orgName);
+        }
+      } catch (err) {
+        console.error('Failed to load org name');
+      }
+    };
+    fetchSettings();
+  }, []);
+
   const navLinkClass = ({ isActive }) =>
     `sidebar-nav-link ${isActive ? 'active' : ''}`;
 
@@ -24,9 +41,11 @@ export default function Sidebar() {
       <div className="px-6 py-6 border-b border-gold/10 bg-primary/20">
         <div className="flex flex-col">
           <h1 className="text-xl font-heading font-bold text-gold tracking-tight leading-tight">
-            Amaanitvam
+            {orgName.split(' ')[0] || 'Amaanitvam'}
           </h1>
-          <p className="text-[10px] font-ui text-white/50 uppercase tracking-[0.2em] font-medium">Foundation</p>
+          <p className="text-[10px] font-ui text-white/50 uppercase tracking-[0.2em] font-medium">
+            {orgName.split(' ').slice(1).join(' ') || 'Foundation'}
+          </p>
         </div>
       </div>
 
@@ -67,13 +86,17 @@ export default function Sidebar() {
               <Award className="w-[18px] h-[18px]" />
               <span className="font-ui">Certificates</span>
             </NavLink>
-            <NavLink to="/content" className={navLinkClass}>
+            <NavLink to="/cms" className={navLinkClass}>
               <Globe className="w-[18px] h-[18px]" />
-              <span className="font-ui">Website Content</span>
+              <span className="font-ui">Website CMS</span>
             </NavLink>
             <NavLink to="/gallery" className={navLinkClass}>
               <Image className="w-[18px] h-[18px] opacity-70" />
               Gallery Images
+            </NavLink>
+            <NavLink to="/settings" className={navLinkClass}>
+              <SettingsIcon className="w-[18px] h-[18px] opacity-70" />
+              System Settings
             </NavLink>
           </>
         )}
@@ -107,8 +130,8 @@ export default function Sidebar() {
             {userProfile?.name?.charAt(0)?.toUpperCase() || 'A'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-ui font-bold text-white truncate">
-              {userProfile?.name || 'Admin'}
+            <p className="text-xs font-ui font-bold text-white truncate" title={userProfile?.name}>
+              {userProfile?.name?.split(' ')[0] || 'Admin'}
             </p>
             <span className="inline-block mt-0.5 px-2 py-0.5 text-[9px] font-ui font-bold uppercase tracking-wide bg-gold text-primary-dark rounded">
               {userProfile?.role || 'admin'}

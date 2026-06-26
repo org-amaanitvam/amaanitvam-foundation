@@ -1,4 +1,5 @@
 import InternshipApplication from "../models/internshipApplication.js";
+import Setting from "../models/setting.js";
 import { 
     sendInternshipConfirmationEmail, sendInternshipAdminEmail 
 } 
@@ -8,6 +9,11 @@ import { sendWhatsAppNotification } from "../services/whatsappService.js";
 export const createInternshipApplication = async (req, res) => {
 
     try {
+        const settings = await Setting.findOne();
+        if (settings && settings.maintenanceMode) {
+            return res.status(503).json({ success: false, message: "System is under maintenance. We are currently not accepting new applications. Please try again later." });
+        }
+
         const { name, email, phone, track, university, currentYear, motivation, portfolioUrl, duration } = req.validatedInternship;
         
         const newApplication = new InternshipApplication({

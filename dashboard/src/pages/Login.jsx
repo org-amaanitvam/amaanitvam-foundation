@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,19 +12,67 @@ export default function Login() {
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
+  const [orgName, setOrgName] = useState('Amaanitvam Foundation');
+  
+  // 2FA states
+  const [is2FARequired, setIs2FARequired] = useState(false);
+  const [show2FA, setShow2FA] = useState(false);
+  const [code2fa, setCode2fa] = useState('');
+  const [tempCredentials, setTempCredentials] = useState(null);
 
   const { user, login, resetPassword } = useAuth();
   const navigate = useNavigate();
 
-  if (user) return <Navigate to="/" replace />;
+  useEffect(() => {
+    // Fetch public settings for 2FA flag and org name
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/public/settings`);
+        if (res.data.settings) {
+          setIs2FARequired(res.data.settings.enable2FA);
+          if (res.data.settings.orgName) setOrgName(res.data.settings.orgName);
+        }
+      } catch (err) {
+        console.error('Could not fetch public settings', err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  if (user && !show2FA) return <Navigate to="/" replace />;
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    
+    if (is2FARequired) {
+      setTempCredentials({ email, password });
+      setShow2FA(true);
+      return;
+    }
+
     setIsLoading(true);
     try {
       await login(email, password);
       navigate('/');
+    } catch (err) {
+      setError(err.message || 'Failed to sign in.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    try {
+      if (code2fa === '123456') { // Mock SMS verification code
+        await login(tempCredentials.email, tempCredentials.password);
+        navigate('/');
+      } else {
+        setError('Invalid verification code.');
+      }
     } catch (err) {
       setError(err.message || 'Failed to sign in.');
     } finally {
@@ -48,16 +97,49 @@ export default function Login() {
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <div className="mx-auto w-14 h-14 bg-[#56051a] rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-[#56051a]/30">
-            <LayoutDashboard className="w-7 h-7 text-white" />
+            {show2FA ? <ShieldCheck className="w-7 h-7 text-white" /> : <LayoutDashboard className="w-7 h-7 text-white" />}
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Amaanitvam Foundation</h1>
-          <p className="text-sm text-slate-500 mt-1">Team Dashboard</p>
+          <h1 className="text-2xl font-bold text-slate-800">{orgName}</h1>
+          <p className="text-sm text-slate-500 mt-1">{show2FA ? 'Two-Factor Authentication' : 'Team Dashboard'}</p>
         </div>
 
         {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl border border-red-100 mb-4">{error}</div>}
         {resetSuccess && <div className="bg-green-50 text-green-600 text-sm p-3 rounded-xl border border-green-100 mb-4">{resetSuccess}</div>}
 
-        {!showReset ? (
+        {show2FA ? (
+          <form onSubmit={handleVerify2FA} className="space-y-4 animate-fade-in">
+            <p className="text-sm text-slate-600 text-center mb-6">
+              Enter the verification code sent to your registered device. <br/>
+              <span className="text-xs text-slate-400">(For demo purposes, enter: 123456)</span>
+            </p>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Verification Code</label>
+              <input
+                type="text"
+                required
+                value={code2fa}
+                onChange={(e) => setCode2fa(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#56051a] focus:border-transparent transition-all tracking-widest text-center text-xl font-semibold"
+                placeholder="000000"
+                maxLength={6}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#56051a] text-white py-3 rounded-xl font-semibold hover:bg-[#7a1e3a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#56051a] transition-all disabled:opacity-50 mt-4"
+            >
+              {isLoading ? 'Verifying...' : 'Verify & Continue'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShow2FA(false); setTempCredentials(null); setCode2fa(''); }}
+              className="w-full mt-4 flex items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Login
+            </button>
+          </form>
+        ) : !showReset ? (
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>

@@ -1,4 +1,5 @@
 import projectModel from "../models/project.js";
+import Notification from "../models/notification.js";
 
 // Create Project
 export const createProject = async(req, res) => {
@@ -20,6 +21,13 @@ export const createProject = async(req, res) => {
         });
 
         const project = await newProject.save();
+        
+        await Notification.create({
+            title: "New Project Started",
+            message: `A new project '${title}' has been launched!`,
+            type: "success"
+        });
+
         res.status(201).json({ success: true, message: "Project created successfully", project });
     } catch (error) {
         console.log("Create Project Error:", error);
