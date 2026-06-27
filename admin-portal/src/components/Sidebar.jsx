@@ -7,6 +7,7 @@ import api from '../config/api';
 export default function Sidebar() {
   const { userProfile, logout } = useAuth();
   const navigate = useNavigate();
+  console.log("User Profile:", userProfile);
   const [orgName, setOrgName] = useState('Amaanitvam');
 
   const handleLogout = async () => {

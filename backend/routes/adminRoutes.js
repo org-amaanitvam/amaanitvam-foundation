@@ -3,13 +3,24 @@ import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseT
 import { requireAllowedIP } from '../middleware/ipRestriction.js';
 import User from '../models/user.js';
 import {
-    getMe, getDashboardStats,
-    getCandidates, updateCandidateStatus,
-    getMembers, addMember, updateMemberRole, deactivateMember, deleteMember,
+    getMe,
+    getDashboardStats,
+    getCandidates,
+    updateCandidateStatus,
+    getMembers,
+    addMember,
+    updateMember,
+    updateMemberRole,
+    deactivateMember,
+    deleteMember,
     getDonations,
-    getCertificates, generateCertificate, revokeCertificate,
-    getSettings, updateSettings, getAuditLogs
-} from '../controllers/adminController.js';
+    getCertificates,
+    generateCertificate,
+    revokeCertificate,
+    getSettings,
+    updateSettings,
+    getAuditLogs
+} from '../controllers/adminController.js'; 
 
 const router = express.Router();
 
@@ -39,13 +50,16 @@ router.get('/seed', async (req, res) => {
 });
 
 router.use(verifyFirebaseToken);
+
 router.get('/me', getMe);
 router.get('/stats', requireAdmin, requireAllowedIP, getDashboardStats);
 
 router.get('/candidates', requireAdmin, requireAllowedIP, getCandidates);
 router.put('/candidates/:id/status', requireAdmin, requireAllowedIP, updateCandidateStatus);
+
 router.get('/members', requireAdmin, requireAllowedIP, getMembers);
 router.post('/members', requireAdmin, requireAllowedIP, addMember);
+router.put('/members/:id', requireAdmin, requireAllowedIP, updateMember);
 router.put('/members/:id/role', requireAdmin, requireAllowedIP, updateMemberRole);
 router.put('/members/:id/deactivate', requireAdmin, requireAllowedIP, deactivateMember);
 router.delete('/members/:id', requireAdmin, requireAllowedIP, deleteMember);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Plus, X } from 'lucide-react';
+import { Users, Plus, X, Pencil } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { firebaseConfig } from '../config/firebase';
@@ -12,6 +12,16 @@ export default function Members() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+const [editMember, setEditMember] = useState({
+  id: '',
+  name: '',
+  email: '',
+  phone: '',
+  role: '',
+  department: ''
+});
   const [newMember, setNewMember] = useState(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
@@ -113,6 +123,38 @@ export default function Members() {
       setActionLoading(null);
     }
   };
+  const handleEditMember = async (e) => {
+  e.preventDefault();
+
+  if (!editMember.name || !editMember.email) {
+    toast.error("Name and Email are required");
+    return;
+  }
+
+  setSubmitting(true);
+
+  try {
+    await api.put(`/admin/members/${editMember.id}`, {
+      name: editMember.name,
+      email: editMember.email,
+      phone: editMember.phone,
+      role: editMember.role,
+      department: editMember.department,
+    });
+
+    toast.success("Member updated successfully!");
+
+    setShowEditModal(false);
+
+    fetchMembers();
+  } catch (err) {
+    toast.error(
+      err.response?.data?.message || "Failed to update member"
+    );
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const getRoleBadge = (role) => {
     const styles = {
@@ -212,6 +254,24 @@ export default function Members() {
                             <option value="member">Member</option>
                             <option value="admin">Admin</option>
                           </select>
+                          <button
+  onClick={() => {
+    setEditMember({
+      id: memberId,
+      name: member.name || "",
+      email: member.email || "",
+      phone: member.phone || "",
+      role: member.role || "member",
+      department: member.department || "",
+    });
+    setShowEditModal(true);
+  }}
+  className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
+>
+  <Pencil className="w-3 h-3" />
+  Edit
+</button>
+                          
                           {member.status !== 'inactive' ? (
                             <button
                               onClick={() => handleDeactivate(memberId)}
@@ -328,6 +388,143 @@ export default function Members() {
           </div>
         </div>
       )}
+      {/* Edit Member Modal */}
+{showEditModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-[slideUp_0.25s_ease-out]">
+
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Edit Member
+        </h2>
+
+        <button
+          onClick={() => setShowEditModal(false)}
+          className="text-slate-400 hover:text-slate-600 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <form onSubmit={handleEditMember} className="space-y-4">
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Name <span className="text-red-500">*</span>
+          </label>
+
+          <input
+            type="text"
+            required
+            value={editMember.name}
+            onChange={(e) =>
+              setEditMember({
+                ...editMember,
+                name: e.target.value,
+              })
+            }
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Email <span className="text-red-500">*</span>
+          </label>
+
+          <input
+            type="email"
+            required
+            value={editMember.email}
+            onChange={(e) =>
+              setEditMember({
+                ...editMember,
+                email: e.target.value,
+              })
+            }
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Phone
+          </label>
+
+          <input
+            type="tel"
+            value={editMember.phone}
+            onChange={(e) =>
+              setEditMember({
+                ...editMember,
+                phone: e.target.value,
+              })
+            }
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Role
+          </label>
+
+          <select
+            value={editMember.role}
+            onChange={(e) =>
+              setEditMember({
+                ...editMember,
+                role: e.target.value,
+              })
+            }
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          >
+            <option value="intern">Intern</option>
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Department
+          </label>
+
+          <input
+            type="text"
+            value={editMember.department}
+            onChange={(e) =>
+              setEditMember({
+                ...editMember,
+                department: e.target.value,
+              })
+            }
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => setShowEditModal(false)}
+            className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex-1 bg-[#56051a] hover:bg-[#7a1e3a] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
+          >
+            {submitting ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
     </div>
   );
 }
