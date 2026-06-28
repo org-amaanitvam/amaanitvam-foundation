@@ -8,146 +8,142 @@
   <link href="https://fonts.googleapis.com" rel="preconnect" />
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@400;500;600;700;800&amp;display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=400;500;600;700&family=Inter:wght=400;500;600;700&family=Montserrat:wght=400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet" />
   <link href="assets/images/logo.jpg" rel="icon" type="image/jpg" />
   <link href="css/styles.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <style>
     .events-container {
-      padding: var(--section-py) 0;
+      padding: var(--section-py, 4rem) 0;
     }
+
+    /* ── Main Layout Container ── */
     .featured-webinar-layout {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
-      gap: 3rem;
-      align-items: stretch;
+      gap: 3.5rem;
+      align-items: stretch; /* Crucial: Forces equal height on both column cells */
     }
+
+    /* ── Perfectly Bound Left Gallery Card ── */
+    .left-gallery-card-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 0; /* Prevents cell stretching from image content */
+    }
+
+    .left-gallery-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--surface, #ffffff);
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: var(--radius-lg, 16px);
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      box-sizing: border-box;
+
+      /* Grid layout to match image {CD2047D0-223E-4AEA-9734-7ED243C77524}.png */
+      display: grid;
+      grid-template-rows: 1.2fr 1fr; 
+      gap: 1.25rem;
+    }
+
+    /* Top Row Container */
+    .top-poster-row {
+      min-height: 0;
+      width: 100%;
+    }
+
+    /* Bottom Row Container (Split Side-by-Side) */
+    .bottom-snapshots-row {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr; 
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    /* Image Box Elements */
+    .main-poster,
+    .snapshot-card {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      height: 100%;
+      width: 100%;
+    }
+
+    .main-poster {
+      border: 2px solid var(--gold, #d8a15f);
+    }
+
+    .snapshot-card {
+      border: 1px solid var(--border, #e5e5e5);
+    }
+
+    /* Safe Uniform Image Fitting */
+    .left-gallery-card img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover; 
+    }
+
+    /* Responsive fallbacks */
     @media (max-width: 992px) {
       .featured-webinar-layout {
         grid-template-columns: 1fr;
-        gap: 2.5rem;
+        gap: 3rem;
+        align-items: start;
       }
-    }
-    
-    /* --- ELEGANT IMAGE ALIGNMENT, TRANSITIONS & ANIMATIONS --- */
-    
-    /* Core Gallery Layout */
-    .poster-gallery {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      /* Smooth fade-in entry animation for the image container */
-      animation: fadeInReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    /* Main Poster Frame */
-    .main-poster {
-      border: 3px solid var(--gold);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-      background: var(--surface);
-      /* Establishes 16:9 cinematic aspect ratio for guaranteed alignment */
-      aspect-ratio: 16 / 9; 
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-    }
-
-    /* Main Poster Hover Effect */
-    .main-poster:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 0 20px 38px rgba(0, 0, 0, 0.18);
-    }
-
-    /* Image zoom transition inside frame */
-    .main-poster img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .main-poster:hover img {
-      transform: scale(1.04);
-    }
-
-    /* Bottom Snapshot Grid */
-    .gallery-snapshots {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-
-    /* Snapshot Cards */
-    .snapshot-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      background: var(--surface);
-      /* Forces identical symmetric alignment side-by-side */
-      aspect-ratio: 4 / 3; 
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
-    }
-
-    /* Snapshot Hover Effects */
-    .snapshot-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
-      border-color: var(--gold);
-    }
-
-    /* Snapshot Image internal zoom transition */
-    .snapshot-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
-      filter: brightness(0.95);
-    }
-
-    .snapshot-card:hover img {
-      transform: scale(1.06);
-      filter: brightness(1);
-    }
-
-    /* CSS Keyframe Animation for Page Load Entry */
-    @keyframes fadeInReveal {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+      .left-gallery-card-wrapper {
+        height: auto;
+        min-height: 450px;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+      .left-gallery-card {
+        position: relative;
+        height: 100%;
       }
     }
 
-    /* --- END ANIMATION STYLES --- */
+    @media (max-width: 576px) {
+      .bottom-snapshots-row {
+        grid-template-columns: 1fr; 
+      }
+      .left-gallery-card-wrapper {
+        min-height: 600px;
+      }
+    }
 
-    /* Elegant Sidebar Details Pane */
+    /* ── Details Pane (Right Card - Acts as the baseline height source) ── */
     .webinar-details-pane {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 4px solid var(--primary);
-      border-radius: var(--radius-lg);
+      background: var(--surface, #ffffff);
+      border: 1px solid var(--border, #e5e5e5);
+      border-top: 4px solid var(--primary, #5d0f2d);
+      border-radius: var(--radius-lg, 16px);
       padding: 2.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      height: 100%;
+      box-sizing: border-box;
     }
+
     .webinar-status-badge {
       display: inline-block;
       align-self: flex-start;
       background: rgba(93, 15, 45, 0.08);
-      color: var(--primary);
-      font-family: var(--font-ui);
+      color: var(--primary, #5d0f2d);
+      font-family: var(--font-ui, sans-serif);
       font-size: 0.75rem;
       font-weight: 700;
       padding: 0.4rem 1rem;
@@ -156,29 +152,33 @@
       letter-spacing: 1.5px;
       margin-bottom: 1.5rem;
     }
+
     .webinar-main-title {
-      font-family: var(--font-heading);
+      font-family: var(--font-heading, serif);
       font-size: clamp(2rem, 3.5vw, 2.6rem);
-      color: var(--primary);
+      color: var(--primary, #5d0f2d);
       line-height: 1.2;
       margin-bottom: 0.5rem;
     }
+
     .webinar-subtitle-hindi {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 2.2rem;
-      color: var(--gold-dark);
-      margin-bottom: 2rem;
+      color: var(--gold-dark, #b58241);
+      margin-bottom: 1.5rem;
       font-weight: 700;
     }
+
     .speaker-profile {
       display: flex;
       align-items: center;
       gap: 1.25rem;
       padding: 1.25rem 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2rem;
+      border-top: 1px solid var(--border, #e5e5e5);
+      border-bottom: 1px solid var(--border, #e5e5e5);
+      margin-bottom: 1.75rem;
     }
+
     .speaker-avatar-icon {
       width: 54px;
       height: 54px;
@@ -187,41 +187,47 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--gold-dark);
+      color: var(--gold-dark, #b58241);
       font-size: 1.4rem;
+      flex-shrink: 0;
     }
+
     .speaker-info h4 {
-      font-family: var(--font-ui);
+      font-family: var(--font-ui, sans-serif);
       font-weight: 700;
       font-size: 1.15rem;
-      color: var(--text);
+      color: var(--text, #333);
       margin: 0;
     }
+
     .speaker-info p {
       font-size: 0.9rem;
-      color: var(--muted);
+      color: var(--muted, #666);
       margin: 0.2rem 0 0 0;
     }
+
     .pill-tags-container {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
+
     .topic-pill {
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: var(--bg, #f9f9f9);
+      border: 1px solid var(--border, #e5e5e5);
       padding: 0.4rem 1rem;
       border-radius: 999px;
-      font-family: var(--font-ui);
+      font-family: var(--font-ui, sans-serif);
       font-size: 0.8rem;
       font-weight: 600;
-      color: var(--text);
+      color: var(--text, #333);
     }
+
     .webinar-description-text {
-      color: var(--muted);
+      color: var(--muted, #666);
       font-size: 1.05rem;
-      line-height: 1.8;
+      line-height: 1.7;
       margin-bottom: 2.5rem;
     }
   </style>
@@ -245,8 +251,7 @@
               About Us
               <span aria-hidden="true" class="nav-chevron">
                 <svg fill="none" height="7" viewbox="0 0 12 7" width="12">
-                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                    stroke-width="1.6"></path>
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
                 </svg>
               </span>
             </button>
@@ -274,8 +279,7 @@
               Get Involved
               <span aria-hidden="true" class="nav-chevron">
                 <svg fill="none" height="7" viewbox="0 0 12 7" width="12">
-                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                    stroke-width="1.6"></path>
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
                 </svg>
               </span>
             </button>
@@ -299,8 +303,7 @@
               Resources
               <span aria-hidden="true" class="nav-chevron">
                 <svg fill="none" height="7" viewbox="0 0 12 7" width="12">
-                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                    stroke-width="1.6"></path>
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
                 </svg>
               </span>
             </button>
@@ -387,7 +390,7 @@
     style="position: relative; background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)), url('assets/images/hero.png'); background-size: cover; background-position: center; padding: 5rem 0; min-height: 380px; display: flex; align-items: center;">
     <div class="container" style="display: flex; justify-content: center; text-align: center; width: 100%;">
       <div style="max-width: 960px;">
-        <span class="hero-label section-label" style="color: var(--gold);">Resources</span>
+        <span class="hero-label section-label" style="color: var(--gold, #d8a15f);">Resources</span>
         <h1 class="section-title" style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1rem; color: #ffffff !important;">
           Official Webinars</h1>
         <p class="section-desc" style="max-width: 750px; margin: 0 auto; color: #ffffff; opacity: 0.95; font-size: 1.2rem;">
@@ -399,17 +402,22 @@
 
   <main class="container events-container">
     <div class="featured-webinar-layout">
-      
-      <div class="poster-gallery">
-        <div class="main-poster">
-          <img alt="नारी शक्ति: Dharma, Samman aur Vikas Poster" src="assets/images/Webinar1.jpeg" />
-        </div>
-        <div class="gallery-snapshots">
-          <div class="snapshot-card">
-            <img alt="Webinar Interactive View 1" src="assets/images/Webinar2.jpeg" />
+
+      <div class="left-gallery-card-wrapper">
+        <div class="left-gallery-card">
+          <div class="top-poster-row">
+            <div class="main-poster">
+              <img alt="नारी शक्ति: Dharma, Samman aur Vikas Poster" src="assets/images/Webinar1.jpeg" />
+            </div>
           </div>
-          <div class="snapshot-card">
-            <img alt="Webinar Interactive View 2" src="assets/images/Webinar3.jpeg" />
+          
+          <div class="bottom-snapshots-row">
+            <div class="snapshot-card">
+              <img alt="Webinar Interactive View 1" src="assets/images/Webinar2.jpeg" />
+            </div>
+            <div class="snapshot-card">
+              <img alt="Webinar Interactive View 2" src="assets/images/Webinar3.jpeg" />
+            </div>
           </div>
         </div>
       </div>
@@ -448,8 +456,6 @@
     </div>
   </main>
 
-
-
   <div id="footer"></div>
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 
@@ -471,7 +477,7 @@
   <script src="js/main.js"></script>
   <script>
     (function () {
-      const nav = document.getElementById('site-nav');
+      const nav = document.getElementById('site-header').querySelector('.site-nav');
       const menuToggle = document.getElementById('menu-toggle');
       const mobileMenu = document.getElementById('mobile-menu');
 
@@ -502,14 +508,8 @@
         const trigger = item.querySelector('.dropdown-trigger');
         const menu = item.querySelector('.dropdown-menu');
 
-        function open() {
-          trigger.setAttribute('aria-expanded', 'true');
-          menu.classList.add('is-open');
-        }
-        function close() {
-          trigger.setAttribute('aria-expanded', 'false');
-          menu.classList.remove('is-open');
-        }
+        function open() { trigger.setAttribute('aria-expanded', 'true'); menu.classList.add('is-open'); }
+        function close() { trigger.setAttribute('aria-expanded', 'false'); menu.classList.remove('is-open'); }
 
         item.addEventListener('mouseenter', open);
         item.addEventListener('mouseleave', close);
