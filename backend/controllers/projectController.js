@@ -1,10 +1,11 @@
 import projectModel from "../models/project.js";
 import Notification from "../models/notification.js";
+import ActivityService from "../services/activityService.js";
 
 // Create Project
 export const createProject = async(req, res) => {
     try {
-        const { title, description, progress, status, assignedMembers } = req.body;
+        const { title, description, progress, status, assignedMembers, startDate, endDate } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -16,6 +17,8 @@ export const createProject = async(req, res) => {
         const newProject = new projectModel({
             title,
             description,
+            startDate,
+            endDate,
             progress: progress || 0,
             status: status || "ongoing",
             assignedMembers: assignedMembers || []
@@ -101,6 +104,13 @@ export const updateProject = async(req, res) => {
         if (!project) {
             return res.status(404).json({ success: false, message: "Project not found" });
         }
+
+        await ActivityService.log(
+            "Project Updated",
+            `Project '${project.title}' was updated`,
+            "",
+            req.user?._id
+        );
 
         res.status(200).json({ success: true, message: "Project updated successfully", project });
     } catch (error) {

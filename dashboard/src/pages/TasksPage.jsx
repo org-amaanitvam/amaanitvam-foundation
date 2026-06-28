@@ -3,15 +3,16 @@ import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
 import api from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import FilterBar from '../components/Filters/FilterBar';
 
 export default function TasksPage() {
   const { userProfile } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filters, setFilters] = useState({});
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ title: '', description: '', assignedTo: '', deadline: '', status: 'open' });
+  const [formData, setFormData] = useState({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', priority: 'medium' });
   const [users, setUsers] = useState([]);
   const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
@@ -41,7 +42,7 @@ export default function TasksPage() {
       }
       setShowCreate(false);
       setEditingId(null);
-      setFormData({ title: '', description: '', assignedTo: '', deadline: '', status: 'open' });
+      setFormData({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', priority: 'medium' });
       fetchTasks();
     } catch { toast.error(editingId ? 'Failed to update task' : 'Failed to create task'); }
   };
@@ -53,6 +54,7 @@ export default function TasksPage() {
       assignedTo: task.assignedTo?._id || task.assignedTo || '',
       deadline: task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
       status: task.status,
+      priority: task.priority || 'medium',
       progress: task.progress || 0,
       newComment: ''
     });
@@ -63,7 +65,47 @@ export default function TasksPage() {
   if (loading) return <div className="flex justify-center items-center h-64"><Loader2 className="w-8 h-8 text-[#56051a] animate-spin" /></div>;
 
   const myTasks = isAdmin ? tasks : tasks.filter(t => t.assignedTo?._id === userProfile?._id || t.assignedTo?.email === userProfile?.email);
-  const filtered = filter === 'all' ? myTasks : myTasks.filter(t => t.status === filter);
+  
+  const filtered = myTasks.filter(t => {
+    let match = true;
+    if (filters.status && filters.status !== 'all' && t.status !== filters.status) match = false;
+    if (filters.priority && filters.priority !== 'all' && (t.priority || 'medium') !== filters.priority) match = false;
+    if (filters.assignedTo && filters.assignedTo !== 'all') {
+      const assignedId = t.assignedTo?._id || t.assignedTo;
+      if (assignedId !== filters.assignedTo) match = false;
+    }
+    if (filters.deadline?.start && t.deadline) {
+      if (new Date(t.deadline) < new Date(filters.deadline.start)) match = false;
+    }
+    if (filters.deadline?.end && t.deadline) {
+      // Set end date to end of day to include the selected date
+      const end = new Date(filters.deadline.end);
+      end.setHours(23, 59, 59, 999);
+      if (new Date(t.deadline) > end) match = false;
+    }
+    return match;
+  });
+
+  const filterConfig = [
+    { name: 'status', label: 'Status', type: 'select', options: [
+      { label: 'All Statuses', value: 'all' },
+      { label: 'Open', value: 'open' },
+      { label: 'In Progress', value: 'inProgress' },
+      { label: 'Completed', value: 'completed' },
+      { label: 'Pending Approval', value: 'pending_approval' }
+    ]},
+    { name: 'priority', label: 'Priority', type: 'select', options: [
+      { label: 'All Priorities', value: 'all' },
+      { label: 'Low', value: 'low' },
+      { label: 'Medium', value: 'medium' },
+      { label: 'High', value: 'high' }
+    ]},
+    ...(isAdmin ? [{ name: 'assignedTo', label: 'Assigned To', type: 'select', options: [
+      { label: 'All Members', value: 'all' },
+      ...users.map(u => ({ label: u.name, value: u._id }))
+    ]}] : []),
+    { name: 'deadline', label: 'Deadline Range', type: 'dateRange' }
+  ];
 
   const statusColors = {
     open: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -80,7 +122,7 @@ export default function TasksPage() {
           <p className="text-sm text-slate-500 mt-1">Track tasks and deadlines</p>
         </div>
         {isAdmin && (
-          <button onClick={() => { setEditingId(null); setFormData({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', progress: 0, newComment: '' }); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
+          <button onClick={() => { setEditingId(null); setFormData({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', priority: 'medium', progress: 0, newComment: '' }); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
             <Plus className="w-4 h-4" /> Create Task
           </button>
         )}
@@ -98,6 +140,13 @@ export default function TasksPage() {
                     <select required value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm">
                       <option value="">Select Member</option>
                       {users.map(u => <option key={u._id} value={u._id}>{u.name} ({u.role})</option>)}
+                    </select>
+                  </div>
+                  <div><label className="block text-sm font-medium mb-1">Priority</label>
+                    <select required value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm">
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
                     </select>
                   </div>
                   <div><label className="block text-sm font-medium mb-1">Deadline</label><input type="date" required value={formData.deadline} onChange={e => setFormData({...formData, deadline: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
@@ -149,16 +198,8 @@ export default function TasksPage() {
         </div>
       )}
 
-      <div className="flex gap-2 flex-wrap">
-        {['all', 'open', 'inProgress', 'completed'].map(f => (
-          <button key={f} onClick={() => setFilter(f)}
-            className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
-              filter === f ? 'bg-[#56051a] text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-            }`}>
-            {f === 'inProgress' ? 'In Progress' : f.charAt(0).toUpperCase() + f.slice(1)}
-          </button>
-        ))}
-      </div>
+
+      <FilterBar config={filterConfig} filters={filters} setFilters={setFilters} />
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
@@ -187,6 +228,14 @@ export default function TasksPage() {
                 {t.comments && t.comments.length > 0 && (
                   <p className="text-xs text-slate-400 mt-1 italic line-clamp-1">
                     Latest: {t.comments[t.comments.length - 1].text}
+                  </p>
+                )}
+                {t.priority && (
+                  <p className="text-xs mt-1">
+                    <span className="text-slate-500">Priority: </span>
+                    <span className={`font-medium ${t.priority === 'high' ? 'text-rose-500' : t.priority === 'low' ? 'text-slate-500' : 'text-amber-500'}`}>
+                      {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+                    </span>
                   </p>
                 )}
               </div>

@@ -4,8 +4,10 @@ import {
     getMeetings,
     getMeetingById,
     updateMeeting,
-    deleteMeeting
+    deleteMeeting,
+    uploadMinutes
 } from '../controllers/meetingController.js';
+import upload from '../middleware/upload.js';
 
 const meetingRouter = express.Router();
 
@@ -23,6 +25,9 @@ meetingRouter.put('/:id', updateMeeting);
 
 // Delete Meeting
 meetingRouter.delete('/:id', deleteMeeting);
+
+// Upload Minutes
+meetingRouter.post('/:id/minutes', upload.single('minutes'), uploadMinutes);
 
 export default meetingRouter;
 

@@ -20,6 +20,12 @@ const taskSchema = new mongoose.Schema(
         default: "open"
     },
 
+    priority: {
+        type: String,
+        enum: ["low", "medium", "high"],
+        default: "medium"
+    },
+
     progress: {
         type: Number,
         default: 0,

@@ -9,6 +9,14 @@ const projectSchema = new mongoose.Schema(
 
     description: String,
 
+    startDate: {
+        type: Date
+    },
+
+    endDate: {
+        type: Date
+    },
+
     progress: {
         type: Number,
         default: 0,

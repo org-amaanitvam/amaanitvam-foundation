@@ -1,5 +1,6 @@
 import meetingModel from "../models/meeting.js";
 import Notification from "../models/notification.js";
+import ActivityService from "../services/activityService.js";
 
 // Create Meeting
 export const createMeeting = async(req, res) => {
@@ -37,6 +38,13 @@ export const createMeeting = async(req, res) => {
                 type: "info"
             });
         }
+
+        await ActivityService.log(
+            "Meeting Scheduled",
+            `Meeting '${title}' was scheduled`,
+            `Scheduled for ${new Date(meetingDate).toLocaleString()}`,
+            req.user?._id
+        );
 
         res.status(201).json({ success: true, meeting });
     } catch (error) {
@@ -107,6 +115,40 @@ export const deleteMeeting = async(req, res) => {
         res.status(200).json({ success: true, message: "Meeting deleted successfully" });
     } catch (error) {
         console.log("Delete Meeting Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Upload Minutes
+export const uploadMinutes = async (req, res) => {
+    try {
+        const meetingId = req.params.id;
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        const minutesUrl = `/uploads/${req.file.filename}`;
+        
+        const meeting = await meetingModel.findByIdAndUpdate(
+            meetingId,
+            { minutesUrl },
+            { new: true, runValidators: true }
+        ).populate("attendees", "name email");
+
+        if (!meeting) {
+            return res.status(404).json({ success: false, message: "Meeting not found" });
+        }
+
+        await ActivityService.log(
+            "Meeting Minutes Uploaded",
+            `Minutes uploaded for '${meeting.title}'`,
+            "",
+            req.user?._id
+        );
+
+        res.status(200).json({ success: true, message: "Meeting minutes uploaded successfully", meeting });
+    } catch (error) {
+        console.log("Upload Minutes Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

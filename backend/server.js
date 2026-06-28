@@ -22,6 +22,8 @@
     import notificationRoutes from "./routes/notificationRoutes.js";
     import publicRoutes from "./routes/publicRoutes.js";
     import cmsRoutes from "./routes/cmsRoutes.js";
+    import activityRoutes from "./routes/activityRoutes.js";
+    import searchRoutes from "./routes/searchRoutes.js";
     import User from "./models/user.js";
     import path from "path";
     import { fileURLToPath } from "url";
@@ -71,6 +73,8 @@
     app.use("/api/announcements", announcementRoutes);
     app.use("/api/departments", departmentRoutes);
     app.use("/api/cms", cmsRoutes);
+    app.use("/api/activities", activityRoutes);
+    app.use("/api/search", searchRoutes);
     
     app.get("/", (req, res) => res.send("Backend Running"));
     app.get("/health", (req, res) => res.json({ success: true, message: "OK" }));

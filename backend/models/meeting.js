@@ -19,7 +19,12 @@ const meetingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
         }
-    ]
+    ],
+
+    minutesUrl: {
+        type: String,
+        default: null
+    }
 },
 {
     timestamps: true

@@ -3,6 +3,7 @@ import { Bell, AlertTriangle, Info, CheckCircle2 } from 'lucide-react';
 import api from '../config/api';
 
 import SwipeableNotification from './SwipeableNotification';
+import GlobalSearch from './TopBar/GlobalSearch';
 
 export default function TopBar() {
   const [notifications, setNotifications] = useState([]);
@@ -61,7 +62,11 @@ export default function TopBar() {
   };
 
   return (
-    <div className="flex justify-end items-center mb-6 relative z-40">
+    <div className="flex justify-between items-center mb-6 relative z-40">
+      <div className="flex-1 max-w-md">
+        <GlobalSearch />
+      </div>
+
       <div className="relative">
         <button 
           onClick={() => setShowDropdown(!showDropdown)}

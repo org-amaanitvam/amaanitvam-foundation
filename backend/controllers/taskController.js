@@ -1,11 +1,12 @@
 import taskModel from "../models/task.js";
 import Notification from "../models/notification.js";
 import { sendSMSNotification } from "../services/smsService.js";
+import ActivityService from "../services/activityService.js";
 
 // Create Task
 export const createTask = async(req, res) => {
     try {
-        const { title, description, assignedTo, status, deadline } = req.body;
+        const { title, description, assignedTo, status, priority, deadline } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -19,6 +20,7 @@ export const createTask = async(req, res) => {
             description,
             assignedTo,
             status: status || "open",
+            priority: priority || "medium",
             deadline
         });
 
@@ -38,6 +40,13 @@ export const createTask = async(req, res) => {
                 await sendSMSNotification(populatedTask.assignedTo.phone, `Amaanitvam: You have been assigned a new task '${title}'. Log in to your dashboard to view details.`);
             }
         }
+
+        await ActivityService.log(
+            "Task Created",
+            `Task '${title}' was created`,
+            assignedTo ? `Assigned to user` : 'Unassigned',
+            req.user?._id
+        );
 
         res.status(201).json({ success: true, message: "Task created successfully", task: populatedTask });
     } catch (error) {
@@ -145,6 +154,15 @@ export const updateTask = async(req, res) => {
 
         if (!task) {
             return res.status(404).json({ success: false, message: "Task not found" });
+        }
+
+        if (updateData.status === 'completed') {
+            await ActivityService.log(
+                "Task Completed",
+                `Task '${task.title}' was completed`,
+                "",
+                req.user?._id
+            );
         }
 
         res.status(200).json({ success: true, message: "Task updated successfully", task });

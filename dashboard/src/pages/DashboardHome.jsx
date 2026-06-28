@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import api from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import ActivityFeed from '../components/ActivityFeed/ActivityFeed';
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();
@@ -79,8 +80,10 @@ export default function DashboardHome() {
         )}
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex-1">
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Meetings */}
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
@@ -176,6 +179,11 @@ export default function DashboardHome() {
               ))
             )}
           </div>
+        </div>
+        </div>
+
+        <div className="w-full lg:w-80 xl:w-96 shrink-0">
+          <ActivityFeed />
         </div>
       </div>
     </div>

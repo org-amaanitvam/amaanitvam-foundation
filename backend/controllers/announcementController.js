@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import announcementModel from "../models/announcement.js";
 import Notification from "../models/notification.js";
+import ActivityService from "../services/activityService.js";
 
 // Create Announcement
 export const createAnnouncement = async(req, res) => {
@@ -45,6 +46,13 @@ export const createAnnouncement = async(req, res) => {
             type: priority === "High" ? "emergency" : "info",
             link: "/announcements"
         });
+
+        await ActivityService.log(
+            "Announcement Created",
+            `Announcement '${title}' was created`,
+            "",
+            authorId
+        );
 
         res.status(201).json({ success: true, message: "Announcement created successfully", announcement: populatedAnnouncement });
     } catch (error) {
