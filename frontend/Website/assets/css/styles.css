@@ -674,15 +674,15 @@ h6,
   opacity: .9;
 }
 
-body[data-page="faq"] .page-hero .section-title,
-body[data-page="faq"] .page-hero h1 {
-  color: #5d0f2d !important;
-  -webkit-text-fill-color: #5d0f2d !important;
+body[data-page="faq"] .page-hero.has-image .section-title,
+body[data-page="faq"] .page-hero.has-image h1 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
   opacity: 1 !important;
 }
 
-body[data-page="faq"] .page-hero .section-desc {
-  color: #6b5b55 !important;
+body[data-page="faq"] .page-hero.has-image .section-desc {
+  color: #ffffff !important;
   opacity: 1 !important;
 }
 
@@ -6017,5 +6017,103 @@ body.dashboard-page .toast.show {
 
   body.dashboard-page .welcome-panel h2 {
     font-size: 38px;
+  }
+}
+
+/* ===== FAQ PAGE INLINE CSS MOVED FROM HTML ===== */
+.moved-inline-style-075 {
+  position: relative;
+  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url('assets/images/hero.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 6rem 0;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.moved-inline-style-003 {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.moved-inline-style-004 {
+  max-width: 960px;
+}
+
+.moved-inline-style-005 {
+  color: var(--gold) !important;
+  opacity: 1;
+}
+
+.moved-inline-style-076 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  margin-bottom: 1.25rem;
+  color: #ffffff !important;
+  opacity: 1;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.moved-inline-style-077 {
+  max-width: 960px;
+  margin: 0 auto;
+  color: #ffffff !important;
+  opacity: 1;
+  font-size: 1.25rem;
+}
+
+/* ===== FINAL CLEAN FIXES ===== */
+body[data-page="faq"] .page-hero.has-image,
+body[data-page="faq"] .moved-inline-style-075 {
+  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url("assets/images/hero.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  min-height: 480px !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+body[data-page="faq"] .page-hero.has-image .section-label,
+body[data-page="faq"] .moved-inline-style-005 {
+  color: var(--gold) !important;
+  opacity: 1 !important;
+}
+
+body[data-page="faq"] .page-hero.has-image .section-title,
+body[data-page="faq"] .page-hero.has-image h1,
+body[data-page="faq"] .moved-inline-style-076 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: none !important;
+  opacity: 1 !important;
+}
+
+body[data-page="faq"] .page-hero.has-image .section-desc,
+body[data-page="faq"] .moved-inline-style-077 {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+  .moved-inline-style-075 {
+    min-height: 360px !important;
+    padding: 4.5rem 0 !important;
+  }
+
+  .moved-inline-style-076 {
+    font-size: clamp(2.1rem, 10vw, 3rem) !important;
+  }
+
+  .moved-inline-style-077 {
+    font-size: 1rem !important;
   }
 }
