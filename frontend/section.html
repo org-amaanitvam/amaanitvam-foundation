@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amaanitvam Team Dashboard</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="NGO Dashboard Home">
+        <span class="brand-mark">A</span>
+        <span>
+          <strong>Amaanitvam</strong>
+          <small>Foundation Dashboard</small>
+        </span>
+      </a>
+
+      <nav class="side-nav" aria-label="Dashboard sections">
+        <a class="active" href="#overview" data-section-link="dashboard-overview"><span>Overview</span><b>15</b></a>
+        <a href="section.html?view=members"><span>Members</span><b>1.2k</b></a>
+        <a href="section.html?view=recruitment"><span>Recruitment</span><b>86</b></a>
+        <a href="section.html?view=performance"><span>Performance</span><b>94%</b></a>
+        <a href="section.html?view=tasks"><span>Tasks</span><b>128</b></a>
+        <a href="section.html?view=meetings"><span>Calendar</span><b>12</b></a>
+        <a href="section.html?view=donations"><span>Donations</span><b>Rs 8.4L</b></a>
+        <a href="section.html?view=reports"><span>Reports</span><b>PDF</b></a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div>
+          <p class="eyebrow">Centralized NGO Operations</p>
+          <h1>Dashboard Overview</h1>
+        </div>
+        <form class="searchbar" role="search">
+          <input type="search" placeholder="Search members, candidates, reports..." aria-label="Global search">
+          <button type="submit">Search</button>
+        </form>
+        <span class="team-pill">
+          <span>A</span>
+          <strong>Team</strong>
+        </span>
+      </header>
+
+      <section class="filter-strip" aria-label="Dashboard filters">
+        <select><option>All Departments</option><option>Education</option><option>Health</option><option>Fundraising</option></select>
+        <select><option>All Roles</option><option>Intern</option><option>Volunteer</option><option>Authority</option></select>
+        <input type="date" value="2026-06-29" aria-label="Filter by date">
+        <select><option>All Statuses</option><option>Pending</option><option>Approved</option><option>Completed</option></select>
+        <button class="secondary-btn" type="button">Export Data</button>
+      </section>
+
+      <section id="overview" class="hero-grid">
+        <article class="welcome-panel">
+          <div>
+            <p class="eyebrow">Today, 29 Jun 2026</p>
+            <h2>Amaanitvam Team Dashboard</h2>
+            <p>Track people, recruitment, tasks, projects, donations, certificates, website activity, and reports with role-based visibility.</p>
+          </div>
+          <div class="hero-actions">
+            <a href="section.html?view=tasks">Add Task</a>
+            <a href="section.html?view=announcements">Create Announcement</a>
+            <a href="section.html?view=meetings">Schedule Meeting</a>
+          </div>
+        </article>
+
+        <article class="priority-panel">
+          <div class="panel-head">
+            <h2>Priority Alerts</h2>
+            <a href="section.html?view=notifications">View All</a>
+          </div>
+          <ul class="alert-list">
+            <li><strong>18</strong><span>Pending applications need HR review</span></li>
+            <li><strong>7</strong><span>Certificates waiting for verification</span></li>
+            <li><strong>3</strong><span>Project deadlines due this week</span></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="stats-grid" id="statsGrid" aria-label="Dashboard statistics"></section>
+
+      <section class="content-grid">
+        <article class="panel wide">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">NGO Growth Statistics</p>
+              <h2>Monthly Growth Chart</h2>
+            </div>
+            <a href="section.html?view=reports#donation-analytics">Analytics</a>
+          </div>
+          <canvas id="growthChart" height="130" aria-label="Monthly growth chart"></canvas>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Task Progress</h2>
+            <a href="section.html?view=tasks">Open</a>
+          </div>
+          <div class="progress-stack">
+            <div><span>Completed</span><b>68%</b><i style="--w:68%"></i></div>
+            <div><span>In Progress</span><b>21%</b><i style="--w:21%"></i></div>
+            <div><span>Pending</span><b>11%</b><i style="--w:11%"></i></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Calendar</h2>
+            <a href="section.html?view=meetings">Open</a>
+          </div>
+          <div class="mini-calendar" id="miniCalendar"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Recent Activity</h2>
+            <a href="section.html?view=activity">Feed</a>
+          </div>
+          <ol class="activity-feed" id="activityFeed"></ol>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Quick Actions</h2>
+            <a href="section.html?view=quick-actions">More</a>
+          </div>
+          <div class="action-grid" id="quickActions"></div>
+        </article>
+      </section>
+
+      <section class="module-section" aria-label="All dashboard modules">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Role-Based Modules</p>
+            <h2>Open Any Section</h2>
+          </div>
+          <p>Each module opens as a separate page with focused metrics, records, and actions.</p>
+        </div>
+        <div class="module-grid" id="moduleGrid"></div>
+      </section>
+    </main>
+  </div>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
