@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amaanitvam Team Dashboard</title>
-  <link rel="stylesheet" href="css/dashboard.css">
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amaanitvam Team Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+
+<body class="dashboard-page">
   <div class="app-shell">
     <aside class="sidebar">
-      <a class="brand" href="index.html" aria-label="NGO Dashboard Home">
+      <a class="brand" href="dashboard.html" aria-label="NGO Dashboard Home">
         <span class="brand-mark">A</span>
         <span>
           <strong>Amaanitvam</strong>
@@ -19,7 +20,7 @@
       </a>
 
       <nav class="side-nav" aria-label="Dashboard sections">
-        <a class="active" href="#overview" data-section-link="dashboard-overview"><span>Overview</span><b>15</b></a>
+        <a class="active" href="dashboard.html#overview"><span>Overview</span><b>15</b></a>
         <a href="section.html?view=members"><span>Members</span><b>1.2k</b></a>
         <a href="section.html?view=recruitment"><span>Recruitment</span><b>86</b></a>
         <a href="section.html?view=performance"><span>Performance</span><b>94%</b></a>
@@ -32,28 +33,44 @@
 
     <main class="main">
       <header class="topbar">
-        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <button class="icon-btn menu-toggle" id="menuToggle" type="button" aria-label="Toggle menu"
+          aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
+
         <div>
           <p class="eyebrow">Centralized NGO Operations</p>
           <h1>Dashboard Overview</h1>
         </div>
+
         <form class="searchbar" role="search">
-          <input type="search" placeholder="Search members, candidates, reports..." aria-label="Global search">
+          <input type="search" placeholder="Search members, candidates, reports..." aria-label="Global search" />
           <button type="submit">Search</button>
         </form>
-        <span class="team-pill">
-          <span>A</span>
-          <strong>Team</strong>
-        </span>
+
+        <span class="team-pill"><span>A</span><strong>Team</strong></span>
       </header>
 
       <section class="filter-strip" aria-label="Dashboard filters">
-        <select><option>All Departments</option><option>Education</option><option>Health</option><option>Fundraising</option></select>
-        <select><option>All Roles</option><option>Intern</option><option>Volunteer</option><option>Authority</option></select>
-        <input type="date" value="2026-06-29" aria-label="Filter by date">
-        <select><option>All Statuses</option><option>Pending</option><option>Approved</option><option>Completed</option></select>
+        <select aria-label="Department filter">
+          <option>All Departments</option>
+          <option>Education</option>
+          <option>Health</option>
+          <option>Fundraising</option>
+        </select>
+        <select aria-label="Role filter">
+          <option>All Roles</option>
+          <option>Intern</option>
+          <option>Volunteer</option>
+          <option>Authority</option>
+        </select>
+        <input type="date" value="2026-06-29" aria-label="Filter by date" />
+        <select aria-label="Status filter">
+          <option>All Statuses</option>
+          <option>Pending</option>
+          <option>Approved</option>
+          <option>Completed</option>
+        </select>
         <button class="secondary-btn" type="button">Export Data</button>
       </section>
 
@@ -62,7 +79,8 @@
           <div>
             <p class="eyebrow">Today, 29 Jun 2026</p>
             <h2>Amaanitvam Team Dashboard</h2>
-            <p>Track people, recruitment, tasks, projects, donations, certificates, website activity, and reports with role-based visibility.</p>
+            <p>Track people, recruitment, tasks, projects, donations, certificates, website activity, and reports with
+              role-based visibility.</p>
           </div>
           <div class="hero-actions">
             <a href="section.html?view=tasks">Add Task</a>
@@ -71,10 +89,9 @@
           </div>
         </article>
 
-        <article class="priority-panel">
+        <article class="priority-panel panel">
           <div class="panel-head">
-            <h2>Priority Alerts</h2>
-            <a href="section.html?view=notifications">View All</a>
+            <h2>Priority Alerts</h2><a href="section.html?view=notifications">View All</a>
           </div>
           <ul class="alert-list">
             <li><strong>18</strong><span>Pending applications need HR review</span></li>
@@ -92,16 +109,12 @@
             <div>
               <p class="eyebrow">NGO Growth Statistics</p>
               <h2>Monthly Growth Chart</h2>
-            </div>
-            <a href="section.html?view=reports#donation-analytics">Analytics</a>
-          </div>
-          <canvas id="growthChart" height="130" aria-label="Monthly growth chart"></canvas>
+            </div><a href="section.html?view=reports#donation-analytics">Analytics</a>
+          </div><canvas id="growthChart" height="130" aria-label="Monthly growth chart"></canvas>
         </article>
-
         <article class="panel">
           <div class="panel-head">
-            <h2>Task Progress</h2>
-            <a href="section.html?view=tasks">Open</a>
+            <h2>Task Progress</h2><a href="section.html?view=tasks">Open</a>
           </div>
           <div class="progress-stack">
             <div><span>Completed</span><b>68%</b><i style="--w:68%"></i></div>
@@ -109,27 +122,21 @@
             <div><span>Pending</span><b>11%</b><i style="--w:11%"></i></div>
           </div>
         </article>
-
         <article class="panel">
           <div class="panel-head">
-            <h2>Calendar</h2>
-            <a href="section.html?view=meetings">Open</a>
+            <h2>Calendar</h2><a href="section.html?view=meetings">Open</a>
           </div>
           <div class="mini-calendar" id="miniCalendar"></div>
         </article>
-
         <article class="panel">
           <div class="panel-head">
-            <h2>Recent Activity</h2>
-            <a href="section.html?view=activity">Feed</a>
+            <h2>Recent Activity</h2><a href="section.html?view=activity">Feed</a>
           </div>
           <ol class="activity-feed" id="activityFeed"></ol>
         </article>
-
         <article class="panel">
           <div class="panel-head">
-            <h2>Quick Actions</h2>
-            <a href="section.html?view=quick-actions">More</a>
+            <h2>Quick Actions</h2><a href="section.html?view=quick-actions">More</a>
           </div>
           <div class="action-grid" id="quickActions"></div>
         </article>
@@ -147,5 +154,8 @@
       </section>
     </main>
   </div>
-  <script src="js/dashboard.js"></script>
+
+  <script src="js/script.js"></script>
+</body>
+
 </html>
