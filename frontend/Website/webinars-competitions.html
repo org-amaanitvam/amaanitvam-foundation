@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -10,236 +9,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect" />
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=400;500;600;700&family=Inter:wght=400;500;600;700&family=Montserrat:wght=400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=400;500;600;700&family=Inter:wght=400;500;600;700&family=Montserrat:wght=400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  
+  <!-- Assets -->
   <link href="assets/images/logo.jpg" rel="icon" type="image/jpg" />
   <link href="assets/css/styles.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
-=======
-  <style>
-    .events-container {
-      padding: var(--section-py, 4rem) 0;
-    }
-
-    /* ── Main Layout Container ── */
-    .featured-webinar-layout {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 3.5rem;
-      align-items: stretch;
-      /* Crucial: Forces equal height on both column cells */
-    }
-
-    /* ── Perfectly Bound Left Gallery Card ── */
-    .left-gallery-card-wrapper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      /* Prevents cell stretching from image content */
-    }
-
-    .left-gallery-card {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--surface, #ffffff);
-      border: 1px solid var(--border, #e5e5e5);
-      border-radius: var(--radius-lg, 16px);
-      padding: 1.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      box-sizing: border-box;
-
-      /* Grid layout to match image {CD2047D0-223E-4AEA-9734-7ED243C77524}.png */
-      display: grid;
-      grid-template-rows: 1.2fr 1fr;
-      gap: 1.25rem;
-    }
-
-    /* Top Row Container */
-    .top-poster-row {
-      min-height: 0;
-      width: 100%;
-    }
-
-    /* Bottom Row Container (Split Side-by-Side) */
-    .bottom-snapshots-row {
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      width: 100%;
-    }
-
-    /* Image Box Elements */
-    .main-poster,
-    .snapshot-card {
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      height: 100%;
-      width: 100%;
-    }
-
-    .main-poster {
-      border: 2px solid var(--gold, #d8a15f);
-    }
-
-    .snapshot-card {
-      border: 1px solid var(--border, #e5e5e5);
-    }
-
-    /* Safe Uniform Image Fitting */
-    .left-gallery-card img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-    }
-
-    /* Responsive fallbacks */
-    @media (max-width: 992px) {
-      .featured-webinar-layout {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        align-items: start;
-      }
-
-      .left-gallery-card-wrapper {
-        height: auto;
-        min-height: 450px;
-      }
-
-      .left-gallery-card {
-        position: relative;
-        height: 100%;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .bottom-snapshots-row {
-        grid-template-columns: 1fr;
-      }
-
-      .left-gallery-card-wrapper {
-        min-height: 600px;
-      }
-    }
-
-    /* ── Details Pane (Right Card - Acts as the baseline height source) ── */
-    .webinar-details-pane {
-      background: var(--surface, #ffffff);
-      border: 1px solid var(--border, #e5e5e5);
-      border-top: 4px solid var(--primary, #5d0f2d);
-      border-radius: var(--radius-lg, 16px);
-      padding: 2.5rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-      box-sizing: border-box;
-    }
-
-    .webinar-status-badge {
-      display: inline-block;
-      align-self: flex-start;
-      background: rgba(93, 15, 45, 0.08);
-      color: var(--primary, #5d0f2d);
-      font-family: var(--font-ui, sans-serif);
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.4rem 1rem;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 1.5rem;
-    }
-
-    .webinar-main-title {
-      font-family: var(--font-heading, serif);
-      font-size: clamp(2rem, 3.5vw, 2.6rem);
-      color: var(--primary, #5d0f2d);
-      line-height: 1.2;
-      margin-bottom: 0.5rem;
-    }
-
-    .webinar-subtitle-hindi {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 2.2rem;
-      color: var(--gold-dark, #b58241);
-      margin-bottom: 1.5rem;
-      font-weight: 700;
-    }
-
-    .speaker-profile {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      padding: 1.25rem 0;
-      border-top: 1px solid var(--border, #e5e5e5);
-      border-bottom: 1px solid var(--border, #e5e5e5);
-      margin-bottom: 1.75rem;
-    }
-
-    .speaker-avatar-icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background: rgba(216, 161, 95, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold-dark, #b58241);
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-
-    .speaker-info h4 {
-      font-family: var(--font-ui, sans-serif);
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: var(--text, #333);
-      margin: 0;
-    }
-
-    .speaker-info p {
-      font-size: 0.9rem;
-      color: var(--muted, #666);
-      margin: 0.2rem 0 0 0;
-    }
-
-    .pill-tags-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.75rem;
-    }
-
-    .topic-pill {
-      background: var(--bg, #f9f9f9);
-      border: 1px solid var(--border, #e5e5e5);
-      padding: 0.4rem 1rem;
-      border-radius: 999px;
-      font-family: var(--font-ui, sans-serif);
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text, #333);
-    }
-
-    .webinar-description-text {
-      color: var(--muted, #666);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
-    }
-  </style>
-
 </head>
 
 <body data-page="webinars-competitions">
@@ -394,21 +172,19 @@
     </div>
   </header>
 
-  <section class="page-hero has-image" data-hero
-    style="position: relative; background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)), url('assets/images/hero.png'); background-size: cover; background-position: center; padding: 5rem 0; min-height: 380px; display: flex; align-items: center;">
+  <section class="page-hero has-image" data-hero style="position: relative; background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)), url('assets/images/hero.png'); background-size: cover; background-position: center; padding: 5rem 0; min-height: 380px; display: flex; align-items: center;">
     <div class="container" style="display: flex; justify-content: center; text-align: center; width: 100%;">
       <div style="max-width: 960px;">
         <span class="hero-label section-label" style="color: var(--gold, #d8a15f);">Resources</span>
-        <h1 class="section-title"
-          style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1rem; color: #ffffff !important;">
+        <h1 class="section-title" style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1rem; color: #ffffff !important;">
           Official Webinars</h1>
-        <p class="section-desc"
-          style="max-width: 750px; margin: 0 auto; color: #ffffff; opacity: 0.95; font-size: 1.2rem;">
+        <p class="section-desc" style="max-width: 750px; margin: 0 auto; color: #ffffff; opacity: 0.95; font-size: 1.2rem;">
           Interactive sessions, expert deep dives, and leadership panels hosted by Amaanitvam Foundation.
         </p>
       </div>
     </div>
   </section>
+
   <main class="container events-container">
     <div class="featured-webinar-layout">
       <div class="left-gallery-card-wrapper">
@@ -428,6 +204,7 @@
           </div>
         </div>
       </div>
+
       <div class="webinar-details-pane">
         <div>
           <span class="webinar-status-badge">Featured Webinar</span>
@@ -452,13 +229,14 @@
             An impactful interactive leadership session centered on cultivating core framework capabilities, driving social self-confidence paradigms, and defining next-generation educational opportunity pipelines.
           </p>
         </div>
-
         <a class="btn btn-primary" href="contact.html" style="width: 100%; text-align: center;">Inquire For Sessions</a>
       </div>
     </div>
   </main>
+
   <div id="footer"></div>
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
+
   <div class="floating-socials">
     <a aria-label="Facebook" href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
     <a aria-label="Instagram" href="https://www.instagram.com/amaanitvamfoundation" target="_blank"><i class="fa-brands fa-instagram"></i></a>
@@ -466,51 +244,32 @@
     <a aria-label="LinkedIn" href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
   </div>
 
-
   <script src="assets/js/main.js"></script>
   <script>
     (function () {
       const nav = document.getElementById('site-header').querySelector('.site-nav');
       const menuToggle = document.getElementById('menu-toggle');
       const mobileMenu = document.getElementById('mobile-menu');
-
       if (nav) {
-        function onScroll() {
-          nav.classList.toggle('is-solid', window.scrollY > 60);
-        }
+        function onScroll() { nav.classList.toggle('is-solid', window.scrollY > 60); }
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
       }
-
-      const pageMap = {
-        about: 0, impact: 0, programs: 0, gallery: 0,
-        volunteer: 1, internship: 1, contact: 1,
-        collaborations: 2, verify: 2, faq: 2, resources: 2,
-        'webinars-competitions': 2
-      };
-
+      const pageMap = { about: 0, impact: 0, programs: 0, gallery: 0, volunteer: 1, internship: 1, contact: 1, collaborations: 2, verify: 2, faq: 2, resources: 2, 'webinars-competitions': 2 };
       const page = document.body.dataset.page;
       if (page && pageMap[page] !== undefined) {
         const triggers = document.querySelectorAll('.nav-link.dropdown-trigger');
-        if (triggers[pageMap[page]]) {
-          triggers[pageMap[page]].classList.add('is-active');
-        }
+        if (triggers[pageMap[page]]) { triggers[pageMap[page]].classList.add('is-active'); }
       }
-
       document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
         const trigger = item.querySelector('.dropdown-trigger');
         const menu = item.querySelector('.dropdown-menu');
-
         function open() { trigger.setAttribute('aria-expanded', 'true'); menu.classList.add('is-open'); }
         function close() { trigger.setAttribute('aria-expanded', 'false'); menu.classList.remove('is-open'); }
-
         item.addEventListener('mouseenter', open);
         item.addEventListener('mouseleave', close);
-        trigger.addEventListener('click', function () {
-          trigger.getAttribute('aria-expanded') === 'true' ? close() : open();
-        });
+        trigger.addEventListener('click', function () { trigger.getAttribute('aria-expanded') === 'true' ? close() : open(); });
       });
-
       if (menuToggle && mobileMenu) {
         menuToggle.addEventListener('click', function () {
           const isOpen = mobileMenu.classList.toggle('is-open');
@@ -519,13 +278,10 @@
         });
       }
     })();
-
-    fetch('footer.html')
-      .then(function (response) { return response.text(); })
-      .then(function (data) {
-        const footer = document.getElementById('footer');
-        if (footer) footer.innerHTML = data;
-      });
+    fetch('footer.html').then(function (response) { return response.text(); }).then(function (data) {
+      const footer = document.getElementById('footer');
+      if (footer) footer.innerHTML = data;
+    });
   </script>
 </body>
 </html>
