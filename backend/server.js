@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -17,7 +16,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import meetingRoutes from "./routes/meetingRoutes.js";
-import taskRoutes from "./routes/TasksRoutes.js";
+import taskRoutes from "./routes/TasksRoutes.js"; // Plural file mapping
 import announcementRoutes from "./routes/announcementRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
@@ -28,8 +27,6 @@ import cmsRoutes from "./routes/cmsRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 
-// Catch anything that slips past route-level error handling instead of
-// crashing silently or leaving a request hanging with no response.
 process.on("unhandledRejection", (reason) => {
     console.error("Unhandled Promise Rejection:", reason);
 });
@@ -73,22 +70,13 @@ app.use(
     })
 );
 
-// Webhook route needs the raw body (for signature verification) and must be
-// registered BEFORE the global json/urlencoded parsers below.
+// Webhook payload integrity block
 app.use("/api/webhook", express.raw({ type: "application/json" }), webhookRoutes);
 
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-app.get("/", (req, res) => {
-    res.send("Backend Running");
-});
-
-app.get("/health", (req, res) => {
-    res.json({ success: true, message: "OK" });
-});
 
 app.use("/api/contact", contactRoutes);
 app.use("/api/internship", internshipRoutes);
@@ -116,10 +104,8 @@ app.use((req, res) => {
     });
 });
 
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
     console.error("Server Error:", err.message);
-
     res.status(err.status || 500).json({
         success: false,
         message: err.message || "Internal Server Error",
@@ -131,7 +117,6 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     try {
         await connectDB();
-
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });
