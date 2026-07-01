@@ -1,4 +1,5 @@
 import express from 'express';
+import { departmentAccess } from "../middleware/departmentAccess.js";
 import {
     createMeeting,
     getMeetings,

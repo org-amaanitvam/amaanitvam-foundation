@@ -93,8 +93,26 @@ export const createMeeting = async (req, res) => {
 // Get All Meetings
 export const getMeetings = async (req, res) => {
     try {
-        const meetings = await meetingModel.find()
-            .populate("attendees", "name email");
+let query = {};
+
+if (req.user.role !== "admin" && req.user.role !== "super_admin") {
+    const department = await Department.findOne({
+        departmentName: req.user.department
+    });
+
+    if (!department) {
+        return res.status(404).json({
+            success: false,
+            message: "Department not found"
+        });
+    }
+
+    query.department = department._id;
+}
+
+const meetings = await meetingModel.find(query)
+    .populate("attendees", "name email")
+    .populate("department", "departmentName");
         res.status(200).json({ success: true, meetings });
     } catch (error) {
         console.log("Get Meetings Error:", error);
@@ -105,9 +123,27 @@ export const getMeetings = async (req, res) => {
 // Get Single Meeting by ID
 export const getMeetingById = async (req, res) => {
     try {
-        const meeting = await meetingModel.findById(req.params.id)
-            .populate("attendees", "name email");
+        let meeting;
 
+if (req.user.role === "admin" || req.user.role === "super_admin") {
+    meeting = await meetingModel.findById(req.params.id);
+} else {
+    const department = await Department.findOne({
+        departmentName: req.user.department
+    });
+
+    meeting = await meetingModel.findOne({
+        _id: req.params.id,
+        department: department._id
+    });
+}
+
+if (!meeting) {
+    return res.status(404).json({
+        success: false,
+        message: "Meeting not found"
+    });
+}
         if (!meeting) {
             return res.status(404).json({ success: false, message: "Meeting not found" });
         }

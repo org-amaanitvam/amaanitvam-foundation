@@ -1,5 +1,6 @@
 import express from 'express';
 import { verifyFirebaseToken } from '../middleware/verifyFirebaseToken.js';
+import { departmentAccess } from "../middleware/departmentAccess.js";
 import {
   markAttendance,
   getDepartmentAttendance,
@@ -10,6 +11,7 @@ import {
 const router = express.Router();
 
 router.use(verifyFirebaseToken);
+router.use(departmentAccess);
 
 router.post('/mark', markAttendance);
 router.get('/department/:departmentId', getDepartmentAttendance);

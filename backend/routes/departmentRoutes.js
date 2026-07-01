@@ -15,7 +15,6 @@ import {
 const router = express.Router();
 
 router.use(verifyFirebaseToken);
-
 // CREATE Department
 router.post("/create", requireAdmin, createDepartment);
 
