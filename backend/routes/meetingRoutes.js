@@ -5,32 +5,27 @@ import {
     getMeetingById,
     updateMeeting,
     deleteMeeting,
-    uploadMinutes
+    uploadMinutes,
+    markAttendance,
+    bulkMarkAttendance,
+    getAttendanceReport,
+    getUserAttendanceHistory
 } from '../controllers/meetingController.js';
 import upload from '../middleware/upload.js';
 import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
 
 const meetingRouter = express.Router();
-
 meetingRouter.use(verifyFirebaseToken);
 
-// Create Meeting
 meetingRouter.post('/create', requireAdmin, createMeeting);
-
-// Get All Meetings
 meetingRouter.get('/', getMeetings);
-
-// Get Single Meeting by ID
+meetingRouter.get('/user/:userId/attendance', getUserAttendanceHistory);
 meetingRouter.get('/:id', getMeetingById);
-
-// Update Meeting
 meetingRouter.put('/:id', updateMeeting);
-
-// Delete Meeting
 meetingRouter.delete('/:id', deleteMeeting);
-
-// Upload Minutes
 meetingRouter.post('/:id/minutes', upload.single('minutes'), uploadMinutes);
+meetingRouter.put('/:id/attendance', markAttendance);
+meetingRouter.put('/:id/attendance/bulk', bulkMarkAttendance);
+meetingRouter.get('/:id/attendance/report', getAttendanceReport);
 
 export default meetingRouter;
-
