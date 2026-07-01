@@ -6,6 +6,7 @@ import {
     getTasksByStatus,
     getTasksByUser,
     updateTask,
+     getTasksByProject,
     deleteTask
 } from '../controllers/taskController.js';
 import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
@@ -34,5 +35,8 @@ taskRouter.put('/:id', updateTask);
 
 // Delete Task
 taskRouter.delete('/:id', requireAdmin, deleteTask);
+
+// add this route — place it ABOVE /:id to avoid route conflict
+taskRouter.get('/project/:projectId', getTasksByProject);
 
 export default taskRouter;

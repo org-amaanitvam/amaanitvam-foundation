@@ -2,11 +2,11 @@ import taskModel from "../models/task.js";
 import Notification from "../models/notification.js";
 import { sendSMSNotification } from "../services/smsService.js";
 import ActivityService from "../services/activityService.js";
-
+import User from "../models/user.js";
 // Create Task
 export const createTask = async(req, res) => {
     try {
-        const { title, description, assignedTo, status, priority, deadline } = req.body;
+        const { title, description, project, assignedTo, status, priority, deadline } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -18,6 +18,7 @@ export const createTask = async(req, res) => {
         const newTask = new taskModel({
             title,
             description,
+            project: project || null,
             assignedTo,
             status: status || "open",
             priority: priority || "medium",
@@ -133,19 +134,18 @@ export const updateTask = async(req, res) => {
             updateQuery.status = 'pending_approval';
             
             // Notify admins
-            import('../models/user.js').then(async ({ default: User }) => {
-                const admins = await User.find({ role: { $in: ['admin', 'super_admin'] } });
-                const notifications = admins.map(admin => ({
-                    userId: admin._id,
-                    title: "Task Completion Request",
-                    message: `${req.user.name} has requested approval for task completion.`,
-                    type: "alert",
-                    link: "/tasks"
-                }));
-                await Notification.insertMany(notifications);
-            });
+   
+    
+    const admins = await User.find({ role: { $in: ['admin', 'super_admin'] } });
+    const notifications = admins.map(admin => ({
+        userId: admin._id,
+        title: "Task Completion Request",
+        message: `${req.user.name} has requested approval for task completion.`,
+        type: "alert",
+        link: "/tasks"
+    }));
+    await Notification.insertMany(notifications);
         }
-
         const task = await taskModel.findByIdAndUpdate(
             req.params.id,
             updateQuery,
@@ -184,6 +184,19 @@ export const deleteTask = async(req, res) => {
         res.status(200).json({ success: true, message: "Task deleted successfully" });
     } catch (error) {
         console.log("Delete Task Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+// Get Tasks by Project
+export const getTasksByProject = async(req, res) => {
+    try {
+        const { projectId } = req.params;
+        const tasks = await taskModel.find({ project: projectId })
+            .populate("assignedTo", "name email");
+
+        res.status(200).json({ success: true, tasks });
+    } catch (error) {
+        console.log("Get Tasks by Project Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

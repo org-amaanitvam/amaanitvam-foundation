@@ -11,7 +11,7 @@ export default function TopBar() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000); // Poll every minute
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -19,77 +19,94 @@ export default function TopBar() {
     try {
       const { data } = await api.get('/notifications');
       setNotifications(data.notifications || []);
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleMarkAsRead = async (id) => {
     try {
       await api.put(`/notifications/${id}/read`);
-      setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));
-    } catch (error) {
-      console.error('Failed to mark as read', error);
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+      );
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await api.delete(`/notifications/${id}`);
-      setNotifications(notifications.filter(n => n._id !== id));
-    } catch (error) {
-      console.error('Failed to delete notification', error);
+      setNotifications((prev) => prev.filter((n) => n._id !== id));
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleMarkAllAsRead = async () => {
     try {
       await api.put('/notifications/read-all');
-      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error('Failed to mark all as read', error);
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, isRead: true }))
+      );
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const getIcon = (type) => {
     switch (type) {
-      case 'emergency': return <AlertTriangle className="w-5 h-5 text-rose-500" />;
-      case 'success': return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
-      default: return <Info className="w-5 h-5 text-blue-500" />;
+      case 'emergency':
+        return <AlertTriangle className="w-5 h-5 text-red-500" />;
+      case 'success':
+        return <CheckCircle2 className="w-5 h-5 text-green-600" />;
+      default:
+        return <Info className="w-5 h-5 text-gold" />;
     }
   };
 
   return (
-    <div className="flex justify-between items-center mb-6 relative z-40">
-      <div className="flex-1 max-w-md">
+    <header className="flex items-center justify-between gap-6 mb-8">
+      <div className="flex-1 max-w-xl">
         <GlobalSearch />
       </div>
 
       <div className="relative">
-        <button 
+        <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="relative p-2 rounded-full hover:bg-slate-200/50 transition-colors bg-white border border-slate-200 shadow-sm"
+          className="relative h-11 w-11 flex items-center justify-center rounded-xl bg-surface border border-border-custom hover:border-gold transition-all shadow-sm"
         >
-          <Bell className="w-5 h-5 text-slate-600" />
+          <Bell className="w-5 h-5 text-primary" />
+
           {unreadCount > 0 && (
-            <span className="absolute top-0 right-0 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+            <span className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-gold text-primary-dark text-[10px] font-bold flex items-center justify-center border-2 border-surface">
               {unreadCount}
             </span>
           )}
         </button>
 
         {showDropdown && (
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
-            <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-              <h3 className="font-semibold text-slate-800">Notifications</h3>
-              {unreadCount > 0 && <span className="text-xs font-medium text-[#56051a]">{unreadCount} new</span>}
+          <div className="absolute right-0 mt-3 w-[360px] rounded-2xl overflow-hidden bg-surface border border-border-custom shadow-2xl z-50">
+
+            <div className="px-5 py-4 border-b border-border-custom bg-background flex items-center justify-between">
+              <h3 className="font-heading text-xl text-primary">
+                Notifications
+              </h3>
+
+              {unreadCount > 0 && (
+                <span className="text-xs font-ui font-semibold text-gold">
+                  {unreadCount} New
+                </span>
+              )}
             </div>
-            <div className="max-h-[300px] overflow-y-auto">
+
+            <div className="max-h-[360px] overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-6 text-center text-slate-500 text-sm">
-                  No notifications yet.
+                <div className="py-10 text-center text-text-muted">
+                  No notifications available.
                 </div>
               ) : (
                 notifications.map((notif) => (
@@ -103,17 +120,18 @@ export default function TopBar() {
                 ))
               )}
             </div>
-            <div className="px-4 py-2 border-t border-slate-100 bg-slate-50 text-center">
-              <button 
+
+            <div className="px-5 py-3 border-t border-border-custom bg-background">
+              <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs font-medium text-[#56051a] hover:underline"
+                className="w-full btn-maroon"
               >
-                Mark all as read
+                Mark All as Read
               </button>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </header>
   );
 }
