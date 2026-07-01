@@ -6,38 +6,46 @@ import {
     getTasksByStatus,
     getTasksByUser,
     updateTask,
-     getTasksByProject,
     deleteTask
 } from '../controllers/taskController.js';
 import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
+import taskModel from '../models/task.js'; // Direct import to fix the missing controller function safely
 
 const taskRouter = express.Router();
 
 taskRouter.use(verifyFirebaseToken);
 
-
-// Create Task
+// 1. Create Task
 taskRouter.post('/create', requireAdmin, createTask);
 
-// Get All Tasks
+// 2. Get All Tasks
 taskRouter.get('/', getTasks);
 
-// Get Tasks by Status
+// 3. Get Tasks by Status
 taskRouter.get('/status/:status', getTasksByStatus);
 
-// Get Tasks Assigned to User
+// 4. Get Tasks Assigned to User
 taskRouter.get('/user/:userId', getTasksByUser);
 
-// Get Single Task by ID
+// 5. Get Tasks by Project (MOVED ABOVE /:id TO ELIMINATE ROUTE COLLISION BUG)
+taskRouter.get('/project/:projectId', async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        // Queries tasks mapped to this project field safely
+        const tasks = await taskModel.find({ project: projectId }).populate("assignedTo", "name email");
+        res.status(200).json({ success: true, tasks });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// 6. Get Single Task by ID
 taskRouter.get('/:id', getTaskById);
 
-// Update Task
+// 7. Update Task
 taskRouter.put('/:id', updateTask);
 
-// Delete Task
+// 8. Delete Task
 taskRouter.delete('/:id', requireAdmin, deleteTask);
-
-// add this route — place it ABOVE /:id to avoid route conflict
-taskRouter.get('/project/:projectId', getTasksByProject);
 
 export default taskRouter;
