@@ -283,7 +283,7 @@
       const submitButton = contactForm.querySelector('button[type="submit"]');
       const originalButtonHtml = submitButton ? submitButton.innerHTML : '';
       const formData = new FormData(contactForm);
-      const apiUrl = contactForm.dataset.apiUrl || 'http://localhost:5000/api/contact';
+      const apiUrl = contactForm.dataset.apiUrl || 'https://amaanitvam-platform.onrender.com/api/contact';
 
       if (contactStatus) {
         contactStatus.innerHTML = '<p style="margin:0;">Sending your message...</p>';
@@ -1333,7 +1333,7 @@ fetch('footer.html')
 
       try {
 
-        var response = await fetch('http://localhost:5000/api/donate/create-order', {
+        var response = await fetch('https://amaanitvam-platform.onrender.com/api/donate/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: name, email: email, phone: phone, amount: selectedAmount })
@@ -1366,7 +1366,7 @@ fetch('footer.html')
           handler: async function (paymentResponse) {
 
             try {
-              var verifyRes = await fetch('http://localhost:5000/api/donate/verify', {
+              var verifyRes = await fetch('https://amaanitvam-platform.onrender.com/api/donate/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1797,7 +1797,7 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
   const formData = new FormData(this);
 
   try {
-    const response = await fetch('http://localhost:5000/api/internship/apply', {
+    const response = await fetch('https://amaanitvam-platform.onrender.com/api/internship/apply', {
       method: 'POST',
       body: formData
     });
@@ -2629,7 +2629,7 @@ document.getElementById('volunteerForm')?.addEventListener('submit', async funct
   const data = Object.fromEntries(formData.entries());
 
   try {
-    const response = await fetch('http://localhost:5000/api/volunteer/apply', {
+    const response = await fetch('https://amaanitvam-platform.onrender.com/api/volunteer/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
