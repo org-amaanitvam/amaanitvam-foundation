@@ -41,12 +41,50 @@ const ensureObjectId = (id) => {
 };
 
 const buildFolderSummary = async (folder, req) => {
-  const [mediaCount, explicitCover] = await Promise.all([
-    Gallery.countDocuments({ folderId: folder._id }),
-    folder.coverMediaId ? Gallery.findById(folder.coverMediaId) : null,
-  ]);
+  const mediaCount = await Gallery.countDocuments({ folderId: folder._id });
 
-  const coverMedia = explicitCover || await Gallery.findOne({ folderId: folder._id }).sort({ createdAt: -1 });
+  const mediaHasStoredFile = async (item) => {
+    if (!item?.fileId) return false;
+
+    try {
+      const gridFsId = item.fileId instanceof ObjectId ? item.fileId : new ObjectId(String(item.fileId));
+      const bucket = getBucket();
+      const file = await bucket.find({ _id: gridFsId }).limit(1).next();
+      return Boolean(file);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const findFirstExistingCover = async (query) => {
+    const candidates = await Gallery.find(query).sort({ createdAt: 1, _id: 1 }).limit(100);
+
+    for (const candidate of candidates) {
+      if (await mediaHasStoredFile(candidate)) {
+        return candidate;
+      }
+    }
+
+    return null;
+  };
+
+  // Use the first uploaded PHOTO in the album as the public cover.
+  // If that file was deleted/missing in GridFS, skip it and use the next valid image.
+  const firstUploadedImageCover = await findFirstExistingCover({
+    folderId: folder._id,
+    $or: [
+      { mediaType: 'image' },
+      { contentType: /^image\//i },
+    ],
+  });
+
+  // Fallback only for albums that contain videos but no images.
+  const firstUploadedAnyCover = !firstUploadedImageCover
+    ? await findFirstExistingCover({ folderId: folder._id })
+    : null;
+
+  const coverMedia = firstUploadedImageCover || firstUploadedAnyCover;
+
   return serializeFolder(folder, req, { mediaCount, coverMedia });
 };
 
@@ -74,7 +112,7 @@ router.get('/folders/:folderId/media', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Gallery folder not found' });
     }
 
-    const images = await Gallery.find({ folderId: folderObjectId }).sort({ createdAt: -1 });
+    const images = await Gallery.find({ folderId: folderObjectId }).sort({ createdAt: 1, _id: 1 });
     res.json({
       success: true,
       folder: await buildFolderSummary(folder, req),
@@ -102,7 +140,7 @@ router.get('/', async (req, res) => {
       query.folderId = null;
     }
 
-    const images = await Gallery.find(query).sort({ createdAt: -1 });
+    const images = await Gallery.find(query).sort({ createdAt: 1, _id: 1 });
     res.json({ success: true, images: images.map((item) => serializeGalleryItem(item, req)) });
   } catch (error) {
     console.error('Public gallery fetch error:', error);

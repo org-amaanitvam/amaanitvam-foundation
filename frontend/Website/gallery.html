@@ -19,6 +19,7 @@
     rel="stylesheet" />
   <link href="assets/images/logo.jpg" rel="icon" type="image/jpg" />
   <link href="assets/css/styles.css" rel="stylesheet" />
+  <link href="assets/css/gallery-albums.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 </head>
 
@@ -241,9 +242,9 @@
           <p class="section-desc">From education programs to volunteer drives — browse highlights from across our
             initiatives.</p>
         </div>
-        <div class="gallery-grid" id="gallery-container">
+        <div class="gallery-grid" id="gallery-album-container" data-gallery-api-base="http://localhost:5000" data-gallery-albums="true">
           <!-- Dynamic images will be loaded here via JS -->
-          <p class="moved-inline-style-final-015" id="gallery-loading">Loading gallery
+          <p class="moved-inline-style-final-015" id="gallery-album-loading">Loading gallery
             images...</p>
         </div>
       </div>
@@ -275,6 +276,7 @@
 
 
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/gallery-albums.js?v=album-cover-valid-first-photo-20260702"></script>
 
 
 
@@ -408,7 +410,7 @@
     });
 
     if (!valid.length) {
-      container.innerHTML = '<p id="gallery-loading">No valid MongoDB gallery media found.</p>';
+      container.innerHTML = '<p id="gallery-album-loading">No valid MongoDB gallery media found.</p>';
       return;
     }
 
@@ -445,7 +447,7 @@
         console.error('Gallery media failed from backend:', src, item);
         card.remove();
         if (failed >= valid.length) {
-          container.innerHTML = '<p id="gallery-loading">Gallery records loaded, but the backend did not stream the image binaries. Re-upload the gallery images once from admin after this fix.</p>';
+          container.innerHTML = '<p id="gallery-album-loading">Gallery records loaded, but the backend did not stream the image binaries. Re-upload the gallery images once from admin after this fix.</p>';
         }
       });
 
@@ -464,7 +466,7 @@
   }
 
   async function loadMongoGallery() {
-    container.innerHTML = '<p id="gallery-loading">Loading gallery images...</p>';
+    container.innerHTML = '<p id="gallery-album-loading">Loading gallery images...</p>';
     try {
       let items = normalizeMedia(await getJson('/api/gallery'));
 
