@@ -275,113 +275,230 @@
 
 
   <script src="assets/js/main.js"></script>
-<!-- PUBLIC_GALLERY_FOLDER_FIX_START -->
+
+
+
+<!-- GALLERY_MONGO_FULL_STACK_FIX_START -->
 <style>
-  .public-gallery-folders{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}.public-gallery-folder-card{border:1px solid #e5e7eb;border-radius:14px;padding:18px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.08);cursor:pointer}.public-gallery-folder-card:hover{transform:translateY(-2px)}.public-gallery-media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:24px 0}.public-gallery-media-card{border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.08)}.public-gallery-media-card img,.public-gallery-media-card video{width:100%;height:210px;object-fit:cover;background:#f8fafc;display:block}.public-gallery-media-title{padding:10px 12px;font-weight:600;color:#111827}.public-gallery-back-btn{border:0;border-radius:999px;padding:10px 16px;background:#111827;color:#fff;cursor:pointer;margin:16px 0}.public-gallery-empty{padding:22px;border:1px dashed #cbd5e1;border-radius:14px;text-align:center;color:#64748b;background:#f8fafc}.public-gallery-error{padding:14px;border-radius:10px;background:#fee2e2;color:#991b1b;margin:16px 0}
+  /* Only layout sizing. Existing gallery animation/hover rules from assets/css/styles.css stay untouched. */
+  #gallery-container.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  #gallery-container .gallery-card {
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+  #gallery-container .gallery-card img,
+  #gallery-container .gallery-card video,
+  #gallery-container .gallery-image {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    display: block;
+  }
+  #gallery-container #gallery-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  @media (max-width: 900px) {
+    #gallery-container.gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    #gallery-container.gallery-grid { grid-template-columns: 1fr; }
+  }
 </style>
 <script>
-(function(){
-  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-    ? 'http://localhost:5000'
-    : '';
+(function () {
+  'use strict';
 
-  const container = document.getElementById('gallery-container') || document.querySelector('.gallery-container') || document.querySelector('main') || document.body;
+  const API_BASE = (
+    window.API_BASE_URL ||
+    window.BACKEND_URL ||
+    ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:5000' : location.origin)
+  ).replace(/\/$/, '');
 
-  function mediaUrl(item){
-    const id = item._id || item.id || item.fileId || item.gridFsFileId;
-    if (item.url && /^https?:///i.test(item.url)) return item.url;
-    if (item.url && item.url.startsWith('/')) return API_BASE + item.url;
-    if (item.src && /^https?:///i.test(item.src)) return item.src;
-    if (item.src && item.src.startsWith('/')) return API_BASE + item.src;
-    return API_BASE + '/api/gallery/media/' + id;
-  }
+  const container = document.getElementById('gallery-container');
+  if (!container) return;
 
-  function isVideo(item){
-    const type = String(item.type || item.mediaType || item.mimeType || '').toLowerCase();
-    const name = String(item.title || item.name || item.originalName || item.filename || '').toLowerCase();
-    return type.includes('video') || /.(mp4|mov|webm|mkv|avi)$/i.test(name);
-  }
-
-  async function getJson(paths){
-    let lastErr;
-    for (const p of paths){
-      try{
-        const res = await fetch(API_BASE + p, { cache: 'no-store' });
-        if (res.ok) return await res.json();
-        lastErr = new Error(p + ' returned ' + res.status);
-      }catch(err){ lastErr = err; }
+  function cleanId(value) {
+    if (!value) return '';
+    if (typeof value === 'object') {
+      if (value.$oid) return String(value.$oid);
+      if (value._id) return cleanId(value._id);
+      if (value.id) return cleanId(value.id);
+      return '';
     }
-    throw lastErr || new Error('No gallery API responded');
+    return String(value).trim();
   }
 
-  function normalizeArray(data){
+  function pickArray(data) {
     if (Array.isArray(data)) return data;
-    if (Array.isArray(data.folders)) return data.folders;
-    if (Array.isArray(data.media)) return data.media;
-    if (Array.isArray(data.items)) return data.items;
-    if (Array.isArray(data.gallery)) return data.gallery;
-    if (Array.isArray(data.data)) return data.data;
+    if (!data || typeof data !== 'object') return [];
+    const keys = ['media', 'images', 'items', 'gallery', 'galleries', 'files', 'data'];
+    for (const key of keys) {
+      if (Array.isArray(data[key])) return data[key];
+      if (data.data && Array.isArray(data.data[key])) return data.data[key];
+    }
     return [];
   }
 
-  async function loadFolders(){
-    container.innerHTML = '<div class="public-gallery-empty">Loading gallery...</div>';
-    try{
-      const data = await getJson(['/api/gallery/folders', '/api/public/gallery/folders', '/api/gallery']);
-      const folders = normalizeArray(data);
-      if (!folders.length){
-        container.innerHTML = '<div class="public-gallery-empty">No gallery folders found.</div>';
-        return;
-      }
-      container.innerHTML = '<div class="public-gallery-folders">' + folders.map(folder => {
-        const id = folder._id || folder.id;
-        const title = folder.name || folder.title || 'Gallery Folder';
-        const count = folder.mediaCount || folder.count || (Array.isArray(folder.media) ? folder.media.length : 0);
-        return '<div class="public-gallery-folder-card" data-folder-id="' + id + '"><h3>' + escapeHtml(title) + '</h3><p>' + count + ' media file(s)</p></div>';
-      }).join('') + '</div>';
-      container.querySelectorAll('[data-folder-id]').forEach(card => card.addEventListener('click', () => loadFolderMedia(card.dataset.folderId, card.querySelector('h3')?.textContent || 'Gallery')));
-    }catch(err){
-      container.innerHTML = '<div class="public-gallery-error">Gallery failed to load. Check backend is running and public gallery API is available.</div>';
-      console.error('Public gallery load error:', err);
-    }
+  function normalizeMedia(data) {
+    const arr = pickArray(data);
+    const out = [];
+    arr.forEach(function (item) {
+      if (!item || typeof item !== 'object') return;
+      const childKeys = ['media', 'images', 'items', 'files'];
+      let usedChildren = false;
+      childKeys.forEach(function (key) {
+        if (Array.isArray(item[key])) {
+          usedChildren = true;
+          item[key].forEach(function (child) { out.push(child); });
+        }
+      });
+      if (!usedChildren) out.push(item);
+    });
+    return out;
   }
 
-  async function loadFolderMedia(folderId, folderName){
-    container.innerHTML = '<button class="public-gallery-back-btn" type="button">← Back to folders</button><h2>' + escapeHtml(folderName) + '</h2><div class="public-gallery-empty">Loading media...</div>';
-    container.querySelector('button').addEventListener('click', loadFolders);
-    try{
-      const data = await getJson(['/api/gallery/folders/' + folderId + '/media', '/api/public/gallery/folders/' + folderId + '/media', '/api/gallery?folderId=' + folderId]);
-      const media = normalizeArray(data);
-      const back = '<button class="public-gallery-back-btn" type="button">← Back to folders</button><h2>' + escapeHtml(folderName) + '</h2>';
-      if (!media.length){
-        container.innerHTML = back + '<div class="public-gallery-empty">No media found in this folder.</div>';
+  async function getJson(path) {
+    const res = await fetch(API_BASE + path, { cache: 'no-store' });
+    const data = await res.json().catch(function () { return {}; });
+    if (!res.ok) throw new Error(path + ' returned HTTP ' + res.status);
+    return data;
+  }
+
+  function mediaId(item) {
+    const direct = cleanId(item.fileId || item.gridFsFileId || item.gridfsFileId || item.mediaId || item.imageId || item.file_id);
+    if (direct) return direct;
+
+    const url = String(item.mediaUrl || item.imageUrl || item.url || item.src || item.path || '');
+    const match = url.match(/\/api\/gallery\/media\/([^/?#]+)/i);
+    if (match && match[1]) return decodeURIComponent(match[1]);
+
+    return cleanId(item._id || item.id);
+  }
+
+  function mediaSrc(item) {
+    const id = mediaId(item);
+    return id ? API_BASE + '/api/gallery/media/' + encodeURIComponent(id) : '';
+  }
+
+  function titleOf(item) {
+    return item.title || item.name || item.caption || item.originalName || item.filename || 'Gallery media';
+  }
+
+  function isVideo(item) {
+    const type = String(item.contentType || item.mimeType || item.mimetype || item.mediaType || item.type || '').toLowerCase();
+    const name = String(item.originalName || item.filename || item.name || item.title || '').toLowerCase();
+    return type.indexOf('video') !== -1 || /\.(mp4|mov|webm|mkv|avi)$/i.test(name);
+  }
+
+  function render(items) {
+    container.classList.add('gallery-grid');
+    container.innerHTML = '';
+
+    const valid = items.map(function (item) {
+      return { item: item, src: mediaSrc(item) };
+    }).filter(function (entry) {
+      return Boolean(entry.src);
+    });
+
+    if (!valid.length) {
+      container.innerHTML = '<p id="gallery-loading">No valid MongoDB gallery media found.</p>';
+      return;
+    }
+
+    let failed = 0;
+
+    valid.forEach(function (entry, index) {
+      const item = entry.item;
+      const src = entry.src;
+      const title = titleOf(item);
+
+      const card = document.createElement('article');
+      card.className = 'gallery-card reveal-card reveal-item scroll-reveal';
+      card.setAttribute('data-reveal', 'fade-up');
+      card.setAttribute('data-animate', 'fade-up');
+      card.style.animationDelay = (index * 70) + 'ms';
+      card.style.setProperty('--delay', (index * 70) + 'ms');
+
+      const media = document.createElement(isVideo(item) ? 'video' : 'img');
+      media.className = 'gallery-image';
+      media.src = src;
+      media.title = title;
+
+      if (media.tagName === 'IMG') {
+        media.alt = title;
+        media.loading = 'lazy';
+        media.decoding = 'async';
       } else {
-        container.innerHTML = back + '<div class="public-gallery-media-grid">' + media.map(item => {
-          const title = item.title || item.name || item.originalName || item.filename || 'Gallery media';
-          const url = mediaUrl(item);
-          const tag = isVideo(item)
-            ? '<video src="' + url + '" controls preload="metadata"></video>'
-            : '<img src="' + url + '" alt="' + escapeHtml(title) + '" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'public-gallery-empty',textContent:'Image could not load'}))">';
-          return '<div class="public-gallery-media-card">' + tag + '<div class="public-gallery-media-title">' + escapeHtml(title) + '</div></div>';
-        }).join('') + '</div>';
+        media.controls = true;
+        media.preload = 'metadata';
       }
-      container.querySelector('button').addEventListener('click', loadFolders);
-    }catch(err){
-      container.innerHTML = '<button class="public-gallery-back-btn" type="button">← Back to folders</button><div class="public-gallery-error">Media failed to load from backend.</div>';
-      container.querySelector('button').addEventListener('click', loadFolders);
-      console.error('Public gallery media load error:', err);
+
+      media.addEventListener('error', function () {
+        failed += 1;
+        console.error('Gallery media failed from backend:', src, item);
+        card.remove();
+        if (failed >= valid.length) {
+          container.innerHTML = '<p id="gallery-loading">Gallery records loaded, but the backend did not stream the image binaries. Re-upload the gallery images once from admin after this fix.</p>';
+        }
+      });
+
+      const caption = document.createElement('p');
+      caption.textContent = title;
+
+      card.appendChild(media);
+      card.appendChild(caption);
+      container.appendChild(card);
+    });
+
+    requestAnimationFrame(function () {
+      window.dispatchEvent(new Event('scroll'));
+      document.dispatchEvent(new CustomEvent('gallery:loaded'));
+    });
+  }
+
+  async function loadMongoGallery() {
+    container.innerHTML = '<p id="gallery-loading">Loading gallery images...</p>';
+    try {
+      let items = normalizeMedia(await getJson('/api/gallery'));
+
+      if (!items.length) {
+        const foldersData = await getJson('/api/gallery/folders').catch(function () { return {}; });
+        const folders = pickArray(foldersData);
+        const all = [];
+        for (const folder of folders) {
+          const folderId = cleanId(folder._id || folder.id);
+          if (!folderId) continue;
+          const mediaData = await getJson('/api/gallery/folders/' + encodeURIComponent(folderId) + '/media').catch(function () { return {}; });
+          normalizeMedia(mediaData).forEach(function (item) { all.push(item); });
+        }
+        items = all;
+      }
+
+      render(items);
+    } catch (err) {
+      console.error('Mongo gallery load error:', err);
+      container.innerHTML = '<p id="gallery-loading">Gallery failed to load. Start backend on port 5000 and refresh.</p>';
     }
   }
 
-  function escapeHtml(value){
-    return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadMongoGallery);
+  } else {
+    loadMongoGallery();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadFolders);
-  else loadFolders();
+  window.loadMongoGallery = loadMongoGallery;
 })();
 </script>
-<!-- PUBLIC_GALLERY_FOLDER_FIX_END -->
+<!-- GALLERY_MONGO_FULL_STACK_FIX_END -->
+
 </body>
 
 </html>
