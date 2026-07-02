@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import announcementModel from "../models/announcement.js";
 import Notification from "../models/notification.js";
 import ActivityService from "../services/activityService.js";
+import Department from "../models/department.js";
 
 // Create Announcement
 export const createAnnouncement = async(req, res) => {
@@ -22,13 +23,28 @@ export const createAnnouncement = async(req, res) => {
                 message: "createdBy must be a valid user id"
             });
         }
+        let departmentId = null;
+        let visibility = "global";
+
+        if (req.user.role !== "admin" && req.user.role !== "super_admin") {
+            const department = await Department.findOne({
+                departmentHead: req.user._id
+        });
+
+        if (department) {
+            departmentId = department._id;
+            visibility = "department";
+        }
+    }
 
         const announcementData = {
             title,
             message,
             category: category || "General",
             priority: priority || "Medium",
-            expiryDate
+            expiryDate,
+            department: departmentId,
+            visibility
         };
 
         if (authorId) {
@@ -106,7 +122,18 @@ export const getAnnouncementsByPriority = async(req, res) => {
             });
         }
 
-        const announcements = await announcementModel.find({ priority, isActive: true }).populate("createdBy", "name email").sort({ createdAt: -1 });
+        if (req.user.role === "admin" || req.user.role === "super_admin") {
+        // return everything
+        }
+        else{
+
+        // find user's department
+        // return
+        // global announcements
+        // +
+        // department announcements
+    
+}populate("createdBy", "name email").sort({ createdAt: -1 });
         res.status(200).json({ success: true, announcements });
     } catch (error) {
         console.log("Get Announcements by Priority Error:", error);
@@ -173,6 +200,9 @@ export const deactivateAnnouncement = async(req, res) => {
 // Delete Announcement (Hard Delete)
 export const deleteAnnouncement = async(req, res) => {
     try {
+        updateAnnouncement()
+        deleteAnnouncement()
+        deactivateAnnouncement()
         const announcement = await announcementModel.findByIdAndDelete(req.params.id);
 
         if (!announcement) {

@@ -1,69 +1,104 @@
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
 
 @theme {
-  --color-primary: #5D0F2D;
-  --color-primary-dark: #4A0B23;
-  --color-primary-light: #7A1D44;
-  --color-secondary: #C46B87;
-  --color-gold: #D8A15F;
-  --color-cream: #F8F3ED;
-  --color-background: #F5EFE6;
-  --color-surface: #FFFAF3;
-  --color-border-custom: #DCC8B6;
-  --color-text-main: #3D2B2B;
-  --color-text-muted: #6B5B55;
+  --color-primary: #5d0f2d;
+  --color-primary-dark: #4a0b23;
+  --color-primary-light: #7a1d44;
+  --color-secondary: #c46b87;
+  --color-gold: #d8a15f;
+  --color-gold-dark: #b98243;
+  --color-background: #f5efe6;
+  --color-surface: #fffaf3;
+  --color-border-custom: #dcc8b6;
+  --color-text-main: #3d2b2b;
+  --color-text-muted: #6b5b55;
 
-  --font-heading: 'Cormorant Garamond', serif;
-  --font-body: 'Inter', sans-serif;
-  --font-ui: 'Montserrat', sans-serif;
+  --font-heading: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-ui: "Montserrat", system-ui, sans-serif;
 }
 
 @layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   body {
     @apply bg-background text-text-main font-body antialiased;
+    margin: 0;
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-bold text-primary;
   }
 }
 
 @layer components {
   .sidebar-nav-link {
-    @apply flex items-center gap-3 px-4 py-3 text-sm font-ui text-white/70 rounded-xl transition-all duration-300 hover:bg-white/10 hover:text-white;
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl font-ui text-sm font-medium text-white/80 transition-all duration-300;
   }
+
+  .sidebar-nav-link:hover {
+    @apply bg-white/10 text-white;
+  }
+
   .sidebar-nav-link.active {
-    @apply bg-gold/20 text-gold font-semibold border-r-4 border-gold rounded-r-none;
+    @apply bg-primary text-white border-l-4 border-gold;
   }
 
   .card-premium {
-    @apply bg-surface border border-border-custom rounded-[22px] p-6 shadow-sm hover:shadow-md transition-shadow duration-300;
+    @apply bg-surface border border-border-custom rounded-2xl p-6 shadow-sm transition-all duration-300 hover:shadow-lg;
   }
 
   .btn-maroon {
-    @apply bg-primary hover:bg-primary-dark text-white font-ui font-bold uppercase tracking-wider px-6 py-2.5 rounded-xl border border-gold transition-all duration-300 active:scale-95;
+    @apply bg-primary text-white px-6 py-3 rounded-xl font-ui font-semibold transition-all duration-300 hover:bg-primary-dark;
+  }
+
+  .btn-gold {
+    @apply bg-gold text-white px-6 py-3 rounded-xl font-ui font-semibold transition-all duration-300 hover:bg-gold-dark;
   }
 
   .input-premium {
-    @apply bg-white border border-border-custom rounded-xl px-4 py-2.5 text-sm font-body outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all;
+    @apply w-full bg-white border border-border-custom rounded-xl px-4 py-3 text-sm outline-none transition-all duration-300 focus:border-gold focus:ring-2 focus:ring-gold/20;
   }
 
   .table-premium {
-    @apply w-full border-separate border-spacing-0 overflow-hidden rounded-[18px] border border-border-custom;
+    @apply w-full bg-white rounded-2xl border border-border-custom overflow-hidden;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease;
+  }
+
+  .gold-text {
+    color: #d8a15f;
+  }
+
+  .maroon-text {
+    color: #5d0f2d;
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@layer utilities {
-  .btn-gold-glow {
-    @apply border-2 border-[#FFD700] transition-all duration-300 
-           hover:shadow-[0_0_12px_rgba(255,215,0,0.45)] hover:-translate-y-0.5;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

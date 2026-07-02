@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Shield, User, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import api from '../config/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ export default function Login() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/public/settings`);
+        const res = await api.get('/public/settings');
         if (res.data.settings) {
           setIs2FARequired(res.data.settings.enable2FA);
           if (res.data.settings.orgName) setOrgName(res.data.settings.orgName);

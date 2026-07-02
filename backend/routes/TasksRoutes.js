@@ -6,33 +6,31 @@ import {
     getTasksByStatus,
     getTasksByUser,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTasksByProject
 } from '../controllers/taskController.js';
 import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
+import { requireMinRole } from '../middleware/rbac.js';
 
 const taskRouter = express.Router();
-
 taskRouter.use(verifyFirebaseToken);
 
-// Create Task
+// Create — admin only
 taskRouter.post('/create', requireAdmin, createTask);
 
-// Get All Tasks
+// Get all — admin sees all, others scoped in controller
 taskRouter.get('/', getTasks);
 
-// Get Tasks by Status
+// Filters
 taskRouter.get('/status/:status', getTasksByStatus);
-
-// Get Tasks Assigned to User
+taskRouter.get('/project/:projectId', getTasksByProject);
 taskRouter.get('/user/:userId', getTasksByUser);
-
-// Get Single Task by ID
 taskRouter.get('/:id', getTaskById);
 
-// Update Task
+// Update — any authenticated user (controller gates completion approval)
 taskRouter.put('/:id', updateTask);
 
-// Delete Task
+// Delete — admin only
 taskRouter.delete('/:id', requireAdmin, deleteTask);
 
 export default taskRouter;

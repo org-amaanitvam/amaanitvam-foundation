@@ -59,7 +59,7 @@ export default function Profile() {
         payload.profileImage = base64Image;
       }
 
-      const res = await api.post('/admin/update-profile', payload);
+      const res = await api.put('/admin/me', payload);
       setUserProfile(res.data.user);
       toast.success('Profile updated successfully!');
       setProfileImage(null);

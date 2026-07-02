@@ -134,7 +134,7 @@
                 <span class="dropdown-icon"><span class="material-symbols-outlined">admin_panel_settings</span></span>
                 <span class="dropdown-text"><strong>Admin portal</strong><small>Admin controls</small></span>
               </a>
-              <a class="dropdown-item" href="dashboard.html" role="menuitem">
+              <a class="dropdown-item" href="http://localhost:5174/login" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">dashboard</span></span>
                 <span class="dropdown-text"><strong>Dashboard Panel</strong><small>View analytics</small></span>
               </a>
@@ -200,7 +200,7 @@
           </button>
           <div class="mobile-group-links">
             <a class="mobile-link" href="http://localhost:5173/login">Admin portal</a>
-            <a class="mobile-link" href="dashboard.html">Dashboard Panel</a>
+            <a class="mobile-link" href="http://localhost:5174/login">Dashboard Panel</a>
             <a class="mobile-link" href="verify.html">Verify certificates</a>
             <a class="mobile-link" href="webinars-competitions.html">Webinar &amp; competitions</a>
             <a class="mobile-link" href="collaborations.html">Collaboration &amp; partnership</a>
@@ -275,6 +275,113 @@
 
 
   <script src="assets/js/main.js"></script>
+<!-- PUBLIC_GALLERY_FOLDER_FIX_START -->
+<style>
+  .public-gallery-folders{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:24px 0}.public-gallery-folder-card{border:1px solid #e5e7eb;border-radius:14px;padding:18px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.08);cursor:pointer}.public-gallery-folder-card:hover{transform:translateY(-2px)}.public-gallery-media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:24px 0}.public-gallery-media-card{border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.08)}.public-gallery-media-card img,.public-gallery-media-card video{width:100%;height:210px;object-fit:cover;background:#f8fafc;display:block}.public-gallery-media-title{padding:10px 12px;font-weight:600;color:#111827}.public-gallery-back-btn{border:0;border-radius:999px;padding:10px 16px;background:#111827;color:#fff;cursor:pointer;margin:16px 0}.public-gallery-empty{padding:22px;border:1px dashed #cbd5e1;border-radius:14px;text-align:center;color:#64748b;background:#f8fafc}.public-gallery-error{padding:14px;border-radius:10px;background:#fee2e2;color:#991b1b;margin:16px 0}
+</style>
+<script>
+(function(){
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000'
+    : '';
+
+  const container = document.getElementById('gallery-container') || document.querySelector('.gallery-container') || document.querySelector('main') || document.body;
+
+  function mediaUrl(item){
+    const id = item._id || item.id || item.fileId || item.gridFsFileId;
+    if (item.url && /^https?:///i.test(item.url)) return item.url;
+    if (item.url && item.url.startsWith('/')) return API_BASE + item.url;
+    if (item.src && /^https?:///i.test(item.src)) return item.src;
+    if (item.src && item.src.startsWith('/')) return API_BASE + item.src;
+    return API_BASE + '/api/gallery/media/' + id;
+  }
+
+  function isVideo(item){
+    const type = String(item.type || item.mediaType || item.mimeType || '').toLowerCase();
+    const name = String(item.title || item.name || item.originalName || item.filename || '').toLowerCase();
+    return type.includes('video') || /.(mp4|mov|webm|mkv|avi)$/i.test(name);
+  }
+
+  async function getJson(paths){
+    let lastErr;
+    for (const p of paths){
+      try{
+        const res = await fetch(API_BASE + p, { cache: 'no-store' });
+        if (res.ok) return await res.json();
+        lastErr = new Error(p + ' returned ' + res.status);
+      }catch(err){ lastErr = err; }
+    }
+    throw lastErr || new Error('No gallery API responded');
+  }
+
+  function normalizeArray(data){
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.folders)) return data.folders;
+    if (Array.isArray(data.media)) return data.media;
+    if (Array.isArray(data.items)) return data.items;
+    if (Array.isArray(data.gallery)) return data.gallery;
+    if (Array.isArray(data.data)) return data.data;
+    return [];
+  }
+
+  async function loadFolders(){
+    container.innerHTML = '<div class="public-gallery-empty">Loading gallery...</div>';
+    try{
+      const data = await getJson(['/api/gallery/folders', '/api/public/gallery/folders', '/api/gallery']);
+      const folders = normalizeArray(data);
+      if (!folders.length){
+        container.innerHTML = '<div class="public-gallery-empty">No gallery folders found.</div>';
+        return;
+      }
+      container.innerHTML = '<div class="public-gallery-folders">' + folders.map(folder => {
+        const id = folder._id || folder.id;
+        const title = folder.name || folder.title || 'Gallery Folder';
+        const count = folder.mediaCount || folder.count || (Array.isArray(folder.media) ? folder.media.length : 0);
+        return '<div class="public-gallery-folder-card" data-folder-id="' + id + '"><h3>' + escapeHtml(title) + '</h3><p>' + count + ' media file(s)</p></div>';
+      }).join('') + '</div>';
+      container.querySelectorAll('[data-folder-id]').forEach(card => card.addEventListener('click', () => loadFolderMedia(card.dataset.folderId, card.querySelector('h3')?.textContent || 'Gallery')));
+    }catch(err){
+      container.innerHTML = '<div class="public-gallery-error">Gallery failed to load. Check backend is running and public gallery API is available.</div>';
+      console.error('Public gallery load error:', err);
+    }
+  }
+
+  async function loadFolderMedia(folderId, folderName){
+    container.innerHTML = '<button class="public-gallery-back-btn" type="button">← Back to folders</button><h2>' + escapeHtml(folderName) + '</h2><div class="public-gallery-empty">Loading media...</div>';
+    container.querySelector('button').addEventListener('click', loadFolders);
+    try{
+      const data = await getJson(['/api/gallery/folders/' + folderId + '/media', '/api/public/gallery/folders/' + folderId + '/media', '/api/gallery?folderId=' + folderId]);
+      const media = normalizeArray(data);
+      const back = '<button class="public-gallery-back-btn" type="button">← Back to folders</button><h2>' + escapeHtml(folderName) + '</h2>';
+      if (!media.length){
+        container.innerHTML = back + '<div class="public-gallery-empty">No media found in this folder.</div>';
+      } else {
+        container.innerHTML = back + '<div class="public-gallery-media-grid">' + media.map(item => {
+          const title = item.title || item.name || item.originalName || item.filename || 'Gallery media';
+          const url = mediaUrl(item);
+          const tag = isVideo(item)
+            ? '<video src="' + url + '" controls preload="metadata"></video>'
+            : '<img src="' + url + '" alt="' + escapeHtml(title) + '" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'public-gallery-empty',textContent:'Image could not load'}))">';
+          return '<div class="public-gallery-media-card">' + tag + '<div class="public-gallery-media-title">' + escapeHtml(title) + '</div></div>';
+        }).join('') + '</div>';
+      }
+      container.querySelector('button').addEventListener('click', loadFolders);
+    }catch(err){
+      container.innerHTML = '<button class="public-gallery-back-btn" type="button">← Back to folders</button><div class="public-gallery-error">Media failed to load from backend.</div>';
+      container.querySelector('button').addEventListener('click', loadFolders);
+      console.error('Public gallery media load error:', err);
+    }
+  }
+
+  function escapeHtml(value){
+    return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadFolders);
+  else loadFolders();
+})();
+</script>
+<!-- PUBLIC_GALLERY_FOLDER_FIX_END -->
 </body>
 
 </html>

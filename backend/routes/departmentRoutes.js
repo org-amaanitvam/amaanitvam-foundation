@@ -1,4 +1,5 @@
 import express from "express";
+import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
 
 import {
   createDepartment,
@@ -13,41 +14,36 @@ import {
 
 const router = express.Router();
 
-/* =========================
-   CREATE Department
-========================= */
-router.post("/create", createDepartment);
+// ✅ Add this helper — super_admin only guard
+const requireSuperAdmin = (req, res, next) => {
+  if (req.user?.role !== "super_admin") {
+    return res.status(403).json({ message: "Only super_admin can perform this action." });
+  }
+  next();
+};
 
-/* =========================
-   GET Departments
-========================= */
+router.use(verifyFirebaseToken);
+
+// CREATE Department
+router.post("/create", requireAdmin, createDepartment);
+
+// GET Departments (scoped inside controller by role)
 router.get("/", getDepartments);
 router.get("/:id", getDepartmentById);
 
-/* =========================
-   EDIT Department
-   (includes optional head update)
-========================= */
-router.put("/:id", editDepartment);
+// EDIT Department
+router.put("/:id", requireAdmin, editDepartment);
 
-/* =========================
-   DELETE Department
-========================= */
-router.delete("/:id", deleteDepartment);
+// DELETE — upgraded to super_admin only
+router.delete("/:id", requireSuperAdmin, deleteDepartment);
 
-/* =========================
-   ASSIGN MEMBER
-========================= */
-router.post("/:id/assign-member", assignMember);
-
-/* =========================
-   UPDATE PERFORMANCE
-========================= */
+// UPDATE PERFORMANCE
 router.put("/:id/performance", updatePerformance);
 
-/* =========================
-   DEPARTMENT REPORT
-========================= */
+// DEPARTMENT REPORT
 router.get("/:id/report", getDepartmentReport);
+
+// ASSIGN MEMBER
+router.post("/:id/members", requireAdmin, assignMember);
 
 export default router;

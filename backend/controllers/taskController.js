@@ -2,11 +2,11 @@ import taskModel from "../models/task.js";
 import Notification from "../models/notification.js";
 import { sendSMSNotification } from "../services/smsService.js";
 import ActivityService from "../services/activityService.js";
-
+import User from "../models/user.js";
 // Create Task
 export const createTask = async(req, res) => {
     try {
-        const { title, description, assignedTo, status, priority, deadline } = req.body;
+        const { title, description, project, assignedTo, status, priority, deadline } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -18,6 +18,7 @@ export const createTask = async(req, res) => {
         const newTask = new taskModel({
             title,
             description,
+            project: project || null,
             assignedTo,
             status: status || "open",
             priority: priority || "medium",
@@ -55,10 +56,12 @@ export const createTask = async(req, res) => {
     }
 };
 
-// Get All Tasks
+// Get All Tasks — non-admins see only their own
 export const getTasks = async(req, res) => {
     try {
-        const tasks = await taskModel.find().populate("assignedTo", "name email");
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'super_admin';
+        const query = isAdmin ? {} : { assignedTo: req.user._id };
+        const tasks = await taskModel.find(query).populate("assignedTo", "name email");
         res.status(200).json({ success: true, tasks });
     } catch (error) {
         console.log("Get Tasks Error:", error);
@@ -66,13 +69,20 @@ export const getTasks = async(req, res) => {
     }
 };
 
-// Get Single Task by ID
+// Get Single Task — non-admins can only see their own
 export const getTaskById = async(req, res) => {
     try {
         const task = await taskModel.findById(req.params.id).populate("assignedTo", "name email");
 
         if (!task) {
             return res.status(404).json({ success: false, message: "Task not found" });
+        }
+
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'super_admin';
+        const isAssigned = task.assignedTo?._id?.toString() === req.user._id.toString();
+
+        if (!isAdmin && !isAssigned) {
+            return res.status(403).json({ success: false, message: "Access denied. This task is not assigned to you." });
         }
 
         res.status(200).json({ success: true, task });
@@ -82,11 +92,11 @@ export const getTaskById = async(req, res) => {
     }
 };
 
-// Get Tasks by Status
+// Get Tasks by Status — non-admins scoped to their own
 export const getTasksByStatus = async(req, res) => {
     try {
         const { status } = req.params;
-        const validStatuses = ["open", "inProgress", "completed"];
+        const validStatuses = ["open", "inProgress", "completed", "pending_approval"];
 
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ 
@@ -95,14 +105,15 @@ export const getTasksByStatus = async(req, res) => {
             });
         }
 
-        const tasks = await taskModel.find({ status }).populate("assignedTo", "name email");
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'super_admin';
+        const query = isAdmin ? { status } : { status, assignedTo: req.user._id };
+        const tasks = await taskModel.find(query).populate("assignedTo", "name email");
         res.status(200).json({ success: true, tasks });
     } catch (error) {
         console.log("Get Tasks by Status Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 // Get Tasks Assigned to User
 export const getTasksByUser = async(req, res) => {
     try {
@@ -133,19 +144,18 @@ export const updateTask = async(req, res) => {
             updateQuery.status = 'pending_approval';
             
             // Notify admins
-            import('../models/user.js').then(async ({ default: User }) => {
-                const admins = await User.find({ role: { $in: ['admin', 'super_admin'] } });
-                const notifications = admins.map(admin => ({
-                    userId: admin._id,
-                    title: "Task Completion Request",
-                    message: `${req.user.name} has requested approval for task completion.`,
-                    type: "alert",
-                    link: "/tasks"
-                }));
-                await Notification.insertMany(notifications);
-            });
+   
+    
+    const admins = await User.find({ role: { $in: ['admin', 'super_admin'] } });
+    const notifications = admins.map(admin => ({
+        userId: admin._id,
+        title: "Task Completion Request",
+        message: `${req.user.name} has requested approval for task completion.`,
+        type: "alert",
+        link: "/tasks"
+    }));
+    await Notification.insertMany(notifications);
         }
-
         const task = await taskModel.findByIdAndUpdate(
             req.params.id,
             updateQuery,
@@ -184,6 +194,19 @@ export const deleteTask = async(req, res) => {
         res.status(200).json({ success: true, message: "Task deleted successfully" });
     } catch (error) {
         console.log("Delete Task Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+// Get Tasks by Project
+export const getTasksByProject = async(req, res) => {
+    try {
+        const { projectId } = req.params;
+        const tasks = await taskModel.find({ project: projectId })
+            .populate("assignedTo", "name email");
+
+        res.status(200).json({ success: true, tasks });
+    } catch (error) {
+        console.log("Get Tasks by Project Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

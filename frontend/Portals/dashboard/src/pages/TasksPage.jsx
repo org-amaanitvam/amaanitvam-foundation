@@ -1,37 +1,67 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
 import api from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import FilterBar from '../components/Filters/FilterBar';
 
+const initialFormData = {
+  title: '',
+  description: '',
+  assignedTo: '',
+  deadline: '',
+  status: 'open',
+  priority: 'medium',
+  progress: 0,
+  newComment: '',
+};
+
 export default function TasksPage() {
   const { userProfile } = useAuth();
+
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({});
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', priority: 'medium' });
+  const [formData, setFormData] = useState(initialFormData);
   const [users, setUsers] = useState([]);
-  const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
-  useEffect(() => { fetchTasks(); }, []);
+  const isAdmin =
+    userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
+      setLoading(true);
+
       const { data } = await api.get('/tasks');
       setTasks(data.tasks || []);
+
       if (isAdmin) {
         const res = await api.get('/admin/members');
         setUsers(res.data.members || []);
       }
-    } catch { toast.error('Failed to load tasks'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Failed to load tasks');
+    } finally {
+      setLoading(false);
+    }
+  }, [isAdmin]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const resetForm = () => {
+    setShowCreate(false);
+    setEditingId(null);
+    setFormData(initialFormData);
   };
 
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
+
     try {
       if (editingId) {
         await api.put(`/tasks/${editingId}`, formData);
@@ -40,71 +70,138 @@ export default function TasksPage() {
         await api.post('/tasks/create', formData);
         toast.success('Task created');
       }
-      setShowCreate(false);
-      setEditingId(null);
-      setFormData({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', priority: 'medium' });
+
+      resetForm();
       fetchTasks();
-    } catch { toast.error(editingId ? 'Failed to update task' : 'Failed to create task'); }
+    } catch (err) {
+      console.error(err);
+      toast.error(
+        err.response?.data?.message ||
+        (editingId ? 'Failed to update task' : 'Failed to create task')
+      );
+    }
   };
 
-    const openEdit = (task) => {
+  const openEdit = (task) => {
     setFormData({
-      title: task.title,
+      title: task.title || '',
       description: task.description || '',
       assignedTo: task.assignedTo?._id || task.assignedTo || '',
-      deadline: task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : '',
-      status: task.status,
+      deadline: task.deadline
+        ? new Date(task.deadline).toISOString().split('T')[0]
+        : '',
+      status: task.status || 'open',
       priority: task.priority || 'medium',
-      progress: task.progress || 0,
-      newComment: ''
+      progress: Number(task.progress || 0),
+      newComment: '',
     });
+
     setEditingId(task._id);
     setShowCreate(true);
   };
 
-  if (loading) return <div className="flex justify-center items-center h-64"><Loader2 className="w-8 h-8 text-[#56051a] animate-spin" /></div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 text-[#56051a] animate-spin" />
+      </div>
+    );
+  }
 
-  const myTasks = isAdmin ? tasks : tasks.filter(t => t.assignedTo?._id === userProfile?._id || t.assignedTo?.email === userProfile?.email);
-  
-  const filtered = myTasks.filter(t => {
+  const myTasks = isAdmin
+    ? tasks
+    : tasks.filter(
+      (t) =>
+        t.assignedTo?._id === userProfile?._id ||
+        t.assignedTo?.email === userProfile?.email
+    );
+
+  const filtered = myTasks.filter((t) => {
     let match = true;
-    if (filters.status && filters.status !== 'all' && t.status !== filters.status) match = false;
-    if (filters.priority && filters.priority !== 'all' && (t.priority || 'medium') !== filters.priority) match = false;
+
+    if (filters.status && filters.status !== 'all' && t.status !== filters.status) {
+      match = false;
+    }
+
+    if (
+      filters.priority &&
+      filters.priority !== 'all' &&
+      (t.priority || 'medium') !== filters.priority
+    ) {
+      match = false;
+    }
+
     if (filters.assignedTo && filters.assignedTo !== 'all') {
       const assignedId = t.assignedTo?._id || t.assignedTo;
-      if (assignedId !== filters.assignedTo) match = false;
+
+      if (assignedId !== filters.assignedTo) {
+        match = false;
+      }
     }
+
     if (filters.deadline?.start && t.deadline) {
-      if (new Date(t.deadline) < new Date(filters.deadline.start)) match = false;
+      if (new Date(t.deadline) < new Date(filters.deadline.start)) {
+        match = false;
+      }
     }
+
     if (filters.deadline?.end && t.deadline) {
-      // Set end date to end of day to include the selected date
       const end = new Date(filters.deadline.end);
       end.setHours(23, 59, 59, 999);
-      if (new Date(t.deadline) > end) match = false;
+
+      if (new Date(t.deadline) > end) {
+        match = false;
+      }
     }
+
     return match;
   });
 
   const filterConfig = [
-    { name: 'status', label: 'Status', type: 'select', options: [
-      { label: 'All Statuses', value: 'all' },
-      { label: 'Open', value: 'open' },
-      { label: 'In Progress', value: 'inProgress' },
-      { label: 'Completed', value: 'completed' },
-      { label: 'Pending Approval', value: 'pending_approval' }
-    ]},
-    { name: 'priority', label: 'Priority', type: 'select', options: [
-      { label: 'All Priorities', value: 'all' },
-      { label: 'Low', value: 'low' },
-      { label: 'Medium', value: 'medium' },
-      { label: 'High', value: 'high' }
-    ]},
-    ...(isAdmin ? [{ name: 'assignedTo', label: 'Assigned To', type: 'select', options: [
-      { label: 'All Members', value: 'all' },
-      ...users.map(u => ({ label: u.name, value: u._id }))
-    ]}] : []),
-    { name: 'deadline', label: 'Deadline Range', type: 'dateRange' }
+    {
+      name: 'status',
+      label: 'Status',
+      type: 'select',
+      options: [
+        { label: 'All Statuses', value: 'all' },
+        { label: 'Open', value: 'open' },
+        { label: 'In Progress', value: 'inProgress' },
+        { label: 'Completed', value: 'completed' },
+        { label: 'Pending Approval', value: 'pending_approval' },
+      ],
+    },
+    {
+      name: 'priority',
+      label: 'Priority',
+      type: 'select',
+      options: [
+        { label: 'All Priorities', value: 'all' },
+        { label: 'Low', value: 'low' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'High', value: 'high' },
+      ],
+    },
+    ...(isAdmin
+      ? [
+        {
+          name: 'assignedTo',
+          label: 'Assigned To',
+          type: 'select',
+          options: [
+            { label: 'All Members', value: 'all' },
+            ...users.map((u) => ({
+              label: u.name,
+              value: u._id,
+            })),
+          ],
+        },
+      ]
+      : []),
+    {
+      name: 'deadline',
+      label: 'Deadline Range',
+      type: 'dateRange',
+    },
   ];
 
   const statusColors = {
@@ -114,16 +211,35 @@ export default function TasksPage() {
     pending_approval: 'bg-purple-100 text-purple-700 border-purple-200',
   };
 
+  const getStatusLabel = (status) => {
+    if (status === 'inProgress') return 'In Progress';
+    if (status === 'pending_approval') return 'Pending Approval';
+    return status || 'Open';
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{isAdmin ? 'All Tasks' : 'My Tasks'}</h1>
-          <p className="text-sm text-slate-500 mt-1">Track tasks and deadlines</p>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isAdmin ? 'All Tasks' : 'My Tasks'}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Track tasks and deadlines
+          </p>
         </div>
+
         {isAdmin && (
-          <button onClick={() => { setEditingId(null); setFormData({ title: '', description: '', assignedTo: '', deadline: '', status: 'open', priority: 'medium', progress: 0, newComment: '' }); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Create Task
+          <button
+            onClick={() => {
+              setEditingId(null);
+              setFormData(initialFormData);
+              setShowCreate(true);
+            }}
+            className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Create Task
           </button>
         )}
       </div>
@@ -131,73 +247,219 @@ export default function TasksPage() {
       {showCreate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">{editingId ? (isAdmin ? 'Edit Task' : 'Update Task Progress') : 'Create New Task'}</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-4">
+              {editingId
+                ? isAdmin
+                  ? 'Edit Task'
+                  : 'Update Task Progress'
+                : 'Create New Task'}
+            </h2>
+
             <form onSubmit={handleCreateOrUpdate} className="space-y-4">
               {isAdmin && (
                 <>
-                  <div><label className="block text-sm font-medium mb-1">Title</label><input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
-                  <div><label className="block text-sm font-medium mb-1">Assign To</label>
-                    <select required value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Title
+                    </label>
+                    <input
+                      required
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Assign To
+                    </label>
+                    <select
+                      required
+                      value={formData.assignedTo}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          assignedTo: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    >
                       <option value="">Select Member</option>
-                      {users.map(u => <option key={u._id} value={u._id}>{u.name} ({u.role})</option>)}
+                      {users.map((u) => (
+                        <option key={u._id} value={u._id}>
+                          {u.name} ({u.role})
+                        </option>
+                      ))}
                     </select>
                   </div>
-                  <div><label className="block text-sm font-medium mb-1">Priority</label>
-                    <select required value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm">
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Priority
+                    </label>
+                    <select
+                      required
+                      value={formData.priority}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          priority: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
                       <option value="high">High</option>
                     </select>
                   </div>
-                  <div><label className="block text-sm font-medium mb-1">Deadline</label><input type="date" required value={formData.deadline} onChange={e => setFormData({...formData, deadline: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
-                  <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" rows="3"></textarea></div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Deadline
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.deadline}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          deadline: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                      rows="3"
+                    />
+                  </div>
                 </>
               )}
+
               {!isAdmin && (
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
-                  <h3 className="font-semibold text-slate-800">{formData.title}</h3>
-                  <p className="text-xs text-slate-500 mt-1">{formData.description}</p>
+                  <h3 className="font-semibold text-slate-800">
+                    {formData.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {formData.description}
+                  </p>
                 </div>
               )}
-              
+
               {editingId && (
                 <>
-                  <div><label className="block text-sm font-medium mb-1">Status</label>
-                    <select required value={formData.status} onChange={e => {
-                      const newStatus = e.target.value;
-                      setFormData({
-                        ...formData, 
-                        status: newStatus,
-                        progress: newStatus === 'completed' ? 100 : formData.progress
-                      });
-                    }} className="w-full px-3 py-2 border rounded-xl text-sm">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Status
+                    </label>
+                    <select
+                      required
+                      value={formData.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value;
+
+                        setFormData({
+                          ...formData,
+                          status: newStatus,
+                          progress:
+                            newStatus === 'completed'
+                              ? 100
+                              : Number(formData.progress || 0),
+                        });
+                      }}
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    >
                       <option value="open">Open</option>
                       <option value="inProgress">In Progress</option>
                       <option value="completed">Completed</option>
                     </select>
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium mb-1 flex justify-between">
                       <span>Progress</span>
-                      <span className="text-[#56051a] font-bold">{formData.progress || 0}%</span>
+                      <span className="text-[#56051a] font-bold">
+                        {formData.progress || 0}%
+                      </span>
                     </label>
-                    <input type="range" min="0" max="100" value={formData.progress || 0} onChange={e => setFormData({...formData, progress: e.target.value})} className="w-full accent-[#56051a]" />
+
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={formData.progress || 0}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          progress: Number(e.target.value),
+                        })
+                      }
+                      className="w-full accent-[#56051a]"
+                    />
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium mb-1">Add Update Comment</label>
-                    <input type="text" placeholder="e.g. Task has been started" value={formData.newComment || ''} onChange={e => setFormData({...formData, newComment: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" />
+                    <label className="block text-sm font-medium mb-1">
+                      Add Update Comment
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Task has been started"
+                      value={formData.newComment || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          newComment: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    />
                   </div>
                 </>
               )}
+
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
-                <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-[#56051a] rounded-xl hover:bg-[#7a1e3a]">{editingId ? 'Save Changes' : 'Create'}</button>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#56051a] rounded-xl hover:bg-[#7a1e3a]"
+                >
+                  {editingId ? 'Save Changes' : 'Create'}
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
 
       <FilterBar config={filterConfig} filters={filters} setFilters={setFilters} />
 
@@ -208,38 +470,69 @@ export default function TasksPage() {
         </div>
       ) : (
         <div className="grid gap-3">
-          {filtered.map(t => (
-            <div key={t._id} className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow">
-              <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'}`}>
-                {t.status === 'inProgress' ? 'In Progress' : (t.status === 'pending_approval' ? 'Pending Approval' : t.status)}
+          {filtered.map((t) => (
+            <div
+              key={t._id}
+              className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
+            >
+              <span
+                className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'
+                  }`}
+              >
+                {getStatusLabel(t.status)}
               </span>
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-slate-800 truncate">{t.title}</h3>
-                  <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">{t.progress || 0}%</span>
+                  <h3 className="font-semibold text-slate-800 truncate">
+                    {t.title}
+                  </h3>
+
+                  <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">
+                    {t.progress || 0}%
+                  </span>
                 </div>
+
                 <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 mb-1 max-w-[200px]">
-                  <div className="bg-[#56051a] h-1.5 rounded-full" style={{ width: `${t.progress || 0}%` }}></div>
+                  <div
+                    className="bg-[#56051a] h-1.5 rounded-full"
+                    style={{ width: `${t.progress || 0}%` }}
+                  />
                 </div>
+
                 <p className="text-xs text-slate-500 mt-0.5">
                   Assigned to: {t.assignedTo?.name || 'Unassigned'}
-                  {t.deadline && ` • Due: ${new Date(t.deadline).toLocaleDateString()}`}
+                  {t.deadline &&
+                    ` • Due: ${new Date(t.deadline).toLocaleDateString()}`}
                 </p>
+
                 {t.comments && t.comments.length > 0 && (
                   <p className="text-xs text-slate-400 mt-1 italic line-clamp-1">
                     Latest: {t.comments[t.comments.length - 1].text}
                   </p>
                 )}
+
                 {t.priority && (
                   <p className="text-xs mt-1">
                     <span className="text-slate-500">Priority: </span>
-                    <span className={`font-medium ${t.priority === 'high' ? 'text-rose-500' : t.priority === 'low' ? 'text-slate-500' : 'text-amber-500'}`}>
+                    <span
+                      className={`font-medium ${t.priority === 'high'
+                          ? 'text-rose-500'
+                          : t.priority === 'low'
+                            ? 'text-slate-500'
+                            : 'text-amber-500'
+                        }`}
+                    >
                       {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
                     </span>
                   </p>
                 )}
               </div>
-              <button onClick={() => openEdit(t)} className="p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium">
+
+              <button
+                onClick={() => openEdit(t)}
+                className="p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
+              >
                 <Edit2 className="w-4 h-4" />
                 {!isAdmin && <span>Update</span>}
               </button>

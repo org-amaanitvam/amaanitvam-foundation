@@ -1660,6 +1660,16 @@ const BACKEND_URL = window.location.hostname.includes('github.dev')
   : "http://localhost:5000";
 
 async function loadGalleryImages() {
+  const __amaanitvamSafeGalleryGuard = document.getElementById('galleryGrid') || document.getElementById('gallery-container') || document.querySelector('[data-gallery-grid]');
+  if (!__amaanitvamSafeGalleryGuard) return;
+
+  
+
+  const __isAmaanitvamGalleryPage = /gallery/i.test(window.location.pathname) || document.body?.dataset?.page === 'gallery';
+  if (!__isAmaanitvamGalleryPage) return;
+
+  
+
   const container = document.getElementById('gallery-container');
   try {
     const response = await fetch(`${BACKEND_URL}/api/gallery`);
@@ -1806,7 +1816,7 @@ fetch("footer.html")
 
 
 /* ===== Moved from internship.html inline script ===== */
-document.getElementById('internshipForm').addEventListener('submit', async function (e) {
+document.getElementById('internshipForm')?.addEventListener('submit', async function (e) {
   e.preventDefault();
   const btn = document.getElementById('int-submit-btn');
   const btnText = btn.querySelector('.submit-btn-text');
@@ -2651,7 +2661,7 @@ fetch('footer.html')
 
 
 /* ===== Moved from volunteer.html inline script ===== */
-document.getElementById('volunteerForm').addEventListener('submit', async function (e) {
+document.getElementById('volunteerForm')?.addEventListener('submit', async function (e) {
   e.preventDefault();
   const status = document.getElementById('vol-status');
   status.textContent = "Submitting...";
@@ -2864,3 +2874,376 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(function (error) { console.error('Footer load error:', error); });
   }
 });
+
+
+/* ===== Campaign Donations + Funds Fix: single safe block ===== */
+(function () {
+  if (window.__amaanitvamCampaignFundsFixLoaded) return;
+  window.__amaanitvamCampaignFundsFixLoaded = true;
+
+  const MIN_AMOUNT = 10;
+  let activeCampaigns = [];
+  let selectedCampaignId = 'organization';
+  let workingApiBase = null;
+
+  function isLocalHost() {
+    return ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+  }
+
+  function apiCandidates() {
+    const configured =
+      window.AMAANITVAM_API_BASE ||
+      document.body?.dataset?.apiBase ||
+      document.querySelector('meta[name="amaanitvam-api-base"]')?.content ||
+      '';
+
+    const list = [];
+    if (configured) list.push(configured.replace(/\/$/, ''));
+
+    // Your backend is on 5000. Do not try 5001 or Live Server 5500, because that creates noisy console errors.
+    if (isLocalHost()) {
+      list.push('http://localhost:5000/api');
+      list.push('http://127.0.0.1:5000/api');
+    }
+
+    // Only use same-origin /api when this is not VS Code Live Server.
+    if (!['5500', '5501'].includes(window.location.port) && window.location.protocol !== 'file:') {
+      list.push('/api');
+    }
+
+    return [...new Set(list.filter(Boolean))];
+  }
+
+  async function fetchJson(path, options = {}) {
+    const bases = workingApiBase ? [workingApiBase, ...apiCandidates()] : apiCandidates();
+    let lastError;
+
+    for (const base of [...new Set(bases)]) {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(`${base}${path}`, {
+          ...options,
+          signal: controller.signal,
+        }).finally(() => clearTimeout(timer));
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || `Request failed: ${response.status}`);
+        workingApiBase = base;
+        return data;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error('Backend API is not reachable on port 5000.');
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  function rupees(value) {
+    return `₹${Number(value || 0).toLocaleString('en-IN')}`;
+  }
+
+  function progress(campaign) {
+    const goal = Number(campaign.goalAmount || 0);
+    const raised = Number(campaign.raisedAmount || 0);
+    if (!goal) return 0;
+    return Math.min(100, Math.max(0, Math.round((raised / goal) * 100)));
+  }
+
+  function injectStyles() {
+    if (document.getElementById('amaanitvam-campaign-funds-style')) return;
+    const style = document.createElement('style');
+    style.id = 'amaanitvam-campaign-funds-style';
+    style.textContent = `
+      .campaign-donation-selector,.campaign-preview-section{margin:1.25rem 0}
+      .campaign-selector-title,.campaign-eyebrow{color:#56051a;font-weight:800;letter-spacing:.02em}
+      .campaign-selector-subtitle{color:#6b7280;margin:.25rem 0 1rem}
+      .campaign-options,.campaign-preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.9rem}
+      .campaign-option,.campaign-preview-card{border:1px solid #ead7dd;border-radius:16px;padding:1rem;background:#fff;box-shadow:0 10px 30px rgba(86,5,26,.08)}
+      .campaign-option{cursor:pointer;display:block}
+      .campaign-option input{margin-right:.5rem}
+      .campaign-option.is-selected{border-color:#56051a;box-shadow:0 12px 35px rgba(86,5,26,.18)}
+      .campaign-option-title,.campaign-preview-card h3{display:block;font-weight:800;color:#56051a;margin-bottom:.35rem}
+      .campaign-option-desc,.campaign-preview-card p{color:#6b7280;font-size:.95rem;line-height:1.5}
+      .campaign-progress{height:8px;background:#f3e7eb;border-radius:999px;overflow:hidden;margin:.75rem 0 .4rem}
+      .campaign-progress span{display:block;height:100%;background:#56051a}
+      .campaign-meta{color:#374151;font-weight:700;font-size:.9rem}
+      .campaign-preview-section{padding:3rem 1.25rem;background:#fff7f9}
+      .campaign-preview-inner{max-width:1120px;margin:0 auto}
+      .campaign-preview-inner h2{color:#56051a;font-size:clamp(1.7rem,3vw,2.4rem);margin:.25rem 0 .75rem}
+      .campaign-donate-link{display:inline-block;margin-top:.9rem;padding:.7rem 1rem;border-radius:999px;background:#56051a;color:#fff;text-decoration:none;font-weight:800}
+      .campaign-error{color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;border-radius:12px;padding:.85rem}
+    `;
+    document.head.appendChild(style);
+  }
+
+  async function loadCampaigns() {
+    const data = await fetchJson('/donate/campaigns');
+    activeCampaigns = Array.isArray(data) ? data : Array.isArray(data.campaigns) ? data.campaigns : [];
+    return activeCampaigns;
+  }
+
+  function renderHomeCampaigns() {
+    const container = document.getElementById('homeCampaigns');
+    if (!container) return;
+
+    if (!activeCampaigns.length) {
+      container.innerHTML = `
+        <div class="campaign-preview-inner">
+          <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
+          <h2>Support Amaanitvam Foundation</h2>
+          <p>No active campaigns are live right now. You can still make a direct organization donation.</p>
+          <a class="campaign-donate-link" href="contact.html">Donate Now</a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="campaign-preview-inner">
+        <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
+        <h2>Support a live campaign</h2>
+        <div class="campaign-preview-grid">
+          ${activeCampaigns.map((campaign) => {
+            const id = campaign._id || campaign.id;
+            const pct = progress(campaign);
+            return `
+              <article class="campaign-preview-card">
+                <h3>${escapeHtml(campaign.title)}</h3>
+                <p>${escapeHtml(campaign.description || 'Support this active campaign.')}</p>
+                <div class="campaign-progress"><span style="width:${pct}%"></span></div>
+                <div class="campaign-meta">${rupees(campaign.raisedAmount)} raised / ${rupees(campaign.goalAmount)} goal</div>
+                <a class="campaign-donate-link" href="contact.html?campaign=${encodeURIComponent(id)}">Donate to this campaign</a>
+              </article>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }
+
+  function renderCampaignSelector() {
+    const container = document.getElementById('campaignDonationSelector');
+    if (!container) return;
+
+    const requested = new URLSearchParams(window.location.search).get('campaign');
+    if (requested && activeCampaigns.some((c) => String(c._id || c.id) === String(requested))) {
+      selectedCampaignId = requested;
+    }
+
+    const campaignCards = activeCampaigns.map((campaign) => {
+      const id = campaign._id || campaign.id;
+      const checked = String(selectedCampaignId) === String(id) ? 'checked' : '';
+      const selected = checked ? ' is-selected' : '';
+      const pct = progress(campaign);
+      return `
+        <label class="campaign-option${selected}">
+          <input type="radio" name="donationTarget" value="${escapeHtml(id)}" ${checked}>
+          <span class="campaign-option-title">${escapeHtml(campaign.title)}</span>
+          <p class="campaign-option-desc">${escapeHtml(campaign.description || 'Support this active campaign.')}</p>
+          <div class="campaign-progress"><span style="width:${pct}%"></span></div>
+          <div class="campaign-meta">${rupees(campaign.raisedAmount)} raised / ${rupees(campaign.goalAmount)} goal</div>
+        </label>`;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="campaign-selector-title">Choose where your donation should go</div>
+      <p class="campaign-selector-subtitle">Donate directly to the organization or select an active campaign.</p>
+      <div class="campaign-options">
+        <label class="campaign-option ${selectedCampaignId === 'organization' ? 'is-selected' : ''}">
+          <input type="radio" name="donationTarget" value="organization" ${selectedCampaignId === 'organization' ? 'checked' : ''}>
+          <span class="campaign-option-title">Amaanitvam Foundation</span>
+          <p class="campaign-option-desc">Direct donation to the organization for general foundation work.</p>
+        </label>
+        ${campaignCards || '<div class="campaign-option"><span class="campaign-option-title">No active campaigns right now</span><p class="campaign-option-desc">Direct organization donation is available.</p></div>'}
+      </div>`;
+
+    container.querySelectorAll('input[name="donationTarget"]').forEach((input) => {
+      input.addEventListener('change', () => {
+        selectedCampaignId = input.value || 'organization';
+        container.querySelectorAll('.campaign-option').forEach((card) => card.classList.remove('is-selected'));
+        input.closest('.campaign-option')?.classList.add('is-selected');
+      });
+    });
+  }
+
+  function currentAmount() {
+    const activeBtn = document.querySelector('.amount-btn.active');
+    const customAmount = document.getElementById('customAmount');
+    const amount = Number(customAmount?.value || activeBtn?.dataset?.amount || 0);
+    return Number.isFinite(amount) ? amount : 0;
+  }
+
+  function setupAmountButtons() {
+    const customAmount = document.getElementById('customAmount');
+    document.querySelectorAll('.amount-btn').forEach((btn) => {
+      if (btn.dataset.campaignFundsBound === 'true') return;
+      btn.dataset.campaignFundsBound = 'true';
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.amount-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (customAmount) customAmount.value = '';
+      });
+    });
+    if (customAmount && customAmount.dataset.campaignFundsBound !== 'true') {
+      customAmount.dataset.campaignFundsBound = 'true';
+      customAmount.addEventListener('input', () => {
+        document.querySelectorAll('.amount-btn').forEach((b) => b.classList.remove('active'));
+      });
+    }
+  }
+
+  function status(message, color) {
+    const el = document.getElementById('donate-status');
+    if (!el) return;
+    el.textContent = message || '';
+    el.style.color = color || '';
+  }
+
+  function loadRazorpay() {
+    return new Promise((resolve, reject) => {
+      if (window.Razorpay) return resolve();
+      const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+      if (existing) {
+        existing.addEventListener('load', resolve, { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  function resetForm() {
+    ['donorName', 'donorEmail', 'donorPhone'].forEach((id) => {
+      const input = document.getElementById(id);
+      if (input) input.value = '';
+    });
+    const customAmount = document.getElementById('customAmount');
+    if (customAmount) customAmount.value = '';
+    document.querySelectorAll('.amount-btn').forEach((btn) => btn.classList.remove('active'));
+    selectedCampaignId = 'organization';
+    renderCampaignSelector();
+  }
+
+  async function payNow(button) {
+    const name = document.getElementById('donorName')?.value.trim() || '';
+    const email = document.getElementById('donorEmail')?.value.trim() || '';
+    const phone = document.getElementById('donorPhone')?.value.trim() || '';
+    const amount = currentAmount();
+    const campaignId = selectedCampaignId === 'organization' ? null : selectedCampaignId;
+
+    if (!name || !email) return status('Please enter your name and email.', 'red');
+    if (amount < MIN_AMOUNT) return status('Minimum donation amount is ₹10.', 'red');
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Processing...';
+    status('', '');
+
+    try {
+      await loadRazorpay();
+      const data = await fetchJson('/donate/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, amount, campaignId }),
+      });
+
+      const options = {
+        key: data.key,
+        amount: data.order.amount,
+        currency: data.order.currency || 'INR',
+        name: 'Amaanitvam Foundation',
+        description: data.campaign?.title ? `Donation for ${data.campaign.title}` : 'Donation to Amaanitvam Foundation',
+        order_id: data.order.id,
+        prefill: { name, email, contact: phone },
+        theme: { color: '#56051a' },
+        modal: {
+          ondismiss: () => {
+            button.disabled = false;
+            button.textContent = originalText || 'Proceed to Pay Securely';
+          },
+        },
+        handler: async (paymentResponse) => {
+          try {
+            const verifyData = await fetchJson('/donate/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                campaignId,
+              }),
+            });
+
+            status('✅ ' + (verifyData.message || 'Payment successful. Thank you!'), '#16a34a');
+            resetForm();
+            await loadCampaigns();
+            renderCampaignSelector();
+            renderHomeCampaigns();
+          } catch (error) {
+            status(error.message || 'Payment verification failed. Please contact support.', 'red');
+          } finally {
+            button.disabled = false;
+            button.textContent = originalText || 'Proceed to Pay Securely';
+          }
+        },
+      };
+
+      new window.Razorpay(options).open();
+    } catch (error) {
+      status(error.message || 'Donation failed. Please try again.', 'red');
+      button.disabled = false;
+      button.textContent = originalText || 'Proceed to Pay Securely';
+    }
+  }
+
+  async function boot() {
+    const hasCampaignArea = document.getElementById('homeCampaigns') || document.getElementById('campaignDonationSelector');
+    const payButton = document.getElementById('payButton');
+    if (!hasCampaignArea && !payButton) return;
+
+    injectStyles();
+    setupAmountButtons();
+
+    try {
+      await loadCampaigns();
+      renderHomeCampaigns();
+      renderCampaignSelector();
+    } catch (error) {
+      const message = `Could not load active campaigns from http://localhost:5000/api/donate/campaigns. ${escapeHtml(error.message || '')}`;
+      const home = document.getElementById('homeCampaigns');
+      const selector = document.getElementById('campaignDonationSelector');
+      if (home) home.innerHTML = `<div class="campaign-preview-inner"><div class="campaign-error">${message}</div></div>`;
+      if (selector) selector.innerHTML = `<div class="campaign-error">${message}</div>`;
+      console.error('Campaign loading failed:', error);
+    }
+
+    if (payButton && document.getElementById('donorName') && document.getElementById('donorEmail')) {
+      // Remove old duplicate click handlers that may have been bound earlier in main.js.
+      const cleanButton = payButton.cloneNode(true);
+      payButton.parentNode.replaceChild(cleanButton, payButton);
+      cleanButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        payNow(cleanButton);
+      }, true);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();

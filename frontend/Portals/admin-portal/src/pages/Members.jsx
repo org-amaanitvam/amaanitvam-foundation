@@ -85,75 +85,145 @@ const [editMember, setEditMember] = useState({
   };
 
   const handleRoleChange = async (id, newRole) => {
-    setActionLoading(id);
-    try {
-      await api.put(`/admin/members/${id}/role`, { role: newRole });
-      toast.success('Role updated successfully!');
-      setMembers(members => members.map(m => (m._id === id || m.id === id) ? { ...m, role: newRole } : m));
-      fetchMembers();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update role');
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  const previousMembers = members;
 
-  const handleDeactivate = async (id) => {
-    setActionLoading(id);
-    try {
-      await api.put(`/admin/members/${id}/deactivate`);
-      toast.success('Member deactivated');
-      fetchMembers();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to deactivate member');
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  setActionLoading(id);
+  setMembers((currentMembers) =>
+    currentMembers.map((member) =>
+      (member._id === id || member.id === id)
+        ? { ...member, role: newRole }
+        : member
+    )
+  );
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this member? This action cannot be undone.')) return;
-    setActionLoading(id);
-    try {
-      await api.delete(`/admin/members/${id}`);
-      toast.success('Member deleted successfully');
-      fetchMembers();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to delete member');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-  const handleEditMember = async () => {
-    if (!editMember.name || !editMember.email) {
-      toast.error("Name and Email are required");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      // Update general fields
-      await api.put(`/admin/members/${editMember.id}`, {
-        name: editMember.name,
-        email: editMember.email,
-        phone: editMember.phone,
-        department: editMember.department,
-      });
-      // Update role via the dedicated role endpoint
-      await api.put(`/admin/members/${editMember.id}/role`, {
-        role: editMember.role,
-      });
-      toast.success("Member updated successfully!");
-      setShowEditModal(false);
-      window.location.reload();
-    } catch (err) {
-      alert('API ERROR: ' + JSON.stringify(err.response?.data || err.message));
-      toast.error(err.response?.data?.message || "Failed to update member");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  try {
+    const res = await api.put(`/admin/members/${id}/role`, { role: newRole });
+    const updatedMember = res.data?.member;
 
-  const getRoleBadge = (role) => {
+    if (updatedMember) {
+      setMembers((currentMembers) =>
+        currentMembers.map((member) =>
+          (member._id === id || member.id === id)
+            ? { ...member, ...updatedMember }
+            : member
+        )
+      );
+    }
+
+    toast.success('Role updated successfully!');
+  } catch (err) {
+    setMembers(previousMembers);
+    toast.error(err.response?.data?.message || 'Failed to update role');
+  } finally {
+    setActionLoading(null);
+  }
+};
+
+const handleDeactivate = async (id) => {
+  const previousMembers = members;
+
+  setActionLoading(id);
+  setMembers((currentMembers) =>
+    currentMembers.map((member) =>
+      (member._id === id || member.id === id)
+        ? { ...member, status: 'inactive' }
+        : member
+    )
+  );
+
+  try {
+    const res = await api.put(`/admin/members/${id}/deactivate`);
+    const updatedMember = res.data?.member;
+
+    if (updatedMember) {
+      setMembers((currentMembers) =>
+        currentMembers.map((member) =>
+          (member._id === id || member.id === id)
+            ? { ...member, ...updatedMember }
+            : member
+        )
+      );
+    }
+
+    toast.success('Member deactivated');
+  } catch (err) {
+    setMembers(previousMembers);
+    toast.error(err.response?.data?.message || 'Failed to deactivate member');
+  } finally {
+    setActionLoading(null);
+  }
+};
+
+const handleDelete = async (id) => {
+  if (!window.confirm('Are you sure you want to delete this member? This action cannot be undone.')) return;
+
+  const previousMembers = members;
+
+  setActionLoading(id);
+  setMembers((currentMembers) =>
+    currentMembers.filter((member) => member._id !== id && member.id !== id)
+  );
+
+  try {
+    await api.delete(`/admin/members/${id}`);
+    toast.success('Member deleted successfully');
+  } catch (err) {
+    setMembers(previousMembers);
+    toast.error(err.response?.data?.message || 'Failed to delete member');
+  } finally {
+    setActionLoading(null);
+  }
+};
+
+const handleEditMember = async (e) => {
+  e?.preventDefault?.();
+
+  if (!editMember.name || !editMember.email) {
+    toast.error("Name and Email are required");
+    return;
+  }
+
+  setSubmitting(true);
+
+  try {
+    const detailsRes = await api.put(`/admin/members/${editMember.id}`, {
+      name: editMember.name,
+      phone: editMember.phone,
+      department: editMember.department,
+    });
+
+    const roleRes = await api.put(`/admin/members/${editMember.id}/role`, {
+      role: editMember.role,
+    });
+
+    const updatedMember = {
+      ...(detailsRes.data?.member || {}),
+      ...(roleRes.data?.member || {}),
+      name: editMember.name,
+      email: editMember.email,
+      phone: editMember.phone,
+      department: editMember.department,
+      role: editMember.role,
+    };
+
+    setMembers((currentMembers) =>
+      currentMembers.map((member) =>
+        (member._id === editMember.id || member.id === editMember.id)
+          ? { ...member, ...updatedMember }
+          : member
+      )
+    );
+
+    toast.success("Member updated successfully!");
+    setShowEditModal(false);
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Failed to update member");
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+const getRoleBadge = (role) => {
     const styles = {
       admin: 'bg-indigo-50 text-indigo-700',
       member: 'bg-blue-50 text-blue-700',

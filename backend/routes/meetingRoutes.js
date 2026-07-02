@@ -5,32 +5,53 @@ import {
     getMeetingById,
     updateMeeting,
     deleteMeeting,
-    uploadMinutes
+    uploadMinutes,
+    markAttendance,
+    bulkMarkAttendance,
+    getAttendanceReport,
+    getUserAttendanceHistory
 } from '../controllers/meetingController.js';
 import upload from '../middleware/upload.js';
 import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
+import { meetingAccess } from "../middleware/meetingAccess.js";
 
 const meetingRouter = express.Router();
-
 meetingRouter.use(verifyFirebaseToken);
 
-// Create Meeting
+// Create — admin only
 meetingRouter.post('/create', requireAdmin, createMeeting);
 
-// Get All Meetings
+// View — scoped in controller
 meetingRouter.get('/', getMeetings);
-
-// Get Single Meeting by ID
+meetingRouter.get('/user/:userId/attendance', getUserAttendanceHistory);
 meetingRouter.get('/:id', getMeetingById);
 
-// Update Meeting
-meetingRouter.put('/:id', updateMeeting);
+// Update/Delete — admin only
+meetingRouter.put('/:id', meetingAccess, updateMeeting);
+meetingRouter.delete('/:id', meetingAccess, deleteMeeting);
 
-// Delete Meeting
-meetingRouter.delete('/:id', deleteMeeting);
+meetingRouter.post(
+    '/:id/minutes',
+    meetingAccess,
+    upload.single('minutes'),
+    uploadMinutes
+);
+// Attendance
+meetingRouter.put(
+    '/:id/attendance',
+    meetingAccess,
+    markAttendance
+);
 
-// Upload Minutes
-meetingRouter.post('/:id/minutes', upload.single('minutes'), uploadMinutes);
+meetingRouter.put(
+    '/:id/attendance/bulk',
+    meetingAccess,
+    bulkMarkAttendance
+);
 
+meetingRouter.get(
+    '/:id/attendance/report',
+    meetingAccess,
+    getAttendanceReport
+);
 export default meetingRouter;
-

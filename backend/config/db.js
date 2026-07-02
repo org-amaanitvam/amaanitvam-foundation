@@ -1,18 +1,22 @@
 import mongoose from "mongoose";
-import dns from "node:dns";
-
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const connectDB = async () => {
+  const mongoUri = process.env.MONGO_URI;
+
+  if (!mongoUri) {
+    throw new Error("MONGO_URI is missing in backend/.env");
+  }
+
   try {
-    console.log("Using DNS:", dns.getServers());
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 15000,
+    });
 
-    await mongoose.connect(process.env.MONGO_URI);
-
-    console.log("✅ MongoDB Connected Successfully!");
+    console.log(`MongoDB connected: ${conn.connection.host}`);
+    console.log(`Database: ${conn.connection.name}`);
   } catch (error) {
-    console.error("❌ Database connection error:", error);
-    process.exit(1);
+    console.error("MongoDB connection failed:", error.message);
+    throw error;
   }
 };
 

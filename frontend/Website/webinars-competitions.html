@@ -18,6 +18,144 @@
   <!-- Assets -->
   <link href="assets/images/logo.jpg" rel="icon" type="image/jpg" />
   <link href="assets/css/styles.css" rel="stylesheet" />
+<<<<<<< HEAD
+=======
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    /* --- Featured webinar layout: alignment/structure fix --- */
+    .events-container {
+      padding-top: 56px;
+      padding-bottom: 56px;
+    }
+
+    .featured-webinar-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 460px) 1fr;
+      align-items: stretch;
+      gap: 40px;
+    }
+
+    .left-gallery-card-wrapper {
+      display: flex;
+    }
+
+    .left-gallery-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .top-poster-row {
+      width: 100%;
+    }
+
+    .main-poster {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .main-poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .bottom-snapshots-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .snapshot-card {
+      aspect-ratio: 4 / 3;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .snapshot-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .webinar-details-pane {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .webinar-status-badge {
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+
+    .webinar-subtitle-hindi {
+      margin-bottom: 4px;
+    }
+
+    .webinar-main-title {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .speaker-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .speaker-avatar-icon {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .speaker-info h4 {
+      margin: 0 0 4px;
+    }
+
+    .speaker-info p {
+      margin: 0;
+    }
+
+    .pill-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .webinar-description-text {
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .webinar-details-pane > .btn {
+      align-self: flex-start;
+    }
+
+    @media (max-width: 860px) {
+      .featured-webinar-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .left-gallery-card-wrapper {
+        max-width: 460px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+
+>>>>>>> 93b91d7b944cf14a0e8232e2bef23ba46977a3cc
 </head>
 
 <body data-page="webinars-competitions">
@@ -95,11 +233,11 @@
               </span>
             </button>
             <div class="dropdown-menu" role="menu">
-              <a class="dropdown-item" href="admin.html" role="menuitem">
+              <a class="dropdown-item" href="http://localhost:5173/login" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">admin_panel_settings</span></span>
                 <span class="dropdown-text"><strong>Admin portal</strong><small>Admin controls</small></span>
               </a>
-              <a class="dropdown-item" href="dashboard.html" role="menuitem">
+              <a class="dropdown-item" href="http://localhost:5174/login" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">dashboard</span></span>
                 <span class="dropdown-text"><strong>Dashboard Panel</strong><small>View analytics</small></span>
               </a>
@@ -160,8 +298,8 @@
             Resources <span aria-hidden="true" class="material-symbols-outlined">expand_more</span>
           </button>
           <div class="mobile-group-links">
-            <a class="mobile-link" href="admin.html">Admin portal</a>
-            <a class="mobile-link" href="dashboard.html">Dashboard Panel</a>
+            <a class="mobile-link" href="http://localhost:5173/login">Admin portal</a>
+            <a class="mobile-link" href="http://localhost:5174/login">Dashboard Panel</a>
             <a class="mobile-link" href="verify.html">Verify certificates</a>
             <a class="mobile-link" href="webinars-competitions.html">Webinar & competitions</a>
             <a class="mobile-link" href="collaborations.html">Collaboration & partnership</a>
@@ -223,7 +361,6 @@
             <span class="topic-pill">Education & Opportunities</span>
             <span class="topic-pill">Leadership Development</span>
             <span class="topic-pill">Empowered Women</span>
-            <span class="topic-pill">Confidence Building</span>
           </div>
           <p class="webinar-description-text">
             An impactful interactive leadership session centered on cultivating core framework capabilities, driving social self-confidence paradigms, and defining next-generation educational opportunity pipelines.
@@ -233,7 +370,70 @@
       </div>
     </div>
   </main>
+<<<<<<< HEAD
 
+=======
+  <section class="section section-white" id="registration-form-section">
+    <div class="container moved-inline-style-070">
+      <div class="section-header">
+        <span class="section-label">Join Us</span>
+        <h2 class="section-title">Webinar &amp; Competition Registration</h2>
+      </div>
+      <form class="moved-inline-style-112" id="registrationForm">
+        <div class="moved-inline-style-064">
+          <label class="form-label" for="reg-name">Full Name
+            <span aria-hidden="true" class="moved-inline-style-113">*</span>
+          </label>
+          <input class="form-input" id="reg-name" name="name" pattern="[A-Za-z\s]+" placeholder="Jane Doe" required=""
+            title="Please enter only letters and spaces" type="text" />
+        </div>
+        <div class="moved-inline-style-064">
+          <label class="form-label" for="reg-email">Email Address
+            <span aria-hidden="true" class="moved-inline-style-113">*</span>
+          </label>
+          <input class="form-input" id="reg-email" name="email" placeholder="jane@example.com" required=""
+            type="email" />
+        </div>
+        <div class="moved-inline-style-064">
+          <label class="form-label" for="reg-phone">Phone Number
+            <span aria-hidden="true" class="moved-inline-style-113">*</span>
+          </label>
+          <input class="form-input" id="reg-phone" maxlength="10" name="phone" pattern="\d{10}"
+            placeholder="10-digit number" required="" title="Please enter exactly 10 digits" type="text" />
+        </div>
+        <div class="moved-inline-style-064">
+          <label class="form-label" for="reg-type">Register For
+            <span aria-hidden="true" class="moved-inline-style-113">*</span>
+          </label>
+          <select class="form-input" id="reg-type" name="type" required="">
+            <option disabled="" selected="" value="">Select an option</option>
+            <option value="Webinar">Webinar</option>
+            <option value="Competition">Competition</option>
+          </select>
+        </div>
+        <div class="moved-inline-style-064">
+          <label class="form-label" for="reg-event">Event Name
+            <span aria-hidden="true" class="moved-inline-style-113">*</span>
+          </label>
+          <input class="form-input" id="reg-event" name="event" placeholder="e.g. Dharma, Samman aur Vikas"
+            required="" type="text" />
+        </div>
+        <div class="moved-inline-style-064">
+          <label class="form-label" for="reg-organization">Organization/Institution (Optional)</label>
+          <input class="form-input" id="reg-organization" name="organization"
+            placeholder="e.g. School, College, Company" type="text" />
+        </div>
+        <div class="moved-inline-style-065">
+          <label class="form-label" for="reg-message">Message/Query (Optional)</label>
+          <textarea class="form-textarea" id="reg-message" name="message"
+            placeholder="Any questions or additional details..." rows="4"></textarea>
+        </div>
+        <button class="btn btn-primary moved-inline-style-140" type="submit">Submit Registration</button>
+        <div class="moved-inline-style-122" id="reg-status"></div>
+      </form>
+    </div>
+  </section>
+>>>>>>> 93b91d7b944cf14a0e8232e2bef23ba46977a3cc
   <div id="footer"></div>
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 

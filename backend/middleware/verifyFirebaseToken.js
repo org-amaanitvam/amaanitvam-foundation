@@ -1,5 +1,4 @@
 import User from '../models/user.js';
-
 // DEMO MODE: In production, use firebase-admin SDK to verify tokens
 // For now, this extracts the email from the Firebase JWT payload without cryptographic verification
 // TODO: Install firebase-admin and use admin.auth().verifyIdToken(token) for production
@@ -40,8 +39,9 @@ export const verifyFirebaseToken = async (req, res, next) => {
                 firebaseUid: decoded.user_id || decoded.sub || '',
                 name: decoded.name || email.split('@')[0],
                 email,
-                role: 'admin',
-                status: 'active'
+                role: 'intern',
+                status: 'active',
+                department: ''
             });
         }
 

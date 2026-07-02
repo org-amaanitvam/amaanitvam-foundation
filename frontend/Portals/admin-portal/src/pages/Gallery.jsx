@@ -1,419 +1,918 @@
-import { useState, useEffect } from 'react';
-import { Image, Upload, Trash2, Loader2, Plus, Eye, X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ArrowLeft,
+  Eye,
+  Folder,
+  FolderPlus,
+  Image,
+  Loader2,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+  Video,
+  X,
+} from 'lucide-react';
 import api from '../config/api';
 
+const MAX_GALLERY_MEDIA_SIZE = 100 * 1024 * 1024;
+const GALLERY_UPLOAD_BATCH_SIZE = 5;
+
+const formatBytes = (bytes) => {
+  if (!bytes) return '0 B';
+
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / 1024 ** index).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+};
+
+const chunkFiles = (files, size = GALLERY_UPLOAD_BATCH_SIZE) => {
+  const chunks = [];
+
+  for (let i = 0; i < files.length; i += size) {
+    chunks.push(files.slice(i, i + size));
+  }
+
+  return chunks;
+};
+
+const isAllowedGalleryFile = (file) => file?.type?.startsWith('image/') || file?.type?.startsWith('video/');
+const isVideoMedia = (item) => item?.mediaType === 'video' || item?.contentType?.startsWith('video/');
+
+const getApiBaseUrl = () => (api.defaults.baseURL || '').replace(/\/api\/?$/, '');
+
+const getMediaSrc = (item) => {
+  if (!item?.imageUrl) return '';
+  if (item.imageUrl.startsWith('http')) return item.imageUrl;
+  return `${getApiBaseUrl()}${item.imageUrl}`;
+};
+
+const validateGalleryFiles = (files) => {
+  const invalidFiles = files.filter((file) => !isAllowedGalleryFile(file));
+
+  if (invalidFiles.length) {
+    return `Only photo and video files are allowed. Invalid: ${invalidFiles.map((file) => file.name).join(', ')}`;
+  }
+
+  const oversizedFiles = files.filter((file) => file.size > MAX_GALLERY_MEDIA_SIZE);
+
+  if (oversizedFiles.length) {
+    return `Each file must be 100MB or smaller. Too large: ${oversizedFiles
+      .map((file) => `${file.name} (${formatBytes(file.size)})`)
+      .join(', ')}`;
+  }
+
+  return '';
+};
+
+const formatDate = (value) => {
+  if (!value) return '';
+
+  return new Date(value).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
 export default function Gallery() {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState('');
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
- const [selectedFiles, setSelectedFiles] = useState([]);
-  
-  // Edit state
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingImage, setEditingImage] = useState(null);
+  const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [mediaItems, setMediaItems] = useState([]);
+  const [loadingFolders, setLoadingFolders] = useState(true);
+  const [loadingMedia, setLoadingMedia] = useState(false);
+  const [showCreateFolder, setShowCreateFolder] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [newFolderDescription, setNewFolderDescription] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [titlePrefix, setTitlePrefix] = useState('');
+  const [viewingMedia, setViewingMedia] = useState(null);
+  const [editingMedia, setEditingMedia] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editFile, setEditFile] = useState(null);
-  const [viewingImage, setViewingImage] = useState(null);
+  const [error, setError] = useState('');
+  const [creatingFolder, setCreatingFolder] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
 
-  useEffect(() => {
-    fetchImages();
+  const selectedFolderSummary = useMemo(
+    () => folders.find((folder) => folder._id === selectedFolder?._id) || selectedFolder,
+    [folders, selectedFolder]
+  );
+
+  const fetchFolders = useCallback(async () => {
+    try {
+      setError('');
+      const response = await api.get('/admin/gallery/folders');
+      setFolders(response.data?.folders || []);
+    } catch (err) {
+      console.error('Error fetching gallery folders:', err);
+      setError(err.response?.data?.message || 'Failed to load gallery folders');
+    } finally {
+      setLoadingFolders(false);
+    }
   }, []);
 
-  const fetchImages = async () => {
+  const fetchFolderMedia = useCallback(async (folderId) => {
+    if (!folderId) return;
+
     try {
-      const { data } = await api.get('/gallery');
-      setImages(data.images || []);
+      setError('');
+      setLoadingMedia(true);
+      const response = await api.get(`/admin/gallery/folders/${folderId}/media`);
+      setMediaItems(response.data?.images || []);
+
+      if (response.data?.folder) {
+        setSelectedFolder(response.data.folder);
+      }
     } catch (err) {
-      setError('Failed to load gallery images');
-      console.error(err);
+      console.error('Error fetching folder media:', err);
+      setError(err.response?.data?.message || 'Failed to load folder media');
     } finally {
-      setLoading(false);
+      setLoadingMedia(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchFolders();
+  }, [fetchFolders]);
+
+  const openFolder = (folder) => {
+    setSelectedFolder(folder);
+    setMediaItems([]);
+    fetchFolderMedia(folder._id);
   };
 
-  const handleFileSelect = (e) => {
-  const files = Array.from(e.target.files || []);
-  setSelectedFiles(files);
-};
+  const goBackToFolders = () => {
+    setSelectedFolder(null);
+    setMediaItems([]);
+    setError('');
+    fetchFolders();
+  };
 
-  const handleUpload = async (e) => {
-  e.preventDefault();
-
-  if (!selectedFiles.length || !newTitle) {
-    setError('Please provide a title and select at least one image');
-    return;
-  }
-
-  setUploading(true);
-  setError('');
-
-  const formData = new FormData();
-  formData.append('title', newTitle);
-
-  selectedFiles.forEach((file) => {
-    formData.append('images', file);
-  });
-
-  try {
-    await api.post('/admin/gallery/bulk', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-
-    setIsModalOpen(false);
-    setNewTitle('');
+  const resetUploadForm = () => {
     setSelectedFiles([]);
-    fetchImages();
-  } catch (err) {
-    setError(err.response?.data?.message || 'Failed to upload images');
-  } finally {
-    setUploading(false);
-  }
-};
+    setTitlePrefix('');
+    setShowUploadModal(false);
+  };
 
-  const handleEditClick = (img) => {
-    setEditingImage(img);
-    setEditTitle(img.title);
+
+  const openEditMedia = (mediaItem) => {
+    setEditingMedia(mediaItem);
+    setEditTitle(mediaItem?.title || '');
     setEditFile(null);
-    setIsEditModalOpen(true);
+    setError('');
   };
 
-  const handleEditFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setEditFile(e.target.files[0]);
-    }
+  const resetEditForm = () => {
+    setEditingMedia(null);
+    setEditTitle('');
+    setEditFile(null);
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    if (!editTitle) {
-      setError('Title cannot be empty');
+  const handleCreateFolder = async (event) => {
+    event.preventDefault();
+    const folderName = newFolderName.trim();
+
+    if (!folderName) {
+      setError('Folder name is required');
       return;
     }
 
-    setUploading(true);
-    setError('');
+    try {
+      setCreatingFolder(true);
+      setError('');
+      const response = await api.post('/admin/gallery/folders', {
+        name: folderName,
+        description: newFolderDescription.trim(),
+      });
 
-    const formData = new FormData();
-    formData.append('title', editTitle);
-    if (editFile) {
-      formData.append('image', editFile);
+      const createdFolder = response.data?.folder;
+      setNewFolderName('');
+      setNewFolderDescription('');
+      setShowCreateFolder(false);
+      await fetchFolders();
+
+      if (createdFolder) {
+        openFolder(createdFolder);
+      }
+    } catch (err) {
+      console.error('Error creating gallery folder:', err);
+      setError(err.response?.data?.message || 'Failed to create gallery folder');
+    } finally {
+      setCreatingFolder(false);
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files || []);
+    const validationError = validateGalleryFiles(files);
+
+    if (validationError) {
+      setError(validationError);
+      event.target.value = '';
+      return;
     }
 
-    try {
-      await api.put(`/admin/gallery/${editingImage._id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      setIsEditModalOpen(false);
-      setEditingImage(null);
-      setEditTitle('');
+    setSelectedFiles(files);
+    setError('');
+  };
+
+
+  const handleEditFileChange = (event) => {
+    const [file] = Array.from(event.target.files || []);
+
+    if (!file) {
       setEditFile(null);
-      fetchImages(); // Refresh the list
+      return;
+    }
+
+    const validationError = validateGalleryFiles([file]);
+
+    if (validationError) {
+      setError(validationError);
+      setEditFile(null);
+      event.target.value = '';
+      return;
+    }
+
+    setEditFile(file);
+    setError('');
+  };
+
+  const handleUpload = async (event) => {
+    event.preventDefault();
+
+    if (!selectedFolderSummary?._id) {
+      setError('Open a folder before uploading media');
+      return;
+    }
+
+    if (!selectedFiles.length) {
+      setError('Please select photos or videos to upload');
+      return;
+    }
+
+    const validationError = validateGalleryFiles(selectedFiles);
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    const uploadTitle = titlePrefix.trim() || selectedFolderSummary.name;
+    const batches = chunkFiles(selectedFiles);
+    const uploaded = [];
+
+    try {
+      setUploading(true);
+      setError('');
+
+      for (const batch of batches) {
+        const formData = new FormData();
+        formData.append('titlePrefix', uploadTitle);
+        formData.append('folderId', selectedFolderSummary._id);
+
+        batch.forEach((file) => formData.append('media', file));
+
+        const response = await api.post(
+          `/admin/gallery/folders/${selectedFolderSummary._id}/bulk`,
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+        uploaded.push(...(response.data?.images || []));
+      }
+
+      setMediaItems((prev) => [...uploaded, ...prev]);
+      resetUploadForm();
+      await fetchFolders();
+      await fetchFolderMedia(selectedFolderSummary._id);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update image');
+      console.error('Error uploading gallery media:', err);
+      setError(err.response?.data?.message || 'Failed to upload gallery media');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this image?')) return;
-    
+  const handleUpdateMedia = async (event) => {
+    event.preventDefault();
+
+    if (!editingMedia?._id) {
+      setError('Select media to edit');
+      return;
+    }
+
+    const nextTitle = editTitle.trim();
+
+    if (!nextTitle) {
+      setError('Media name is required');
+      return;
+    }
+
+    if (editFile) {
+      const validationError = validateGalleryFiles([editFile]);
+
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+    }
+
     try {
-      await api.delete(`/admin/gallery/${id}`);
-      setImages(images.filter(img => img._id !== id));
+      setSavingEdit(true);
+      setError('');
+
+      const formData = new FormData();
+      formData.append('title', nextTitle);
+
+      if (editFile) {
+        formData.append('media', editFile);
+      }
+
+      const response = await api.put(`/admin/gallery/${editingMedia._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const updatedMedia = response.data?.image;
+
+      if (updatedMedia) {
+        setMediaItems((prev) => prev.map((item) => (item._id === updatedMedia._id ? updatedMedia : item)));
+        setViewingMedia((prev) => (prev?._id === updatedMedia._id ? updatedMedia : prev));
+      }
+
+      resetEditForm();
+      await fetchFolders();
+
+      if (selectedFolderSummary?._id) {
+        await fetchFolderMedia(selectedFolderSummary._id);
+      }
     } catch (err) {
-      console.error('Failed to delete image', err);
-      alert('Failed to delete image');
+      console.error('Error updating gallery media:', err);
+      setError(err.response?.data?.message || 'Failed to update gallery media');
+    } finally {
+      setSavingEdit(false);
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gallery Management</h1>
-          <p className="text-sm text-slate-500 mt-1">Add or remove images from the main website gallery</p>
+  const handleDeleteMedia = async (mediaItem) => {
+    const confirmed = window.confirm(`Delete "${mediaItem.title}" from this folder?`);
+
+    if (!confirmed) return;
+
+    try {
+      setError('');
+      await api.delete(`/admin/gallery/${mediaItem._id}`);
+      setMediaItems((prev) => prev.filter((item) => item._id !== mediaItem._id));
+      await fetchFolders();
+      if (selectedFolderSummary?._id) {
+        await fetchFolderMedia(selectedFolderSummary._id);
+      }
+    } catch (err) {
+      console.error('Error deleting gallery media:', err);
+      setError(err.response?.data?.message || 'Failed to delete gallery media');
+    }
+  };
+
+  const handleDeleteFolder = async (folder) => {
+    const confirmed = window.confirm(
+      `Delete the folder "${folder.name}" and all ${folder.mediaCount || 0} media item(s) inside it?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setError('');
+      await api.delete(`/admin/gallery/folders/${folder._id}`);
+      if (selectedFolder?._id === folder._id) {
+        setSelectedFolder(null);
+        setMediaItems([]);
+      }
+      await fetchFolders();
+    } catch (err) {
+      console.error('Error deleting gallery folder:', err);
+      setError(err.response?.data?.message || 'Failed to delete gallery folder');
+    }
+  };
+
+  const renderFolderGrid = () => {
+    if (loadingFolders) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="mr-2 h-6 w-6 animate-spin text-blue-600" />
+          <span className="text-gray-600">Loading gallery folders...</span>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#56051a] hover:bg-[#56051a]/90 text-white rounded-xl font-medium transition-all shadow-sm shadow-[#56051a]/20"
-        >
-          <Plus className="w-4 h-4" />
-          Add Image
-        </button>
+      );
+    }
+
+    if (!folders.length) {
+      return (
+        <div className="rounded-2xl border-2 border-dashed border-gray-300 bg-white p-12 text-center">
+          <Folder className="mx-auto mb-4 h-14 w-14 text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900">No gallery folders yet</h3>
+          <p className="mt-2 text-sm text-gray-500">Create a project folder first, then upload photos and videos inside it.</p>
+          <button
+            onClick={() => setShowCreateFolder(true)}
+            className="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            <FolderPlus className="mr-2 h-4 w-4" />
+            Create Folder
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {folders.map((folder) => {
+          const coverMedia = folder.coverMedia;
+          const coverSrc = getMediaSrc(coverMedia);
+          const coverIsVideo = isVideoMedia(coverMedia);
+
+          return (
+            <div key={folder._id} className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+              <button type="button" onClick={() => openFolder(folder)} className="block w-full text-left">
+                <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100">
+                  {coverSrc ? (
+                    coverIsVideo ? (
+                      <video src={coverSrc} className="h-full w-full object-cover" muted preload="metadata" />
+                    ) : (
+                      <img src={coverSrc} alt={folder.name} className="h-full w-full object-cover" loading="lazy" />
+                    )
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <Folder className="h-16 w-16 text-blue-400" />
+                    </div>
+                  )}
+
+                  <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/20" />
+                  <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm">
+                    {folder.mediaCount || 0} item{folder.mediaCount === 1 ? '' : 's'}
+                  </div>
+                  {coverIsVideo && (
+                    <div className="absolute bottom-3 left-3 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold text-white">
+                      Video cover
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{folder.name}</h3>
+                      <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+                        {folder.description || 'Project gallery folder'}
+                      </p>
+                    </div>
+                    <Folder className="h-5 w-5 shrink-0 text-blue-500" />
+                  </div>
+                  <p className="mt-4 text-xs text-gray-400">Created {formatDate(folder.createdAt)}</p>
+                </div>
+              </button>
+
+              <div className="border-t border-gray-100 px-5 py-3">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteFolder(folder)}
+                  className="inline-flex items-center text-sm font-medium text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete folder
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderMediaGrid = () => {
+    if (loadingMedia) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="mr-2 h-6 w-6 animate-spin text-blue-600" />
+          <span className="text-gray-600">Loading folder media...</span>
+        </div>
+      );
+    }
+
+    if (!mediaItems.length) {
+      return (
+        <div className="rounded-2xl border-2 border-dashed border-gray-300 bg-white p-12 text-center">
+          <Image className="mx-auto mb-4 h-14 w-14 text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900">This folder is empty</h3>
+          <p className="mt-2 text-sm text-gray-500">Upload project photos and videos in bulk to create a clean folder preview.</p>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Media
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        {mediaItems.map((item) => {
+          const mediaSrc = getMediaSrc(item);
+          const isVideo = isVideoMedia(item);
+
+          return (
+            <div key={item._id} className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+              <div className="relative aspect-video bg-gray-100">
+                {isVideo ? (
+                  <video src={mediaSrc} className="h-full w-full object-cover" muted preload="metadata" />
+                ) : (
+                  <img src={mediaSrc} alt={item.title} className="h-full w-full object-cover" loading="lazy" />
+                )}
+
+                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                  <button
+                    type="button"
+                    onClick={() => setViewingMedia(item)}
+                    className="rounded-full bg-white p-3 text-gray-700 shadow hover:bg-gray-50"
+                    title="Preview"
+                  >
+                    <Eye className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openEditMedia(item)}
+                    className="rounded-full bg-blue-600 p-3 text-white shadow hover:bg-blue-700"
+                    title="Edit"
+                  >
+                    <Pencil className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteMedia(item)}
+                    className="rounded-full bg-red-600 p-3 text-white shadow hover:bg-red-700"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm">
+                  {isVideo ? <Video className="mr-1 inline h-3 w-3" /> : <Image className="mr-1 inline h-3 w-3" />}
+                  {isVideo ? 'Video' : 'Photo'}
+                </div>
+              </div>
+
+              <div className="p-4">
+                <h3 className="truncate text-sm font-semibold text-gray-900">{item.title}</h3>
+                <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                  <span>{formatBytes(item.size)}</span>
+                  <span>{formatDate(item.createdAt)}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-sm font-medium uppercase tracking-wide text-blue-600">Admin Portal</p>
+          <h1 className="mt-1 text-2xl font-bold text-gray-900">Gallery Management</h1>
+          <p className="mt-2 text-sm text-gray-500">
+            Organize project photos and videos into folders, upload in bulk, preview, edit, and delete media quickly.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          {selectedFolderSummary ? (
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              Upload Media
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowCreateFolder(true)}
+              className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+            >
+              <FolderPlus className="mr-2 h-4 w-4" />
+              Create Folder
+            </button>
+          )}
+        </div>
       </div>
 
-      {error && !isModalOpen && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100">
-          {error}
+      {error && (
+        <div className="flex items-start justify-between rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError('')} className="ml-4 text-red-500 hover:text-red-700">
+            <X className="h-4 w-4" />
+          </button>
         </div>
       )}
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="w-8 h-8 text-[#56051a] animate-spin" />
-        </div>
-      ) : images.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Image className="w-8 h-8 text-slate-400" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-1">No Images Found</h3>
-          <p className="text-slate-500">The gallery is currently empty.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {images.map((img) => (
-            <div key={img._id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden group">
-              <div className="aspect-[4/3] relative bg-slate-100">
-                <img 
-                  src={`${api.defaults.baseURL.replace('/api', '')}${img.imageUrl}`} 
-                  alt={img.title} 
-                  className="w-full h-full object-cover"
-                />
-<div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <button 
-                    onClick={() => setViewingImage(img)}
-                    className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-lg transition-colors"
-                    title="View Image"
-                  >
-                    <Eye className="w-5 h-5" />
-                  </button>
-                  <button 
-                    onClick={() => handleEditClick(img)}
-                    className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-colors"
-                    title="Edit Image"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(img._id)}
-                    className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transition-colors"
-                    title="Delete Image"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-              <div className="p-4 border-t border-slate-100">
-                <h3 className="font-semibold text-slate-900 truncate" title={img.title}>
-                  {img.title}
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Added on {new Date(img.createdAt).toLocaleDateString()}
+      {selectedFolderSummary ? (
+        <div className="space-y-6">
+          <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <button
+                type="button"
+                onClick={goBackToFolders}
+                className="rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-50"
+                title="Back to folders"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{selectedFolderSummary.name}</h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  {selectedFolderSummary.description || 'Project media folder'}
+                </p>
+                <p className="mt-2 text-xs text-gray-400">
+                  {selectedFolderSummary.mediaCount || mediaItems.length} media item(s)
                 </p>
               </div>
             </div>
-          ))}
-        </div>
-      )}
 
-      {/* View Modal */}
-      {viewingImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-          <div className="bg-white rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl relative animate-[slideUp_0.25s_ease-out]">
-            <button 
-              onClick={() => setViewingImage(null)}
-              className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors z-10"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="w-full h-[60vh] bg-slate-100 flex items-center justify-center overflow-hidden">
-              <img 
-                src={`${api.defaults.baseURL.replace('/api', '')}${viewingImage.imageUrl}`} 
-                alt={viewingImage.title} 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="p-6 bg-white">
-              <h2 className="text-xl font-bold text-slate-900 mb-2">{viewingImage.title}</h2>
-              <div className="flex flex-col sm:flex-row gap-4 text-sm text-slate-600">
-                <p><span className="font-semibold">Uploaded On:</span> {new Date(viewingImage.createdAt).toLocaleString()}</p>
-                <p><span className="font-semibold">Type:</span> {viewingImage.contentType || 'N/A'}</p>
-                <p><span className="font-semibold">ID:</span> {viewingImage._id}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Upload Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-900">Add New Image</h2>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600"
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setShowUploadModal(true)}
+                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
-                &times;
+                <Plus className="mr-2 h-4 w-4" />
+                Add Media
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeleteFolder(selectedFolderSummary)}
+                className="inline-flex items-center rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Folder
               </button>
             </div>
-            
-            <form onSubmit={handleUpload} className="p-6">
-              {error && isModalOpen && (
-                <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
-                  {error}
-                </div>
-              )}
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Image Title
-                  </label>
-                  <input
-                    type="text"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="e.g. Project Manthan Event"
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30 transition-all outline-none"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Upload Image
-                  </label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
-                    <div className="space-y-1 text-center">
-                      <Upload className="mx-auto h-8 w-8 text-slate-400" />
-                      <div className="flex text-sm text-slate-600">
-                        <label htmlFor="gallery-upload" className="relative cursor-pointer rounded-md font-medium text-[#56051a] hover:text-[#56051a]/80 focus-within:outline-none">
-                         <span>
-  {selectedFiles.length > 0
-    ? `${selectedFiles.length} image(s) selected`
-    : 'Upload one or more images'}
-</span>
+          </div>
 
-<input
-  id="gallery-upload"
-  name="gallery-upload"
-  type="file"
-  accept="image/*"
-  multiple
-  onChange={handleFileSelect}
-  className="sr-only"
-/>
-                        </label>
+          {renderMediaGrid()}
+        </div>
+      ) : (
+        renderFolderGrid()
+      )}
+
+      {showCreateFolder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleCreateFolder} className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Create Gallery Folder</h2>
+                <p className="mt-1 text-sm text-gray-500">Use one folder for each project/event.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateFolder(false)}
+                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Folder Name</label>
+                <input
+                  type="text"
+                  value={newFolderName}
+                  onChange={(event) => setNewFolderName(event.target.value)}
+                  placeholder="Example: Tree Plantation Drive 2026"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  value={newFolderDescription}
+                  onChange={(event) => setNewFolderDescription(event.target.value)}
+                  placeholder="Short project/event detail"
+                  rows="3"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowCreateFolder(false)}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={creatingFolder}
+                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {creatingFolder ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FolderPlus className="mr-2 h-4 w-4" />}
+                Create Folder
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {showUploadModal && selectedFolderSummary && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleUpload} className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Upload to {selectedFolderSummary.name}</h2>
+                <p className="mt-1 text-sm text-gray-500">Photos and videos upload in safe batches of five, up to 100MB per file.</p>
+              </div>
+              <button
+                type="button"
+                onClick={resetUploadForm}
+                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-5">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Media title prefix</label>
+                <input
+                  type="text"
+                  value={titlePrefix}
+                  onChange={(event) => setTitlePrefix(event.target.value)}
+                  placeholder={selectedFolderSummary.name}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
+                <p className="mt-1 text-xs text-gray-500">Example: "Tree Plantation" becomes Tree Plantation 1, Tree Plantation 2...</p>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Select photos/videos</label>
+                <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center hover:border-blue-400 hover:bg-blue-50">
+                  <Upload className="mb-3 h-10 w-10 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">Click to select files</span>
+                  <span className="mt-1 text-xs text-gray-500">Bulk upload supported. Images and videos only.</span>
+                  <input type="file" multiple accept="image/*,video/*" onChange={handleFileChange} className="hidden" />
+                </label>
+              </div>
+
+              {selectedFiles.length > 0 && (
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <p className="text-sm font-medium text-gray-700">Selected files ({selectedFiles.length})</p>
+                  <div className="mt-3 max-h-40 space-y-2 overflow-auto text-sm text-gray-600">
+                    {selectedFiles.map((file) => (
+                      <div key={`${file.name}-${file.size}`} className="flex items-center justify-between rounded bg-white px-3 py-2">
+                        <span className="truncate">{file.name}</span>
+                        <span className="ml-3 shrink-0 text-xs text-gray-400">{formatBytes(file.size)}</span>
                       </div>
-                      <p className="text-xs text-slate-500">PNG, JPG, GIF up to 5MB</p>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
+            </div>
 
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50"
-                  disabled={uploading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                 disabled={uploading || selectedFiles.length === 0 || !newTitle}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#56051a] text-white text-sm font-medium rounded-xl hover:bg-[#56051a]/90 disabled:opacity-50 transition-colors"
-                >
-                  {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
-                 {uploading ? 'Uploading...' : selectedFiles.length > 1 ? 'Save Images' : 'Save Image'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      {/* Edit Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-900">Edit Image</h2>
-              <button 
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600"
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={resetUploadForm}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                &times;
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={uploading || !selectedFiles.length}
+                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                {uploading ? 'Uploading...' : 'Upload Media'}
               </button>
             </div>
-            
-            <form onSubmit={handleUpdate} className="p-6">
-              {error && isEditModalOpen && (
-                <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
-                  {error}
-                </div>
-              )}
-              
+          </form>
+        </div>
+      )}
+
+      {editingMedia && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleUpdateMedia} className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Edit Media</h2>
+                <p className="mt-1 text-sm text-gray-500">Change the media name or replace the photo/video inside this folder.</p>
+              </div>
+              <button
+                type="button"
+                onClick={resetEditForm}
+                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-5 md:grid-cols-[220px_1fr]">
+              <div className="overflow-hidden rounded-xl bg-gray-100">
+                {isVideoMedia(editingMedia) ? (
+                  <video src={getMediaSrc(editingMedia)} className="aspect-video h-full w-full object-cover" muted preload="metadata" />
+                ) : (
+                  <img src={getMediaSrc(editingMedia)} alt={editingMedia.title} className="aspect-video h-full w-full object-cover" />
+                )}
+              </div>
+
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Image Title
-                  </label>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">Media Name</label>
                   <input
                     type="text"
                     value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    placeholder="e.g. Project Manthan Event"
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30 transition-all outline-none"
+                    onChange={(event) => setEditTitle(event.target.value)}
+                    placeholder="Enter media name"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                     required
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Upload New Image (Optional)
+                  <label className="mb-2 block text-sm font-medium text-gray-700">Replace Photo/Video</label>
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-5 text-center hover:border-blue-400 hover:bg-blue-50">
+                    <Upload className="mb-2 h-8 w-8 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-700">Choose new file</span>
+                    <span className="mt-1 text-xs text-gray-500">Optional. Leave blank to only rename.</span>
+                    <input type="file" accept="image/*,video/*" onChange={handleEditFileChange} className="hidden" />
                   </label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
-                    <div className="space-y-1 text-center">
-                      <Upload className="mx-auto h-8 w-8 text-slate-400" />
-                      <div className="flex text-sm text-slate-600">
-                        <label htmlFor="edit-file-upload" className="relative cursor-pointer rounded-md font-medium text-[#56051a] hover:text-[#56051a]/80 focus-within:outline-none">
-                          <span>{editFile ? editFile.name : 'Upload a new file to replace the old one'}</span>
-                          <input 
-                            id="edit-file-upload" 
-                            name="edit-file-upload" 
-                            type="file" 
-                            className="sr-only" 
-                            accept="image/*"
-                            onChange={handleEditFileSelect}
-                          />
-                        </label>
-                      </div>
-                      <p className="text-xs text-slate-500">Leave empty to keep current image</p>
+                </div>
+
+                {editFile && (
+                  <div className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="truncate">{editFile.name}</span>
+                      <span className="shrink-0 text-xs text-gray-400">{formatBytes(editFile.size)}</span>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
+            </div>
 
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50"
-                  disabled={uploading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={uploading || !editTitle}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#56051a] text-white text-sm font-medium rounded-xl hover:bg-[#56051a]/90 disabled:opacity-50 transition-colors"
-                >
-                  {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {uploading ? 'Updating...' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={resetEditForm}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={savingEdit}
+                className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {savingEdit ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Pencil className="mr-2 h-4 w-4" />}
+                {savingEdit ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {viewingMedia && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="relative max-h-full w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl">
+            <button
+              type="button"
+              onClick={() => setViewingMedia(null)}
+              className="absolute right-4 top-4 z-10 rounded-full bg-black/60 p-2 text-white hover:bg-black/80"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="max-h-[75vh] bg-black">
+              {isVideoMedia(viewingMedia) ? (
+                <video src={getMediaSrc(viewingMedia)} controls className="mx-auto max-h-[75vh] w-full object-contain" />
+              ) : (
+                <img src={getMediaSrc(viewingMedia)} alt={viewingMedia.title} className="mx-auto max-h-[75vh] w-full object-contain" />
+              )}
+            </div>
+
+            <div className="p-5">
+              <h3 className="text-lg font-semibold text-gray-900">{viewingMedia.title}</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {viewingMedia.originalName || 'Gallery media'} · {formatBytes(viewingMedia.size)}
+              </p>
+            </div>
           </div>
         </div>
       )}

@@ -1,6 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
+console.log("API KEY:", import.meta.env.VITE_FIREBASE_API_KEY);
+console.log("PROJECT ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
+
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'PLACEHOLDER',
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'PLACEHOLDER',

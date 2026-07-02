@@ -11,8 +11,9 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ title: '', description: '', progress: 0, startDate: '', endDate: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', progress: 0, startDate: '', endDate: '', assignedMembers: [], department: '' });
   const [users, setUsers] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [filters, setFilters] = useState({});
   const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
@@ -23,6 +24,8 @@ export default function ProjectsPage() {
       if (isAdmin) {
         const res = await api.get('/admin/members');
         setUsers(res.data.members || []);
+        const deptRes = await api.get('/departments');
+        setDepartments(deptRes.data.departments || []);
       }
     } catch {
       toast.error('Failed to load data');
@@ -45,19 +48,20 @@ export default function ProjectsPage() {
       }
       setShowCreate(false);
       setEditingId(null);
-      setFormData({ title: '', description: '', progress: 0, assignedMembers: [], startDate: '', endDate: '' });
+      setFormData({ title: '', description: '', progress: 0, assignedMembers: [], startDate: '', endDate: '', department: '' });
       fetchProjects();
     } catch { toast.error(editingId ? 'Failed to update project' : 'Failed to create project'); }
   };
 
   const openEdit = (p) => {
-    setFormData({ 
-      title: p.title || p.name, 
-      description: p.description || '', 
-      progress: p.progress || 0, 
+    setFormData({
+      title: p.title || p.name,
+      description: p.description || '',
+      progress: p.progress || 0,
       startDate: p.startDate ? new Date(p.startDate).toISOString().split('T')[0] : '',
       endDate: p.endDate ? new Date(p.endDate).toISOString().split('T')[0] : '',
-      assignedMembers: p.assignedMembers?.map(m => m._id) || [] 
+      assignedMembers: p.assignedMembers?.map(m => m._id) || [],
+      department: p.department?._id || p.department || ''
     });
     setEditingId(p._id);
     setShowCreate(true);
@@ -77,7 +81,7 @@ export default function ProjectsPage() {
   const filtered = projects.filter(p => {
     let match = true;
     if (filters.status && filters.status !== 'all' && p.status !== filters.status) match = false;
-    
+
     if (filters.startDate?.start && p.startDate) {
       if (new Date(p.startDate) < new Date(filters.startDate.start)) match = false;
     }
@@ -126,7 +130,7 @@ export default function ProjectsPage() {
           <p className="text-sm text-slate-500 mt-1">Track project progress</p>
         </div>
         {isAdmin && (
-          <button onClick={() => { setEditingId(null); setFormData({ title: '', description: '', progress: 0, assignedMembers: [], startDate: '', endDate: '' }); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
+          <button onClick={() => { setEditingId(null); setFormData({ title: '', description: '', progress: 0, assignedMembers: [], startDate: '', endDate: '', department: '' }); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
             <Plus className="w-4 h-4" /> New Project
           </button>
         )}
@@ -142,36 +146,51 @@ export default function ProjectsPage() {
               ) : (
                 <div className="mb-2"><h3 className="font-semibold text-slate-800">{formData.title}</h3></div>
               )}
+
               <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" rows="3"></textarea></div>
               <div><label className="block text-sm font-medium mb-1">Progress (%)</label><input type="number" min="0" max="100" required value={formData.progress} onChange={e => setFormData({...formData, progress: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
-              
-              {isAdmin && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium mb-1">Start Date</label><input type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
-                  <div><label className="block text-sm font-medium mb-1">End Date</label><input type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
-                </div>
-              )}
 
               {isAdmin && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">Assign Members (Private Project)</label>
-                  <div className="max-h-40 overflow-y-auto border rounded-xl p-2 space-y-1">
-                    {users.map(u => (
-                      <label key={u._id} className="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.assignedMembers?.includes(u._id)}
-                          onChange={() => toggleMember(u._id)}
-                          className="rounded text-[#56051a] focus:ring-[#56051a]"
-                        />
-                        <span className="text-sm">{u.name} <span className="text-xs text-slate-400">({u.role})</span></span>
-                      </label>
-                    ))}
-                    {users.length === 0 && <p className="text-xs text-slate-500 text-center">No members found</p>}
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Department (Domain)</label>
+                    <select
+                      value={formData.department}
+                      onChange={e => setFormData({...formData, department: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-xl text-sm"
+                    >
+                      <option value="">No Department</option>
+                      {departments.map(d => (
+                        <option key={d._id} value={d._id}>{d.departmentName}</option>
+                      ))}
+                    </select>
                   </div>
-                </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><label className="block text-sm font-medium mb-1">Start Date</label><input type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
+                    <div><label className="block text-sm font-medium mb-1">End Date</label><input type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Assign Members (Private Project)</label>
+                    <div className="max-h-40 overflow-y-auto border rounded-xl p-2 space-y-1">
+                      {users.map(u => (
+                        <label key={u._id} className="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.assignedMembers?.includes(u._id)}
+                            onChange={() => toggleMember(u._id)}
+                            className="rounded text-[#56051a] focus:ring-[#56051a]"
+                          />
+                          <span className="text-sm">{u.name} <span className="text-xs text-slate-400">({u.role})</span></span>
+                        </label>
+                      ))}
+                      {users.length === 0 && <p className="text-xs text-slate-500 text-center">No members found</p>}
+                    </div>
+                  </div>
+                </>
               )}
-              
+
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
                 <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-[#56051a] rounded-xl hover:bg-[#7a1e3a]">{editingId ? 'Save' : 'Create'}</button>
@@ -180,7 +199,7 @@ export default function ProjectsPage() {
           </div>
         </div>
       )}
-      
+
       <FilterBar config={filterConfig} filters={filters} setFilters={setFilters} />
 
       {filtered.length === 0 ? (
@@ -201,10 +220,13 @@ export default function ProjectsPage() {
                     {p.title || p.name}
                     {p.status === 'pending_approval' && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-lg border bg-purple-100 text-purple-700 border-purple-200">Pending Approval</span>}
                   </h3>
+                  {p.department?.departmentName && (
+                    <span className="text-xs text-slate-400 font-medium">{p.department.departmentName}</span>
+                  )}
                 </div>
                 <span className="text-sm font-bold text-[#56051a]">{p.progress || 0}%</span>
               </div>
-              
+
               {(p.startDate || p.endDate) && (
                 <div className="text-xs text-slate-400 mb-2 flex items-center gap-2 font-medium">
                   {p.startDate && <span>Starts: {new Date(p.startDate).toLocaleDateString()}</span>}
@@ -212,12 +234,12 @@ export default function ProjectsPage() {
                   {p.endDate && <span>Ends: {new Date(p.endDate).toLocaleDateString()}</span>}
                 </div>
               )}
-              
+
               <p className="text-xs text-slate-500 mb-3">{p.description || 'No description'}</p>
               <div className="w-full bg-slate-100 rounded-full h-2.5 mb-3">
                 <div className="bg-[#56051a] h-2.5 rounded-full transition-all duration-500" style={{ width: `${p.progress || 0}%` }}></div>
               </div>
-              
+
               {p.status === 'pending_approval' && isAdmin && (
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
                   <button onClick={async () => {

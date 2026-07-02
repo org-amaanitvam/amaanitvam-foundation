@@ -45,7 +45,19 @@ const announcementSchema = new mongoose.Schema({
     expiryDate: {
       type: Date,
     },
-},
+
+    department:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"department",
+      default:null
+    },
+
+    visibility:{
+      type:String,
+      enum:["global","department"],
+      default:"department"
+    }
+}, 
 { 
   timestamps: true 
 });

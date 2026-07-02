@@ -1,43 +1,41 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema(
-{
+  {
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-
     description: String,
-
-    startDate: {
-        type: Date
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "department",
+      default: null,
     },
-
-    endDate: {
-        type: Date
-    },
-
+    startDate: { type: Date },
+    endDate: { type: Date },
     progress: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 100
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
     },
-
     status: {
-        type: String,
-        enum: ["ongoing", "completed", "pending_approval"],
-        default: "ongoing"
+      type: String,
+      enum: ["ongoing", "completed", "pending_approval"],
+      default: "ongoing",
     },
-    
-    assignedMembers: [{
+    assignedMembers: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }]
-},
-{
-    timestamps: true
-});
+        ref: "User",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const projectModel = mongoose.models.project || mongoose.model("project", projectSchema);
 export default projectModel;

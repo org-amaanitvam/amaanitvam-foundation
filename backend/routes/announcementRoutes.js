@@ -9,31 +9,23 @@ import {
     deactivateAnnouncement,
     deleteAnnouncement
 } from '../controllers/announcementController.js';
+import { verifyFirebaseToken } from '../middleware/verifyFirebaseToken.js';
+import { requireMinRole } from '../middleware/rbac.js';
 
 const announcementRouter = express.Router();
 
-// Create Announcement
-announcementRouter.post('/create', createAnnouncement);
+announcementRouter.use(verifyFirebaseToken);
 
-// Get All Announcements
+// View — everyone
 announcementRouter.get('/', getAnnouncements);
-
-// Get Announcements by Category
 announcementRouter.get('/category/:category', getAnnouncementsByCategory);
-
-// Get Announcements by Priority
 announcementRouter.get('/priority/:priority', getAnnouncementsByPriority);
-
-// Get Single Announcement by ID
 announcementRouter.get('/:id', getAnnouncementById);
 
-// Update Announcement
-announcementRouter.put('/:id', updateAnnouncement);
-
-// Deactivate Announcement
-announcementRouter.patch('/:id/deactivate', deactivateAnnouncement);
-
-// Delete Announcement
-announcementRouter.delete('/:id', deleteAnnouncement);
+// Mutate — admin/super_admin only
+announcementRouter.post('/create', requireMinRole('admin'), createAnnouncement);
+announcementRouter.put('/:id', requireMinRole('admin'), updateAnnouncement);
+announcementRouter.patch('/:id/deactivate', requireMinRole('admin'), deactivateAnnouncement);
+announcementRouter.delete('/:id', requireMinRole('admin'), deleteAnnouncement);
 
 export default announcementRouter;
