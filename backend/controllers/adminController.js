@@ -308,7 +308,13 @@ export const getCertificates = async (req, res) => {
       .select('-pdfBuffer')
       .sort({ createdAt: -1 });
 
-    res.json({ success: true, certificates });
+    const certsWithUrl = certificates.map(cert => {
+      const c = cert.toObject();
+      c.certificateUrl = `/api/certificates/${cert._id}/download`;
+      return c;
+    });
+
+    res.json({ success: true, certificates: certsWithUrl });
   } catch (error) {
     console.error('Certificates error:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch certificates.' });
@@ -346,7 +352,9 @@ export const uploadCertificateFile = async (req, res) => {
       ipAddress: req.ip,
     });
 
-    res.json({ success: true, message: 'Certificate PDF uploaded successfully.', certificate });
+    const certObj = certificate.toObject();
+    certObj.certificateUrl = `/api/certificates/${certificate._id}/download`;
+    res.json({ success: true, message: 'Certificate PDF uploaded successfully.', certificate: certObj });
   } catch (error) {
     console.error('Upload certificate file error:', error);
     res.status(500).json({ success: false, message: error.message || 'Failed to upload certificate PDF.' });
@@ -415,6 +423,7 @@ export const generateCertificate = async (req, res) => {
 
     const safeCertificate = certificate.toObject();
     delete safeCertificate.pdfBuffer;
+    safeCertificate.certificateUrl = `/api/certificates/${certificate._id}/download`;
 
     res.status(201).json({ success: true, certificate: safeCertificate });
   } catch (error) {

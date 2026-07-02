@@ -100,6 +100,27 @@ app.use("/api/public", publicRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/notifications", notificationRoutes);
 
+// Mock Intern Reports route to satisfy dashboard frontend
+app.get("/api/reports", (req, res) => {
+    res.json({
+        success: true,
+        reports: [
+            {
+                _id: "report-1",
+                title: "June Performance Summary",
+                description: "Overall excellent progress in frontend development, backend task completions, and team collaboration.",
+                createdAt: new Date("2026-06-30T10:00:00.000Z")
+            },
+            {
+                _id: "report-2",
+                title: "Mid-Term Internship Report",
+                description: "Good understanding of system architecture, clean documentation writing, and prompt response to bug fixes.",
+                createdAt: new Date("2026-06-15T10:00:00.000Z")
+            }
+        ]
+    });
+});
+
 app.use((req, res) => {
     res.status(404).json({
         success: false,

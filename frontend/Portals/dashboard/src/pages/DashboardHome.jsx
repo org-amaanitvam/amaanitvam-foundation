@@ -34,6 +34,10 @@ export default function DashboardHome() {
 
   const fetchDashboardData = async () => {
     try {
+      const statsReq = (userProfile?.role === 'admin' || userProfile?.role === 'super_admin')
+        ? api.get('/admin/stats')
+        : Promise.resolve({ data: null });
+
       const [
         statsRes,
         meetingsRes,
@@ -41,7 +45,7 @@ export default function DashboardHome() {
         announcementsRes,
         projectsRes,
       ] = await Promise.allSettled([
-        api.get('/admin/stats'),
+        statsReq,
         api.get('/meetings'),
         api.get('/tasks'),
         api.get('/announcements'),

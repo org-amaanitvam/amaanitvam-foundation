@@ -1,7 +1,10 @@
 import express from 'express';
 import Certificate from '../models/certificate.js';
+import { getCertificates, downloadCertificate } from '../controllers/adminController.js';
+import { verifyFirebaseToken } from '../middleware/verifyFirebaseToken.js';
 
 const router = express.Router();
+
 
 // GET /api/certificates/verify/:certificateId
 // PUBLIC route — no authentication required
@@ -134,4 +137,11 @@ router.get('/seed', async (req, res) => {
     }
 });
 
+// GET /api/certificates/my — Authenticated; returns only the current user's certificates
+router.get('/my', verifyFirebaseToken, getCertificates);
+
+// GET /api/certificates/:id/download — Authenticated; downloads a specific certificate PDF
+router.get('/:id/download', verifyFirebaseToken, downloadCertificate);
+
 export default router;
+
