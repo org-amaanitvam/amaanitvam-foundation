@@ -327,44 +327,7 @@
   </div>
 
   <script src="assets/js/main.js"></script>
-  <script>
-    (function () {
-      const nav = document.getElementById('site-header').querySelector('.site-nav');
-      const menuToggle = document.getElementById('menu-toggle');
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (nav) {
-        function onScroll() { nav.classList.toggle('is-solid', window.scrollY > 60); }
-        window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll();
-      }
-      const pageMap = { about: 0, impact: 0, programs: 0, gallery: 0, volunteer: 1, internship: 1, contact: 1, collaborations: 2, verify: 2, faq: 2, resources: 2, 'webinars-competitions': 2 };
-      const page = document.body.dataset.page;
-      if (page && pageMap[page] !== undefined) {
-        const triggers = document.querySelectorAll('.nav-link.dropdown-trigger');
-        if (triggers[pageMap[page]]) { triggers[pageMap[page]].classList.add('is-active'); }
-      }
-      document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
-        const trigger = item.querySelector('.dropdown-trigger');
-        const menu = item.querySelector('.dropdown-menu');
-        function open() { trigger.setAttribute('aria-expanded', 'true'); menu.classList.add('is-open'); }
-        function close() { trigger.setAttribute('aria-expanded', 'false'); menu.classList.remove('is-open'); }
-        item.addEventListener('mouseenter', open);
-        item.addEventListener('mouseleave', close);
-        trigger.addEventListener('click', function () { trigger.getAttribute('aria-expanded') === 'true' ? close() : open(); });
-      });
-      if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener('click', function () {
-          const isOpen = mobileMenu.classList.toggle('is-open');
-          menuToggle.setAttribute('aria-expanded', isOpen);
-          menuToggle.classList.toggle('is-active', isOpen);
-        });
-      }
-    })();
-    fetch('footer.html').then(function (response) { return response.text(); }).then(function (data) {
-      const footer = document.getElementById('footer');
-      if (footer) footer.innerHTML = data;
-    });
-  </script>
+  
 </body>
 
 </html>
