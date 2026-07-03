@@ -16,6 +16,7 @@ import internshipRoutes from "./routes/internshipRoutes.js";
 import volunteerRoutes from "./routes/volunteerRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
 import donationRoutes from "./routes/donationRoutes.js";
+import campaignRoutes from "./routes/campaignRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
@@ -64,7 +65,11 @@ const allowedOrigins = [
   process.env.ADMIN_URL,
 ].filter(Boolean);
 
-app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 
 app.use(
   cors({
@@ -72,6 +77,8 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
+
+      console.error("CORS blocked:", origin);
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
@@ -103,14 +110,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/internship", internshipRoutes);
 app.use("/api/volunteer", volunteerRoutes);
 app.use("/api/donate", donationRoutes);
-
-/* FIX: website active campaign API */
-app.get("/api/campaigns/active", (req, res) => {
-  res.json({
-    success: true,
-    campaigns: [],
-  });
-});
+app.use("/api/campaigns", campaignRoutes);
 
 app.use("/api", galleryMongoMediaFixRoutes);
 app.use("/api/auth", authRoutes);
@@ -160,6 +160,7 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   console.error("Server Error:", err.message);
+
   res.status(err.status || 500).json({
     success: false,
     message: err.message || "Internal Server Error",
@@ -171,6 +172,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

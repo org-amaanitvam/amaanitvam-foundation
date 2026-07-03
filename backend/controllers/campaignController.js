@@ -11,7 +11,7 @@ export const getCampaigns = async (req, res) => {
 
 export const getPublicCampaigns = async (req, res) => {
   try {
-    const campaigns = await Campaign.find({ status: "active" }).sort({ createdAt: -1 });
+    const campaigns = await Campaign.find({ status: { $regex: /^active$/i } }).sort({ createdAt: -1 });
     res.json({ success: true, campaigns });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -65,7 +65,7 @@ export const deleteCampaign = async (req, res) => {
   try {
     const campaign = await Campaign.findByIdAndUpdate(
       req.params.id,
-      { status: "inactive" },
+      { status: { $regex: /^inactive$/i } },
       { new: true }
     );
 
