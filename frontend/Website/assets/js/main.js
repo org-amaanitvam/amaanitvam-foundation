@@ -2,7 +2,13 @@
    COMPLETE WEBSITE JS + DASHBOARD JS
    Website interactions first, dashboard module logic second.
    ===================================================== */
+/* =====================================================
+   COMPLETE WEBSITE JS + DASHBOARD JS
+   Website interactions first, dashboard module logic second.
+   ===================================================== */
 
+   const API_BASE_URL = 'https://amaanitvam-foundation.onrender.com/api';
+   
 (function () {
   'use strict';
 
@@ -283,11 +289,7 @@
       const submitButton = contactForm.querySelector('button[type="submit"]');
       const originalButtonHtml = submitButton ? submitButton.innerHTML : '';
       const formData = new FormData(contactForm);
-<<<<<<< HEAD
-      const apiUrl = contactForm.dataset.apiUrl || 'https://amaanitvam-platform.onrender.com/api/contact';
-=======
-      const apiUrl = contactForm.dataset.apiUrl || 'http://localhost:5000/api/contact';
->>>>>>> e1a4c38033c5d1aa16286c929191b3e1a88a859a
+      const apiUrl = contactForm.dataset.apiUrl || API_BASE_URL + '/contact';
 
       if (contactStatus) {
         contactStatus.innerHTML = '<p style="margin:0;">Sending your message...</p>';
@@ -1337,11 +1339,7 @@ fetch('footer.html')
 
       try {
 
-<<<<<<< HEAD
-        var response = await fetch('https://amaanitvam-platform.onrender.com/api/donate/create-order', {
-=======
-        var response = await fetch('http://localhost:5000/api/donate/create-order', {
->>>>>>> e1a4c38033c5d1aa16286c929191b3e1a88a859a
+        var response = await fetch(API_BASE_URL + '/donate/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: name, email: email, phone: phone, amount: selectedAmount })
@@ -1374,11 +1372,7 @@ fetch('footer.html')
           handler: async function (paymentResponse) {
 
             try {
-<<<<<<< HEAD
-              var verifyRes = await fetch('https://amaanitvam-platform.onrender.com/api/donate/verify', {
-=======
-              var verifyRes = await fetch('http://localhost:5000/api/donate/verify', {
->>>>>>> e1a4c38033c5d1aa16286c929191b3e1a88a859a
+              var verifyRes = await fetch(API_BASE_URL + '/donate/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1809,11 +1803,7 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
   const formData = new FormData(this);
 
   try {
-<<<<<<< HEAD
-    const response = await fetch('https://amaanitvam-platform.onrender.com/api/internship/apply', {
-=======
-    const response = await fetch('http://localhost:5000/api/internship/apply', {
->>>>>>> e1a4c38033c5d1aa16286c929191b3e1a88a859a
+    const response = await fetch(API_BASE_URL + '/internship/apply', {
       method: 'POST',
       body: formData
     });
@@ -2645,11 +2635,7 @@ document.getElementById('volunteerForm')?.addEventListener('submit', async funct
   const data = Object.fromEntries(formData.entries());
 
   try {
-<<<<<<< HEAD
-    const response = await fetch('https://amaanitvam-platform.onrender.com/api/volunteer/apply', {
-=======
-    const response = await fetch('http://localhost:5000/api/volunteer/apply', {
->>>>>>> e1a4c38033c5d1aa16286c929191b3e1a88a859a
+    const response = await fetch(API_BASE_URL + '/volunteer/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -2880,8 +2866,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Your backend is on 5000. Do not try 5001 or Live Server 5500, because that creates noisy console errors.
     if (isLocalHost()) {
-      list.push('http://localhost:5000/api');
-      list.push('http://127.0.0.1:5000/api');
+      list.push(API_BASE_URL);
     }
 
     // Only use same-origin /api when this is not VS Code Live Server.
@@ -3199,7 +3184,7 @@ document.addEventListener('DOMContentLoaded', function () {
       renderHomeCampaigns();
       renderCampaignSelector();
     } catch (error) {
-      const message = `Could not load active campaigns from http://localhost:5000/api/donate/campaigns. ${escapeHtml(error.message || '')}`;
+      const message = `Could not load active campaigns from the API. ${escapeHtml(error.message || '')}`;
       const home = document.getElementById('homeCampaigns');
       const selector = document.getElementById('campaignDonationSelector');
       if (home) home.innerHTML = `<div class="campaign-preview-inner"><div class="campaign-error">${message}</div></div>`;
@@ -3242,7 +3227,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let activeApiBase = cleanBase(
     container.dataset.galleryApiBase ||
     window.GALLERY_API_BASE ||
-    window.API_BASE_URL ||
+    (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api$/, '') : '') ||
     localStorage.getItem('GALLERY_API_BASE') ||
     localStorage.getItem('API_BASE_URL') ||
     localStorage.getItem('backendUrl') ||
@@ -3270,8 +3255,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (isLocalWebsiteHost()) {
-      candidates.push('http://localhost:5000');
-      candidates.push('http://127.0.0.1:5000');
+      candidates.push('https://amaanitvam-foundation.onrender.com');
     }
 
     // Production/staging fallback: use same origin only when not running through Live Server.
@@ -3284,7 +3268,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function backendBase() {
     const candidates = apiBaseCandidates();
-    return cleanBase(activeApiBase || candidates[0] || 'http://localhost:5000');
+    return cleanBase(activeApiBase || candidates[0] || 'https://amaanitvam-foundation.onrender.com');
   }
 
   async function fetchGalleryJson(path) {
