@@ -242,7 +242,7 @@
           <p class="section-desc">From education programs to volunteer drives — browse highlights from across our
             initiatives.</p>
         </div>
-        <div class="gallery-grid" id="gallery-album-container" data-gallery-api-base="http://localhost:5000" data-gallery-albums="true">
+        <div class="gallery-grid" id="gallery-album-container" data-gallery-api-base="https://amaanitvam-foundation.onrender.com/api/gallery/folders/1" data-gallery-albums="true">
           <!-- Dynamic images will be loaded here via JS -->
           <p class="moved-inline-style-final-015" id="gallery-album-loading">Loading gallery
             images...</p>
@@ -320,7 +320,7 @@
   const API_BASE = (
     window.API_BASE_URL ||
     window.BACKEND_URL ||
-    ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:5000' : location.origin)
+    ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'https://amaanitvam-foundation.onrender.com/api/gallery/folders/1' : location.origin)
   ).replace(/\/$/, '');
 
   const container = document.getElementById('gallery-container');
