@@ -8,7 +8,7 @@ import cors from "cors";
 import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
-import profileRoutes from "./routes/profileRoutes.js";
+// import profileRoutes from "./routes/profileRoutes.js";
 
 import connectDB from "./config/db.js";
 
@@ -88,7 +88,7 @@ app.use(
   })
 );
 
-app.use("/api/profile", profileRoutes);
+// app.use("/api/profile", profileRoutes);
 app.use("/api/webhook", express.raw({ type: "application/json" }), webhookRoutes);
 
 app.use(express.json({ limit: "100mb" }));
