@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Shield, User, Lock, Mail, KeyRound } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../config/api';
+import axios from 'axios';
 
-export default function Login() {
+export default function Login() { 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +13,7 @@ export default function Login() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
   const [orgName, setOrgName] = useState('Amaanitvam Foundation');
-  
+
   const [is2FARequired, setIs2FARequired] = useState(false);
   const [show2FA, setShow2FA] = useState(false);
   const [code2fa, setCode2fa] = useState('');
@@ -25,26 +25,30 @@ export default function Login() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await api.get('/public/settings');
+        const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const res = await axios.get(`${baseURL}/public/settings`);
+
         if (res.data.settings) {
-          setIs2FARequired(res.data.settings.enable2FA);
+          setIs2FARequired(Boolean(res.data.settings.enable2FA));
           if (res.data.settings.orgName) setOrgName(res.data.settings.orgName);
         }
       } catch (err) {
-        console.error('Could not fetch public settings', err);
+        console.error('Could not fetch public settings:', err);
       }
     };
+
     fetchSettings();
   }, []);
 
   if (user && !show2FA) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    
+    setResetSuccess('');
+
     if (is2FARequired) {
       setTempCredentials({ email, password });
       setShow2FA(true);
@@ -55,9 +59,9 @@ export default function Login() {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Failed to sign in. Please check your credentials.');
+      setError(err.message || 'Failed to sign in.');
     } finally {
       setIsLoading(false);
     }
@@ -67,11 +71,11 @@ export default function Login() {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+
     try {
-      if (code2fa === '123456') { // Mock SMS verification code
+      if (code2fa === '123456') {
         await login(tempCredentials.email, tempCredentials.password);
-        setShow2FA(false);
-        navigate('/');
+        navigate('/dashboard');
       } else {
         setError('Invalid verification code.');
       }
@@ -96,175 +100,184 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#6b1d44] px-4">
-      {/* Container Box */}
-      <div className="w-full max-w-195 h-auto md:h-120 bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
+    <div className="min-h-screen flex items-center justify-center bg-[#6b1d44] px-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,161,95,0.25),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(93,15,45,0.22),transparent_35%)]" />
+
+      {/* Transparent Wrapper Container for alignment */}
+      <div className="w-full max-w-220 h-auto md:h-130 bg-transparent rounded-2xl flex flex-col md:flex-row overflow-hidden relative z-10 shadow-2xl">
         
-        {/* Left Sidebar Accent Controls */}
-        <div className="w-full md:w-[38%] bg-linear-to-br from-[#8a164b] to-[#690b31] relative flex flex-col justify-between overflow-hidden py-6 md:py-0">
+        {/* Left Sidebar Accent Panel with Increased Branding Size & Tagline */}
+        <div className="w-full md:w-[42%] bg-linear-to-br from-[#8a164b] to-[#690b31] relative flex flex-col justify-between overflow-hidden p-6 md:p-8 rounded-t-2xl md:rounded-tr-none md:rounded-l-2xl">
           <div className="absolute inset-0 bg-white/10 rotate-45 -top-1/2 -left-1/2 w-[200%] h-[200%] pointer-events-none"></div>
           <div className="absolute inset-0 bg-black/5 rotate-30 -top-1/2 left-[-80%] w-[200%] h-[200%] pointer-events-none"></div>
           
-          {/* Brand Header Container (Text placed on the right side of image) */}
-          <div className="px-6 py-6 border-b border-white/10 bg-black/10 z-10 w-full">
+          {/* Brand Header Container */}
+          <div className="z-10 w-full border-b border-white/10 pb-6">
             <div className="flex flex-row items-center gap-4">
+              {/* Increased logo size from h-12 w-12 to h-16 w-16 */}
               <img 
                 alt="Amaanitvam Foundation" 
-                className="brand-logo h-12 w-12 object-contain bg-white p-1 rounded-xl shadow-md shrink-0" 
+                className="brand-logo h-16 w-16 object-contain bg-white p-1.5 rounded-xl shadow-md shrink-0" 
                 src="assets/images/logo.jpg" 
               />
               <div className="flex flex-col justify-center">
-                <h1 className="text-xl font-heading font-black text-white tracking-tight leading-none uppercase">
+                {/* Increased typography size from text-xl to text-2xl */}
+                <h1 className="text-4xl font-heading font-black text-white tracking-tight leading-none uppercase">
                   {orgName.split(' ')[0] || 'Amaanitvam'}
                 </h1>
-                <p className="text-[10px] font-ui text-yellow-500 uppercase tracking-[0.2em] font-bold mt-1.5 leading-none">
+                {/* Increased tracking size and layout scale from text-[10px] to text-xs */}
+                <p className="text-xl font-ui text-yellow-500 uppercase tracking-[0.2em] font-bold mt-1.5 leading-none">
                   {orgName.split(' ').slice(1).join(' ') || 'Foundation'}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-row md:flex-col gap-4 md:gap-6 w-full z-10 my-auto">
-            <button
-              type="button"
-              disabled={show2FA}
-              onClick={() => { setShowReset(false); setError(''); setResetSuccess(''); }}
-              className={`text-sm md:text-base font-bold uppercase tracking-wider py-3 px-6 text-center md:text-right w-full cursor-pointer transition-all duration-300 relative disabled:opacity-40 ${
-                !showReset && !show2FA
-                  ? 'text-black bg-white rounded-xl md:rounded-l-full md:rounded-r-none md:w-[75%] md:ml-auto shadow-md' 
-                  : 'text-white/70 hover:text-white bg-transparent'
-              }`}
-            >
-              Login
-              {!showReset && !show2FA && (
-                <>
-                  <div className="hidden md:block absolute -top-5 right-0 w-5 h-5 bg-transparent rounded-br-2xl shadow-[5px_5px_0_0_#fff]" />
-                  <div className="hidden md:block absolute -bottom-5 right-0 w-5 h-5 bg-transparent rounded-tr-2xl shadow-[5px_-5px_0_0_#fff]" />
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              disabled={show2FA}
-              onClick={() => { setShowReset(true); setError(''); }}
-              className={`text-sm md:text-base font-bold uppercase tracking-wider py-3 px-6 text-center md:text-right w-full cursor-pointer transition-all duration-300 relative disabled:opacity-40 ${
-                showReset && !show2FA
-                  ? 'text-black bg-white rounded-xl md:rounded-l-full md:rounded-r-none md:w-[75%] md:ml-auto shadow-md' 
-                  : 'text-white/70 hover:text-white bg-transparent'
-              }`}
-            >
-              Reset
-              {showReset && !show2FA && (
-                <>
-                  <div className="hidden md:block absolute -top-5 right-0 w-5 h-5 bg-transparent rounded-br-2xl shadow-[5px_5px_0_0_#fff]" />
-                  <div className="hidden md:block absolute -bottom-5 right-0 w-5 h-5 bg-transparent rounded-tr-2xl shadow-[5px_-5px_0_0_#fff]" />
-                </>
-              )}
-            </button>
+          {/* Tagline Section */}
+          <div className="z-10 my-auto py-6">
+            <p className="text-white text-xl md:text-base leading-relaxed font-light font-sans tracking-wide">
+              Empowering Lives Through Education, Compassion, and Collective Action. A student-led movement inspiring learning, responsibility, and positive change for a stronger society.
+            </p>
           </div>
           
-          {/* Bottom balancing block */}
-          <div className="hidden md:block h-12" />
+          <div className="hidden md:block h-6" />
         </div>
 
-        {/* Right Form Component Body */}
-        <div className="flex-1 flex flex-col justify-center p-8 md:p-10">
+        {/* Right Form Component Body - Solid White Background */}
+        <div className="flex-1 flex flex-col justify-center p-8 md:p-10 bg-white rounded-b-2xl md:rounded-bl-none md:rounded-r-2xl">
           <div className="w-full flex flex-col items-center">
             
-            {/* Highly Bolded Account Login Header */}
-            <div className="text-center mb-8">
-              <h2 className="text-[#690b31] text-2xl font-black tracking-widest uppercase">
-                {show2FA ? 'Security Check' : !showReset ? 'Account Login' : 'Reset Password'}
+            
+
+            {/* Upper Tab Toggles Integration */}
+            <div className="flex justify-center gap-6 mb-6 w-full max-w-[320px] border-b border-gray-200 pb-3">
+              <button
+                type="button"
+                disabled={show2FA}
+                onClick={() => { setShowReset(false); setError(''); setResetSuccess(''); }}
+                className={`text-sm font-bold uppercase tracking-widest pb-1 cursor-pointer transition-all duration-200 disabled:opacity-40 ${
+                  !showReset && !show2FA
+                    ? 'text-[#6b1d44] border-b-2 border-[#6b1d44] font-black'
+                    : 'text-gray-400 hover:text-gray-700'
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                disabled={show2FA}
+                onClick={() => { setShowReset(true); setError(''); }}
+                className={`text-sm font-bold uppercase tracking-widest pb-1 cursor-pointer transition-all duration-200 disabled:opacity-40 ${
+                  showReset && !show2FA
+                    ? 'text-[#6b1d44] border-b-2 border-[#6b1d44] font-black'
+                    : 'text-gray-400 hover:text-gray-700'
+                }`}
+              >
+                Reset
+              </button>
+            </div>
+
+            {/* Form Details Header Block */}
+            <div className="text-center mb-6 w-full max-w-[320px]">
+              <h2 className="text-gray-800 text-2xl font-black tracking-widest uppercase">
+                {show2FA ? 'Two-Factor Authentication' : !showReset ? 'Admin Login' : 'Reset Password'}
               </h2>
             </div>
 
             {error && (
-              <div className="w-full max-w-[320px] bg-red-50 text-red-600 text-xs p-2.5 rounded-lg border border-red-100 mb-4 text-center">
+              <div className="w-full max-w-[320px] bg-red-50 text-red-700 text-xs p-2.5 rounded-lg border border-red-200 mb-4 text-center">
                 {error}
               </div>
             )}
+            
             {resetSuccess && (
-              <div className="w-full max-w-[320px] bg-green-50 text-green-600 text-xs p-2.5 rounded-lg border border-green-100 mb-4 text-center">
+              <div className="w-full max-w-[320px] bg-green-50 text-green-700 text-xs p-2.5 rounded-lg border border-green-200 mb-4 text-center">
                 {resetSuccess}
               </div>
             )}
 
             {show2FA ? (
-              /* Two-Factor Authentication View */
+              /* Two-Factor Authentication View Form */
               <form onSubmit={handleVerify2FA} className="w-full max-w-[320px] flex flex-col items-center">
-                <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-3 border border-amber-100">
-                  <Shield className="w-6 h-6" />
-                </div>
-                <p className="text-xs text-slate-500 text-center mb-4 leading-relaxed">
-                  Two-Factor Authentication is enabled. Please enter your verification code to proceed.
+                <p className="text-xs text-gray-500 text-center mb-4 leading-relaxed">
+                  Enter the verification code sent to your registered device.
+                  <br />
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    Demo code: 123456
+                  </span>
                 </p>
+                
                 <div className="w-full relative mb-6">
-                  <KeyRound className="absolute left-1 bottom-2 text-slate-400 w-5 h-5" />
                   <input
-                    id="code2fa"
                     type="text"
-                    maxLength={6}
+                    required
                     value={code2fa}
                     onChange={(e) => setCode2fa(e.target.value)}
-                    placeholder="Enter 6-digit code"
-                    required
-                    className="w-full border-b border-slate-200 py-2 pl-8 pr-2 text-sm text-center tracking-[0.3em] font-bold text-slate-800 outline-none focus:border-[#a94276] transition-colors bg-transparent"
+                    className="w-full border-b border-gray-300 py-2 text-center text-xl tracking-[0.3em] font-bold text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent"
+                    placeholder="000000"
+                    maxLength={6}
                   />
                 </div>
 
                 <div className="w-full flex justify-between items-center mt-2">
                   <button
                     type="button"
-                    onClick={() => { setShow2FA(false); setCode2fa(''); setError(''); }}
-                    className="text-xs text-slate-400 hover:text-[#690b31] bg-transparent transition-colors cursor-pointer"
+                    onClick={() => {
+                      setShow2FA(false);
+                      setTempCredentials(null);
+                      setCode2fa('');
+                      setError('');
+                    }}
+                    className="text-xs text-gray-400 hover:text-gray-600 bg-transparent transition-colors cursor-pointer flex items-center gap-1"
                   >
-                    Cancel
+                    <ArrowLeft className="w-3 h-3" />
+                    Back to Login
                   </button>
                   
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-linear-to-r from-[#8a164b] to-[#690b31] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-95 transition-all disabled:opacity-50 cursor-pointer"
+                    className="bg-[#6b1d44] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
                   >
-                    {isLoading ? 'Verifying…' : 'Verify Code'}
+                    {isLoading ? 'Verifying...' : 'Verify & Continue'}
                   </button>
                 </div>
               </form>
             ) : !showReset ? (
-              /* Standard Login View */
+              /* Standard Login Sign In View Form */
               <form onSubmit={handleLogin} className="w-full max-w-[320px] flex flex-col items-center">
                 <div className="w-full relative mb-5">
-                  <User className="absolute left-1 bottom-2 text-slate-400 w-5 h-5" />
                   <input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
+                    placeholder="you@amaanitvam.org"
                     required
-                    className="w-full border-b border-slate-200 py-2 pl-8 pr-2 text-sm text-slate-800 outline-none focus:border-[#a94276] transition-colors bg-transparent"
+                    className="w-full border-b border-gray-300 py-2 text-sm text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent placeholder-gray-400"
                   />
                 </div>
 
                 <div className="w-full relative mb-6">
-                  <Lock className="absolute left-1 bottom-2 text-slate-400 w-5 h-5" />
                   <input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
+                    placeholder="Enter your password"
                     required
-                    className="w-full border-b border-slate-200 py-2 pl-8 pr-2 text-sm text-slate-800 outline-none focus:border-[#a94276] transition-colors bg-transparent"
+                    className="w-full border-b border-gray-300 py-2 text-sm text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent placeholder-gray-400"
                   />
                 </div>
 
                 <div className="w-full flex justify-between items-center mt-2">
                   <button
                     type="button"
-                    onClick={() => { setShowReset(true); setError(''); }}
-                    className="text-xs text-slate-400 hover:text-[#a94276] bg-transparent transition-colors cursor-pointer"
+                    onClick={() => {
+                      setShowReset(true);
+                      setError('');
+                    }}
+                    className="text-xs text-gray-400 hover:text-[#6b1d44] bg-transparent transition-colors cursor-pointer"
                   >
                     Forgot Password?
                   </button>
@@ -272,42 +285,45 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-linear-to-r from-[#8a164b] to-[#690b31] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-95 transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="bg-[#6b1d44] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
                   >
-                    {isLoading ? 'Signing in…' : 'Login'}
+                    {isLoading ? 'Signing in…' : 'Sign In'}
                   </button>
                 </div>
               </form>
             ) : (
-              /* Password Reset View */
+              /* Password Reset Link View Form */
               <form onSubmit={handleResetPassword} className="w-full max-w-[320px] flex flex-col items-center">
                 <div className="w-full relative mb-6">
-                  <Mail className="absolute left-1 bottom-2 text-slate-400 w-5 h-5" />
                   <input
                     id="reset-email"
                     type="email"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    placeholder="Email Address"
+                    placeholder="you@amaanitvam.org"
                     required
-                    className="w-full border-b border-slate-200 py-2 pl-8 pr-2 text-sm text-slate-800 outline-none focus:border-[#a94276] transition-colors bg-transparent"
+                    className="w-full border-b border-gray-300 py-2 text-sm text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent placeholder-gray-400"
                   />
                 </div>
 
                 <div className="w-full flex justify-between items-center mt-2">
                   <button
                     type="button"
-                    onClick={() => { setShowReset(false); setError(''); setResetSuccess(''); }}
-                    className="text-xs text-slate-400 hover:text-[#690b31] bg-transparent transition-colors cursor-pointer"
+                    onClick={() => {
+                      setShowReset(false);
+                      setError('');
+                      setResetSuccess('');
+                    }}
+                    className="text-xs text-gray-400 hover:text-gray-600 bg-transparent transition-colors cursor-pointer"
                   >
-                    Back to Login
+                    Back to Sign In
                   </button>
                   
                   <button
                     type="submit"
-                    className="bg-linear-to-r from-[#8a164b] to-[#690b31] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-95 transition-all cursor-pointer"
+                    className="bg-[#6b1d44] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-90 transition-all cursor-pointer"
                   >
-                    Send Link
+                    Send Reset Link
                   </button>
                 </div>
               </form>
