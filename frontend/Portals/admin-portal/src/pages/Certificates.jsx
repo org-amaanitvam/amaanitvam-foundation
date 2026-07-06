@@ -54,10 +54,23 @@ export default function Certificates() {
   const [updating, setUpdating] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [certificateFile, setCertificateFile] = useState(null);
+  const [domains, setDomains] = useState([]);
 
   useEffect(() => {
     fetchCertificates();
+    fetchDomains();
   }, []);
+
+  const fetchDomains = async () => {
+    try {
+      const res = await api.get('/public/departments');
+      if (res.data && res.data.departments) {
+        setDomains(res.data.departments);
+      }
+    } catch (err) {
+      console.error('Failed to load domains', err);
+    }
+  };
 
   const fetchCertificates = async () => {
     setLoading(true);
@@ -297,7 +310,10 @@ export default function Certificates() {
           </label>
           <label className="block md:col-span-2">
             <span className="text-sm font-semibold text-slate-700">Internship Domain *</span>
-            <input name="domain" value={form.domain} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+            <select name="domain" value={form.domain} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
+              <option value="" disabled>Select a domain</option>
+              {domains.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
           </label>
           <label className="block">
             <span className="text-sm font-semibold text-slate-700">Status</span>

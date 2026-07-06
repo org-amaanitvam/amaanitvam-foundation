@@ -24,13 +24,7 @@ const volunteerApplicationSchema = new mongoose.Schema(
         role: {
             type: String,
             required: true,
-            trim: true,
-            enum: [
-                "Community Outreach",
-                "Event Coordination",
-                "Education Support",
-                "Social Media & Communications"
-            ]
+            trim: true
         },
         availability: {
             type: String,

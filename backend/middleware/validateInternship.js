@@ -1,22 +1,11 @@
+import Department from "../models/department.js";
+
 const trimValue = (value) => String(value ?? "").replace(/\u0000/g, "").trim();
 
 const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
 
-const VALID_TRACKS = [
-    "Creative",
-    "Graphics",
-    "Social media",
-    "Marketing",
-    "Frontend",
-    "Backend",
-    "Full stack",
-    "HR",
-    "Project Manager",
-    "Content"
-];
-
-export const validateInternshipApplication = (req, res, next) => {
+export const validateInternshipApplication = async (req, res, next) => {
     const name = trimValue(req.body?.name);
     const email = trimValue(req.body?.email).toLowerCase();
     const phone = trimValue(req.body?.phone);
@@ -42,10 +31,18 @@ export const validateInternshipApplication = (req, res, next) => {
         });
     }
 
-    if (!VALID_TRACKS.includes(track)) {
-        return res.status(400).json({
+    try {
+        const validTracks = await Department.distinct("departmentName");
+        if (!validTracks.includes(track)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid internship domain selected: ${track}. Please select a valid domain.`
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
             success: false,
-            message: `Invalid internship domain selected: ${track}. Please select a valid domain.`
+            message: "Internal server error during validation."
         });
     }
 
@@ -60,8 +57,6 @@ export const validateInternshipApplication = (req, res, next) => {
         portfolioUrl,
         duration
     };
-
-
 
     next();
 };

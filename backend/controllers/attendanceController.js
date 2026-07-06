@@ -176,6 +176,42 @@ export const getAttendanceUsers = async (req, res) => {
         return res.json({ success: true, isAdmin: true, users: [], departments: departmentOptions });
       }
 
+      if (departmentId === 'all') {
+        const allActiveUsers = await User.find({ status: 'active' }).select('name email role department');
+        const userMap = new Map();
+
+        departments.forEach(dept => {
+          if (dept.departmentHead) {
+            const head = {
+              _id: dept.departmentHead._id,
+              name: dept.departmentHead.name,
+              email: dept.departmentHead.email,
+              role: dept.departmentHead.role,
+              departmentId: dept._id,
+              departmentName: dept.departmentName,
+            };
+            userMap.set(head._id.toString(), head);
+          }
+        });
+
+        allActiveUsers.forEach((user) => {
+          const id = user._id.toString();
+          if (!userMap.has(id)) {
+            const deptObj = departments.find(d => d.departmentName === user.department);
+            userMap.set(id, {
+              _id: user._id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              departmentId: deptObj ? deptObj._id : null,
+              departmentName: user.department || 'N/A',
+            });
+          }
+        });
+
+        return res.json({ success: true, isAdmin: true, users: Array.from(userMap.values()), departments: departmentOptions });
+      }
+
       const department = await Department.findById(departmentId).populate('departmentHead', 'name email role department');
       if (!department) {
         return res.status(404).json({ success: false, message: 'Department not found.' });
@@ -216,7 +252,12 @@ export const getAttendanceUsers = async (req, res) => {
 
     const department = await Department.findOne({ departmentHead: req.user._id }).populate('members.user', 'name email role department');
     if (!department) {
-      return res.status(403).json({ success: false, message: 'Only department heads can access attendance register.' });
+      return res.json({ 
+        success: true, 
+        isAdmin: false,
+        isDepartmentHead: false,
+        users: [] 
+      });
     }
 
     // SAFE FIX: Filter out rows missing unpopulated user profiles to handle removed accounts safely

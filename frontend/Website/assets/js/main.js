@@ -1219,3 +1219,148 @@ const API_BASE_URL =
   })();
 
 })();
+
+/* ===== Internship application form (internship.html) ===== */
+document.getElementById('internshipForm')?.addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const btn = document.getElementById('int-submit-btn');
+  const btnText = btn.querySelector('.submit-btn-text');
+  const btnSpinner = btn.querySelector('.submit-btn-spinner');
+  const btnSuccess = btn.querySelector('.submit-btn-success');
+  const status = document.getElementById('int-status');
+
+  // Reset states
+  btn.classList.remove('is-success', 'is-error');
+  status.textContent = '';
+  status.className = '';
+  status.style.color = '';
+
+  // Show spinner
+  btnText.style.display = 'none';
+  btnSpinner.style.display = 'inline-flex';
+  btnSuccess.style.display = 'none';
+  btn.classList.add('is-loading');
+
+  const formData = new FormData(this);
+
+  try {
+    const response = await fetch(API_BASE_URL + '/internship/apply', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await response.json();
+    if (response.ok) {
+      // Show success
+      btnSpinner.style.display = 'none';
+      btnSuccess.style.display = 'inline-flex';
+      btn.classList.remove('is-loading');
+      btn.classList.add('is-success');
+      status.textContent = result.message || "Application submitted successfully!";
+      status.style.color = "#22c55e";
+      status.className = 'show';
+      this.reset();
+      // Reset button after 3 seconds
+      setTimeout(() => {
+        btnSuccess.style.display = 'none';
+        btnText.style.display = 'inline';
+        btn.classList.remove('is-success');
+      }, 3000);
+    } else {
+      btnSpinner.style.display = 'none';
+      btnText.style.display = 'inline';
+      btn.classList.remove('is-loading');
+      btn.classList.add('is-error');
+      status.textContent = result.message || "Error submitting application.";
+      status.style.color = "red";
+      status.className = 'show';
+      setTimeout(() => btn.classList.remove('is-error'), 600);
+    }
+  } catch (err) {
+    btnSpinner.style.display = 'none';
+    btnText.style.display = 'inline';
+    btn.classList.remove('is-loading');
+    btn.classList.add('is-error');
+    status.textContent = "Failed to connect to the server.";
+    status.style.color = "red";
+    status.className = 'show';
+    setTimeout(() => btn.classList.remove('is-error'), 600);
+  }
+});
+
+/* ===== Volunteer application form (volunteer.html) ===== */
+document.getElementById('volunteerForm')?.addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const status = document.getElementById('vol-status');
+  status.textContent = "Submitting...";
+  status.style.color = "var(--navy)";
+
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData.entries());
+
+  try {
+    const response = await fetch(API_BASE_URL + '/volunteer/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (response.ok) {
+      status.textContent = result.message || "Application submitted successfully!";
+      status.style.color = "green";
+      this.reset();
+    } else {
+      status.textContent = result.message || "Error submitting application.";
+      status.style.color = "red";
+    }
+  } catch (err) {
+    status.textContent = "Failed to connect to the server.";
+    status.style.color = "red";
+  }
+});
+
+/* ===== Dynamic Departments / Domains Loader ===== */
+(function() {
+  async function loadDepartments() {
+    const intTrack = document.getElementById('int-track');
+    const volRole = document.getElementById('vol-role');
+    
+    if (!intTrack && !volRole) return;
+    
+    try {
+      const base = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api$/, '') : '';
+      const response = await fetch(`${base}/api/public/departments`);
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.departments)) {
+        const optionsHTML = data.departments.map(dept => 
+          `<option value="${escapeHtml(dept)}">${escapeHtml(dept)}</option>`
+        ).join('');
+        
+        if (intTrack) {
+          intTrack.innerHTML = '<option disabled="" selected="" value="">Select a domain</option>' + optionsHTML;
+        }
+        if (volRole) {
+          volRole.innerHTML = '<option disabled="" selected="" value="">Select a role</option>' + optionsHTML;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load dynamic departments:', error);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDepartments);
+  } else {
+    loadDepartments();
+  }
+})();
+

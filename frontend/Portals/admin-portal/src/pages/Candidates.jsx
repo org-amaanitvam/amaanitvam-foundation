@@ -11,6 +11,7 @@ export default function Candidates() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [domainFilter, setDomainFilter] = useState('');
+  const [domains, setDomains] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
 
@@ -23,6 +24,7 @@ export default function Candidates() {
       if (statusFilter) params.status = statusFilter;
       const res = await api.get('/admin/candidates', { params });
       setCandidates(res.data.candidates || res.data || []);
+      setDomains(res.data.domains || []);
     } catch (err) {
       toast.error('Failed to load candidates');
     } finally {
@@ -81,7 +83,7 @@ export default function Candidates() {
 
   const SkeletonRow = () => (
     <tr className="border-b border-slate-50">
-      {Array.from({ length: 7 }).map((_, i) => (
+      {Array.from({ length: 8 }).map((_, i) => (
         <td key={i} className="px-6 py-4">
           <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4" />
         </td>
@@ -119,16 +121,11 @@ export default function Candidates() {
           className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30 transition-colors text-slate-600"
         >
           <option value="">All Domains</option>
-          <option value="Creative">Creative</option>
-          <option value="Graphics">Graphics</option>
-          <option value="Social media">Social media</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Frontend">Frontend</option>
-          <option value="Backend">Backend</option>
-          <option value="Full stack">Full stack</option>
-          <option value="HR">HR</option>
-          <option value="Project Manager">Project Manager</option>
-          <option value="Content">Content</option>
+          {domains.map((domain) => (
+            <option key={domain} value={domain}>
+              {domain}
+            </option>
+          ))}
         </select>
         <select
           value={statusFilter}
@@ -151,6 +148,7 @@ export default function Candidates() {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Phone</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Domain</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Applied On</th>
@@ -162,7 +160,7 @@ export default function Candidates() {
                 Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
               ) : candidates.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-400">
+                  <td colSpan={8} className="text-center py-12 text-slate-400">
                     <Users className="w-12 h-12 mx-auto mb-3 text-slate-300" />
                     <p className="text-sm font-medium">No candidates found</p>
                     <p className="text-xs text-slate-400 mt-1">Try adjusting your search or filter criteria.</p>
@@ -174,7 +172,12 @@ export default function Candidates() {
                     <td className="px-6 py-4 text-sm text-slate-600 font-medium">{candidate.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{candidate.email}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{candidate.phone || '—'}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{candidate.track}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${candidate.applicationType === 'volunteer' ? 'bg-sky-50 text-sky-700' : 'bg-violet-50 text-violet-700'}`}>
+                        {candidate.applicationType === 'volunteer' ? 'Volunteer' : 'Internship'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{candidate.track || candidate.role || '—'}</td>
                     <td className="px-6 py-4 text-sm">{getStatusBadge(candidate.status)}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">
                       {candidate.createdAt ? new Date(candidate.createdAt).toLocaleDateString('en-IN') : '—'}

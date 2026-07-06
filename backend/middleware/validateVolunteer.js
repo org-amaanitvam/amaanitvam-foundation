@@ -1,16 +1,11 @@
+import Department from "../models/department.js";
+
 const trimValue = (value) => String(value ?? "").replace(/\u0000/g, "").trim();
 
 const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
 
-const VALID_ROLES = [
-    "Community Outreach",
-    "Event Coordination",
-    "Education Support",
-    "Social Media & Communications"
-];
-
-export const validateVolunteerApplication = (req, res, next) => {
+export const validateVolunteerApplication = async (req, res, next) => {
     const name = trimValue(req.body?.name);
     const email = trimValue(req.body?.email).toLowerCase();
     const phone = trimValue(req.body?.phone);
@@ -30,14 +25,22 @@ export const validateVolunteerApplication = (req, res, next) => {
     if (!isValidEmail(email)) {
         return res.status(400).json({
             success: false,
-            message: "All required fields must be filled."
+            message: "Invalid email format."
         });
     }
 
-    if (!VALID_ROLES.includes(role)) {
-        return res.status(400).json({
+    try {
+        const validRoles = await Department.distinct("departmentName");
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid role selected: ${role}. Please select a valid role.`
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
             success: false,
-            message: "All required fields must be filled."
+            message: "Internal server error during validation."
         });
     }
 
