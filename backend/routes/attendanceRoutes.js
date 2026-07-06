@@ -11,7 +11,6 @@ import {
 const router = express.Router();
 
 router.use(verifyFirebaseToken);
-router.use(departmentAccess);
 
 router.post('/mark', markAttendance);
 router.get('/department/all', getDepartmentAttendance);

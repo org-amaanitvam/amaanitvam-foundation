@@ -1317,3 +1317,50 @@ document.getElementById('volunteerForm')?.addEventListener('submit', async funct
     status.style.color = "red";
   }
 });
+
+/* ===== Dynamic Departments / Domains Loader ===== */
+(function() {
+  async function loadDepartments() {
+    const intTrack = document.getElementById('int-track');
+    const volRole = document.getElementById('vol-role');
+    
+    if (!intTrack && !volRole) return;
+    
+    try {
+      const base = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api$/, '') : '';
+      const response = await fetch(`${base}/api/public/departments`);
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.departments)) {
+        const optionsHTML = data.departments.map(dept => 
+          `<option value="${escapeHtml(dept)}">${escapeHtml(dept)}</option>`
+        ).join('');
+        
+        if (intTrack) {
+          intTrack.innerHTML = '<option disabled="" selected="" value="">Select a domain</option>' + optionsHTML;
+        }
+        if (volRole) {
+          volRole.innerHTML = '<option disabled="" selected="" value="">Select a role</option>' + optionsHTML;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load dynamic departments:', error);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDepartments);
+  } else {
+    loadDepartments();
+  }
+})();
+

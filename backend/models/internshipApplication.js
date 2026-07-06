@@ -24,19 +24,7 @@ const internshipApplicationSchema = new mongoose.Schema(
         track: {
             type: String,
             required: true,
-            trim: true,
-            enum: [
-                "Creative",
-                "Graphics",
-                "Social media",
-                "Marketing",
-                "Frontend",
-                "Backend",
-                "Full stack",
-                "HR",
-                "Project Manager",
-                "Content"
-            ]
+            trim: true
         },
         university: {
             type: String,

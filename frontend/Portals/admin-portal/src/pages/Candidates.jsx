@@ -11,6 +11,7 @@ export default function Candidates() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [domainFilter, setDomainFilter] = useState('');
+  const [domains, setDomains] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
 
@@ -23,6 +24,7 @@ export default function Candidates() {
       if (statusFilter) params.status = statusFilter;
       const res = await api.get('/admin/candidates', { params });
       setCandidates(res.data.candidates || res.data || []);
+      setDomains(res.data.domains || []);
     } catch (err) {
       toast.error('Failed to load candidates');
     } finally {
@@ -119,16 +121,11 @@ export default function Candidates() {
           className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30 transition-colors text-slate-600"
         >
           <option value="">All Domains</option>
-          <option value="Creative">Creative</option>
-          <option value="Graphics">Graphics</option>
-          <option value="Social media">Social media</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Frontend">Frontend</option>
-          <option value="Backend">Backend</option>
-          <option value="Full stack">Full stack</option>
-          <option value="HR">HR</option>
-          <option value="Project Manager">Project Manager</option>
-          <option value="Content">Content</option>
+          {domains.map((domain) => (
+            <option key={domain} value={domain}>
+              {domain}
+            </option>
+          ))}
         </select>
         <select
           value={statusFilter}
