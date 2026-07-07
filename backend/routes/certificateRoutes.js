@@ -52,5 +52,11 @@ router.get('/my', verifyFirebaseToken, getCertificates);
 // GET /api/certificates/:id/download — Authenticated; downloads a specific certificate PDF
 router.get('/:id/download', verifyFirebaseToken, downloadCertificate);
 
+// GET /api/certificates/my — Authenticated; returns only the current user's certificates
+router.get('/my', verifyFirebaseToken, getCertificates);
+
+// GET /api/certificates/:id/download — Authenticated; downloads a specific certificate PDF
+router.get('/:id/download', verifyFirebaseToken, downloadCertificate);
+
 export default router;
 

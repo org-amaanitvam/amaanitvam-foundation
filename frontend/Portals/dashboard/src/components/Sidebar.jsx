@@ -159,7 +159,7 @@ export default function Sidebar() {
               My Workspace
             </p>
 
-            <NavLink to="/intern-reports" className={navLinkClass}>
+            <NavLink to="/member-reports" className={navLinkClass}>
               <BarChart3 className="w-[18px] h-[18px]" />
               <span>Reports</span>
             </NavLink>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Stay updated with the latest circulars and announcements from Amaanitvam Foundation.">
+  <title>Circulars - Amaanitvam Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/images/logo.jpg" type="image/jpg">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @media (min-width: 768px) {
+      .grid-hero { 
+        grid-template-columns: 1fr 1fr !important; 
+      }
+      .grid-2-col { 
+        grid-template-columns: 1fr 1fr !important; 
+      }
+      .origins-img { 
+        order: 1 !important; 
+      }
+      .origins-text { 
+        order: 2 !important; 
+      }
+    }
+  </style>
+  <style>
+    /* Floating Donate CTA */
+    .floating-donate {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold, #d4af37);
+      color: #1a2238;
+      padding: 0.9rem 1.6rem;
+      border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      line-height: 1;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .floating-donate:hover,
+    .floating-donate:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+      color: #1a2238;
+    }
+    .floating-donate .material-symbols-outlined {
+      font-size: 1.2rem;
+    }
+    @media (max-width: 540px) {
+      .floating-donate {
+        padding: 0.85rem;
+        border-radius: 50%;
+      }
+      .floating-donate-text {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body data-page="circulars">
+
+  <nav id="site-nav" class="site-nav is-transparent" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="index.html" class="brand" aria-label="Amaanitvam Foundation — Home">
+        <img src="assets/images/logo.jpg" alt="Amaanitvam Foundation" class="brand-logo" width="200" height="38">
+      </a>
+     <div class="nav-links" role="menubar">
+
+  <a href="index.html" class="nav-link">Home</a>
+
+  <!-- ABOUT US -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger">
+      About Us
+      <span class="nav-chevron">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu">
+
+      <a href="about.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">info</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>About Foundation</strong>
+          <small>Our story & values</small>
+        </span>
+      </a>
+
+      <a href="impact.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">bar_chart</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Impact</strong>
+          <small>What we've achieved</small>
+        </span>
+      </a>
+
+      <a href="programs.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">apps</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Programs</strong>
+          <small>Our initiatives & impact areas</small>
+        </span>
+      </a>
+
+      <a href="gallery.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">photo_library</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Gallery</strong>
+          <small>Photos & moments</small>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- GET INVOLVED -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger">
+      Get Involved
+      <span class="nav-chevron">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu">
+
+      <a href="volunteer.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">volunteer_activism</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Volunteer</strong>
+          <small>Join our volunteer network</small>
+        </span>
+      </a>
+
+      <a href="internship.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">work</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Internship</strong>
+          <small>Apply for internship</small>
+        </span>
+      </a>
+
+      <a href="contact.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">mail</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Contact Us</strong>
+          <small>Get in touch</small>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger">
+      Resources
+      <span class="nav-chevron">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu">
+
+      <a href="updates.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">newspaper</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Circulars & Updates</strong>
+          <small>Latest news & notices</small>
+        </span>
+      </a>
+
+      <a href="verify.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">verified</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Verify Certificate</strong>
+          <small>Check your certificate</small>
+        </span>
+      </a>
+
+      <a href="faq.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">help</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>FAQ</strong>
+          <small>Common questions answered</small>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- COLLABORATIONS -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger">
+      Collaborations & Partnerships
+      <span class="nav-chevron">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu">
+      <a href="collaborations.html" class="dropdown-item">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">handshake</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Collaborations & Partnerships</strong>
+          <small>Work with Amaanitvam Foundation</small>
+        </span>
+      </a>
+    </div>
+  </div>
+
+</div>
+      <div class="nav-actions">
+        <a href="contact.html#donate" class="btn-donate">Donate</a>
+        <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+          <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" class="mobile-menu" aria-label="Mobile navigation">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="volunteer.html" class="nav-link">Get Involved</a>
+    <a href="resources.html" class="nav-link">Resources</a>
+     <a href="programs.html" class="mobile-link">Programs</a>
+    <a href="contact.html#donate" class="btn-donate">Donate</a>
+</div>
+
+  <main id="main-content">
+
+    <!-- Hero -->
+    <section class="page-hero has-image section" data-hero aria-labelledby="circulars-hero-title">  
+      <div class="container grid-hero" style="display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center;">
+        <div style="max-width: 560px;">
+          <span class="section-label" style="color: var(--gold);">Resources</span>
+
+<h1 id="circulars-hero-title" class="section-title" style="font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1.25rem;">
+  Circulars & Announcements
+</h1>
+
+<p class="section-desc">
+  Stay updated with official circulars, notices, announcements, and organizational updates from Amaanitvam Foundation.
+</p>
+        </div>
+        <div style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); aspect-ratio: 4/3;">
+          <img
+            src="assets/images/circulars.png"  
+            alt="Community volunteers teaching and interacting with local school children outdoors"
+            width="800"
+            height="600"
+            style="width: 100%; height: 100%; object-fit: cover; display: block;"
+            loading="eager"
+          >
+        </div>
+      </div>
+    </section>    
+
+    <section class="section section-white">
+  <div class="container">
+
+    <h2 class="section-title">Latest Circulars &amp; Announcements</h2>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <h3>Prakruti Seva Samman</h3>
+      <p>Amaanitvam Foundation was honored with the Prakruti Seva Samman in recognition of its dedication to community service, education, and social welfare.</p>
+      <a href="about.html#achievements-title" class="text-primary" style="font-weight:600;font-size:0.9rem;text-decoration:none;">Read more →</a>
+    </div>
+
+    <p class="text-muted" style="text-align:center;margin-top:1.5rem;">
+      For the latest news and organizational updates, visit our <a href="updates.html" class="text-primary" style="font-weight:600;">Updates page</a>.
+    </p>
+
+  </div>
+</section>   
+
+    <!-- CTA -->
+    <section class="section section-alt" aria-labelledby="circulars-cta-title">
+      <div class="container donate-cta-container">
+        <div class="donate-section">
+          <div class="donate-section-inner">
+            <span class="donate-badge">Support Our Mission</span>
+            <h2 id="circulars-cta-title" class="section-title">Be the Change You Wish to See</h2>
+            <p>
+              Join our mission to empower lives through education, compassion, and community action.
+            </p>
+            <p style="color:var(--gold);font-size:0.9rem;font-weight:600;margin-bottom:2rem;">Registered under 12A &amp; 80G — tax-deductible for Indian donors</p>
+            <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+              <a href="contact.html#donate" class="btn btn-primary">Donate Now</a>
+              <a href="impact.html" class="btn btn-outline">See Our Impact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer"></div> 
+
+    <!-- Floating Donate CTA -->
+  <a href="contact.html#donate" class="floating-donate" aria-label="Donate to Amaanitvam Foundation">
+    <span class="material-symbols-outlined">favorite</span>
+    <span class="floating-donate-text">Donate</span>
+  </a>
+<script src="js/main.js"></script>
+<script>
+fetch("footer.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer").innerHTML = data;
+  });
+</script>
+</body>
+</html>

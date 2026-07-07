@@ -19,6 +19,7 @@
     rel="stylesheet" />
   <link href="assets/images/logo.jpg" rel="icon" type="image/jpg" />
   <link href="assets/css/styles.css" rel="stylesheet" />
+  <link href="assets/css/gallery-albums.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 </head>
 
@@ -241,11 +242,18 @@
           <p class="section-desc">From education programs to volunteer drives — browse highlights from across our
             initiatives.</p>
         </div>
+<<<<<<< HEAD
+        <div class="gallery-grid" id="gallery-album-container" data-gallery-api-base="http://localhost:5000" data-gallery-albums="true">
+          <!-- Dynamic images will be loaded here via JS -->
+          <p class="moved-inline-style-final-015" id="gallery-album-loading">Loading gallery
+            images...</p>
+=======
         <div class="gallery-grid" id="gallery-album-container">
           data-gallery-api-base="https://amaanitvam-foundation.onrender.com/api/gallery/folders/1"
           data-gallery-albums="true">
           <!-- Dynamic images will be loaded here via JS -->
           <p class="moved-inline-style-final-015" id="gallery-album-loading">Loading gallery images...</p>
+>>>>>>> upstream/main
         </div>
       </div>
     </section>
@@ -276,6 +284,7 @@
 
 
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/gallery-albums.js?v=no-uncategorized-album-20260702"></script>
 
   <script>
     (function () {
@@ -363,9 +372,16 @@
         return type.indexOf('video') !== -1 || /\.(mp4|mov|webm|mkv|avi)$/i.test(name);
       }
 
+<<<<<<< HEAD
+    if (!valid.length) {
+      container.innerHTML = '<p id="gallery-album-loading">No valid MongoDB gallery media found.</p>';
+      return;
+    }
+=======
       function render(items) {
         container.classList.add('gallery-grid');
         container.innerHTML = '';
+>>>>>>> upstream/main
 
         const valid = items.map(function (item) {
           return { item: item, src: mediaSrc(item) };
@@ -460,10 +476,71 @@
         loadMongoGallery();
       }
 
+<<<<<<< HEAD
+      media.addEventListener('error', function () {
+        failed += 1;
+        console.error('Gallery media failed from backend:', src, item);
+        card.remove();
+        if (failed >= valid.length) {
+          container.innerHTML = '<p id="gallery-album-loading">Gallery records loaded, but the backend did not stream the image binaries. Re-upload the gallery images once from admin after this fix.</p>';
+        }
+      });
+
+      const caption = document.createElement('p');
+      caption.textContent = title;
+
+      card.appendChild(media);
+      card.appendChild(caption);
+      container.appendChild(card);
+    });
+
+    requestAnimationFrame(function () {
+      window.dispatchEvent(new Event('scroll'));
+      document.dispatchEvent(new CustomEvent('gallery:loaded'));
+    });
+  }
+
+  async function loadMongoGallery() {
+    container.innerHTML = '<p id="gallery-album-loading">Loading gallery images...</p>';
+    try {
+      let items = normalizeMedia(await getJson('/api/gallery'));
+
+      if (!items.length) {
+        const foldersData = await getJson('/api/gallery/folders').catch(function () { return {}; });
+        const folders = pickArray(foldersData);
+        const all = [];
+        for (const folder of folders) {
+          const folderId = cleanId(folder._id || folder.id);
+          if (!folderId) continue;
+          const mediaData = await getJson('/api/gallery/folders/' + encodeURIComponent(folderId) + '/media').catch(function () { return {}; });
+          normalizeMedia(mediaData).forEach(function (item) { all.push(item); });
+        }
+        items = all;
+      }
+
+      render(items);
+    } catch (err) {
+      console.error('Mongo gallery load error:', err);
+      container.innerHTML = '<p id="gallery-album-loading">Gallery failed to load. Start backend on port 5000 and refresh.</p>';
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadMongoGallery);
+  } else {
+    loadMongoGallery();
+  }
+
+  window.loadMongoGallery = loadMongoGallery;
+})();
+</script>
+<!-- GALLERY_MONGO_FULL_STACK_FIX_END -->
+=======
       window.loadMongoGallery = loadMongoGallery;
     })();
   </script>
   <!-- GALLERY_MONGO_FULL_STACK_FIX_END -->
+>>>>>>> upstream/main
 
 </body>
 

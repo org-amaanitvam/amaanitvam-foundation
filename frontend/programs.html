@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore Amaanitvam Foundation programs — education, community development, volunteering, internships, and certificate programs.">
+  <title>Programs &amp; Initiatives — Amaanitvam Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/images/logo.jpg" type="image/jpg">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @media (min-width: 768px) {
+      .grid-2-col { 
+        grid-template-columns: 1fr 1fr !important; 
+      }
+      .grid-hero { 
+        grid-template-columns: 1fr 1fr !important; 
+      }
+      .story-grid { 
+        grid-template-columns: 1fr 1fr !important; 
+      }
+      .origins-img { 
+        order: 1 !important; 
+      }
+      .origins-text { 
+        order: 2 !important; 
+      }
+    }
+    .program-metric {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .program-metric .stat-value { 
+      font-size: 1.1rem; 
+      margin-right: 0.25rem; 
+    }
+    .story-quote {
+      border-left: 4px solid var(--primary);
+      padding-left: 1.5rem;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--navy);
+      margin-bottom: 1.5rem;
+    }
+  </style>
+  <style>
+    /* ── Programs page: tighter vertical rhythm & alignment to match about.html ──
+       Scoped to [data-page="programs"] only. ──────────────────────────────────── */
+
+    /* Hero: same compact sizing as about.html */
+    body[data-page="programs"] .page-hero.has-image {
+      padding: 4rem 0 !important;
+      min-height: 380px !important;
+    }
+
+    /* Reduce section padding to match about.html */
+    body[data-page="programs"] main#main-content > section.section {
+      padding: 2.75rem 0 !important;
+    }
+
+    /* Section headers: tighter bottom margin */
+    body[data-page="programs"] .section-header {
+      margin-bottom: 1.75rem !important;
+    }
+
+    /* Grid gaps consistent with about.html two-col rows */
+    body[data-page="programs"] .grid-2 {
+      gap: 2.25rem !important;
+    }
+
+    /* Responsive: 5-col cards drop gracefully on smaller screens */
+    @media (max-width: 1024px) {
+      body[data-page="programs"] .programs-5col {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+    }
+    @media (max-width: 640px) {
+      body[data-page="programs"] .programs-5col {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+    @media (max-width: 400px) {
+      body[data-page="programs"] .programs-5col {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+  <style>
+    /* Floating Donate CTA */
+    .floating-donate {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold, #d4af37);
+      color: #1a2238;
+      padding: 0.9rem 1.6rem;
+      border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      line-height: 1;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .floating-donate:hover,
+    .floating-donate:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+      color: #1a2238;
+    }
+    .floating-donate .material-symbols-outlined {
+      font-size: 1.2rem;
+    }
+    @media (max-width: 540px) {
+      .floating-donate {
+        padding: 0.85rem;
+        border-radius: 50%;
+      }
+      .floating-donate-text {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body data-page="programs">
+
+  <header class="site-header" id="site-header">
+  <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="index.html" class="brand" aria-label="Amaanitvam Foundation home">
+        <img src="assets/images/logo.jpg"alt="Amaanitvam Foundation" class="brand-logo">
+        <div class="brand-text">
+          <span class="brand-name">AMAANITVAM</span>
+          <span class="brand-subtitle">FOUNDATION</span>
+        </div>
+      </a>
+      <div class="nav-links" id="nav-links" role="navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <!-- ABOUT US -->
+   <!-- ABOUT US -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+      About Us
+      <span class="nav-chevron" aria-hidden="true">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu" role="menu">
+
+      <a href="about.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">info</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>About Foundation</strong>
+          <small>Our story & values</small>
+        </span>
+      </a>
+
+      <a href="impact.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">bar_chart</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Impact</strong>
+          <small>What we've achieved</small>
+        </span>
+      </a>
+
+      <a href="programs.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">apps</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Programs</strong>
+          <small>Our initiatives & impact areas</small>
+        </span>
+      </a>
+
+      <a href="gallery.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">photo_library</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Gallery</strong>
+          <small>Photos & moments</small>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+ 
+  <!-- GET INVOLVED -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+      Get Involved
+      <span class="nav-chevron" aria-hidden="true">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu" role="menu">
+
+      <a href="volunteer.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">volunteer_activism</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Volunteer</strong>
+          <small>Join our volunteer network</small>
+        </span>
+      </a>
+
+      <a href="internship.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">work</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Internship</strong>
+          <small>Apply for internship</small>
+        </span>
+      </a>
+
+      <a href="contact.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">mail</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Contact Us</strong>
+          <small>Get in touch</small>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="nav-item has-dropdown">
+    <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+      Resources
+      <span class="nav-chevron" aria-hidden="true">
+        <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+          <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="dropdown-menu" role="menu">
+
+      <a href="updates.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">newspaper</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Circulars & Updates</strong>
+          <small>Latest news & notices</small>
+        </span>
+      </a>
+
+      <a href="verify.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">verified</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>Verify Certificate</strong>
+          <small>Check your certificate</small>
+        </span>
+      </a>
+
+      <a href="faq.html" class="dropdown-item" role="menuitem">
+        <span class="dropdown-icon">
+          <span class="material-symbols-outlined">help</span>
+        </span>
+        <span class="dropdown-text">
+          <strong>FAQ</strong>
+          <small>Common questions answered</small>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+</div>
+     <!-- COLLABORATIONS -->
+  <!-- COLLABORATIONS ▼ -->
+<div class="nav-item has-dropdown">
+  <button class="nav-link dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+    Collaborations & Partnerships
+    <span class="nav-chevron" aria-hidden="true">
+      <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+  </button>
+
+  <div class="dropdown-menu" role="menu">
+
+    <a href="collaborations.html" class="dropdown-item" role="menuitem">
+      <span class="dropdown-icon">
+        <span class="material-symbols-outlined">handshake</span>
+      </span>
+      <span class="dropdown-text">
+        <strong>Collaborations & Partnerships</strong>
+        <small>Work with Amaanitvam Foundation</small>
+      </span>
+    </a>
+
+  </div>
+</div>
+
+
+      <div class="nav-actions">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-inner"><a href="index.html" class="mobile-link" style="padding:1rem 0.25rem;font-weight:600;display:block;">
+    </a>
+    <div class="mobile-section">
+      <button class="mobile-group-toggle" aria-expanded="false">About Us 
+        <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+      </button>
+      <div class="mobile-group-links">
+        <a href="about.html" class="mobile-link">About Foundation</a>
+        <a href="impact.html" class="mobile-link">Impact</a>
+        <a href="gallery.html" class="mobile-link">Gallery</a>
+      </div>
+    </div>
+    <div class="mobile-section">
+      <button class="mobile-group-toggle" aria-expanded="false">Get Involved 
+        <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+      </button>
+      <div class="mobile-group-links">
+        <a href="volunteer.html" class="mobile-link">Volunteer</a>
+        <a href="internship.html" class="mobile-link">Internship</a>
+        <a href="contact.html" class="mobile-link">Contact Us</a>
+        <a href="contact.html#partnerships-heading" class="mobile-link">Collaborations &amp; Partnerships</a>
+      </div>
+    </div>
+    <div class="mobile-section">
+      <button class="mobile-group-toggle" aria-expanded="false">Resources 
+        <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+      </button>
+      <div class="mobile-group-links">
+        <a href="updates.html" class="mobile-link">Circulars &amp; Updates</a>
+        <a href="contact.html#faq" class="mobile-link">FAQ</a>
+        <a href="verify.html" class="mobile-link">Verify Certificate</a>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+  <main id="main-content">
+
+    <!-- Hero -->
+    <section class="page-hero has-image section" data-hero aria-labelledby="programs-hero-title"
+      style="position: relative;
+      background: linear-gradient(135deg, rgba(86, 5, 26, 0.97) 0%, rgba(58, 10, 35, 0.92) 50%, rgba(26, 34, 56, 0.95) 100%);
+      padding: 6rem 0;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;">
+      <div class="container" style="display: flex; justify-content: center; text-align: center; width: 100%;">
+        <div style="max-width: 960px;">
+          <span class="section-label" style="color: var(--gold);">Our Programs</span>
+          <h1 id="programs-hero-title" class="section-title" style="font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 1.25rem; color: #ffffff !important; opacity: 1;">
+            Programs Creating Pathways To Change
+          </h1>
+          <p class="section-desc" style="max-width: 960px; margin: 0 auto; color: #ffffff; opacity: 1; font-size: 1.25rem;">
+            Explore our initiatives empowering communities through education, awareness, mentorship, and meaningful action.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Program Categories -->
+    <section class="section section-alt" aria-labelledby="programs-categories-title">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-label">What We Do</span>
+          <h2 id="programs-categories-title" class="section-title">Core Program Areas</h2>
+          <p class="section-desc">Our holistic approach addresses community needs through structured, sustainable interventions.</p>
+        </header>
+        <div class="programs-5col" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
+
+          <article id="education" class="card" style="text-align: center; padding: 1.25rem 1rem;">
+            <div class="card-icon card-icon-pink" style="margin: 0 auto 0.75rem;">
+              <span class="material-symbols-outlined icon-fill" aria-hidden="true">school</span>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Education</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
+              School admissions &amp; learning support for underserved children.
+            </p>
+            <a href="impact.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">View Impact</a>
+          </article>
+
+          <article id="community" class="card" style="text-align: center; padding: 1.25rem 1rem;">
+            <div class="card-icon card-icon-purple" style="margin: 0 auto 0.75rem;">
+              <span class="material-symbols-outlined icon-fill" aria-hidden="true">groups</span>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Community Development</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
+              Counselling, awareness &amp; mentorship for stronger communities.
+            </p>
+            <a href="impact.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">View Impact</a>
+          </article>
+
+          <article id="volunteer" class="card" style="text-align: center; padding: 1.25rem 1rem;">
+            <div class="card-icon card-icon-gold" style="margin: 0 auto 0.75rem;">
+              <span class="material-symbols-outlined icon-fill" aria-hidden="true">volunteer_activism</span>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Volunteer Network</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
+              Passionate individuals driving on-ground community impact.
+            </p>
+            <a href="volunteer.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Join Network</a>
+          </article>
+
+          <article id="internships" class="card" style="text-align: center; padding: 1.25rem 1rem;">
+            <div class="card-icon card-icon-navy" style="margin: 0 auto 0.75rem;">
+              <span class="material-symbols-outlined icon-fill" aria-hidden="true">work</span>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Internships</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
+              Real-world experience &amp; skill-building for changemakers.
+            </p>
+            <a href="internship.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Apply Now</a>
+          </article>
+
+          <article id="certificates" class="card" style="text-align: center; padding: 1.25rem 1rem;">
+            <div class="card-icon card-icon-purple" style="margin: 0 auto 0.75rem;">
+              <span class="material-symbols-outlined icon-fill" aria-hidden="true">verified</span>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem;">Certificate Programs</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0; line-height: 1.5;">
+              Verified, publicly verifiable credentials for completions.
+            </p>
+            <a href="verify.html" class="btn btn-outline" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.4rem 0.75rem;">Verify Certificate</a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Initiatives -->
+    <section class="section section-white" aria-labelledby="initiatives-title">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-label">On the Ground</span>
+          <h2 id="initiatives-title" class="section-title">Core Initiatives &amp; Projects</h2>
+          <p class="section-desc">Our flagship programs delivering education support, youth empowerment, and personal development for children and adolescents.</p>
+        </header>
+
+        <div style="display: flex; flex-direction: column; gap: 3rem;">
+
+          <article id="shiksha">
+            <img src="assets/images/project-shiksha.png" alt="Project Shiksha — school admission support and education for children" class="project-poster" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem;" width="600" height="400" loading="lazy">
+            <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem;">Project Shiksha</h3>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+              Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community support, and dedicated volunteers, the project has now impacted more than <strong>50 children</strong>.
+            </p>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+              Many children were unable to secure admission in government schools due to a lack of proper documentation and guidance. The foundation supported these children and their families by assisting with school admission procedures, preparing and arranging required documents, guiding parents through the admission process, and ensuring children gained access to quality education.
+            </p>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7;">
+              Today, these children are continuing their education and moving toward a brighter future.
+            </p>
+          </article>
+
+          <hr style="border: none; border-top: 1px solid var(--border); margin: 0;">
+
+          <article id="manthan">
+            <img src="assets/images/project-manthan.png" alt="Project Manthan — counselling and awareness for children and adolescents" class="project-poster" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem;" width="600" height="400" loading="lazy">
+            <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem;">Project Manthan</h3>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+              Under Project Manthan, Amaanitvam Foundation worked with children and adolescents to address negative habits and personal challenges through awareness sessions and counselling.
+            </p>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+              Initiatives included counselling and mentorship sessions, guidance on positive life choices, awareness regarding harmful habits and their consequences, personality development activities, confidence-building sessions, and encouraging education, discipline, and social responsibility.
+            </p>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7;">
+              Through these efforts, many children demonstrated positive behavioural changes and developed a stronger focus on their education and future goals.
+            </p>
+          </article>
+
+          <hr style="border: none; border-top: 1px solid var(--border); margin: 0;">
+
+          <article id="pravah">
+            <img src="assets/images/hero.png" alt="Project Pravah — youth empowerment initiative in Hisar, Haryana" class="project-poster" style="width: 100%; max-height: 320px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem;" width="600" height="400" loading="lazy">
+            <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem;">Project Pravah</h3>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+              Project Pravah is our pilot initiative launched in Hisar, Haryana — aimed at creating opportunities, spreading awareness, and building a brighter future for children and youth.
+            </p>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+              Key focus areas include opportunity creation for rural youth, awareness drives on education &amp; health, and grassroots community engagement beyond Delhi.
+            </p>
+            <p class="text-muted" style="font-size: 0.95rem; line-height: 1.7;">
+              Expanding our reach beyond Delhi, Project Pravah brings grassroots action to rural communities and empowers the next generation with knowledge, access, and hope.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Donation CTA -->
+    <section class="section section-alt" aria-labelledby="donate-cta-title">
+      <div class="container donate-cta-container">
+        <div class="donate-section">
+          <div class="donate-section-inner">
+            <span class="donate-badge">Support Our Mission</span>
+            <h2 id="donate-cta-title" class="section-title">Be the Change You Wish to See</h2>
+            <p>
+              Join our mission to empower lives through education, compassion, and community action.
+            </p>
+            <p style="color:var(--gold);font-size:0.9rem;font-weight:600;margin-bottom:2rem;">Registered under 12A &amp; 80G — tax-deductible for Indian donors</p>
+            <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+              <a href="contact.html#donate" class="btn btn-primary">Donate Now</a>
+              <a href="impact.html" class="btn btn-outline">See Our Impact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer"></div>
+    <!-- Floating Donate CTA -->
+  <a href="contact.html#donate" class="floating-donate" aria-label="Donate to Amaanitvam Foundation">
+    <span class="material-symbols-outlined">favorite</span>
+    <span class="floating-donate-text">Donate</span>
+  </a>
+<script src="js/main.js"></script>
+<script>
+fetch("footer.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer").innerHTML = data;
+  });
+</script>
+</body>
+</html>
+ 

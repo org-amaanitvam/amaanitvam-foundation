@@ -9,7 +9,7 @@ import TasksPage from './pages/TasksPage';
 import AnnouncementsPage from './pages/AnnouncementsPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProfilePage from './pages/ProfilePage';
-import InternReportsPage from './pages/InternReportsPage';
+import MemberReportsPage from './pages/MemberReportsPage'; // 👈 Updated naming convention
 import AttendancePage from './pages/AttendancePage';
 import MyCertificatesPage from './pages/MyCertificatesPage';
 import DepartmentsPage from './pages/DepartmentsPage';
@@ -35,7 +35,8 @@ export default function App() {
       <Route path="/announcements" element={<DashPage><AnnouncementsPage /></DashPage>} />
       <Route path="/projects" element={<DashPage><ProjectsPage /></DashPage>} />
       <Route path="/profile" element={<DashPage><ProfilePage /></DashPage>} />
-      <Route path="/intern-reports" element={<DashPage><InternReportsPage /></DashPage>} />
+      <Route path="/member-reports" element={<DashPage><MemberReportsPage /></DashPage>} /> 
+      
       <Route path="/attendance" element={<DashPage><AttendancePage /></DashPage>} />
       <Route path="/my-certificates" element={<DashPage><MyCertificatesPage /></DashPage>} />
       <Route path="/departments" element={<DashPage><DepartmentsPage /></DashPage>} />
