@@ -33,25 +33,25 @@ export default function AttendancePage() {
   const [savingUserId, setSavingUserId] = useState(null);
   const [drafts, setDrafts] = useState({});
 
-  const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
-  const isDepartmentHead = ['department_head', 'head', 'departmentHead'].includes(userProfile?.role);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isDepartmentHead, setIsDepartmentHead] = useState(false);
+  
+  // Wait until we fetch API rights to determine if they can register
+  const [rightsLoaded, setRightsLoaded] = useState(false);
   const canRegister = isAdmin || isDepartmentHead;
-  const isViewerOnly = !canRegister;
+  const isViewerOnly = rightsLoaded && !canRegister;
 
   useEffect(() => {
     if (authLoading || !userProfile) return;
-    if (isViewerOnly) {
-      setActiveTab('view');
-      loadMyAttendance(selectedDate);
-      return;
-    }
-
     loadDepartmentOptions();
-  }, [authLoading, userProfile?.role]);
+  }, [authLoading, userProfile]);
 
   useEffect(() => {
+    if (!rightsLoaded) return;
+    
     if (isViewerOnly) {
-      loadMyAttendance(selectedDate);
+      setActiveTab('view');
+      loadMyAttendance();
       return;
     }
 
@@ -63,27 +63,24 @@ export default function AttendancePage() {
       if (!selectedDepartmentId) return;
       loadDepartmentUsers(selectedDepartmentId);
     }
-  }, [selectedDepartmentId, activeTab, selectedDate, isViewerOnly]);
+  }, [selectedDepartmentId, activeTab, selectedDate, isViewerOnly, rightsLoaded]);
 
   const loadDepartmentOptions = async () => {
     try {
       setLoading(true);
       const { data } = await api.get('/attendance/users');
-      const { data: domainData } = await api.get('/projects/domains');
-
-      const domainOptions = (domainData.domains || []).map(d => ({
-        departmentId: d._id,
-        departmentName: d.departmentName,
-      }));
-
+      
+      setIsAdmin(data.isAdmin);
+      setIsDepartmentHead(data.isDepartmentHead || data.isAdmin);
+      
       if (data.isAdmin) {
         const options = [
-          { departmentId: '', departmentName: 'All Departments' },
-          ...domainOptions,
+          { departmentId: 'all', departmentName: 'All Departments' },
+          ...(data.departments || []),
         ];
         setDepartmentOptions(options);
-        setSelectedDepartmentId(prev => prev || '');
-      } else {
+        setSelectedDepartmentId('all');
+      } else if (data.isDepartmentHead) {
         const options = [{ departmentId: data.departmentId, departmentName: data.departmentName }];
         setDepartmentOptions(options);
         setSelectedDepartmentId(data.departmentId || '');
@@ -92,20 +89,20 @@ export default function AttendancePage() {
       if (data.users?.length) {
         setUsers(data.users);
       }
+      setRightsLoaded(true);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to load attendance data');
+      setRightsLoaded(true);
     } finally {
       setLoading(false);
     }
   };
 
   const loadDepartmentAttendance = async (departmentId, date) => {
+    if (!departmentId) return;
     try {
       setLoading(true);
-      const endpoint = !departmentId
-        ? '/attendance/department/all'
-        : `/attendance/department/${departmentId}`;
-      const { data } = await api.get(endpoint, { params: { date } });
+      const { data } = await api.get(`/attendance/department/${departmentId}`, { params: { date } });
       setAttendanceRecords(data.attendance || []);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to load attendance');
@@ -133,10 +130,11 @@ export default function AttendancePage() {
     }
   };
 
-  const loadMyAttendance = async (date) => {
+  const loadMyAttendance = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/attendance/me', { params: { date } });
+      // Fetch ALL records — no date param. Client filters for display.
+      const { data } = await api.get('/attendance/me');
       setMyAttendance(data.attendance || []);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to load your attendance');
@@ -147,10 +145,15 @@ export default function AttendancePage() {
 
   const handleSaveAttendance = async (userItem) => {
     try {
+      const targetDepartmentId = userItem.departmentId || (selectedDepartmentId !== 'all' ? selectedDepartmentId : null);
+      if (!targetDepartmentId) {
+        toast.error('Cannot mark attendance: User has no valid department assigned.');
+        return;
+      }
       setSavingUserId(userItem._id);
       const status = drafts[userItem._id] || 'present';
       await api.post('/attendance/mark', {
-        departmentId: selectedDepartmentId,
+        departmentId: targetDepartmentId,
         userId: userItem._id,
         date: selectedDate,
         status,
@@ -331,25 +334,30 @@ export default function AttendancePage() {
                 ))}
               </div>
             )
-          ) : myAttendance.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-              No attendance records found for your account.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {myAttendance.map((record) => (
-                <div key={record._id} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="font-medium text-slate-800">{record.department?.departmentName || 'Department'}</p>
-                    <p className="text-sm text-slate-500">{new Date(record.date).toLocaleDateString()}</p>
+          ) : (() => {
+            const filtered = selectedDate
+              ? myAttendance.filter((r) => new Date(r.date).toISOString().slice(0, 10) === selectedDate)
+              : myAttendance;
+            return filtered.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
+                {selectedDate ? `No attendance record found for ${new Date(selectedDate).toLocaleDateString()}.` : 'No attendance records found for your account.'}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filtered.map((record) => (
+                  <div key={record._id} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="font-medium text-slate-800">{record.department?.departmentName || 'Department'}</p>
+                      <p className="text-sm text-slate-500">{new Date(record.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                    </div>
+                    <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${statusClasses[record.status] || 'bg-slate-100 text-slate-700'}`}>
+                      {record.status}
+                    </span>
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${statusClasses[record.status] || 'bg-slate-100 text-slate-700'}`}>
-                    {record.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

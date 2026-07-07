@@ -103,6 +103,7 @@ export default function Attendance() {
       if (attendanceRes.data && attendanceRes.data.attendance) {
         const recordsMap = {};
         attendanceRes.data.attendance.forEach(record => {
+          if (!record.user) return; // Skip corrupted records where user was deleted
           const userId = typeof record.user === 'object' ? record.user._id : record.user;
           recordsMap[userId] = record;
         });
