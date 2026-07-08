@@ -1,6 +1,7 @@
 /* =====================================================
-   COMPLETE WEBSITE CSS - CLEANED
-   Duplicate selector blocks merged; repeated declarations kept with latest value.
+   COMPLETE WEBSITE CSS - FIXED
+   Merge conflict resolved, duplicate declarations removed,
+   invalid conflict markers removed, existing design preserved.
    ===================================================== */
 
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap");
@@ -5854,7 +5855,7 @@ body.dashboard-page .toast.show {
   opacity: 1;
 }
 
-@media(max-width:1180px) {
+@media (max-width:1180px) {
 
   body.dashboard-page .stats-grid,
   body.dashboard-page .module-grid {
@@ -5866,7 +5867,7 @@ body.dashboard-page .toast.show {
   }
 }
 
-@media(max-width:920px) {
+@media (max-width:920px) {
   body.dashboard-page .app-shell {
     grid-template-columns: 1fr;
   }
@@ -5921,7 +5922,7 @@ body.dashboard-page .toast.show {
   }
 }
 
-@media(max-width:620px) {
+@media (max-width:620px) {
   body.dashboard-page .dashboard-main {
     padding: 14px;
   }
@@ -6084,27 +6085,22 @@ body[data-page="faq"] .moved-inline-style-077 {
   display: block !important;
 }
 
-/* ===== Moved from webinars-competitions.html <style> ===== */
 .events-container {
   padding: var(--section-py, 4rem) 0;
 }
 
-/* ── Main Layout Container ── */
 .featured-webinar-layout {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 3.5rem;
   align-items: stretch;
-  /* Crucial: Forces equal height on both column cells */
 }
 
-/* ── Perfectly Bound Left Gallery Card ── */
 .left-gallery-card-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
   min-height: 0;
-  /* Prevents cell stretching from image content */
 }
 
 .left-gallery-card {
@@ -6119,20 +6115,16 @@ body[data-page="faq"] .moved-inline-style-077 {
   padding: 1.5rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
-
-  /* Grid layout to match image {CD2047D0-223E-4AEA-9734-7ED243C77524}.png */
   display: grid;
   grid-template-rows: 1.2fr 1fr;
   gap: 1.25rem;
 }
 
-/* Top Row Container */
 .top-poster-row {
   min-height: 0;
   width: 100%;
 }
 
-/* Bottom Row Container (Split Side-by-Side) */
 .bottom-snapshots-row {
   min-height: 0;
   display: grid;
@@ -6141,7 +6133,6 @@ body[data-page="faq"] .moved-inline-style-077 {
   width: 100%;
 }
 
-/* Image Box Elements */
 .main-poster,
 .snapshot-card {
   border-radius: 10px;
@@ -6159,7 +6150,6 @@ body[data-page="faq"] .moved-inline-style-077 {
   border: 1px solid var(--border, #e5e5e5);
 }
 
-/* Safe Uniform Image Fitting */
 .left-gallery-card img {
   width: 100%;
   height: 100%;
@@ -6167,7 +6157,6 @@ body[data-page="faq"] .moved-inline-style-077 {
   object-fit: cover;
 }
 
-/* Responsive fallbacks */
 @media (max-width: 992px) {
   .featured-webinar-layout {
     grid-template-columns: 1fr;
@@ -6196,7 +6185,6 @@ body[data-page="faq"] .moved-inline-style-077 {
   }
 }
 
-/* ── Details Pane (Right Card - Acts as the baseline height source) ── */
 .webinar-details-pane {
   background: var(--surface, #ffffff);
   border: 1px solid var(--border, #e5e5e5);
@@ -6235,7 +6223,7 @@ body[data-page="faq"] .moved-inline-style-077 {
 }
 
 .webinar-subtitle-hindi {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 2.2rem;
   color: var(--gold-dark, #b58241);
   margin-bottom: 1.5rem;
@@ -6304,12 +6292,9 @@ body[data-page="faq"] .moved-inline-style-077 {
   margin-bottom: 2.5rem;
 }
 
-
-/* ===== Inline styles moved from HTML files ===== */
-
 .moved-inline-style-final-001 {
   position: relative;
-  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url('assets/images/hero.png');
+  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url("assets/images/hero.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -6463,7 +6448,7 @@ body[data-page="faq"] .moved-inline-style-077 {
 
 .moved-inline-style-final-029 {
   position: relative;
-  background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)), url('assets/images/hero.png');
+  background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)), url("assets/images/hero.png");
   background-size: cover;
   background-position: center;
   padding: 5rem 0;
@@ -6494,14 +6479,6 @@ body[data-page="faq"] .moved-inline-style-077 {
   width: 100%;
   text-align: center;
 }
-
-
-/* =====================================================
-   GLOBAL PAGE HEADER IMAGE FIX
-   Applies heroo.png to all non-home page headers from CSS only.
-   Image location expected: frontend/Website/assets/images/heroo.png
-   CSS file expected inside: frontend/Website/assets/css/ or frontend/Website/css/
-   ===================================================== */
 
 .page-hero.has-image,
 .about-hero,
@@ -6534,8 +6511,7 @@ body[data-page="contact"] .contact-hero,
   position: relative !important;
   overflow: hidden !important;
   background-color: var(--primary) !important;
-  background-image:
-    linear-gradient(135deg, rgba(86, 5, 26, 0.84), rgba(86, 5, 26, 0.62)),
+  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.84), rgba(86, 5, 26, 0.62)),
     url("../images/heroo.png") !important;
   background-size: cover !important;
   background-position: center center !important;
@@ -6581,12 +6557,11 @@ body[data-page="contact"] .contact-hero,
   -webkit-text-fill-color: var(--gold) !important;
 }
 
-/* FAQ page arranged like contact FAQ - keep all sections */
 body[data-page="faq"] .page-hero {
   display: block !important;
 }
 
-body[data-page="faq"] main#main-content > section:not(.page-hero) {
+body[data-page="faq"] main#main-content>section:not(.page-hero) {
   padding: 72px 0 !important;
 }
 
@@ -6660,24 +6635,6 @@ body[data-page="faq"] .faq-item.is-open .faq-icon {
   transform: rotate(180deg) !important;
 }
 
-<<<<<<< HEAD
-.team-row{
-    display:flex;
-    justify-content:center;
-    gap:24px;
-    flex-wrap:wrap;
-    margin-bottom:32px;
-}
-
-.team-row-1 .card{
-    flex:0 1 260px;
-}
-
-.team-row-2 .card,
-.team-row-3 .card{
-    flex:0 1 280px;
-}
-=======
 .team-row {
   display: flex;
   justify-content: center;
@@ -6761,26 +6718,18 @@ body[data-page="faq"] .faq-item.is-open .faq-icon {
   font-size: .88rem;
 }
 
-
-
-
-
-
-
-
-/* responsive fixes */
-
 @media (min-width: 601px) and (max-width: 992px) {
   .footer-container {
     grid-template-columns: 1fr 1fr !important;
     gap: 28px !important;
   }
 }
+
 @media (max-width: 600px) {
   .footer-container {
     grid-template-columns: 1fr !important;
   }
-
+}
 
 @media (max-width: 900px) {
   .project-showcase {
@@ -6788,16 +6737,19 @@ body[data-page="faq"] .faq-item.is-open .faq-icon {
     gap: 2.5rem !important;
     margin: 50px 0 !important;
   }
+
   .project-image-wrapper {
     position: relative !important;
     top: 0 !important;
     margin-bottom: 20px !important;
   }
+
   .project-content {
     height: auto !important;
     overflow: visible !important;
     padding-right: 0 !important;
   }
+
   .project-image-caption {
     position: relative !important;
     bottom: auto !important;
@@ -6806,14 +6758,8 @@ body[data-page="faq"] .faq-item.is-open .faq-icon {
   }
 }
 
-
-.team-row-1,
-.moved-inline-style-042,
-.moved-inline-style-085,
-.moved-inline-style-139 {
-  /* these were repeat(4, 1fr) */
-}
 @media (max-width: 900px) {
+
   .team-row-1,
   .moved-inline-style-042,
   .moved-inline-style-085,
@@ -6821,113 +6767,123 @@ body[data-page="faq"] .faq-item.is-open .faq-icon {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
 @media (max-width: 480px) {
+
   .team-row-1,
   .moved-inline-style-042,
   .moved-inline-style-085,
   .moved-inline-style-139 {
     grid-template-columns: 1fr !important;
   }
+
   .team-row-2 {
     flex-direction: column !important;
     align-items: center !important;
   }
 }
 
-.moved-inline-style-102 {
-  /* was repeat(4, 1fr) */
-}
 @media (max-width: 900px) {
-  .moved-inline-style-102 { grid-template-columns: repeat(2, 1fr) !important; }
+  .moved-inline-style-102 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
+
 @media (max-width: 480px) {
-  .moved-inline-style-102 { grid-template-columns: 1fr !important; }
+  .moved-inline-style-102 {
+    grid-template-columns: 1fr !important;
+  }
 }
 
-.moved-inline-style-123 {
-  /* was repeat(5, 1fr) */
-}
 @media (max-width: 1024px) {
-  .moved-inline-style-123 { grid-template-columns: repeat(3, 1fr) !important; }
-}
-@media (max-width: 640px) {
-  .moved-inline-style-123 { grid-template-columns: repeat(2, 1fr) !important; }
-}
-@media (max-width: 400px) {
-  .moved-inline-style-123 { grid-template-columns: 1fr !important; }
+  .moved-inline-style-123 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
 }
 
-/* ---------------------------------------------------
-   4. STATS GRID — 1 column on very small phones
---------------------------------------------------- */
+@media (max-width: 640px) {
+  .moved-inline-style-123 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .moved-inline-style-123 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 @media (max-width: 420px) {
   .stats-grid {
     grid-template-columns: 1fr !important;
   }
 }
 
-/* ---------------------------------------------------
-   5. HERO BUTTONS — forced min-width overflowed on
-   narrow phones (two 190px buttons + gap > 320px screen)
---------------------------------------------------- */
 @media (max-width: 480px) {
+
   body[data-page="home"] .hero-actions .btn,
   body:not([data-page]) .hero-actions .btn {
     min-width: 150px !important;
   }
 }
+
 @media (max-width: 380px) {
+
   body[data-page="home"] .hero-actions .btn,
   body:not([data-page]) .hero-actions .btn {
     min-width: 100% !important;
   }
+
   .hero-actions {
     flex-direction: column !important;
   }
 }
-
 
 @media (max-width: 480px) {
   .donation-btn {
     font-size: 1.05rem !important;
     padding: 16px 32px !important;
   }
+
   .donate-section .btn-primary {
     font-size: 1.2rem !important;
     padding: 16px 28px !important;
   }
 }
 
-
 @media (max-width: 380px) {
   .card {
     padding: 1.25rem !important;
   }
+
   .contact-card,
   .partnership-box {
     padding: 24px 16px !important;
   }
+
   .donation-card {
     padding: 40px 18px !important;
   }
+
   .donate-section {
     padding: 1.75rem 1rem !important;
   }
+
   #donate.donation-section {
     padding: 20px !important;
   }
+
   .brand-name {
     font-size: 1.05rem !important;
     letter-spacing: 1.5px !important;
   }
 }
 
-
 @media (min-width: 1600px) {
+
   .donation-card p,
   .partnership-box p,
   .contact-hero .section-desc {
     max-width: 900px !important;
   }
 }
->>>>>>> upstream/main
