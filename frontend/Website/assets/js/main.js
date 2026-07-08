@@ -8,6 +8,7 @@ const API_BASE_URL =
 (function () {
   'use strict';
 
+  function initNavbar() {
   const nav = document.getElementById('site-nav');
   const menuToggle = document.getElementById('menu-toggle');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -265,6 +266,23 @@ const API_BASE_URL =
   }
 
 
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const navbarPlaceholder = document.getElementById("navbar-placeholder");
+    if (navbarPlaceholder) {
+      fetch("components/navbar.html")
+        .then(function(res) { return res.text(); })
+        .then(function(data) {
+          navbarPlaceholder.outerHTML = data;
+          initNavbar();
+        })
+        .catch(function(err) { console.error("Navbar load error:", err); });
+    } else {
+      initNavbar();
+    }
+  });
+
   document.querySelectorAll('.faq-question').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const item = btn.closest('.faq-item');
@@ -429,7 +447,7 @@ const API_BASE_URL =
     const footer = document.getElementById("footer");
 
     if (footer) {
-      fetch("footer.html")
+      fetch("components/footer.html")
         .then(function (response) {
           return response.text();
         })
