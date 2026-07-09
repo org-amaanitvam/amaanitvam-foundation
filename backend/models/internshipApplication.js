@@ -47,11 +47,14 @@ const internshipApplicationSchema = new mongoose.Schema(
             trim: true,
             maxlength: 500
         },
-
         duration: {
             type: String,
             trim: true,
             maxlength: 50
+        },
+        resumeUrl: {
+            type: String,
+            default: ""
         },
         status: {
             type: String,
@@ -59,7 +62,6 @@ const internshipApplicationSchema = new mongoose.Schema(
             default: "pending",
             index: true
         },
-
         submissionTimestamp: {
             type: Date,
             default: Date.now,

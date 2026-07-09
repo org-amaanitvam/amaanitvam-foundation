@@ -32,6 +32,7 @@ import cmsRoutes from "./routes/cmsRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import galleryMongoMediaFixRoutes from "./routes/galleryMongoMediaFixRoutes.js";
+import internshipRoutes from "./routes/internshipRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +45,10 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+  "http://localhost:5500",   // <-- ADD THIS FOR LIVE SERVER
+  "http://127.0.0.1:5500",
   "https://amaanitvam.org",
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
@@ -58,6 +63,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Standard Routing
 app.use("/api/auth", authRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/internship", internshipRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/volunteer", volunteerRoutes);
 app.use("/api/donate", donationRoutes);
@@ -77,6 +83,20 @@ app.use("/api/public", publicRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/notifications", notificationRoutes);
 
+// Serve Frontend Static Files (Dashboard)
+const dashboardBuildPath = path.join(__dirname, "../frontend/Portals/dashboard/dist");
+app.use(express.static(dashboardBuildPath));
+
+// CATCH-ALL: Redirect non-API requests to the React app
+app.get(/(.*)/, (req, res, next) => {
+  // If it's an API request that wasn't found, skip to the 404 handler
+  if (req.originalUrl.startsWith("/api")) {
+    return next();
+  }
+  res.sendFile(path.join(dashboardBuildPath, "index.html"));
+});
+
+// 404 API Handler
 app.use((req, res) => res.status(404).json({ success: false, message: "Route not found" }));
 
 const startServer = async () => {
