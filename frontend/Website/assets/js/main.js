@@ -1287,16 +1287,6 @@ document.getElementById('volunteerForm')?.addEventListener('submit', async funct
   }
 })();
 
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
 /**
  * ==========================================================================
  * PREMIUM DIGITAL LIBRARY LOGIC ENGINE
@@ -1437,7 +1427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Execute first configuration pipeline pass
     renderLibraryGrid(libraryItems);
 });
-=======
+
 /* ===== Gallery Album Loader - Common JS ===== */
 (function () {
   'use strict';
@@ -1774,4 +1764,3 @@ document.addEventListener('DOMContentLoaded', () => {
     initAlbumGallery();
   }
 })();
->>>>>>> c4881dd6ce7626b359f24138e8dc7cf7f1e99f36
