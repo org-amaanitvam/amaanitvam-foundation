@@ -34,10 +34,9 @@ export default function App() {
       <Route path="/announcements" element={<DashPage><AnnouncementsPage /></DashPage>} />
       <Route path="/projects" element={<DashPage><ProjectsPage /></DashPage>} />
       <Route path="/profile" element={<DashPage><ProfilePage /></DashPage>} />
-      <Route path="/member-reports" element={<DashPage><MemberReportsPage /></DashPage>} /> 
+      <Route path="/member-reports" element={<DashPage><Reports /></DashPage>} /> 
       
       <Route path="/attendance" element={<DashPage><AttendancePage /></DashPage>} />
-      <Route path="/my-certificates" element={<DashPage><MyCertificatesPage /></DashPage>} />
       <Route path="/departments" element={<DashPage><DepartmentsPage /></DashPage>} />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
