@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -158,8 +157,9 @@
             <label class="form-label" for="vol-role">Preferred Role
               <span aria-hidden="true" class="moved-inline-style-113">*</span>
             </label>
-            <select class="form-input" id="vol-role" name="role" required="">
-              <option disabled="" selected="" value="">Select a role</option>
+            <select class="form-input" name="role" id="vol-role" required>
+                <option value="" disabled selected>Select a role</option>
+                <option value="Event Coordinator">Event Coordinator</option>
             </select>
           </div>
           <div class="moved-inline-style-064">
@@ -172,6 +172,10 @@
             <label class="form-label" for="vol-skills">Skills/Expertise (Optional)</label>
             <input class="form-input" id="vol-skills" name="skills" placeholder="e.g. Graphic Design, Public Speaking"
               type="text" />
+          </div>
+          <div class="moved-inline-style-064">
+            <label class="form-label" for="vol-resume">Attach Resume <span aria-hidden="true" class="moved-inline-style-113">*</span></label>
+            <input accept=".pdf,.doc,.docx" class="form-input" id="vol-resume" name="resume" required="" type="file" />
           </div>
           <div class="moved-inline-style-065">
             <label class="form-label" for="vol-motivation">Why do you want to volunteer?
@@ -205,7 +209,6 @@
       <i class="fa-brands fa-linkedin-in"></i>
     </a>
   </div>
-
 
   <script src="assets/js/main.js"></script>
 </body>

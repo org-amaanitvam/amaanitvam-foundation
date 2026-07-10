@@ -49,12 +49,16 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://127.0.0.1:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5174",
+<<<<<<< HEAD
   "http://localhost:5500",
   "http://127.0.0.1:5500",
 
+=======
+  "http://localhost:5500",   // <-- ADD THIS FOR LIVE SERVER
+  "http://127.0.0.1:5500",
+>>>>>>> 3b2f82929db3fb9f44c27bc71b08eba155f56521
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
   "https://admin.amaanitvam.org",
@@ -92,6 +96,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/internship", internshipRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/volunteer", volunteerRoutes);
 app.use("/api/donate", donationRoutes);
@@ -113,26 +118,20 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/internship", internshipRoutes);
 app.use("/api", galleryMongoMediaFixRoutes);
 
-// --- START: "NOT FOUND AFTER REFRESH" FIX ---
-
-// 1. Serve Frontend Static Files (Point to your React build folder)
+// Serve Frontend Static Files (Dashboard)
 const dashboardBuildPath = path.join(__dirname, "../frontend/Portals/dashboard/dist");
 app.use(express.static(dashboardBuildPath));
 
-// 2. CATCH-ALL Route: Redirect non-API requests to the React app's index.html
-// (Using Regex /(.*)/ instead of "*" to prevent path-to-regexp crash)
+// CATCH-ALL: Redirect non-API requests to the React app
 app.get(/(.*)/, (req, res, next) => {
-  // If it is an API request that wasn't found above, skip down to the 404 handler
+  // If it's an API request that wasn't found, skip to the 404 handler
   if (req.originalUrl.startsWith("/api")) {
     return next();
   }
-  // Otherwise, let React Router handle the URL
   res.sendFile(path.join(dashboardBuildPath, "index.html"));
 });
 
-// --- END FIX ---
-
-// 404 API Handler (Only reaches here if an /api/... route is completely invalid)
+// 404 API Handler
 app.use((req, res) => res.status(404).json({ success: false, message: "Route not found" }));
 
 // Start Database and Server

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { CalendarCheck, Search, Calendar, CheckCircle, XCircle, Clock, AlertCircle, X, Pencil, Users, UserCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { CalendarCheck, Search, Calendar, CheckCircle, XCircle, Clock, AlertCircle, X, Pencil, Users, UserCircle, BarChart3 } from 'lucide-react';
 import api from '../config/api';
 import toast from 'react-hot-toast';
 
 export default function Attendance() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -213,37 +215,33 @@ export default function Attendance() {
             <CalendarCheck className="w-6 h-6 text-[#56051a]" />
             Attendance
           </h1>
-          <p className="text-sm text-slate-500 mt-1">View your attendance history and manage team records</p>
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* FIXED NAVIGATION TAB SECTION */}
       <div className="flex border-b border-slate-200 mb-6 gap-6">
         <button
           onClick={() => setActiveTab('my-attendance')}
-          className={`pb-3 text-sm font-semibold transition-colors flex items-center gap-2 border-b-2 ${
-            activeTab === 'my-attendance' 
-              ? 'border-[#56051a] text-[#56051a]' 
-              : 'border-transparent text-slate-500 hover:text-slate-700'
-          }`}
+          className={`pb-3 text-sm font-semibold border-b-2 ${activeTab === 'my-attendance' ? 'border-[#56051a] text-[#56051a]' : 'border-transparent text-slate-500'}`}
         >
-          <UserCircle className="w-4 h-4" />
-          My Attendance
+          <UserCircle className="w-4 h-4 inline" /> My Attendance
         </button>
-        
         {isDepartmentHead && (
           <button
             onClick={() => setActiveTab('manage-attendance')}
-            className={`pb-3 text-sm font-semibold transition-colors flex items-center gap-2 border-b-2 ${
-              activeTab === 'manage-attendance' 
-                ? 'border-[#56051a] text-[#56051a]' 
-                : 'border-transparent text-slate-500 hover:text-slate-700'
-            }`}
+            className={`pb-3 text-sm font-semibold border-b-2 ${activeTab === 'manage-attendance' ? 'border-[#56051a] text-[#56051a]' : 'border-transparent text-slate-500'}`}
           >
-            <Users className="w-4 h-4" />
-            Manage Attendance
+            <Users className="w-4 h-4 inline" /> Manage Attendance
           </button>
         )}
+        {/* NEWLY ADDED LINK TO REPORTS */}
+        {/* Updated View Reports button to match the tab styling */}
+        <button
+          onClick={() => navigate('/reports')}
+          className="pb-3 text-sm font-semibold text-slate-500 hover:text-[#56051a] hover:border-[#56051a] border-b-2 border-transparent transition-colors flex items-center gap-2">
+          <BarChart3 className="w-4 h-4" /> View Reports
+        </button>
+
       </div>
 
       {/* MY ATTENDANCE TAB */}

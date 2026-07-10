@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Users, Search, Mail, Filter } from 'lucide-react';
+import { Users, Search, Mail, Filter, Eye } from 'lucide-react'; // Added Eye icon
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { firebaseConfig } from '../config/firebase';
@@ -44,7 +44,6 @@ export default function Candidates() {
     setActionLoading(id);
     try {
       if (status === 'shortlisted') {
-        // Create user in Firebase Auth silently
         const secondaryApp = initializeApp(firebaseConfig, `SecondaryApp_${Date.now()}`);
         const secondaryAuth = getAuth(secondaryApp);
         try {
@@ -83,7 +82,7 @@ export default function Candidates() {
 
   const SkeletonRow = () => (
     <tr className="border-b border-slate-50">
-      {Array.from({ length: 8 }).map((_, i) => (
+      {Array.from({ length: 9 }).map((_, i) => (
         <td key={i} className="px-6 py-4">
           <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4" />
         </td>
@@ -93,7 +92,6 @@ export default function Candidates() {
 
   return (
     <div>
-      {/* Topbar */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-slate-800">Candidate Management</h1>
@@ -103,7 +101,6 @@ export default function Candidates() {
         </div>
       </div>
 
-      {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -139,7 +136,6 @@ export default function Candidates() {
         </select>
       </div>
 
-      {/* Data Table */}
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -151,6 +147,7 @@ export default function Candidates() {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Domain</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">CV</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Applied On</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">Actions</th>
               </tr>
@@ -160,7 +157,7 @@ export default function Candidates() {
                 Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
               ) : candidates.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-slate-400">
+                  <td colSpan={9} className="text-center py-12 text-slate-400">
                     <Users className="w-12 h-12 mx-auto mb-3 text-slate-300" />
                     <p className="text-sm font-medium">No candidates found</p>
                     <p className="text-xs text-slate-400 mt-1">Try adjusting your search or filter criteria.</p>
@@ -179,6 +176,24 @@ export default function Candidates() {
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-600">{candidate.track || candidate.role || '—'}</td>
                     <td className="px-6 py-4 text-sm">{getStatusBadge(candidate.status)}</td>
+                    
+                    {/* NEW CV COLUMN */}
+                    <td className="px-6 py-4 text-sm">
+                      {candidate.resumeUrl ? (
+                        <a 
+                          href={candidate.resumeUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[#56051a] hover:text-[#7a1e3a] transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-[#56051a]/10"
+                          title="View Resume"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 text-xs">No CV</span>
+                      )}
+                    </td>
+
                     <td className="px-6 py-4 text-sm text-slate-600">
                       {candidate.createdAt ? new Date(candidate.createdAt).toLocaleDateString('en-IN') : '—'}
                     </td>

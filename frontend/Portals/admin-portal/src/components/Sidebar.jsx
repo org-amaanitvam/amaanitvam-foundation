@@ -139,6 +139,11 @@ export default function Sidebar() {
               <span>Gallery Media</span>
             </NavLink>
 
+            <NavLink to="/attendance" className={navLinkClass}>
+               <Users className="w-[18px] h-[18px]" />
+              <span>Attendance</span>
+            </NavLink>
+
             <NavLink to="/reports" className={navLinkClass}>
               <BarChart3 className="w-[18px] h-[18px]" />
               <span>Reports</span>

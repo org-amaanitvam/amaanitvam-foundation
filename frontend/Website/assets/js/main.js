@@ -18,177 +18,61 @@ function escapeHtml(value) {
 (function () {
   'use strict';
 
-  function initNavbar() {
+function initNavbar() {
     const nav = document.getElementById('site-nav');
     const menuToggle = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
     const currentPage = document.body.dataset.page || '';
-    const navLinks = document.getElementById('nav-links');
     const hasGroupedNavbar = !!document.querySelector('.nav-item.has-dropdown');
-    const needsNavbarUpgrade = false;
 
-    const pageMap = {
-      about: 0,
-      impact: 0,
-      programs: 0,
-      gallery: 0,
-
-      volunteer: 1,
-      internship: 1,
-      contact: 1,
-
-      "digital-library": 2,
-      courses: 2,
-      webinars: 2,
-      "webinars-competitions": 2,
-
-      resources: 3,
-      verify: 3,
-      faq: 3,
-      collaborations: 3,
-
-      portal: 4,
-      admin: 4,
-      dashboard: 4
-    };
-
-    if (hasGroupedNavbar || needsNavbarUpgrade) {
-      document.querySelectorAll('[data-nav]').forEach(function (link) {
-        if (link.dataset.nav === currentPage) {
-          link.classList.add('is-active');
-          link.setAttribute('aria-current', 'page');
-        }
-      });
-
-      if (currentPage && pageMap[currentPage] !== undefined) {
-        const triggers = document.querySelectorAll('.nav-link.dropdown-trigger');
-        const activeTrigger = triggers[pageMap[currentPage]];
-
-        if (activeTrigger) {
-          activeTrigger.classList.add('is-active');
-        }
+    // 1. Highlight active links
+    document.querySelectorAll('[data-nav]').forEach(function (link) {
+      if (link.dataset.nav === currentPage) {
+        link.classList.add('is-active');
+        link.setAttribute('aria-current', 'page');
       }
+    });
 
-      function updateNav() {
-        if (!nav) return;
-        const hero = document.querySelector('[data-hero]');
-        const scrolled = window.scrollY > 40;
-        const hasHero = hero && hero.getBoundingClientRect().bottom > 80;
+    // 2. Navbar transparency scroll effect
+    function updateNav() {
+      if (!nav) return;
+      const hero = document.querySelector('[data-hero]');
+      const scrolled = window.scrollY > 40;
+      const hasHero = hero && hero.getBoundingClientRect().bottom > 80;
 
-        if (hasHero && !scrolled) {
-          nav.classList.add('is-transparent');
-          nav.classList.remove('is-solid');
-        } else {
-          nav.classList.remove('is-transparent');
-          nav.classList.add('is-solid');
-        }
+      if (hasHero && !scrolled) {
+        nav.classList.add('is-transparent');
+        nav.classList.remove('is-solid');
+      } else {
+        nav.classList.remove('is-transparent');
+        nav.classList.add('is-solid');
       }
+    }
 
-      window.addEventListener('scroll', updateNav, { passive: true });
-      updateNav();
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
 
-      if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener('click', function () {
-          const open = mobileMenu.classList.toggle('is-open');
-          menuToggle.setAttribute('aria-expanded', open);
-          menuToggle.classList.toggle('is-active', open);
-          mobileMenu.setAttribute('aria-hidden', String(!open));
-          document.body.style.overflow = open ? 'hidden' : '';
-        });
-
-        mobileMenu.querySelectorAll('.mobile-group-toggle').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            const section = btn.closest('.mobile-section');
-            const links = section ? section.querySelector('.mobile-group-links') : null;
-            const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-
-            mobileMenu.querySelectorAll('.mobile-section').forEach(function (item) {
-              const toggle = item.querySelector('.mobile-group-toggle');
-              const panel = item.querySelector('.mobile-group-links');
-
-              if (toggle) toggle.setAttribute('aria-expanded', 'false');
-              if (panel) panel.classList.remove('is-open');
-            });
-
-            if (!isExpanded && links) {
-              btn.setAttribute('aria-expanded', 'true');
-              links.classList.add('is-open');
-            }
-          });
-        });
-
-        mobileMenu.querySelectorAll('a').forEach(function (link) {
-          link.addEventListener('click', function () {
-            mobileMenu.classList.remove('is-open');
-            mobileMenu.setAttribute('aria-hidden', 'true');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            menuToggle.classList.remove('is-active');
-            document.body.style.overflow = '';
-          });
-        });
-      }
-
-      document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
-        const trigger = item.querySelector('.dropdown-trigger');
-        const menu = item.querySelector('.dropdown-menu');
-
-        if (!trigger || !menu) return;
-
-        function openMenu() {
-          trigger.setAttribute('aria-expanded', 'true');
-          menu.classList.add('is-open');
-        }
-
-        function closeMenu() {
-          trigger.setAttribute('aria-expanded', 'false');
-          menu.classList.remove('is-open');
-        }
-
-        item.addEventListener('mouseenter', openMenu);
-        item.addEventListener('mouseleave', closeMenu);
-
-        trigger.addEventListener('click', function () {
-          trigger.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
-        });
-
-        trigger.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') closeMenu();
-        });
-      });
-
-      document.addEventListener('click', function (e) {
-        if (!e.target.closest('.nav-item.has-dropdown')) {
-          document.querySelectorAll('.dropdown-trigger').forEach(function (trigger) {
-            trigger.setAttribute('aria-expanded', 'false');
-          });
-          document.querySelectorAll('.dropdown-menu').forEach(function (menu) {
-            menu.classList.remove('is-open');
-          });
-        }
+    // 3. Mobile Menu Logic
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', function () {
+        const open = mobileMenu.classList.toggle('is-open');
+        menuToggle.setAttribute('aria-expanded', open);
+        document.body.style.overflow = open ? 'hidden' : '';
       });
     }
 
+    // 4. Dropdown Menu Logic
+    document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
+      const trigger = item.querySelector('.dropdown-trigger');
+      const menu = item.querySelector('.dropdown-menu');
+      if (!trigger || !menu) return;
 
+      item.addEventListener('mouseenter', () => { trigger.setAttribute('aria-expanded', 'true'); menu.classList.add('is-open'); });
+      item.addEventListener('mouseleave', () => { trigger.setAttribute('aria-expanded', 'false'); menu.classList.remove('is-open'); });
+    });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const navbarPlaceholder =
-      document.getElementById("navbar") ||
-      document.getElementById("navbar-placeholder");
-
-    if (navbarPlaceholder) {
-      fetch("components/navbar.html")
-        .then(function (res) { return res.text(); })
-        .then(function (data) {
-          navbarPlaceholder.innerHTML = data;
-          initNavbar();
-        })
-        .catch(function (err) { console.error("Navbar load error:", err); });
-    } else {
-      initNavbar();
-    }
-  });
-
+  // FAQ Handlers
   document.querySelectorAll('.faq-question').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const item = btn.closest('.faq-item');
@@ -196,7 +80,6 @@ function escapeHtml(value) {
       btn.setAttribute('aria-expanded', expanded);
     });
   });
-
 
   const contactForm = document.getElementById('contactForm');
   const contactStatus = document.getElementById('contact-status');
@@ -391,7 +274,6 @@ function escapeHtml(value) {
       const list = [];
       if (configured) list.push(configured.replace(/\/$/, ''));
 
-      // Always try the real backend first — on localhost AND in production.
       list.push(API_BASE_URL);
 
       return [...new Set(list.filter(Boolean))];
@@ -732,7 +614,6 @@ function escapeHtml(value) {
       }
 
       if (payButton && document.getElementById('donorName') && document.getElementById('donorEmail')) {
-        // Remove old duplicate click handlers that may have been bound earlier in main.js.
         const cleanButton = payButton.cloneNode(true);
         payButton.parentNode.replaceChild(cleanButton, payButton);
         cleanButton.addEventListener('click', (event) => {
@@ -750,12 +631,149 @@ function escapeHtml(value) {
     }
   })();
 
-  /* ===== Amaanitvam Gallery Album Loader - merged into main.js =====
-     Mirrors admin-created gallery folders on frontend/Website/gallery.html.
-     Important: this page intentionally shows ONLY real admin-created albums.
-     Unassigned/uncategorized media is NOT shown as a separate public album.
-     Do not move this into a separate JS file unless project policy changes.
-  */
+/* ===== Internship application form (internship.html) ===== */
+document.getElementById('internshipForm')?.addEventListener('submit', async function (e) {
+  e.preventDefault(); 
+  
+  const btn = document.getElementById('int-submit-btn');
+  const status = document.getElementById('int-status');
+
+  // Show processing state
+  btn.disabled = true;
+  status.textContent = "Submitting application...";
+  status.style.color = "var(--navy)";
+
+  const formData = new FormData(this);
+
+  try {
+    const response = await fetch(API_BASE_URL + '/internship/apply', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      // 1. Show the success message immediately
+      status.textContent = "Application submitted successfully!";
+      status.style.color = "green";
+      alert("Success! Your internship application has been submitted.");
+      
+      // 2. Add a delay before resetting the form
+      setTimeout(() => {
+        this.reset(); 
+        status.textContent = ""; // Clear message after 3 seconds
+        btn.disabled = false;
+      }, 3000); 
+      
+    } else {
+      throw new Error(result.message || "Submission failed.");
+    }
+  } catch (err) {
+    alert("Error: " + err.message);
+    status.textContent = err.message;
+    status.style.color = "red";
+    btn.disabled = false;
+  }
+});
+
+  /* ===== Volunteer application form (volunteer.html) ===== */
+  document.getElementById('volunteerForm')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const status = document.getElementById('vol-status');
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn ? submitBtn.textContent : 'Submit Application';
+
+    status.textContent = "Submitting...";
+    status.style.color = "var(--navy)";
+    
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+    }
+
+    const formData = new FormData(this);
+
+    try {
+      const response = await fetch(API_BASE_URL + '/volunteer/apply', {
+        method: 'POST',
+        // NO 'Content-Type' header here, FormData handles it automatically for files
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        // PATCH: Added success popup alert and prevents refresh
+        alert("Success! Your volunteer application has been submitted successfully. We will review your application and get back to you soon!");
+        status.textContent = result.message || "Application submitted successfully!";
+        status.style.color = "green";
+        this.reset();
+      } else {
+        // PATCH: Added error popup alert
+        alert("Error: " + (result.message || "Failed to submit application."));
+        status.textContent = result.message || "Error submitting application.";
+        status.style.color = "red";
+      }
+    } catch (err) {
+      alert("A network error occurred. Please try again.");
+      status.textContent = "Failed to connect to the server.";
+      status.style.color = "red";
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    }
+  });
+
+  /* ===== Dynamic Departments / Domains Loader ===== */
+  (function() {
+    async function loadDepartments() {
+      const intTrack = document.getElementById('int-track');
+      const volRole = document.getElementById('vol-role');
+      
+      if (!intTrack && !volRole) return;
+      
+      try {
+        const base = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api$/, '') : '';
+        const response = await fetch(`${base}/api/public/departments`);
+        const data = await response.json();
+        
+        if (data.success && Array.isArray(data.departments)) {
+          const optionsHTML = data.departments.map(dept => 
+            `<option value="${escapeHtml(dept)}">${escapeHtml(dept)}</option>`
+          ).join('');
+          
+          if (intTrack) {
+            intTrack.innerHTML = '<option disabled="" selected="" value="">Select a domain</option>' + optionsHTML;
+          }
+          if (volRole) {
+            volRole.innerHTML = '<option disabled="" selected="" value="">Select a role</option>' + optionsHTML;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load dynamic departments:', error);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadDepartments);
+    } else {
+      loadDepartments();
+    }
+  })();
+
+  /* ===== Amaanitvam Gallery Album Loader ===== */
   (function () {
     'use strict';
 
@@ -772,15 +790,12 @@ function escapeHtml(value) {
       localStorage.getItem('backendUrl') ||
       ''
     );
+    
     let currentFolders = [];
     const folderMediaCache = new Map();
 
     function cleanBase(value) {
       return String(value || '').trim().replace(/\/+$/, '');
-    }
-
-    function isLocalWebsiteHost() {
-      return ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
     }
 
     function apiBaseCandidates() {
@@ -857,12 +872,10 @@ function escapeHtml(value) {
       if (!raw && id) return `${base}/api/gallery/media/${encodeURIComponent(id)}`;
       if (!raw) return '';
 
-      // Convert Live Server URLs like http://127.0.0.1:5500/api/gallery/media/id back to backend.
       try {
         const parsed = new URL(raw, window.location.origin);
         if (parsed.pathname.startsWith('/api/')) return `${base}${parsed.pathname}${parsed.search}`;
       } catch (_) {
-        // Continue with string fallbacks below.
       }
 
       if (/^(data:|blob:)/i.test(raw)) return raw;
@@ -924,8 +937,6 @@ function escapeHtml(value) {
         return id && Number(folder.mediaCount || 0) > 0;
       });
 
-      // Resolve every album cover from backend folder media.
-      // Future admin-created albums automatically get the first valid uploaded photo as cover.
       const batchSize = 4;
       for (let index = 0; index < foldersToCheck.length; index += batchSize) {
         const batch = foldersToCheck.slice(index, index + batchSize);
@@ -1122,9 +1133,6 @@ function escapeHtml(value) {
 
       try {
         const foldersData = await fetchGalleryJson('/api/gallery/folders');
-
-        // Show ONLY albums/folders that exist in admin portal.
-        // Do not call /api/gallery?uncategorized=true and do not create a fake Uncategorized album.
         currentFolders = Array.isArray(foldersData.folders) ? foldersData.folders : [];
 
         await hydrateFolderCovers();
@@ -1140,7 +1148,6 @@ function escapeHtml(value) {
       initAlbumGallery();
     }
   })();
-
 })();
 
 /* ===== Internship application form (internship.html) ===== */

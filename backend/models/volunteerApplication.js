@@ -43,13 +43,16 @@ const volunteerApplicationSchema = new mongoose.Schema(
             trim: true,
             maxlength: 5000
         },
+        resumeUrl: {
+            type: String,
+            default: ""
+        },
         status: {
             type: String,
             enum: ["pending", "reviewing", "accepted", "rejected"],
             default: "pending",
             index: true
         },
-
         submissionTimestamp: {
             type: Date,
             default: Date.now,

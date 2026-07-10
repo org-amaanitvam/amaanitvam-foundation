@@ -2,10 +2,9 @@ import InternshipApplication from "../models/internshipApplication.js";
 import Setting from "../models/setting.js";
 import { 
     sendInternshipConfirmationEmail, sendInternshipAdminEmail 
-} 
-from "../services/emailService.js";
-export const createInternshipApplication = async (req, res) => {
+} from "../services/emailService.js";
 
+export const createInternshipApplication = async (req, res) => {
     try {
         const settings = await Setting.findOne();
         if (settings && settings.maintenanceMode) {
@@ -14,6 +13,12 @@ export const createInternshipApplication = async (req, res) => {
 
         const { name, email, phone, track, university, currentYear, motivation, portfolioUrl, duration } = req.validatedInternship;
         
+        // Extract the resume URL if a file was successfully uploaded
+        let resumeUrl = "";
+        if (req.file) {
+            resumeUrl = `/uploads/${req.file.filename}`;
+        }
+
         const newApplication = new InternshipApplication({
             name,
             email,
@@ -24,6 +29,7 @@ export const createInternshipApplication = async (req, res) => {
             motivation,
             portfolioUrl,
             duration,
+            resumeUrl, // Save the file path to the database
             submissionTimestamp: new Date()
         });
 
@@ -38,14 +44,13 @@ export const createInternshipApplication = async (req, res) => {
         // Send emails and WhatsApp in the background (fire-and-forget)
         Promise.all([
             sendInternshipConfirmationEmail({ application: newApplication }),
-            sendInternshipAdminEmail({ application: newApplication, resumeFile: req.file })        ]).catch((emailErr) => {
+            sendInternshipAdminEmail({ application: newApplication, resumeFile: req.file })        
+        ]).catch((emailErr) => {
             console.error("Background notification delivery failed:", emailErr);
         });
 
     } catch (error) {
-
         console.error("Internship application submission failed:", error);
-
         res.status(500).json({
             success: false,
             message: "Failed to submit application."

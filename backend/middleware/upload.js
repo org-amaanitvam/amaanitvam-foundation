@@ -2,7 +2,12 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
+<<<<<<< HEAD
 const uploadDir = 'uploads/';
+=======
+// Safety check: Ensure the uploads directory exists
+const uploadDir = path.join(process.cwd(), 'uploads');
+>>>>>>> 3b2f82929db3fb9f44c27bc71b08eba155f56521
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
