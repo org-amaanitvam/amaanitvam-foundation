@@ -1261,3 +1261,153 @@ document.getElementById('volunteerForm')?.addEventListener('submit', async funct
     loadDepartments();
   }
 })();
+
+
+
+
+
+
+
+
+
+
+/**
+ * ==========================================================================
+ * PREMIUM DIGITAL LIBRARY LOGIC ENGINE
+ * Managing reactivity, metric counters, filters, and animation interfaces.
+ * ==========================================================================
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Premium Mock Asset Database Matching Modular Structure Guidelines
+    const libraryItems = [
+        { id: 1, title: "Primary Education Syllabus", category: "educational", type: "PDF Book", icon: "menu_book", desc: "Comprehensive structural layout and learning guidelines engineered to track core academic baseline metrics.", downloads: 142, views: 520 },
+        { id: 2, title: "Community Field SOP Matrix", category: "governance", type: "Official SOP", icon: "gavel", desc: "Standardized procedural tracking documentation outlining interaction guidelines and regional compliance profiles.", downloads: 89, views: 211 },
+        { id: 3, title: "National Impact Webinar 2025", category: "media", type: "Video Master", icon: "video_camera_front", desc: "Archived cinematic conference recordings detailing annual statistical improvements and strategy overviews.", downloads: 34, views: 618 },
+        { id: 4, title: "Socio-Economic Development Studies", category: "educational", type: "Research Paper", icon: "analytics", desc: "Peer-reviewed analysis evaluating implementation paradigms across underrepresented regional clusters.", downloads: 210, views: 984 },
+        { id: 5, title: "Volunteer Certification Assets", category: "governance", type: "Template Bundle", icon: "assignment", desc: "Official verification files, organizational templates, guidelines indices, and sign-up tracking modules.", downloads: 312, views: 743 }
+    ];
+
+    const gridContainer = document.getElementById('libraryContainer');
+    const searchElement = document.getElementById('libSearch');
+    const tabButtons = document.querySelectorAll('.category-tab');
+    const viewerModal = document.getElementById('viewerModal');
+    
+    let activeCategory = 'all';
+
+    // Renders modern content elements dynamically inside container
+    function renderLibraryGrid(items) {
+        gridContainer.innerHTML = '';
+        
+        if (items.length === 0) {
+            gridContainer.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 4rem 1rem; font-family: var(--font-body);">
+                    <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 1rem; opacity: 0.5;">find_in_page</span>
+                    <p style="font-size: 1.1rem;">No digital library records match your custom lookup criteria.</p>
+                </div>`;
+            return;
+        }
+
+        items.forEach(item => {
+            const cardNode = document.createElement('div');
+            cardNode.className = 'library-card';
+            cardNode.innerHTML = `
+                <div>
+                    <div class="library-card-icon">
+                        <span class="material-symbols-outlined">${item.icon}</span>
+                    </div>
+                    <h3>${item.title}</h3>
+                    <p>${item.desc}</p>
+                </div>
+                <div>
+                    <div class="library-meta">
+                        <span class="meta-type">
+                            <span class="material-symbols-outlined">folder_open</span> ${item.type}
+                        </span>
+                        <span>${item.views} views</span>
+                    </div>
+                    <div class="library-actions">
+                        <button class="btn-view" data-id="${item.id}">View File</button>
+                        <button class="btn-download" data-id="${item.id}">
+                            <span class="material-symbols-outlined">download</span> Get
+                        </button>
+                    </div>
+                </div>
+            `;
+            gridContainer.appendChild(cardNode);
+        });
+
+        attachActionListeners();
+    }
+
+    // Intersects category selections with character search vectors concurrently
+    function performLiveSearchFilter() {
+        const query = searchElement.value.toLowerCase();
+        const filteredResult = libraryItems.filter(item => {
+            const matchCategory = activeCategory === 'all' || item.category === activeCategory;
+            const matchQuery = item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
+            return matchCategory && matchQuery;
+        });
+        renderLibraryGrid(filteredResult);
+    }
+
+    // Tab interaction processing
+    tabButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            tabButtons.forEach(btn => btn.classList.remove('is-active'));
+            e.target.classList.add('is-active');
+            activeCategory = e.target.getAttribute('data-category');
+            performLiveSearchFilter();
+        });
+    });
+
+    searchElement.addEventListener('input', performLiveSearchFilter);
+
+    // Event Delegations for View and Download hooks
+    function attachActionListeners() {
+        document.querySelectorAll('.btn-view').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const asset = libraryItems.find(item => item.id === id);
+                if (asset) {
+                    asset.views++; // Increment visual views telemetry metrics counter
+                    openSecureModal(asset);
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-download').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const asset = libraryItems.find(item => item.id === id);
+                if (asset) {
+                    asset.downloads++; // Dynamic background operational analytics tracker
+                    alert(`Secure download socket configured for: "${asset.title}".\nLocal cache sync processing complete.`);
+                    performLiveSearchFilter();
+                }
+            });
+        });
+    }
+
+    // Modal view window tracking interactions
+    function openSecureModal(asset) {
+        document.getElementById('modalTitle').innerText = asset.title;
+        document.getElementById('modalDesc').innerText = `Verifying identity keys... Access clear. This resource is configured under permission clearance algorithms. Active downloads record pool: ${asset.downloads}.`;
+        viewerModal.classList.add('is-active');
+    }
+
+    function hideSecureModal() {
+        viewerModal.classList.remove('is-active');
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', hideSecureModal);
+    document.getElementById('dismissModalBtn').addEventListener('click', hideSecureModal);
+    
+    // Close modal if user clicks outside of modal container box area
+    viewerModal.addEventListener('click', (e) => {
+        if (e.target === viewerModal) hideSecureModal();
+    });
+
+    // Execute first configuration pipeline pass
+    renderLibraryGrid(libraryItems);
+});

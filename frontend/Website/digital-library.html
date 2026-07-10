@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Resource Vault - Amaanitvam Foundation</title>
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+
+    <link href="assets/css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+<div id="navbar-placeholder"></div>
+
+<section class="page-hero has-image" data-hero
+    style="position: relative; background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)), url('assets/images/hero.png'); background-size: cover; background-position: center; padding: 5rem 0; min-height: 380px; display: flex; align-items: center;">
+    <div class="section-header">
+        <span class="section-label">Knowledge Repository</span>
+        <h2 class="section-title">Digital Library Vault</h2>
+        <p class="section-desc">Access centralized academic curricula, research papers, specialized NGO
+            compliance frameworks, and media archives.</p>
+    </div>
+</section>
+    <section class="library-section">
+        <div class="container">
+
+           
+
+            <div class="library-toolbar">
+                <div class="library-search">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" id="libSearch"
+                        placeholder="Filter by document title, keywords, or asset formats...">
+                </div>
+                <div class="category-tabs">
+                    <button class="category-tab is-active" data-category="all">All Assets</button>
+                    <button class="category-tab" data-category="educational">Learning & Research</button>
+                    <button class="category-tab" data-category="governance">NGO Policies & SOPs</button>
+                    <button class="category-tab" data-category="media">Recordings & Materials</button>
+                </div>
+            </div>
+
+            <div class="admin-premium-banner">
+                <div class="admin-banner-content">
+                    <div class="admin-badge">
+                        <span class="material-symbols-outlined">admin_panel_settings</span>
+                        <span>Authorized Vault Access</span>
+                    </div>
+                    <p>Administrative profiles retain cross-domain authorization vectors to dynamically create, rewrite,
+                        update, or clear resource files.</p>
+                </div>
+                <button class="btn-admin-gate" onclick="alert('Redirecting to secure authorization layer...')">
+                    <span>Admin Control Gate</span>
+                    <span class="material-symbols-outlined">arrow_right_alt</span>
+                </button>
+            </div>
+
+            <div class="library-grid" id="libraryContainer">
+            </div>
+
+        </div>
+    </section>
+
+    <div class="library-modal" id="viewerModal">
+        <div class="modal-body">
+            <button class="modal-close" id="closeModalBtn">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="modal-icon-header">
+                <span class="material-symbols-outlined">verified_user</span>
+            </div>
+            <h3 id="modalTitle">Resource Pipeline</h3>
+            <p id="modalDesc">Validating internal verification signatures...</p>
+
+            <div class="modal-action-row">
+                <button class="btn-modal-dismiss" id="dismissModalBtn">Dismiss Window</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+    <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
+    
+    <div class="floating-socials">
+        <a aria-label="Facebook" href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/"
+            target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+        <a aria-label="Instagram" href="https://www.instagram.com/amaanitvamfoundation" target="_blank"><i
+                class="fa-brands fa-instagram"></i></a>
+        <a aria-label="X" href="https://x.com/AmaanitvamOrg" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+        <a aria-label="LinkedIn" href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank"><i
+                class="fa-brands fa-linkedin-in"></i></a>
+    </div>
+
+<script src="assets/js/main.js"></script>
+</body>
+
+</html>
