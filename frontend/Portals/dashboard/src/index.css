@@ -417,3 +417,122 @@ html {
     border-radius: 0.875rem;
   }
 }
+
+/* ==============================
+   SIDEBAR BRAND FIX
+================================ */
+
+.dashboard-sidebar__brand {
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+}
+
+.dashboard-sidebar__logo {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.dashboard-sidebar__brand-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.dashboard-sidebar__brand-text h1 {
+  width: 100%;
+  font-size: 1.25rem;
+  line-height: 1.05;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-sidebar__brand-text p {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+}
+
+
+/* ==============================
+   DASHBOARD STAT ICON FIX
+================================ */
+
+.dashboard-main svg,
+main svg {
+  stroke: currentColor;
+}
+
+.dashboard-main .card-premium svg,
+main .card-premium svg {
+  color: var(--color-primary);
+  stroke: var(--color-primary);
+  opacity: 1;
+}
+
+.dashboard-main .card-premium>div:first-child,
+main .card-premium>div:first-child {
+  color: var(--color-primary);
+}
+
+.dashboard-main .card-premium [class*="bg-white"] svg,
+.dashboard-main .card-premium [class*="bg-gray"] svg,
+main .card-premium [class*="bg-white"] svg,
+main .card-premium [class*="bg-gray"] svg {
+  color: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+  opacity: 1 !important;
+}
+
+
+/* Top dashboard summary cards icons */
+.dashboard-main .grid>div svg,
+main .grid>div svg {
+  color: var(--color-primary);
+  stroke: var(--color-primary);
+  opacity: 1;
+}
+
+.dashboard-sidebar__logo-fallback {
+  display: flex;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.4rem;
+  background: #ffffff;
+  color: var(--color-primary);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.dashboard-sidebar__brand {
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+}
+
+.dashboard-sidebar__brand-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.dashboard-sidebar__brand-text h1 {
+  width: 100%;
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.dashboard-sidebar__brand-text p {
+  margin-top: 0.35rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  overflow: hidden;
+  white-space: nowrap;
+}
