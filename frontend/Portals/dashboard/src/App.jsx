@@ -9,9 +9,8 @@ import TasksPage from './pages/TasksPage';
 import AnnouncementsPage from './pages/AnnouncementsPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProfilePage from './pages/ProfilePage';
-import MemberReportsPage from './pages/MemberReportsPage'; // 👈 Updated naming convention
+import MemberReportsPage from './pages/Reports'; 
 import AttendancePage from './pages/AttendancePage';
-import MyCertificatesPage from './pages/MyCertificatesPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 
 function DashPage({ children }) {
@@ -35,10 +34,9 @@ export default function App() {
       <Route path="/announcements" element={<DashPage><AnnouncementsPage /></DashPage>} />
       <Route path="/projects" element={<DashPage><ProjectsPage /></DashPage>} />
       <Route path="/profile" element={<DashPage><ProfilePage /></DashPage>} />
-      <Route path="/member-reports" element={<DashPage><MemberReportsPage /></DashPage>} /> 
+      <Route path="/member-reports" element={<DashPage><Reports /></DashPage>} /> 
       
       <Route path="/attendance" element={<DashPage><AttendancePage /></DashPage>} />
-      <Route path="/my-certificates" element={<DashPage><MyCertificatesPage /></DashPage>} />
       <Route path="/departments" element={<DashPage><DepartmentsPage /></DashPage>} />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -1,9 +1,0 @@
-import mongoose from 'mongoose';
-import User from './models/user.js';
-import Department from './models/department.js';
-mongoose.connect('mongodb+srv://techamaanitvam:TechAmaanitvam116@amaanitvam.z9utf07.mongodb.net/amaanitvam?retryWrites=true&w=majority&appName=Amaanitvam').
-    then(async () => {
-        console.log('Users:', JSON.stringify(await User.find({}).select('name email role department'), null, 2));
-        console.log('Departments:', JSON.stringify(await Department.find({}).select('departmentName departmentHead'), null, 2));
-        process.exit(0);
-    });

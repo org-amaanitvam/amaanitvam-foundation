@@ -51,14 +51,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5174",
-<<<<<<< HEAD
   "http://localhost:5500",
   "http://127.0.0.1:5500",
-
-=======
-  "http://localhost:5500",   // <-- ADD THIS FOR LIVE SERVER
-  "http://127.0.0.1:5500",
->>>>>>> 3b2f82929db3fb9f44c27bc71b08eba155f56521
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
   "https://admin.amaanitvam.org",
