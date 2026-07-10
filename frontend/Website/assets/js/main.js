@@ -1771,3 +1771,26 @@ document.addEventListener('DOMContentLoaded', () => {
     initAlbumGallery();
   }
 })();
+
+
+
+// navbar
+document.addEventListener("DOMContentLoaded", function () {
+    const navbarPlaceholder = document.getElementById("navbar-placeholder");
+
+    if (navbarPlaceholder) {
+        fetch("components/navbar.html")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to load navbar");
+                }
+                return response.text();
+            })
+            .then(data => {
+                navbarPlaceholder.innerHTML = data;
+            })
+            .catch(error => {
+                console.error("Error loading the navbar:", error);
+            });
+    }
+});
