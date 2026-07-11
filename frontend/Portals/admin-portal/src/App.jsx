@@ -11,7 +11,6 @@ import Gallery from './pages/Gallery';
 import Tasks from './pages/Tasks';
 import Settings from './pages/Settings';
 import CMS from './pages/CMS';
-import Reports from "./pages/Reports";
 import Profile from './pages/Profile';
 
 export default function App() {
