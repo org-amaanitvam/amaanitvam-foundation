@@ -67,198 +67,190 @@
         </div>
     </div>
 
-    <main class="container library-main-layout" style="margin-top: 3rem; margin-bottom: 5rem;">
+<main class="container library-main-layout" style="margin-top: 3rem; margin-bottom: 5rem;">
 
-        <div class="library-filter-navbar">
-            <div class="search-input-box">
-                <span class="material-symbols-outlined search-box-icon">search</span>
-                <input type="text" id="globalSearch" placeholder="Search books, resources, guidelines...">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="section-label"
+            style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; color: var(--gold-dark, #b07c43); font-weight: 700; font-family: var(--font-ui);">Featured
+            Materials</span>
+        <h2 class="section-title"
+            style="font-family: var(--font-heading); font-size: 2.5rem; color: var(--primary, #5d0f2d); margin-top: 0.5rem; font-weight: 600;">
+            Explore Knowledge Catalog</h2>
+        <p style="font-family: var(--font-body); font-size: 1rem; color: var(--muted, #6b5b55); margin-top: 0.5rem;">
+            Access our curated collection of books, documentation, and training guides instantly.</p>
+    </div>
+
+    <div class="library-filter-navbar">
+        <div class="search-input-box">
+            <span class="material-symbols-outlined search-box-icon">search</span>
+            <input type="text" id="globalSearch" placeholder="Search books, resources, guidelines...">
+        </div>
+
+        <div class="filter-dropdowns-group">
+            <div class="select-dropdown-wrapper">
+                <select id="categoryDropdown">
+                    <option value="all">All Categories</option>
+                    <option value="books">Books (PDFs)</option>
+                    <option value="study-materials">Study Materials</option>
+                    <option value="notes">Notes</option>
+                    <option value="research-papers">Research Papers</option>
+                    <option value="ngo-documents">NGO Documents</option>
+                    <option value="policies-guidelines">Policies &amp; Guidelines</option>
+                    <option value="sops-training">SOPs &amp; Training Materials</option>
+                    <option value="meeting-recordings">Previous Meeting Recordings</option>
+                    <option value="webinar-recordings">Webinar Recordings</option>
+                    <option value="certificates-templates">Certificates &amp; Templates</option>
+                    <option value="forms-resources">Forms &amp; Resources</option>
+                </select>
+                <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
             </div>
 
-            <div class="filter-dropdowns-group">
-                <div class="select-dropdown-wrapper">
-                    <select id="categoryDropdown">
-                        <option value="all">All Categories</option>
-                        <option value="books">Books (PDFs)</option>
-                        <option value="study-materials">Study Materials</option>
-                        <option value="notes">Notes</option>
-                        <option value="research-papers">Research Papers</option>
-                        <option value="ngo-documents">NGO Documents</option>
-                        <option value="policies-guidelines">Policies &amp; Guidelines</option>
-                        <option value="sops-training">SOPs &amp; Training Materials</option>
-                        <option value="meeting-recordings">Previous Meeting Recordings</option>
-                        <option value="webinar-recordings">Webinar Recordings</option>
-                        <option value="certificates-templates">Certificates &amp; Templates</option>
-                        <option value="forms-resources">Forms &amp; Resources</option>
-                    </select>
-                    <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
-                </div>
+            <div class="select-dropdown-wrapper">
+                <select id="formatDropdown">
+                    <option value="all">All Formats</option>
+                    <option value="PDF">PDF Documents</option>
+                    <option value="MP4">Video Recordings</option>
+                    <option value="DOCX">Word Templates</option>
+                </select>
+                <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+            </div>
+        </div>
+    </div>
 
-                <div class="select-dropdown-wrapper">
-                    <select id="formatDropdown">
-                        <option value="all">All Formats</option>
-                        <option value="PDF">PDF Documents</option>
-                        <option value="MP4">Video Recordings</option>
-                        <option value="DOCX">Word Templates</option>
-                    </select>
-                    <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+    <div class="library-asset-grid" id="assetGrid">
+
+        <div class="course-style-card" data-category="books" data-format="PDF" data-title="Handbook">
+            <div class="card-preview-frame">
+                <span class="card-format-tag">PDF</span>
+                <div class="placeholder-label">Loading...</div>
+            </div>
+            <div class="card-body-frame">
+                <div class="card-badge-row">
+                    <span class="category-pill-label">Books (PDFs)</span>
+                </div>
+                <h4 class="card-main-heading">Handbook</h4>
+                <p class="card-sub-team">Academic Board Team • 👁️ 245 Views</p>
+                <div class="card-stars-row">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <div class="card-progress-track">
+                    <div class="card-progress-bar" style="width: 85%;"></div>
+                </div>
+                <div class="card-actions-wrapper">
+                    <button class="course-cta-btn btn-secondary-card btn-view" data-target="Handbook">View</button>
+                    <button class="course-cta-btn btn-primary-card btn-download"
+                        data-target="Handbook">Download</button>
                 </div>
             </div>
         </div>
 
-        <div style="text-align: center; margin-bottom: 3rem;">
-            <span class="section-label"
-                style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; color: var(--gold-dark, #b07c43); font-weight: 700; font-family: var(--font-ui);">Featured
-                Materials</span>
-            <h2 class="section-title"
-                style="font-family: var(--font-heading); font-size: 2.5rem; color: var(--primary, #5d0f2d); margin-top: 0.5rem; font-weight: 600;">
-                Explore Knowledge Catalog</h2>
-            <p
-                style="font-family: var(--font-body); font-size: 1rem; color: var(--muted, #6b5b55); margin-top: 0.5rem;">
-                Access our curated collection of books, documentation, and training guides instantly.</p>
+        <div class="course-style-card" data-category="study-materials" data-format="PDF" data-title="Syllabus">
+            <div class="card-preview-frame">
+                <span class="card-format-tag">PDF</span>
+                <div class="placeholder-label">Loading...</div>
+            </div>
+            <div class="card-body-frame">
+                <div class="card-badge-row">
+                    <span class="category-pill-label">Study Materials</span>
+                </div>
+                <h4 class="card-main-heading">Syllabus</h4>
+                <p class="card-sub-team">Compliance Core Team • 👁️ 92 Views</p>
+                <div class="card-stars-row">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <div class="card-progress-track">
+                    <div class="card-progress-bar" style="width: 60%;"></div>
+                </div>
+                <div class="card-actions-wrapper">
+                    <button class="course-cta-btn btn-secondary-card btn-view" data-target="Syllabus">View</button>
+                    <button class="course-cta-btn btn-primary-card btn-download"
+                        data-target="Syllabus">Download</button>
+                </div>
+            </div>
         </div>
 
-        <div class="library-asset-grid" id="assetGrid">
-
-            <div class="course-style-card" data-category="books" data-format="PDF" data-title="Handbook">
-                <div class="card-preview-frame">
-                    <span class="card-format-tag">PDF</span>
-                    <div class="placeholder-label">Loading...</div>
+        <div class="course-style-card" data-category="notes" data-format="PDF" data-title="Blueprints">
+            <div class="card-preview-frame">
+                <span class="card-format-tag">PDF</span>
+                <div class="placeholder-label">Loading...</div>
+            </div>
+            <div class="card-body-frame">
+                <div class="card-badge-row">
+                    <span class="category-pill-label">Notes</span>
                 </div>
-                <div class="card-body-frame">
-                    <div class="card-badge-row">
-                        <span class="category-pill-label">Books (PDFs)</span>
-                    </div>
-                    <h4 class="card-main-heading">Handbook</h4>
-                    <p class="card-sub-team">Academic Board Team • 👁️ 245 Views</p>
-                    <div class="card-stars-row">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <div class="card-progress-track">
-                        <div class="card-progress-bar" style="width: 85%;"></div>
-                    </div>
-                    <div class="card-actions-wrapper">
-                        <button class="course-cta-btn btn-secondary-card btn-view" data-target="Handbook">View</button>
-                        <button class="course-cta-btn btn-primary-card btn-download"
-                            data-target="Handbook">Download</button>
-                    </div>
+                <h4 class="card-main-heading">Blueprints</h4>
+                <p class="card-sub-team">Operations Branch Team • 👁️ 118 Views</p>
+                <div class="card-stars-row">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <div class="card-progress-track">
+                    <div class="card-progress-bar" style="width: 45%;"></div>
+                </div>
+                <div class="card-actions-wrapper">
+                    <button class="course-cta-btn btn-secondary-card btn-view" data-target="Blueprints">View</button>
+                    <button class="course-cta-btn btn-primary-card btn-download"
+                        data-target="Blueprints">Download</button>
                 </div>
             </div>
-
-            <div class="course-style-card" data-category="study-materials" data-format="PDF" data-title="Syllabus">
-                <div class="card-preview-frame">
-                    <span class="card-format-tag">PDF</span>
-                    <div class="placeholder-label">Loading...</div>
-                </div>
-                <div class="card-body-frame">
-                    <div class="card-badge-row">
-                        <span class="category-pill-label">Study Materials</span>
-                    </div>
-                    <h4 class="card-main-heading">Syllabus</h4>
-                    <p class="card-sub-team">Compliance Core Team • 👁️ 92 Views</p>
-                    <div class="card-stars-row">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <div class="card-progress-track">
-                        <div class="card-progress-bar" style="width: 60%;"></div>
-                    </div>
-                    <div class="card-actions-wrapper">
-                        <button class="course-cta-btn btn-secondary-card btn-view" data-target="Syllabus">View</button>
-                        <button class="course-cta-btn btn-primary-card btn-download"
-                            data-target="Syllabus">Download</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="course-style-card" data-category="notes" data-format="PDF" data-title="Blueprints">
-                <div class="card-preview-frame">
-                    <span class="card-format-tag">PDF</span>
-                    <div class="placeholder-label">Loading...</div>
-                </div>
-                <div class="card-body-frame">
-                    <div class="card-badge-row">
-                        <span class="category-pill-label">Notes</span>
-                    </div>
-                    <h4 class="card-main-heading">Blueprints</h4>
-                    <p class="card-sub-team">Operations Branch Team • 👁️ 118 Views</p>
-                    <div class="card-stars-row">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <div class="card-progress-track">
-                        <div class="card-progress-bar" style="width: 45%;"></div>
-                    </div>
-                    <div class="card-actions-wrapper">
-                        <button class="course-cta-btn btn-secondary-card btn-view"
-                            data-target="Blueprints">View</button>
-                        <button class="course-cta-btn btn-primary-card btn-download"
-                            data-target="Blueprints">Download</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="course-style-card" data-category="meeting-recordings" data-format="MP4" data-title="Briefing">
-                <div class="card-preview-frame">
-                    <span class="card-format-tag">MP4</span>
-                    <div class="placeholder-label">Loading...</div>
-                </div>
-                <div class="card-body-frame">
-                    <div class="card-badge-row">
-                        <span class="category-pill-label">Meeting Recordings</span>
-                    </div>
-                    <h4 class="card-main-heading">Briefing</h4>
-                    <p class="card-sub-team">Leadership Board Team • 👁️ 310 Views</p>
-                    <div class="card-stars-row">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <div class="card-progress-track">
-                        <div class="card-progress-bar" style="width: 30%;"></div>
-                    </div>
-                    <div class="card-actions-wrapper">
-                        <button class="course-cta-btn btn-secondary-card btn-view" data-target="Briefing">View</button>
-                        <button class="course-cta-btn btn-primary-card btn-download"
-                            data-target="Briefing">Download</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="course-style-card" data-category="certificates-templates" data-format="DOCX"
-                data-title="Template">
-                <div class="card-preview-frame">
-                    <span class="card-format-tag">DOCX</span>
-                    <div class="placeholder-label">Loading...</div>
-                </div>
-                <div class="card-body-frame">
-                    <div class="card-badge-row">
-                        <span class="category-pill-label">Templates</span>
-                    </div>
-                    <h4 class="card-main-heading">Template</h4>
-                    <p class="card-sub-team">Finance Division Team • 👁️ 412 Views</p>
-                    <div class="card-stars-row">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <div class="card-progress-track">
-                        <div class="card-progress-bar" style="width: 95%;"></div>
-                    </div>
-                    <div class="card-actions-wrapper">
-                        <button class="course-cta-btn btn-secondary-card btn-view" data-target="Template">View</button>
-                        <button class="course-cta-btn btn-primary-card btn-download"
-                            data-target="Template">Download</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </main>
+
+        <div class="course-style-card" data-category="meeting-recordings" data-format="MP4" data-title="Briefing">
+            <div class="card-preview-frame">
+                <span class="card-format-tag">MP4</span>
+                <div class="placeholder-label">Loading...</div>
+            </div>
+            <div class="card-body-frame">
+                <div class="card-badge-row">
+                    <span class="category-pill-label">Meeting Recordings</span>
+                </div>
+                <h4 class="card-main-heading">Briefing</h4>
+                <p class="card-sub-team">Leadership Board Team • 👁️ 310 Views</p>
+                <div class="card-stars-row">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <div class="card-progress-track">
+                    <div class="card-progress-bar" style="width: 30%;"></div>
+                </div>
+                <div class="card-actions-wrapper">
+                    <button class="course-cta-btn btn-secondary-card btn-view" data-target="Briefing">View</button>
+                    <button class="course-cta-btn btn-primary-card btn-download"
+                        data-target="Briefing">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-style-card" data-category="certificates-templates" data-format="DOCX" data-title="Template">
+            <div class="card-preview-frame">
+                <span class="card-format-tag">DOCX</span>
+                <div class="placeholder-label">Loading...</div>
+            </div>
+            <div class="card-body-frame">
+                <div class="card-badge-row">
+                    <span class="category-pill-label">Templates</span>
+                </div>
+                <h4 class="card-main-heading">Template</h4>
+                <p class="card-sub-team">Finance Division Team • 👁️ 412 Views</p>
+                <div class="card-stars-row">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                        class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <div class="card-progress-track">
+                    <div class="card-progress-bar" style="width: 95%;"></div>
+                </div>
+                <div class="card-actions-wrapper">
+                    <button class="course-cta-btn btn-secondary-card btn-view" data-target="Template">View</button>
+                    <button class="course-cta-btn btn-primary-card btn-download"
+                        data-target="Template">Download</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
 
     <div id="footer"></div>
 
