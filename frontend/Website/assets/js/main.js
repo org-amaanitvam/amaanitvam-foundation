@@ -15,10 +15,21 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
+// Viewport detection utility for responsive behavior
+function getViewportSize() {
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    isMobile: window.innerWidth < 768,
+    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
+    isDesktop: window.innerWidth >= 1024
+  };
+}
+
 (function () {
   'use strict';
 
-function initNavbar() {
+  function initNavbar() {
     const nav = document.getElementById('site-nav');
     const menuToggle = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -52,33 +63,121 @@ function initNavbar() {
     window.addEventListener('scroll', updateNav, { passive: true });
     updateNav();
 
-    // 3. Mobile Menu Logic
+    // 3. Mobile Menu Logic with enhanced close behavior
     if (menuToggle && mobileMenu) {
-      menuToggle.addEventListener('click', function () {
+      function closeMenu() {
+        mobileMenu.classList.remove('is-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      }
+
+      function toggleMenu() {
         const open = mobileMenu.classList.toggle('is-open');
         menuToggle.setAttribute('aria-expanded', open);
         document.body.style.overflow = open ? 'hidden' : '';
+      }
+
+      menuToggle.addEventListener('click', toggleMenu);
+
+      // Close menu when clicking mobile menu links
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+      });
+
+      // Close menu on resize to desktop
+      let resizeTimeout;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function () {
+          if (!getViewportSize().isMobile) {
+            closeMenu();
+          }
+        }, 250);
+      }, { passive: true });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', function (e) {
+        if (mobileMenu.classList.contains('is-open') &&
+          !menuToggle.contains(e.target) &&
+          !mobileMenu.contains(e.target)) {
+          closeMenu();
+        }
       });
     }
 
-    // 4. Dropdown Menu Logic
+    // 4. Dropdown Menu Logic with touch support
     document.querySelectorAll('.nav-item.has-dropdown').forEach(function (item) {
       const trigger = item.querySelector('.dropdown-trigger');
       const menu = item.querySelector('.dropdown-menu');
       if (!trigger || !menu) return;
 
-      item.addEventListener('mouseenter', () => { trigger.setAttribute('aria-expanded', 'true'); menu.classList.add('is-open'); });
-      item.addEventListener('mouseleave', () => { trigger.setAttribute('aria-expanded', 'false'); menu.classList.remove('is-open'); });
+      const viewport = getViewportSize();
+
+      // Desktop: hover events
+      if (!viewport.isMobile) {
+        item.addEventListener('mouseenter', () => {
+          trigger.setAttribute('aria-expanded', 'true');
+          menu.classList.add('is-open');
+        });
+        item.addEventListener('mouseleave', () => {
+          trigger.setAttribute('aria-expanded', 'false');
+          menu.classList.remove('is-open');
+        });
+      }
+
+      // Mobile/Touch: click events
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        const isOpen = menu.classList.toggle('is-open');
+        trigger.setAttribute('aria-expanded', isOpen);
+      });
+
+      // Touch support
+      trigger.addEventListener('touchend', function (e) {
+        e.preventDefault();
+        const isOpen = menu.classList.toggle('is-open');
+        trigger.setAttribute('aria-expanded', isOpen);
+      }, { passive: false });
+
+      // Close dropdown when clicking menu items
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menu.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        });
+      });
     });
+
+    // Reinitialize dropdown behavior on resize
+    let dropdownResizeTimeout;
+    window.addEventListener('resize', function () {
+      clearTimeout(dropdownResizeTimeout);
+      dropdownResizeTimeout = setTimeout(function () {
+        // Close all dropdowns on resize
+        document.querySelectorAll('.dropdown-menu.is-open').forEach(menu => {
+          menu.classList.remove('is-open');
+          const trigger = menu.closest('.nav-item.has-dropdown')?.querySelector('.dropdown-trigger');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+      }, 250);
+    }, { passive: true });
   }
 
-  // FAQ Handlers
+  // FAQ Handlers with touch support
   document.querySelectorAll('.faq-question').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const item = btn.closest('.faq-item');
       const expanded = item.classList.toggle('is-open');
       btn.setAttribute('aria-expanded', expanded);
     });
+
+    // Touch support for better mobile UX
+    btn.addEventListener('touchend', function (e) {
+      e.preventDefault();
+      const item = btn.closest('.faq-item');
+      const expanded = item.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', expanded);
+    }, { passive: false });
   });
 
   const contactForm = document.getElementById('contactForm');
@@ -631,51 +730,51 @@ function initNavbar() {
     }
   })();
 
-/* ===== Internship application form (internship.html) ===== */
-document.getElementById('internshipForm')?.addEventListener('submit', async function (e) {
-  e.preventDefault(); 
-  
-  const btn = document.getElementById('int-submit-btn');
-  const status = document.getElementById('int-status');
+  /* ===== Internship application form (internship.html) ===== */
+  document.getElementById('internshipForm')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-  // Show processing state
-  btn.disabled = true;
-  status.textContent = "Submitting application...";
-  status.style.color = "var(--navy)";
+    const btn = document.getElementById('int-submit-btn');
+    const status = document.getElementById('int-status');
 
-  const formData = new FormData(this);
+    // Show processing state
+    btn.disabled = true;
+    status.textContent = "Submitting application...";
+    status.style.color = "var(--navy)";
 
-  try {
-    const response = await fetch(API_BASE_URL + '/internship/apply', {
-      method: 'POST',
-      body: formData
-    });
-    
-    const result = await response.json();
-    
-    if (response.ok) {
-      // 1. Show the success message immediately
-      status.textContent = "Application submitted successfully!";
-      status.style.color = "green";
-      alert("Success! Your internship application has been submitted.");
-      
-      // 2. Add a delay before resetting the form
-      setTimeout(() => {
-        this.reset(); 
-        status.textContent = ""; // Clear message after 3 seconds
-        btn.disabled = false;
-      }, 3000); 
-      
-    } else {
-      throw new Error(result.message || "Submission failed.");
+    const formData = new FormData(this);
+
+    try {
+      const response = await fetch(API_BASE_URL + '/internship/apply', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // 1. Show the success message immediately
+        status.textContent = "Application submitted successfully!";
+        status.style.color = "green";
+        alert("Success! Your internship application has been submitted.");
+
+        // 2. Add a delay before resetting the form
+        setTimeout(() => {
+          this.reset();
+          status.textContent = ""; // Clear message after 3 seconds
+          btn.disabled = false;
+        }, 3000);
+
+      } else {
+        throw new Error(result.message || "Submission failed.");
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+      status.textContent = err.message;
+      status.style.color = "red";
+      btn.disabled = false;
     }
-  } catch (err) {
-    alert("Error: " + err.message);
-    status.textContent = err.message;
-    status.style.color = "red";
-    btn.disabled = false;
-  }
-});
+  });
 
   /* ===== Volunteer application form (volunteer.html) ===== */
   document.getElementById('volunteerForm')?.addEventListener('submit', async function (e) {
@@ -686,10 +785,10 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
 
     status.textContent = "Submitting...";
     status.style.color = "var(--navy)";
-    
+
     if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Submitting...";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
     }
 
     const formData = new FormData(this);
@@ -700,9 +799,9 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
         // NO 'Content-Type' header here, FormData handles it automatically for files
         body: formData
       });
-      
+
       const result = await response.json();
-      
+
       if (response.ok) {
         // PATCH: Added success popup alert and prevents refresh
         alert("Success! Your volunteer application has been submitted successfully. We will review your application and get back to you soon!");
@@ -720,31 +819,31 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
       status.textContent = "Failed to connect to the server.";
       status.style.color = "red";
     } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-        }
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
     }
   });
 
   /* ===== Dynamic Departments / Domains Loader ===== */
-  (function() {
+  (function () {
     async function loadDepartments() {
       const intTrack = document.getElementById('int-track');
       const volRole = document.getElementById('vol-role');
-      
+
       if (!intTrack && !volRole) return;
-      
+
       try {
         const base = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api$/, '') : '';
         const response = await fetch(`${base}/api/public/departments`);
         const data = await response.json();
-        
+
         if (data.success && Array.isArray(data.departments)) {
-          const optionsHTML = data.departments.map(dept => 
+          const optionsHTML = data.departments.map(dept =>
             `<option value="${escapeHtml(dept)}">${escapeHtml(dept)}</option>`
           ).join('');
-          
+
           if (intTrack) {
             intTrack.innerHTML = '<option disabled="" selected="" value="">Select a domain</option>' + optionsHTML;
           }
@@ -790,7 +889,7 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
       localStorage.getItem('backendUrl') ||
       ''
     );
-    
+
     let currentFolders = [];
     const folderMediaCache = new Map();
 
@@ -1148,6 +1247,30 @@ document.getElementById('internshipForm')?.addEventListener('submit', async func
       initAlbumGallery();
     }
   })();
+
+  // Initialize navbar on page load
+  document.addEventListener("DOMContentLoaded", initNavbar, { once: true });
+
+  // Lazy loading initialization for images
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+          }
+          observer.unobserve(img);
+        }
+      });
+    }, { rootMargin: '50px' });
+
+    // Observe all images with data-src attribute
+    document.querySelectorAll('img[data-src]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  }
 })();
 
 /* ===== Internship application form (internship.html) ===== */
@@ -1302,39 +1425,39 @@ document.getElementById('volunteerForm')?.addEventListener('submit', async funct
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Premium Mock Asset Database Matching Modular Structure Guidelines
-    const libraryItems = [
-        { id: 1, title: "Primary Education Syllabus", category: "educational", type: "PDF Book", icon: "menu_book", desc: "Comprehensive structural layout and learning guidelines engineered to track core academic baseline metrics.", downloads: 142, views: 520 },
-        { id: 2, title: "Community Field SOP Matrix", category: "governance", type: "Official SOP", icon: "gavel", desc: "Standardized procedural tracking documentation outlining interaction guidelines and regional compliance profiles.", downloads: 89, views: 211 },
-        { id: 3, title: "National Impact Webinar 2025", category: "media", type: "Video Master", icon: "video_camera_front", desc: "Archived cinematic conference recordings detailing annual statistical improvements and strategy overviews.", downloads: 34, views: 618 },
-        { id: 4, title: "Socio-Economic Development Studies", category: "educational", type: "Research Paper", icon: "analytics", desc: "Peer-reviewed analysis evaluating implementation paradigms across underrepresented regional clusters.", downloads: 210, views: 984 },
-        { id: 5, title: "Volunteer Certification Assets", category: "governance", type: "Template Bundle", icon: "assignment", desc: "Official verification files, organizational templates, guidelines indices, and sign-up tracking modules.", downloads: 312, views: 743 }
-    ];
+  // Premium Mock Asset Database Matching Modular Structure Guidelines
+  const libraryItems = [
+    { id: 1, title: "Primary Education Syllabus", category: "educational", type: "PDF Book", icon: "menu_book", desc: "Comprehensive structural layout and learning guidelines engineered to track core academic baseline metrics.", downloads: 142, views: 520 },
+    { id: 2, title: "Community Field SOP Matrix", category: "governance", type: "Official SOP", icon: "gavel", desc: "Standardized procedural tracking documentation outlining interaction guidelines and regional compliance profiles.", downloads: 89, views: 211 },
+    { id: 3, title: "National Impact Webinar 2025", category: "media", type: "Video Master", icon: "video_camera_front", desc: "Archived cinematic conference recordings detailing annual statistical improvements and strategy overviews.", downloads: 34, views: 618 },
+    { id: 4, title: "Socio-Economic Development Studies", category: "educational", type: "Research Paper", icon: "analytics", desc: "Peer-reviewed analysis evaluating implementation paradigms across underrepresented regional clusters.", downloads: 210, views: 984 },
+    { id: 5, title: "Volunteer Certification Assets", category: "governance", type: "Template Bundle", icon: "assignment", desc: "Official verification files, organizational templates, guidelines indices, and sign-up tracking modules.", downloads: 312, views: 743 }
+  ];
 
-    const gridContainer = document.getElementById('libraryContainer');
-    const searchElement = document.getElementById('libSearch');
-    const tabButtons = document.querySelectorAll('.category-tab');
-    const viewerModal = document.getElementById('viewerModal');
-    
-    let activeCategory = 'all';
+  const gridContainer = document.getElementById('libraryContainer');
+  const searchElement = document.getElementById('libSearch');
+  const tabButtons = document.querySelectorAll('.category-tab');
+  const viewerModal = document.getElementById('viewerModal');
 
-    // Renders modern content elements dynamically inside container
-    function renderLibraryGrid(items) {
-        gridContainer.innerHTML = '';
-        
-        if (items.length === 0) {
-            gridContainer.innerHTML = `
+  let activeCategory = 'all';
+
+  // Renders modern content elements dynamically inside container
+  function renderLibraryGrid(items) {
+    gridContainer.innerHTML = '';
+
+    if (items.length === 0) {
+      gridContainer.innerHTML = `
                 <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 4rem 1rem; font-family: var(--font-body);">
                     <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 1rem; opacity: 0.5;">find_in_page</span>
                     <p style="font-size: 1.1rem;">No digital library records match your custom lookup criteria.</p>
                 </div>`;
-            return;
-        }
+      return;
+    }
 
-        items.forEach(item => {
-            const cardNode = document.createElement('div');
-            cardNode.className = 'library-card';
-            cardNode.innerHTML = `
+    items.forEach(item => {
+      const cardNode = document.createElement('div');
+      cardNode.className = 'library-card';
+      cardNode.innerHTML = `
                 <div>
                     <div class="library-card-icon">
                         <span class="material-symbols-outlined">${item.icon}</span>
@@ -1357,82 +1480,82 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-            gridContainer.appendChild(cardNode);
-        });
-
-        attachActionListeners();
-    }
-
-    // Intersects category selections with character search vectors concurrently
-    function performLiveSearchFilter() {
-        const query = searchElement.value.toLowerCase();
-        const filteredResult = libraryItems.filter(item => {
-            const matchCategory = activeCategory === 'all' || item.category === activeCategory;
-            const matchQuery = item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
-            return matchCategory && matchQuery;
-        });
-        renderLibraryGrid(filteredResult);
-    }
-
-    // Tab interaction processing
-    tabButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            tabButtons.forEach(btn => btn.classList.remove('is-active'));
-            e.target.classList.add('is-active');
-            activeCategory = e.target.getAttribute('data-category');
-            performLiveSearchFilter();
-        });
+      gridContainer.appendChild(cardNode);
     });
 
-    searchElement.addEventListener('input', performLiveSearchFilter);
+    attachActionListeners();
+  }
 
-    // Event Delegations for View and Download hooks
-    function attachActionListeners() {
-        document.querySelectorAll('.btn-view').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = parseInt(btn.getAttribute('data-id'));
-                const asset = libraryItems.find(item => item.id === id);
-                if (asset) {
-                    asset.views++; // Increment visual views telemetry metrics counter
-                    openSecureModal(asset);
-                }
-            });
-        });
+  // Intersects category selections with character search vectors concurrently
+  function performLiveSearchFilter() {
+    const query = searchElement.value.toLowerCase();
+    const filteredResult = libraryItems.filter(item => {
+      const matchCategory = activeCategory === 'all' || item.category === activeCategory;
+      const matchQuery = item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
+      return matchCategory && matchQuery;
+    });
+    renderLibraryGrid(filteredResult);
+  }
 
-        document.querySelectorAll('.btn-download').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = parseInt(btn.getAttribute('data-id'));
-                const asset = libraryItems.find(item => item.id === id);
-                if (asset) {
-                    asset.downloads++; // Dynamic background operational analytics tracker
-                    alert(`Secure download socket configured for: "${asset.title}".\nLocal cache sync processing complete.`);
-                    performLiveSearchFilter();
-                }
-            });
-        });
-    }
+  // Tab interaction processing
+  tabButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      tabButtons.forEach(btn => btn.classList.remove('is-active'));
+      e.target.classList.add('is-active');
+      activeCategory = e.target.getAttribute('data-category');
+      performLiveSearchFilter();
+    });
+  });
 
-    // Modal view window tracking interactions
-    function openSecureModal(asset) {
-        document.getElementById('modalTitle').innerText = asset.title;
-        document.getElementById('modalDesc').innerText = `Verifying identity keys... Access clear. This resource is configured under permission clearance algorithms. Active downloads record pool: ${asset.downloads}.`;
-        viewerModal.classList.add('is-active');
-    }
+  searchElement.addEventListener('input', performLiveSearchFilter);
 
-    function hideSecureModal() {
-        viewerModal.classList.remove('is-active');
-    }
-
-    document.getElementById('closeModalBtn').addEventListener('click', hideSecureModal);
-    document.getElementById('dismissModalBtn').addEventListener('click', hideSecureModal);
-    
-    // Close modal if user clicks outside of modal container box area
-    viewerModal.addEventListener('click', (e) => {
-        if (e.target === viewerModal) hideSecureModal();
+  // Event Delegations for View and Download hooks
+  function attachActionListeners() {
+    document.querySelectorAll('.btn-view').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.getAttribute('data-id'));
+        const asset = libraryItems.find(item => item.id === id);
+        if (asset) {
+          asset.views++; // Increment visual views telemetry metrics counter
+          openSecureModal(asset);
+        }
+      });
     });
 
-    // Execute first configuration pipeline pass
-    renderLibraryGrid(libraryItems);
+    document.querySelectorAll('.btn-download').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.getAttribute('data-id'));
+        const asset = libraryItems.find(item => item.id === id);
+        if (asset) {
+          asset.downloads++; // Dynamic background operational analytics tracker
+          alert(`Secure download socket configured for: "${asset.title}".\nLocal cache sync processing complete.`);
+          performLiveSearchFilter();
+        }
+      });
+    });
+  }
+
+  // Modal view window tracking interactions
+  function openSecureModal(asset) {
+    document.getElementById('modalTitle').innerText = asset.title;
+    document.getElementById('modalDesc').innerText = `Verifying identity keys... Access clear. This resource is configured under permission clearance algorithms. Active downloads record pool: ${asset.downloads}.`;
+    viewerModal.classList.add('is-active');
+  }
+
+  function hideSecureModal() {
+    viewerModal.classList.remove('is-active');
+  }
+
+  document.getElementById('closeModalBtn').addEventListener('click', hideSecureModal);
+  document.getElementById('dismissModalBtn').addEventListener('click', hideSecureModal);
+
+  // Close modal if user clicks outside of modal container box area
+  viewerModal.addEventListener('click', (e) => {
+    if (e.target === viewerModal) hideSecureModal();
+  });
+
+  // Execute first configuration pipeline pass
+  renderLibraryGrid(libraryItems);
 });
 
 /* ===== Gallery Album Loader - Common JS ===== */
@@ -1776,196 +1899,196 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // navbar
 document.addEventListener("DOMContentLoaded", function () {
-    const navbarPlaceholder = document.getElementById("navbar-placeholder");
+  const navbarPlaceholder = document.getElementById("navbar-placeholder");
 
-    if (navbarPlaceholder) {
-        fetch("components/navbar.html")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to load navbar");
-                }
-                return response.text();
-            })
-            .then(data => {
-                navbarPlaceholder.innerHTML = data;
-            })
-            .catch(error => {
-                console.error("Error loading the navbar:", error);
-            });
-    }
+  if (navbarPlaceholder) {
+    fetch("components/navbar.html")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to load navbar");
+        }
+        return response.text();
+      })
+      .then(data => {
+        navbarPlaceholder.innerHTML = data;
+      })
+      .catch(error => {
+        console.error("Error loading the navbar:", error);
+      });
+  }
 });
 
 /* COURSES MODULE */
 
 if (window.location.pathname.includes("courses.html")) {
 
-const courses = [
+  const courses = [
 
-{
-title:"HTML & CSS Fundamentals",
-category:"technical",
-domain:"Web Development",
-instructor:"Technical Team",
-duration:"4 Weeks",
-difficulty:"Beginner",
-rating:5,
-progress:72,
-image:"assets/images/course-web.jpg"
-},
+    {
+      title: "HTML & CSS Fundamentals",
+      category: "technical",
+      domain: "Web Development",
+      instructor: "Technical Team",
+      duration: "4 Weeks",
+      difficulty: "Beginner",
+      rating: 5,
+      progress: 72,
+      image: "assets/images/course-web.jpg"
+    },
 
-{
-title:"JavaScript Essentials",
-category:"technical",
-domain:"Web Development",
-instructor:"Technical Team",
-duration:"6 Weeks",
-difficulty:"Intermediate",
-rating:5,
-progress:0,
-image:"assets/images/course-js.jpg"
-},
+    {
+      title: "JavaScript Essentials",
+      category: "technical",
+      domain: "Web Development",
+      instructor: "Technical Team",
+      duration: "6 Weeks",
+      difficulty: "Intermediate",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-js.jpg"
+    },
 
-{
-title:"React Fundamentals",
-category:"technical",
-domain:"Web Development",
-instructor:"Technical Team",
-duration:"8 Weeks",
-difficulty:"Intermediate",
-rating:5,
-progress:0,
-image:"assets/images/course-react.jpg"
-},
+    {
+      title: "React Fundamentals",
+      category: "technical",
+      domain: "Web Development",
+      instructor: "Technical Team",
+      duration: "8 Weeks",
+      difficulty: "Intermediate",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-react.jpg"
+    },
 
-{
-title:"UI / UX Design",
-category:"technical",
-domain:"UI/UX",
-instructor:"Design Team",
-duration:"5 Weeks",
-difficulty:"Beginner",
-rating:4,
-progress:45,
-image:"assets/images/course-uiux.jpg"
-},
+    {
+      title: "UI / UX Design",
+      category: "technical",
+      domain: "UI/UX",
+      instructor: "Design Team",
+      duration: "5 Weeks",
+      difficulty: "Beginner",
+      rating: 4,
+      progress: 45,
+      image: "assets/images/course-uiux.jpg"
+    },
 
-{
-title:"Graphic Design with Canva",
-category:"technical",
-domain:"Graphic Design",
-instructor:"Creative Team",
-duration:"4 Weeks",
-difficulty:"Beginner",
-rating:5,
-progress:0,
-image:"assets/images/course-graphic.jpg"
-},
+    {
+      title: "Graphic Design with Canva",
+      category: "technical",
+      domain: "Graphic Design",
+      instructor: "Creative Team",
+      duration: "4 Weeks",
+      difficulty: "Beginner",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-graphic.jpg"
+    },
 
-{
-title:"Content Writing Masterclass",
-category:"nontechnical",
-domain:"Content Writing",
-instructor:"Content Team",
-duration:"3 Weeks",
-difficulty:"Beginner",
-rating:5,
-progress:0,
-image:"assets/images/course-writing.jpg"
-},
+    {
+      title: "Content Writing Masterclass",
+      category: "nontechnical",
+      domain: "Content Writing",
+      instructor: "Content Team",
+      duration: "3 Weeks",
+      difficulty: "Beginner",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-writing.jpg"
+    },
 
-{
-title:"Social Media Management",
-category:"nontechnical",
-domain:"Social Media",
-instructor:"Media Team",
-duration:"5 Weeks",
-difficulty:"Intermediate",
-rating:4,
-progress:0,
-image:"assets/images/course-social.jpg"
-},
+    {
+      title: "Social Media Management",
+      category: "nontechnical",
+      domain: "Social Media",
+      instructor: "Media Team",
+      duration: "5 Weeks",
+      difficulty: "Intermediate",
+      rating: 4,
+      progress: 0,
+      image: "assets/images/course-social.jpg"
+    },
 
-{
-title:"Human Resource Management",
-category:"nontechnical",
-domain:"HR",
-instructor:"HR Team",
-duration:"4 Weeks",
-difficulty:"Intermediate",
-rating:5,
-progress:0,
-image:"assets/images/course-hr.jpg"
-},
+    {
+      title: "Human Resource Management",
+      category: "nontechnical",
+      domain: "HR",
+      instructor: "HR Team",
+      duration: "4 Weeks",
+      difficulty: "Intermediate",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-hr.jpg"
+    },
 
-{
-title:"Leadership & Management",
-category:"leadership",
-domain:"Leadership",
-instructor:"Executive Team",
-duration:"6 Weeks",
-difficulty:"Advanced",
-rating:5,
-progress:0,
-image:"assets/images/course-leadership.jpg"
-},
+    {
+      title: "Leadership & Management",
+      category: "leadership",
+      domain: "Leadership",
+      instructor: "Executive Team",
+      duration: "6 Weeks",
+      difficulty: "Advanced",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-leadership.jpg"
+    },
 
-{
-title:"Interview Preparation",
-category:"leadership",
-domain:"Career",
-instructor:"Mentorship Team",
-duration:"2 Weeks",
-difficulty:"Beginner",
-rating:4,
-progress:0,
-image:"assets/images/course-interview.jpg"
-},
+    {
+      title: "Interview Preparation",
+      category: "leadership",
+      domain: "Career",
+      instructor: "Mentorship Team",
+      duration: "2 Weeks",
+      difficulty: "Beginner",
+      rating: 4,
+      progress: 0,
+      image: "assets/images/course-interview.jpg"
+    },
 
-{
-title:"NGO Orientation",
-category:"orientation",
-domain:"Foundation",
-instructor:"Amaanitvam",
-duration:"2 Weeks",
-difficulty:"Beginner",
-rating:5,
-progress:0,
-image:"assets/images/course-orientation.jpg"
-},
+    {
+      title: "NGO Orientation",
+      category: "orientation",
+      domain: "Foundation",
+      instructor: "Amaanitvam",
+      duration: "2 Weeks",
+      difficulty: "Beginner",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-orientation.jpg"
+    },
 
-{
-title:"CSR Fundamentals",
-category:"orientation",
-domain:"CSR",
-instructor:"CSR Team",
-duration:"3 Weeks",
-difficulty:"Intermediate",
-rating:5,
-progress:0,
-image:"assets/images/course-csr.jpg"
-}
+    {
+      title: "CSR Fundamentals",
+      category: "orientation",
+      domain: "CSR",
+      instructor: "CSR Team",
+      duration: "3 Weeks",
+      difficulty: "Intermediate",
+      rating: 5,
+      progress: 0,
+      image: "assets/images/course-csr.jpg"
+    }
 
-];
+  ];
 
-const featuredContainer=document.getElementById("coursesContainer");
-const popularContainer=document.getElementById("popularCourses");
+  const featuredContainer = document.getElementById("coursesContainer");
+  const popularContainer = document.getElementById("popularCourses");
 
-function getStars(count){
-let stars="";
-for(let i=0;i<count;i++){
-stars+=`<span class="material-symbols-outlined">star</span>`;
-}
+  function getStars(count) {
+    let stars = "";
+    for (let i = 0; i < count; i++) {
+      stars += `<span class="material-symbols-outlined">star</span>`;
+    }
 
-return stars;
-}
+    return stars;
+  }
 
 
-function createCourseCard(course){
-return `
+  function createCourseCard(course) {
+    return `
 
 <div class="course-card" data-category="${course.category}">
 <div class="course-image">
-<img src="${course.image}" alt="${course.title}">
+<img src="${course.image}" alt="${course.title}" loading="lazy">
 </div>
 
 <div class="course-content">
@@ -1990,38 +2113,38 @@ ${getStars(course.rating)}
 </div>
 </div>
 <button class="btn btn-primary">
-${course.progress>0?"Continue Learning":"Enroll Now"}
+${course.progress > 0 ? "Continue Learning" : "Enroll Now"}
 </button>
 </div>
 </div>
 `;
+  }
+
+
+  function renderFeatured() {
+    if (!featuredContainer) return;
+    featuredContainer.innerHTML = "";
+    courses.forEach(course => {
+      featuredContainer.innerHTML += createCourseCard(course);
+
+    });
+  }
+
+
+  function renderPopular() {
+    if (!popularContainer) return;
+    popularContainer.innerHTML = "";
+
+    courses.slice(0, 6).forEach(course => {
+
+      popularContainer.innerHTML += createCourseCard(course);
+    });
+  }
+
+
+  renderFeatured();
+  renderPopular();
+
 }
-
-
-function renderFeatured(){
-if(!featuredContainer) return;
-featuredContainer.innerHTML="";
-courses.forEach(course=>{
-featuredContainer.innerHTML+=createCourseCard(course);
-
-});
-}
-
-
-function renderPopular(){
-if(!popularContainer) return;
-popularContainer.innerHTML="";
-
-courses.slice(0,6).forEach(course=>{
-
-popularContainer.innerHTML+=createCourseCard(course);
-});
-}
-
-
-renderFeatured();
-renderPopular();
-
-} 
 
 console.log("Courses Module Loaded Successfully");
