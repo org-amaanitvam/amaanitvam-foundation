@@ -389,7 +389,22 @@ export default function Certificates() {
                   <tr key={i}>{Array.from({ length: 7 }).map((__, j) => <td key={j} className="px-5 py-4"><div className="h-4 bg-slate-100 rounded animate-pulse" /></td>)}</tr>
                 ))
               ) : certificates.length === 0 ? (
-                <tr><td colSpan="7" className="px-5 py-10 text-center text-slate-500">No certificates issued yet</td></tr>
+                <tr>
+                  <td colSpan="7" className="px-5 py-14">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-4">
+                        <ShieldCheck className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">
+                        No Certificates Issued Yet
+                      </h3>
+                      <p className="text-slate-500 max-w-md">
+                        Certificates issued by Amaanitvam Foundation will appear here. Use the
+                        “Add Certificate” button to upload and issue a new certificate.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 certificates.map((cert) => (
                   <tr key={getCertDbId(cert)} className="hover:bg-slate-50/60">

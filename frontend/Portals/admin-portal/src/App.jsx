@@ -9,8 +9,6 @@ import Certificates from './pages/Certificates';
 import Content from './pages/Content';
 import Gallery from './pages/Gallery';
 import Tasks from './pages/Tasks';
-import Attendance from './pages/Attendance';
-import MyCertificates from './pages/MyCertificates';
 import Settings from './pages/Settings';
 import CMS from './pages/CMS';
 import Reports from "./pages/Reports";
@@ -99,26 +97,6 @@ export default function App() {
         }
       />
       <Route
-        path="/attendance"
-        element={
-          <ProtectedRoute>
-            <AdminLayout>
-              <Attendance />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/my-certificates"
-        element={
-          <ProtectedRoute>
-            <AdminLayout>
-              <MyCertificates />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/settings"
         element={
           <ProtectedRoute>
@@ -127,17 +105,8 @@ export default function App() {
             </AdminLayout>
           </ProtectedRoute>
         }
+
       />
-      <Route
-  path="/reports"
-  element={
-    <ProtectedRoute>
-      <AdminLayout>
-        <Reports />
-      </AdminLayout>
-    </ProtectedRoute>
-  }
-/>
       <Route
         path="/cms"
         element={
