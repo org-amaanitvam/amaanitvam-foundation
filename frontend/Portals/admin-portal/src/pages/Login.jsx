@@ -115,81 +115,102 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#6b1d44] px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,161,95,0.25),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(93,15,45,0.22),transparent_35%)]" />
+    <div className="min-h-screen flex items-center justify-center bg-[#5d0f2d] px-3 sm:px-4 py-6 sm:py-8 relative overflow-hidden font-[family-name:var(--font-body)]">
+      {/* Ambient background glow, same spirit as the static auth page */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,161,95,0.22),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(93,15,45,0.35),transparent_45%)]" />
 
-      <div className="w-full max-w-220 h-auto md:h-130 bg-transparent rounded-2xl flex flex-col md:flex-row overflow-hidden relative z-10 shadow-2xl">
-        <div className="w-full md:w-[42%] bg-linear-to-br from-[#8a164b] to-[#690b31] relative flex flex-col justify-between overflow-hidden p-6 md:p-8 rounded-t-2xl md:rounded-tr-none md:rounded-l-2xl">
-          <div className="absolute inset-0 bg-white/10 rotate-45 -top-1/2 -left-1/2 w-[200%] h-[200%] pointer-events-none"></div>
-          <div className="absolute inset-0 bg-black/5 rotate-30 -top-1/2 left-[-80%] w-[200%] h-[200%] pointer-events-none"></div>
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 rounded-2xl sm:rounded-3xl overflow-hidden relative z-10 shadow-2xl min-h-0 md:min-h-[560px]">
 
-          <div className="z-10 w-full border-b border-white/10 pb-6">
-            <div className="flex flex-row items-center gap-4">
-              <img
-                alt="Amaanitvam Foundation"
-                className="brand-logo h-16 w-16 object-contain bg-white p-1.5 rounded-xl shadow-md shrink-0"
-                src="assets/images/logo.jpg"
-              />
-              <div className="flex flex-col justify-center">
-                <h1 className="text-4xl font-heading font-black text-white tracking-tight leading-none uppercase">
-                  {orgName.split(' ')[0] || 'Amaanitvam'}
-                </h1>
-                <p className="text-xl font-ui text-yellow-500 uppercase tracking-[0.2em] font-bold mt-1.5 leading-none">
-                  {orgName.split(' ').slice(1).join(' ') || 'Foundation'}
-                </p>
-              </div>
+        {/* Visual side */}
+        <div className="relative flex flex-col justify-between p-6 sm:p-8 md:p-10 overflow-hidden min-h-[220px] sm:min-h-[260px] md:min-h-0">
+          <img
+            src="assets/images/hero.jpg"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(155deg,rgba(138,22,75,0.88)_0%,rgba(93,15,45,0.92)_60%,rgba(61,10,31,0.95)_100%)]" />
+
+          <div className="relative z-10 flex items-center gap-3 sm:gap-4">
+            <img
+              alt="Amaanitvam Foundation logo"
+              className="h-14 w-14 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain bg-white p-1.5 sm:p-2 rounded-2xl shadow-lg shrink-0"
+              src="assets/images/logo.jpg"
+            />
+            <div className="flex flex-col justify-center leading-none">
+              <b className="text-white text-lg sm:text-2xl md:text-3xl font-[family-name:var(--font-heading)] font-bold tracking-wide uppercase">
+                {orgName.split(' ')[0] || 'Amaanitvam'}
+              </b>
+              <span className="text-[#e9c9a3] text-[10px] sm:text-xs md:text-sm font-[family-name:var(--font-ui)] font-semibold tracking-[0.3em] uppercase mt-1 sm:mt-1.5">
+                {orgName.split(' ').slice(1).join(' ') || 'Foundation'}
+              </span>
             </div>
           </div>
 
-          <div className="z-10 my-auto py-6">
-            <p className="text-white text-xl md:text-base leading-relaxed font-light font-sans tracking-wide">
-              Empowering Lives Through Education, Compassion, and Collective Action. A student-led movement inspiring learning, responsibility, and positive change for a stronger society.
-            </p>
-          </div>
+         <div className="relative z-10 my-6 sm:my-8 md:my-10">
 
-          <div className="hidden md:block h-6" />
+
+  <p className="mt-2 sm:mt-4 text-white/85 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
+    Empowering Lives Through Education, Compassion, and Collective Action.
+    A student-led movement inspiring learning, responsibility, and positive
+    change for a stronger society.
+  </p>
+
+  <small className="block mt-3 sm:mt-5 text-[#e9c9a3] text-[10px] sm:text-[11px] font-[family-name:var(--font-ui)] tracking-[0.25em] uppercase font-semibold">
+    Amaanitvam Foundation &middot; Empowering Communities
+  </small>
+</div>
+       <div className="relative z-10 text-[0.7rem] sm:text-[0.78rem] text-white/65">
+  Trusted by Volunteers &middot; Transparent Initiatives &middot; Sustainable Community Impact
+</div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center p-8 md:p-10 bg-white rounded-b-2xl md:rounded-bl-none md:rounded-r-2xl">
+        {/* Form side */}
+        <div className="flex flex-col justify-center p-6 sm:p-8 md:p-10 bg-[#faf7f2]">
           <div className="w-full flex flex-col items-center">
-            <div className="flex justify-center gap-6 mb-6 w-full max-w-[320px] border-b border-gray-200 pb-3">
-              <button
-                type="button"
-                disabled={show2FA}
-                onClick={() => {
-                  setShowReset(false);
-                  setError('');
-                  setResetSuccess('');
-                }}
-                className={`text-sm font-bold uppercase tracking-widest pb-1 cursor-pointer transition-all duration-200 disabled:opacity-40 ${!showReset && !show2FA
-                    ? 'text-[#6b1d44] border-b-2 border-[#6b1d44] font-black'
-                    : 'text-gray-400 hover:text-gray-700'
-                  }`}
-              >
-                Sign In
-              </button>
 
-              <button
-                type="button"
-                disabled={show2FA}
-                onClick={() => {
-                  setShowReset(true);
-                  setError('');
-                }}
-                className={`text-sm font-bold uppercase tracking-widest pb-1 cursor-pointer transition-all duration-200 disabled:opacity-40 ${showReset && !show2FA
-                    ? 'text-[#6b1d44] border-b-2 border-[#6b1d44] font-black'
-                    : 'text-gray-400 hover:text-gray-700'
-                  }`}
-              >
-                Reset
-              </button>
-            </div>
-
-            <div className="text-center mb-6 w-full max-w-[320px]">
-              <h2 className="text-gray-800 text-2xl font-black tracking-widest uppercase">
+            <div className="w-full max-w-[320px]">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-5 h-px bg-[#d8a15f]" />
+                <span className="text-[#8a164b] text-[11px] sm:text-xs font-[family-name:var(--font-ui)] font-bold tracking-[0.2em] uppercase">
+                  Foundation Management Access
+                </span>
+              </div>
+              <h2 className="text-[#5d0f2d] text-xl sm:text-2xl md:text-[1.7rem] font-[family-name:var(--font-heading)] font-bold mb-5 sm:mb-6">
                 {show2FA ? 'Two-Factor Authentication' : !showReset ? 'Admin Login' : 'Reset Password'}
               </h2>
             </div>
+
+            {!show2FA && (
+              <div className="flex bg-[#f0e7de] rounded-full p-1 mb-6 w-full max-w-[320px]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReset(false);
+                    setError('');
+                    setResetSuccess('');
+                  }}
+                  className={`flex-1 text-xs font-[family-name:var(--font-ui)] font-bold uppercase tracking-widest py-2.5 rounded-full transition-all duration-200 cursor-pointer ${!showReset
+                      ? 'bg-[#5d0f2d] text-white shadow-md'
+                      : 'text-[#8a7468] hover:text-[#5d0f2d]'
+                    }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReset(true);
+                    setError('');
+                  }}
+                  className={`flex-1 text-xs font-[family-name:var(--font-ui)] font-bold uppercase tracking-widest py-2.5 rounded-full transition-all duration-200 cursor-pointer ${showReset
+                      ? 'bg-[#5d0f2d] text-white shadow-md'
+                      : 'text-[#8a7468] hover:text-[#5d0f2d]'
+                    }`}
+                >
+                  Reset
+                </button>
+              </div>
+            )}
 
             {error && (
               <div className="w-full max-w-[320px] bg-red-50 text-red-700 text-xs p-2.5 rounded-lg border border-red-200 mb-4 text-center">
@@ -205,27 +226,27 @@ export default function Login() {
 
             {show2FA ? (
               <form onSubmit={handleVerify2FA} className="w-full max-w-[320px] flex flex-col items-center">
-                <p className="text-xs text-gray-500 text-center mb-4 leading-relaxed">
+                <p className="text-xs text-[#8a7468] text-center mb-4 leading-relaxed">
                   Enter the verification code sent to your registered device.
                   <br />
-                  <span className="text-[10px] text-gray-400 font-medium">
+                  <span className="text-[10px] text-[#b3a297] font-medium">
                     Demo code: 123456
                   </span>
                 </p>
 
-                <div className="w-full relative mb-6">
+                <div className="w-full mb-6">
                   <input
                     type="text"
                     required
                     value={code2fa}
                     onChange={(e) => setCode2fa(e.target.value)}
-                    className="w-full border-b border-gray-300 py-2 text-center text-xl tracking-[0.3em] font-bold text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent"
+                    className="w-full rounded-xl border border-[#e3d6c8] py-3 px-4 text-center text-xl tracking-[0.3em] font-bold text-[#5d0f2d] outline-none focus:border-[#8a164b] transition-colors bg-white"
                     placeholder="000000"
                     maxLength={6}
                   />
                 </div>
 
-                <div className="w-full flex justify-between items-center mt-2">
+                <div className="w-full flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-3 mt-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -234,7 +255,7 @@ export default function Login() {
                       setCode2fa('');
                       setError('');
                     }}
-                    className="text-xs text-gray-400 hover:text-gray-600 bg-transparent transition-colors cursor-pointer flex items-center gap-1"
+                    className="text-xs text-[#8a7468] hover:text-[#5d0f2d] bg-transparent transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1"
                   >
                     <ArrowLeft className="w-3 h-3" />
                     Back to Login
@@ -243,15 +264,18 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-[#6b1d44] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+                    className="w-full sm:w-auto bg-[#5d0f2d] text-white text-xs font-[family-name:var(--font-ui)] font-bold uppercase tracking-wider py-3 px-7 rounded-full shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     {isLoading ? 'Verifying...' : 'Verify & Continue'}
                   </button>
                 </div>
               </form>
             ) : !showReset ? (
-              <form onSubmit={handleLogin} className="w-full max-w-[320px] flex flex-col items-center">
-                <div className="w-full relative mb-5">
+              <form onSubmit={handleLogin} className="w-full max-w-[320px] flex flex-col">
+                <div className="w-full mb-4">
+                  <label htmlFor="email" className="block text-xs font-semibold text-[#5d0f2d] mb-1.5">
+                    Email or Username
+                  </label>
                   <input
                     id="email"
                     name="email"
@@ -260,11 +284,14 @@ export default function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@amaanitvam.org"
                     required
-                    className="w-full border-b border-gray-300 py-2 text-sm text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent placeholder-gray-400"
+                    className="w-full rounded-xl border border-[#e3d6c8] py-2.5 px-4 text-sm text-[#3a2a22] outline-none focus:border-[#8a164b] transition-colors bg-white placeholder-[#b3a297]"
                   />
                 </div>
 
-                <div className="w-full relative mb-6">
+                <div className="w-full mb-3">
+                  <label htmlFor="password" className="block text-xs font-semibold text-[#5d0f2d] mb-1.5">
+                    Password
+                  </label>
                   <input
                     id="password"
                     name="password"
@@ -273,34 +300,44 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     required
-                    className="w-full border-b border-gray-300 py-2 text-sm text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent placeholder-gray-400"
+                    className="w-full rounded-xl border border-[#e3d6c8] py-2.5 px-4 text-sm text-[#3a2a22] outline-none focus:border-[#8a164b] transition-colors bg-white placeholder-[#b3a297]"
                   />
                 </div>
 
-                <div className="w-full flex justify-between items-center mt-2">
+                <div className="w-full flex flex-wrap justify-between items-center gap-y-2 mb-6">
+                  <label className="flex items-center gap-1.5 text-xs text-[#8a7468]">
+                    <input type="checkbox" defaultChecked className="accent-[#8a164b]" />
+                    Remember me
+                  </label>
                   <button
                     type="button"
                     onClick={() => {
                       setShowReset(true);
                       setError('');
                     }}
-                    className="text-xs text-gray-400 hover:text-[#6b1d44] bg-transparent transition-colors cursor-pointer"
+                    className="text-xs text-[#8a164b] font-semibold hover:underline bg-transparent transition-colors cursor-pointer"
                   >
                     Forgot Password?
                   </button>
-
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="bg-[#6b1d44] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
-                  >
-                    {isLoading ? 'Signing in…' : 'Sign In'}
-                  </button>
                 </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-[#5d0f2d] text-white text-sm font-[family-name:var(--font-ui)] font-bold uppercase tracking-wider py-3 rounded-full shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isLoading ? 'Signing in…' : 'Login'}
+                </button>
+<p className="text-center text-[0.7rem] text-[#b3a297] mt-5">
+  Secure access to the Amaanitvam Foundation Administration Portal. Authorized users only.
+</p>
               </form>
             ) : (
-              <form onSubmit={handleResetPassword} className="w-full max-w-[320px] flex flex-col items-center">
-                <div className="w-full relative mb-6">
+              <form onSubmit={handleResetPassword} className="w-full max-w-[320px] flex flex-col">
+                <div className="w-full mb-6">
+                  <label htmlFor="reset-email" className="block text-xs font-semibold text-[#5d0f2d] mb-1.5">
+                    Email or Username
+                  </label>
                   <input
                     id="reset-email"
                     name="reset-email"
@@ -309,11 +346,11 @@ export default function Login() {
                     onChange={(e) => setResetEmail(e.target.value)}
                     placeholder="you@amaanitvam.org"
                     required
-                    className="w-full border-b border-gray-300 py-2 text-sm text-gray-800 outline-none focus:border-[#6b1d44] transition-colors bg-transparent placeholder-gray-400"
+                    className="w-full rounded-xl border border-[#e3d6c8] py-2.5 px-4 text-sm text-[#3a2a22] outline-none focus:border-[#8a164b] transition-colors bg-white placeholder-[#b3a297]"
                   />
                 </div>
 
-                <div className="w-full flex justify-between items-center mt-2">
+                <div className="w-full flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-3">
                   <button
                     type="button"
                     onClick={() => {
@@ -321,14 +358,15 @@ export default function Login() {
                       setError('');
                       setResetSuccess('');
                     }}
-                    className="text-xs text-gray-400 hover:text-gray-600 bg-transparent transition-colors cursor-pointer"
+                    className="text-xs text-[#8a7468] hover:text-[#5d0f2d] bg-transparent transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1 shrink-0"
                   >
+                    <ArrowLeft className="w-3 h-3" />
                     Back to Sign In
                   </button>
 
                   <button
                     type="submit"
-                    className="bg-[#6b1d44] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-full shadow-md hover:opacity-90 transition-all cursor-pointer"
+                    className="w-full sm:w-auto bg-[#5d0f2d] text-white text-xs font-[family-name:var(--font-ui)] font-bold uppercase tracking-wider py-3 px-6 rounded-full shadow-md hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
                   >
                     Send Reset Link
                   </button>
