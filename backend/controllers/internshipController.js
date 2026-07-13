@@ -11,12 +11,13 @@ export const createInternshipApplication = async (req, res) => {
             return res.status(503).json({ success: false, message: "System is under maintenance. We are currently not accepting new applications. Please try again later." });
         }
 
-        const { name, email, phone, track, university, currentYear, motivation, portfolioUrl, duration } = req.validatedInternship;
+        // Pulling sanitized data from the validation middleware
+        const { name, email, phone, track, university, currentYear, motivation, portfolioUrl, duration } = req.validatedInternship; 
         
-        // Extract the resume URL if a file was successfully uploaded
+        // Extract the absolute Cloudinary secure URL if a file was successfully uploaded
         let resumeUrl = "";
         if (req.file) {
-            resumeUrl = `/uploads/${req.file.filename}`;
+            resumeUrl = req.file.path; // <-- FIX: Saves the full cloud URL instead of /uploads/
         }
 
         const newApplication = new InternshipApplication({
@@ -29,7 +30,7 @@ export const createInternshipApplication = async (req, res) => {
             motivation,
             portfolioUrl,
             duration,
-            resumeUrl, // Save the file path to the database
+            resumeUrl, // Save the absolute cloud link to the database
             submissionTimestamp: new Date()
         });
 
@@ -44,7 +45,7 @@ export const createInternshipApplication = async (req, res) => {
         // Send emails and WhatsApp in the background (fire-and-forget)
         Promise.all([
             sendInternshipConfirmationEmail({ application: newApplication }),
-            sendInternshipAdminEmail({ application: newApplication, resumeFile: req.file })        
+            sendInternshipAdminEmail({ application: newApplication, resumeFile: req.file })       
         ]).catch((emailErr) => {
             console.error("Background notification delivery failed:", emailErr);
         });

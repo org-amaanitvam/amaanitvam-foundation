@@ -29,9 +29,15 @@ export const validateVolunteerApplication = async (req, res, next) => {
         });
     }
 
+
     try {
         const validRoles = await Department.distinct("departmentName");
-        if (!validRoles.includes(role)) {
+        // Convert everything to lowercase to eliminate strict casing mismatches
+        const isRoleValid = validRoles.some(
+            (r) => r.toLowerCase() === role.toLowerCase()
+        );
+
+        if (!isRoleValid) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid role selected: ${role}. Please select a valid role.`
@@ -42,7 +48,7 @@ export const validateVolunteerApplication = async (req, res, next) => {
             success: false,
             message: "Internal server error during validation."
         });
-    }
+     }
 
     req.validatedVolunteer = {
         name,

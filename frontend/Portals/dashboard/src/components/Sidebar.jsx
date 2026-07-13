@@ -98,6 +98,30 @@ export default function Sidebar() {
           <LayoutDashboard className="w-[18px] h-[18px]" />
           <span>Dashboard</span>
         </NavLink>
+        {/* MOVED: Attendance and Reports are now strictly in the Dashboard/Overview section */}
+        {isAdmin ? (
+          <>
+            <NavLink to="/member-reports" className={navLinkClass}>
+              <BarChart3 className="w-[18px] h-[18px]" />
+              <span>Team Reports</span>
+            </NavLink>
+            <NavLink to="/attendance" className={navLinkClass}>
+              <CalendarCheck className="w-[18px] h-[18px]" />
+              <span>Attendance</span>
+            </NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink to="/attendance" className={navLinkClass}>
+              <CalendarCheck className="w-[18px] h-[18px]" />
+              <span>Attendance</span>
+            </NavLink>
+            <NavLink to="/reports" className={navLinkClass}>
+              <BarChart3 className="w-[18px] h-[18px]" />
+              <span>Reports</span>
+            </NavLink>
+          </>
+        )}
 
         <p className="sidebar-section-title px-4 pt-6 pb-1 text-xs font-bold text-[#d8a15f]/70 uppercase tracking-[0.18em]">
           Team
@@ -127,35 +151,6 @@ export default function Sidebar() {
           <Building2 className="w-[18px] h-[18px]" />
           <span>Departments</span>
         </NavLink>
-
-        <p className="sidebar-section-title px-4 pt-6 pb-1 text-xs font-bold text-[#d8a15f]/70 uppercase tracking-[0.18em]">
-          My Workspace
-        </p>
-
-        {/* Dynamic Workspace based on Role */}
-        {isAdmin ? (
-          <>
-            <NavLink to="/member-reports" className={navLinkClass}>
-              <BarChart3 className="w-[18px] h-[18px]" />
-              <span>Team Reports</span>
-            </NavLink>
-            <NavLink to="/attendance" className={navLinkClass}>
-              <CalendarCheck className="w-[18px] h-[18px]" />
-              <span>Attendance</span>
-            </NavLink>
-          </>
-        ) : (
-          <>
-            <NavLink to="/attendance" className={navLinkClass}>
-              <CalendarCheck className="w-[18px] h-[18px]" />
-              <span>Attendance</span>
-            </NavLink>
-            <NavLink to="/reports" className={navLinkClass}>
-              <BarChart3 className="w-[18px] h-[18px]" />
-              <span>Reports</span>
-            </NavLink>
-          </>
-        )}
 
         <p className="sidebar-section-title px-4 pt-6 pb-1 text-xs font-bold text-[#d8a15f]/70 uppercase tracking-[0.18em]">
           Account

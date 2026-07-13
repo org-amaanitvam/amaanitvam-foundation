@@ -35,6 +35,7 @@ import activityRoutes from "./routes/activityRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import galleryMongoMediaFixRoutes from "./routes/galleryMongoMediaFixRoutes.js";
 import internshipRoutes from "./routes/internshipRoutes.js";
+import learningHubRoutes from "./routes/learningHubRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -111,6 +112,7 @@ app.use("/api/public", publicRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/internship", internshipRoutes);
+app.use("/api/learning-hub", learningHubRoutes);
 app.use("/api", galleryMongoMediaFixRoutes);
 
 // Serve Frontend Static Files (Dashboard)
@@ -126,7 +128,16 @@ app.get(/(.*)/, (req, res, next) => {
   res.sendFile(path.join(dashboardBuildPath, "index.html"));
 });
 // 404 API Handler
-app.use((req, res) => res.status(404).json({ success: false, message: "Route not found" }));
+// Global Error Handler (Prevents HTML crashes!)
+app.use((err, req, res, next) => {
+  console.error("🔥 MIDDLEWARE CRASH REPORT:");
+  console.error(err); // This will reveal what [object Object] actually is
+  res.status(500).json({ 
+    success: false, 
+    message: "A middleware error occurred", 
+    errorDetails: err.message 
+  });
+});
 
 // Start Database and Server
 const startServer = async () => {

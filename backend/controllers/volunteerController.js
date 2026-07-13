@@ -13,10 +13,10 @@ export const createVolunteerApplication = async (req, res) => {
 
         const { name, email, phone, role, availability, skills, motivation } = req.validatedVolunteer;
 
-        // Extract the resume URL if a file was successfully uploaded
+        // Extract the absolute Cloudinary secure URL if a file was successfully uploaded
         let resumeUrl = "";
         if (req.file) {
-            resumeUrl = `/uploads/${req.file.filename}`;
+            resumeUrl = req.file.path; // <-- FIX: Saves the full cloud URL instead of /uploads/
         }
 
         const newApplication = new VolunteerApplication({
@@ -27,7 +27,7 @@ export const createVolunteerApplication = async (req, res) => {
             availability,
             skills,
             motivation,
-            resumeUrl, // Save the file path to the database
+            resumeUrl, // Save the absolute cloud link to the database
             submissionTimestamp: new Date()
         });
 

@@ -33,7 +33,13 @@ export const validateInternshipApplication = async (req, res, next) => {
 
     try {
         const validTracks = await Department.distinct("departmentName");
-        if (!validTracks.includes(track)) {
+        
+        // Convert everything to lowercase to eliminate strict casing mismatches
+        const isTrackValid = validTracks.some(
+            (t) => t.toLowerCase() === track.toLowerCase()
+        );
+
+        if (!isTrackValid) {
             return res.status(400).json({
                 success: false,
                 message: `Invalid internship domain selected: ${track}. Please select a valid domain.`
