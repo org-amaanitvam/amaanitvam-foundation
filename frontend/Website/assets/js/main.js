@@ -810,7 +810,7 @@ function getViewportSize() {
       boot();
     }
   })();
-  
+
   /* ===== Dynamic Departments / Domains Loader ===== */
   (function () {
     async function loadDepartments() {
@@ -1772,4 +1772,394 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(function (error) {
       console.error("Error loading the navbar:", error);
     });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ==========================================
+  // 1. FETCH & POPULATE DEPARTMENTS (NEW)
+  // ==========================================
+  async function fetchDepartments() {
+    // Select the dropdown by name or ID (Update this selector if your HTML is different)
+    const roleDropdown = document.querySelector('select[name="role"]') || document.getElementById('role');
+    if (!roleDropdown) return;
+
+    try {
+      // Dynamic URL for fetching departments (Port 5500 will ask Port 5000)
+      const DEPT_API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/public/departments' // Replace with your exact GET route if different
+        : 'https://amaanitvam-foundation.onrender.com/api/public/departments';
+
+      const response = await fetch(DEPT_API_URL);
+      const result = await response.json();
+
+      if (response.ok) {
+        // Clear existing hardcoded HTML options and set the default placeholder
+        roleDropdown.innerHTML = '<option value="" disabled selected>Select a role</option>';
+
+        // Extract the array depending on how your backend sends it
+        // (Adjust this if your backend wraps it in result.data or result.departments)
+        const departments = result.departments || result.data || result;
+
+        if (Array.isArray(departments)) {
+          departments.forEach(dept => {
+            const option = document.createElement('option');
+            // Assuming your department object has a 'departmentName' property
+            const deptName = dept.departmentName || dept;
+            option.value = deptName;
+            option.textContent = deptName;
+            roleDropdown.appendChild(option);
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load departments:", error);
+    }
+  }
+
+  // Trigger the fetch immediately when the page loads
+  fetchDepartments();
+
+
+  // ==========================================
+  // 2. FORM SUBMISSION LOGIC (YOUR EXACT CODE)
+  // ==========================================
+  const form = document.getElementById('volunteerForm');
+  if (!form) return; //[cite: 5]
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault(); //[cite: 5]
+
+    const status = document.getElementById('vol-status'); //[cite: 5]
+    const submitBtn = this.querySelector('button[type="submit"]'); //[cite: 5]
+    const originalText = submitBtn ? submitBtn.textContent : 'Submit Application'; //[cite: 5]
+
+    // Loading State
+    if (status) {
+      status.textContent = "Submitting application..."; //[cite: 5]
+      status.style.color = "var(--navy)"; //[cite: 5]
+      status.style.display = 'block'; //[cite: 5]
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true; //[cite: 5]
+      submitBtn.textContent = "Submitting..."; //[cite: 5]
+    }
+
+    // NATIVE FORMDATA - Crucial for catching the PDF file!
+    const formData = new FormData(this); //[cite: 5]
+
+    try {
+      const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/volunteer/apply'  //[cite: 5]
+        : 'https://amaanitvam-foundation.onrender.com/api/volunteer/apply'; //[cite: 5]
+
+      const response = await fetch(API_URL, {
+        method: 'POST', //[cite: 5]
+        body: formData //[cite: 5]
+      });
+
+      const result = await response.json(); //[cite: 5]
+
+      if (response.ok) { //[cite: 5]
+        // Success State
+        alert("Success! Your volunteer application has been submitted successfully. We will review your application and get back to you soon!"); //[cite: 5]
+        if (status) {
+          status.textContent = result.message || "Application submitted successfully!"; //[cite: 5]
+          status.style.color = "green"; //[cite: 5]
+        }
+        this.reset(); //[cite: 5]
+      } else {
+        throw new Error(result.message || "Failed to submit application."); //[cite: 5]
+      }
+    } catch (err) {
+      // Error State
+      alert("Error: " + err.message); //[cite: 5]
+      if (status) {
+        status.textContent = err.message || "Failed to connect to the server."; //[cite: 5]
+        status.style.color = "red"; //[cite: 5]
+      }
+    } finally {
+      // Restore button
+      if (submitBtn) {
+        submitBtn.disabled = false; //[cite: 5]
+        submitBtn.textContent = originalText; //[cite: 5]
+      }
+    }
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('registrationForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const statusDiv = document.getElementById('reg-status');
+    const originalText = submitBtn.textContent;
+
+    // 1. Loading State
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+    if (statusDiv) {
+      statusDiv.textContent = "Sending registration...";
+      statusDiv.style.color = "var(--navy)";
+    }
+
+    // 2. Gather Data & Convert to JSON
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      // 3. Dynamic API URL
+      const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/learning-hub/register'
+        : 'https://amaanitvam-foundation.onrender.com/api/learning-hub/register';
+
+      // 4. Send the Request
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // 5. Success State
+        alert("Registration successful! We look forward to seeing you.");
+        if (statusDiv) {
+          statusDiv.textContent = "Successfully registered!";
+          statusDiv.style.color = "green";
+        }
+        this.reset();
+      } else {
+        throw new Error(result.message || "Failed to register.");
+      }
+    } catch (error) {
+      // 6. Error State
+      console.error(error);
+      alert("Error: " + error.message);
+      if (statusDiv) {
+        statusDiv.textContent = "Error: " + error.message;
+        statusDiv.style.color = "red";
+      }
+    } finally {
+      // Restore the button
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ==========================================
+  // 1. FETCH & POPULATE DEPARTMENTS/TRACKS
+  // ==========================================
+  async function fetchDepartments() {
+    // Select the dropdown by name or ID for the internship track
+    const trackDropdown = document.querySelector('select[name="track"]') || document.getElementById('track');
+    if (!trackDropdown) return;
+
+    try {
+      // Dynamic URL for fetching departments (Port 5500 will ask Port 5000)
+      const DEPT_API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/public/departments'
+        : 'https://amaanitvam-foundation.onrender.com/api/public/departments';
+
+      const response = await fetch(DEPT_API_URL);
+      const result = await response.json();
+
+      if (response.ok) {
+        // Clear existing hardcoded HTML options and set the default placeholder
+        trackDropdown.innerHTML = '<option value="" disabled selected>Select a domain/track</option>';
+
+        const departments = result.departments || result.data || result;
+
+        if (Array.isArray(departments)) {
+          departments.forEach(dept => {
+            const option = document.createElement('option');
+            const deptName = dept.departmentName || dept;
+            option.value = deptName;
+            option.textContent = deptName;
+            trackDropdown.appendChild(option);
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load departments:", error);
+    }
+  }
+
+  // Trigger the fetch immediately when the page loads
+  fetchDepartments();
+
+
+  // ==========================================
+  // 2. FORM SUBMISSION LOGIC
+  // ==========================================
+  const form = document.getElementById('internshipForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('int-submit-btn');
+    const btnText = btn?.querySelector('.submit-btn-text');
+    const btnSpinner = btn?.querySelector('.submit-btn-spinner');
+    const btnSuccess = btn?.querySelector('.submit-btn-success');
+    const status = document.getElementById('int-status');
+
+    // Reset UI States
+    if (btn) btn.classList.remove('is-success', 'is-error');
+    if (status) {
+      status.textContent = '';
+      status.className = '';
+      status.style.display = 'none';
+    }
+
+    // Set Loading State
+    if (btn) btn.classList.add('is-loading');
+    if (btnText) btnText.style.display = 'none';
+    if (btnSpinner) btnSpinner.style.display = 'inline-flex';
+    if (btnSuccess) btnSuccess.style.display = 'none';
+
+    if (status) {
+      status.textContent = "Submitting application...";
+      status.style.color = "var(--navy)";
+      status.style.display = 'block';
+    }
+
+    // NATIVE FORMDATA 
+    const formData = new FormData(this);
+
+    try {
+      const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/internship/apply'
+        : 'https://amaanitvam-foundation.onrender.com/api/internship/apply';
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Success State
+        if (btnSpinner) btnSpinner.style.display = 'none';
+        if (btnSuccess) btnSuccess.style.display = 'inline-flex';
+        if (btn) {
+          btn.classList.remove('is-loading');
+          btn.classList.add('is-success');
+        }
+        if (status) {
+          status.textContent = result.message || "Application submitted successfully!";
+          status.style.color = "#22c55e";
+        }
+
+        alert("Success! Your internship application has been submitted.");
+        this.reset();
+
+        setTimeout(() => {
+          if (btnSuccess) btnSuccess.style.display = 'none';
+          if (btnText) btnText.style.display = 'inline';
+          if (btn) btn.classList.remove('is-success');
+        }, 3000);
+
+      } else {
+        throw new Error(result.message || "Submission failed.");
+      }
+    } catch (err) {
+      // Error State
+      if (btnSpinner) btnSpinner.style.display = 'none';
+      if (btnText) btnText.style.display = 'inline';
+      if (btn) {
+        btn.classList.remove('is-loading');
+        btn.classList.add('is-error');
+      }
+      if (status) {
+        status.textContent = "Error: " + err.message;
+        status.style.color = "red";
+      }
+      alert("Error: " + err.message);
+      setTimeout(() => btn?.classList.remove('is-error'), 600);
+    }
+  });
+});
+
+console.log("Contact JS file is loaded and ready!");
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Make sure your form tag in contact.html has id="contactForm"
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const statusDiv = document.getElementById('contact-status'); // Create this div if you don't have it
+    const originalText = submitBtn.textContent;
+
+    // 1. Loading State
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    if (statusDiv) {
+      statusDiv.textContent = "Sending your message...";
+      statusDiv.style.color = "var(--navy)";
+    }
+
+    // 2. Gather Data & Convert to JSON
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      // 3. Dynamic API URL (Matches your server.js setup)
+      const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/contact' // Adjust if your route adds '/submit'
+        : 'https://amaanitvam-foundation.onrender.com/api/contact';
+
+      // 4. Send the Request
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // 5. Success State
+        alert("Message sent successfully! We will get back to you soon.");
+        if (statusDiv) {
+          statusDiv.textContent = "Message sent successfully!";
+          statusDiv.style.color = "green";
+        }
+        this.reset();
+      } else {
+        throw new Error(result.message || "Failed to send message.");
+      }
+    } catch (error) {
+      // 6. Error State
+      console.error(error);
+      alert("Error: " + error.message);
+      if (statusDiv) {
+        statusDiv.textContent = "Error: " + error.message;
+        statusDiv.style.color = "red";
+      }
+    } finally {
+      // Restore the button
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
 });
