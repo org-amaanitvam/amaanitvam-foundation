@@ -1,0 +1,68 @@
+/* Split from the original styles.css. Keep import order in styles.css unchanged. */
+
+p,
+li,
+small,
+label,
+input,
+textarea,
+select,
+button {
+    font-family: var(--font-body);
+}
+
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    vertical-align: middle;
+}
+
+.icon-fill {
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title,
+.hero-title,
+.page-hero h1,
+.stat-value,
+.footer-heading,
+.card h3,
+.donation-card h3 {
+    font-family: var(--font-heading) !important;
+    color: var(--primary);
+    line-height: 1.05;
+    letter-spacing: .5px;
+    font-weight: 600 !important;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+button,
+.btn,
+a[role="button"],
+input[type="button"],
+input[type="submit"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}

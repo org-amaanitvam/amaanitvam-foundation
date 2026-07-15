@@ -1,0 +1,70 @@
+/* Split from the original styles.css. Keep import order in styles.css unchanged. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    width: 100%;
+    overflow-x: hidden;
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+html,
+body {
+    max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+a,
+span,
+strong,
+small {
+    overflow-wrap: anywhere;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    /* Improve performance with content-visibility */
+    content-visibility: auto;
+}
+
+html,
+body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

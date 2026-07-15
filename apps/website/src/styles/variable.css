@@ -1,0 +1,33 @@
+/* Split from the original styles.css. Keep import order in styles.css unchanged. */
+
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap");
+
+:root {
+    --primary: #5d0f2d;
+    --primary-dark: #4a0b23;
+    --primary-light: #7a1d44;
+    --navy: #5d0f2d;
+    --purple: #c46b87;
+    --maroon: #6f1235;
+    --cream: #f8f3ed;
+    --secondary: #c46b87;
+    --gold: #d8a15f;
+    --gold-dark: #b98243;
+    --bg: #f5efe6;
+    --surface: #fffaf3;
+    --surface-pink: #fff7f8;
+    --card: #ead8c7;
+    --border: #dcc8b6;
+    --text: #3d2b2b;
+    --muted: #6b5b55;
+    --white: #ffffff;
+    --nav-h: 68px;
+    --radius: 14px;
+    --radius-lg: 22px;
+    --shadow: 0 12px 35px rgba(93, 15, 45, .10);
+    --shadow-lg: 0 20px 50px rgba(93, 15, 45, .16);
+    --section-py: 80px;
+    --font-heading: "Cormorant Garamond", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-ui: "Montserrat", system-ui, sans-serif;
+}

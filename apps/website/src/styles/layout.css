@@ -1,0 +1,433 @@
+/* Split from the original styles.css. Keep import order in styles.css unchanged. */
+
+.home-hero .container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.page-hero.has-image .section-title,
+.page-hero.has-image h1,
+.page-hero.has-image p {
+    color: #fff !important;
+}
+
+.page-hero.has-image .section-desc {
+    color: rgba(255, 255, 255, .85) !important;
+}
+
+.page-hero.has-image .section-label {
+    color: var(--gold) !important;
+}
+
+.contact-hero .container {
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+}
+
+.contact-hero .section-label,
+.contact-hero .section-title,
+.contact-hero .section-desc {
+    color: #fff !important;
+    text-align: center !important;
+    opacity: 1 !important;
+}
+
+.contact-hero .section-label {
+    color: #d8a15f !important;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.section {
+    padding: var(--section-py) 0;
+}
+
+.section-alt {
+    background: var(--bg);
+}
+
+.section-white {
+    background: var(--surface);
+}
+
+.section-navy {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+}
+
+.section-divider {
+    border-top: 1px solid var(--border);
+}
+
+.section-header {
+    text-align: center !important;
+    max-width: 780px;
+    margin: 0 auto 3rem !important;
+}
+
+.section-label {
+    display: inline-block;
+    font-family: var(--font-ui) !important;
+    font-size: .88rem !important;
+    font-weight: 700;
+    letter-spacing: .18em !important;
+    text-transform: uppercase;
+    color: var(--gold-dark) !important;
+    margin-bottom: .85rem;
+}
+
+.section-title {
+    font-size: clamp(2.15rem, 3.4vw, 3.35rem) !important;
+    max-width: 900px;
+    margin: 0 auto 1rem;
+    text-align: center !important;
+}
+
+.section-desc,
+.section-subtitle {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.grid-2,
+.grid-3,
+.grid-4 {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.grid-4 {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.split-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+}
+
+.section.section-white {
+    background: var(--surface-pink) !important;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.featured-card .split-2 {
+    gap: 0;
+    align-items: stretch;
+}
+
+main#main-content>.section,
+main>.section {
+    padding: var(--section-py) 0;
+}
+
+body:has(.app-shell) .main {
+    min-width: 0;
+    padding: 24px;
+}
+
+body:has(.app-shell) .searchbar button,
+body:has(.app-shell) .primary-btn,
+body:has(.app-shell) .secondary-btn,
+body:has(.app-shell) .text-btn,
+body:has(.app-shell) .hero-actions a,
+body:has(.app-shell) .section-actions button,
+body:has(.app-shell) .action-grid a {
+    min-height: 40px;
+    border: 0;
+    border-radius: 8px;
+    padding: 0 14px;
+    background: var(--primary);
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+body:has(.app-shell) .welcome-panel,
+body:has(.app-shell) .priority-panel,
+body:has(.app-shell) .panel,
+body:has(.app-shell) .section-hero article {
+    border: 1px solid rgba(220, 200, 182, .86);
+    border-radius: 12px;
+    background: rgba(255, 250, 243, .92);
+    box-shadow: var(--shadow);
+}
+
+body:has(.app-shell) .hero-actions,
+body:has(.app-shell) .section-actions {
+    display: grid;
+    gap: 10px;
+    min-width: 190px;
+}
+
+body:has(.app-shell) .hero-actions a,
+body:has(.app-shell) .section-actions button {
+    display: grid;
+    place-items: center;
+    background: var(--gold);
+    color: var(--primary-dark);
+}
+
+body:has(.app-shell) .priority-panel,
+body:has(.app-shell) .panel,
+body:has(.app-shell) .section-hero article {
+    padding: 18px;
+}
+
+body:has(.app-shell) .panel-head,
+body:has(.app-shell) .section-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+body:has(.app-shell) .section-title {
+    align-items: end;
+}
+
+body:has(.app-shell) .section-title p:last-child {
+    max-width: 500px;
+    margin: 0;
+    color: var(--muted);
+}
+
+body:has(.app-shell) .section-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+body:has(.app-shell) .section-hero article {
+    min-height: 170px;
+}
+
+body:has(.app-shell) .section-hero h2 {
+    font-size: clamp(32px, 5vw, 52px);
+}
+
+body:has(.app-shell) .section-hero p:last-child {
+    max-width: 850px;
+    margin: 12px 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+body.dashboard-page .dashboard-main {
+    min-width: 0;
+    padding: 22px;
+}
+
+body.dashboard-page .searchbar button,
+body.dashboard-page .primary-btn,
+body.dashboard-page .secondary-btn,
+body.dashboard-page .hero-actions button,
+body.dashboard-page .section-actions button,
+body.dashboard-page .action-grid button,
+body.dashboard-page .workspace button {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 800;
+    transition: .2s;
+}
+
+body.dashboard-page .searchbar button:hover,
+body.dashboard-page .primary-btn:hover,
+body.dashboard-page .hero-actions button:hover,
+body.dashboard-page .section-actions button:hover,
+body.dashboard-page .workspace button:hover {
+    transform: translateY(-2px);
+    background: var(--primary-light);
+    box-shadow: 0 10px 24px rgba(93, 15, 45, .18);
+}
+
+body.dashboard-page .welcome-panel,
+body.dashboard-page .panel,
+body.dashboard-page .section-hero article,
+body.dashboard-page .module-card,
+body.dashboard-page .stat-card,
+body.dashboard-page .workspace-card,
+body.dashboard-page .people-row,
+body.dashboard-page .pipeline-item,
+body.dashboard-page .report-item,
+body.dashboard-page .certificate-item {
+    border: 1px solid rgba(220, 200, 182, .88);
+    border-radius: 16px;
+    background: rgba(255, 250, 243, .94);
+    box-shadow: var(--shadow);
+}
+
+body.dashboard-page .hero-actions,
+body.dashboard-page .section-actions {
+    display: grid;
+    gap: 10px;
+    min-width: 190px;
+}
+
+body.dashboard-page .panel,
+body.dashboard-page .section-hero article {
+    padding: 18px;
+}
+
+body.dashboard-page .panel-head,
+body.dashboard-page .section-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+body.dashboard-page .section-title p {
+    max-width: 520px;
+    color: var(--muted);
+}
+
+body.dashboard-page .section-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(250px, .6fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+body.dashboard-page .section-hero article:first-child {
+    padding: 28px;
+}
+
+body.dashboard-page .section-hero article:last-child {
+    display: grid;
+    align-content: center;
+    gap: 10px;
+}
+
+body.dashboard-page .section-hero small {
+    color: var(--gold);
+    font-family: var(--font-ui);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.main-poster,
+.snapshot-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    width: 100%;
+}
+
+.main-poster {
+    border: 2px solid var(--gold, #d8a15f);
+}
+
+.webinar-main-title {
+    font-family: var(--font-heading, serif);
+    font-size: clamp(2rem, 3.5vw, 2.6rem);
+    color: var(--primary, #5d0f2d);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.page-hero.has-image .container,
+.contact-hero .container,
+.collab-hero .container,
+.moved-inline-style-final-029 .container {
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.page-hero.has-image .section-label,
+.page-hero.has-image .section-title,
+.page-hero.has-image .section-desc,
+.page-hero.has-image h1,
+.page-hero.has-image p,
+.contact-hero .section-label,
+.contact-hero .section-title,
+.contact-hero .section-desc,
+.collab-hero .hero-label,
+.collab-hero h1,
+.collab-hero p,
+.moved-inline-style-final-029 .section-label,
+.moved-inline-style-final-029 .section-title,
+.moved-inline-style-final-029 .section-desc,
+.moved-inline-style-final-029 h1,
+.moved-inline-style-final-029 p {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+.page-hero.has-image .section-label,
+.contact-hero .section-label,
+.collab-hero .hero-label,
+.moved-inline-style-final-029 .section-label {
+    color: var(--gold) !important;
+    -webkit-text-fill-color: var(--gold) !important;
+}
+
+.webinar-hero .section-title {
+    font-size: clamp(2.5rem, 6vw, 4rem) !important;
+    margin-bottom: 1rem;
+    color: #ffffff !important;
+}
+
+.webinar-hero .section-desc {
+    max-width: 750px;
+    margin: 0 auto;
+    color: #ffffff !important;
+    opacity: 0.95;
+    font-size: 1.2rem;
+}
+
+.course-hero-stats .container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.container,
+section,
+main,
+article,
+.card,
+.grid-2,
+.grid-3,
+.grid-4,
+.split-2 {
+    min-width: 0;
+}
+
+.course-image img,
+.hero-image img,
+.section-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
