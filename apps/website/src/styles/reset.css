@@ -1,30 +1,33 @@
-/* Split from the original styles.css. Keep import order in styles.css unchanged. */
-
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
 html {
-    scroll-behavior: smooth;
     width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
     width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
-    font-family: var(--font-body);
-    color: var(--text);
-    background: var(--bg);
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
 }
 
-img {
-    max-width: 100%;
+img,
+picture,
+svg,
+video {
     display: block;
+    max-width: 100%;
+    height: auto;
 }
 
 a {
@@ -32,9 +35,11 @@ a {
     text-decoration: none;
 }
 
-html,
-body {
-    max-width: 100%;
+button,
+input,
+textarea,
+select {
+    font: inherit;
 }
 
 h1,
@@ -47,24 +52,4 @@ span,
 strong,
 small {
     overflow-wrap: anywhere;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    /* Improve performance with content-visibility */
-    content-visibility: auto;
-}
-
-html,
-body {
-    overflow-x: hidden;
-    max-width: 100%;
-}
-
-html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
