@@ -1330,7 +1330,7 @@
 .moved-inline-style-002 {
     position: relative;
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("../../public/images/about-heroo.png");
+        url("/images/about-heroo.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1752,7 +1752,7 @@
 .moved-inline-style-079 {
     position: relative;
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("../../public/images/hero.png");
+        url("/images/hero.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -3459,7 +3459,7 @@ body.dashboard-page .toast.show {
 .moved-inline-style-075 {
     position: relative;
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("../../public/images/hero.png");
+        url("/images/hero.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -3659,7 +3659,7 @@ body.dashboard-page .toast.show {
 .moved-inline-style-final-001 {
     position: relative;
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("../../public/images/hero.png");
+        url("/images/hero.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -3814,7 +3814,7 @@ body.dashboard-page .toast.show {
 .moved-inline-style-final-029 {
     position: relative;
     background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)),
-        url("../../public/images/hero.png");
+        url("/images/hero.png");
     background-size: cover;
     background-position: center;
     padding: 5rem 0;

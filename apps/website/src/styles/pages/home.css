@@ -5,7 +5,7 @@
     padding-top: var(--nav-h);
     position: relative;
     overflow: hidden;
-    background-image: url("../../../public/images/hero.jpg") !important;
+    background-image: url("/images/hero.jpg") !important;
     background-size: cover;
     background-position: center 35% !important;
     background-repeat: no-repeat;
@@ -121,7 +121,7 @@ body[data-page="home"] .section.section-white .card p {
 
 body[data-page="home"] .home-hero,
 body:not([data-page]) .home-hero {
-    background-image: url("../../../public/images/hero.jpg") !important;
+    background-image: url("/images/hero.jpg") !important;
     background-size: cover !important;
     background-position: center 35% !important;
     background-repeat: no-repeat !important;

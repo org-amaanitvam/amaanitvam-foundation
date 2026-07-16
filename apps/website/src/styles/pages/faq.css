@@ -64,7 +64,7 @@ body[data-page="faq"] .faq-question {
 body[data-page="faq"] .page-hero.has-image,
 body[data-page="faq"] .moved-inline-style-075 {
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("../../../public/images/hero.png") !important;
+        url("/images/hero.png") !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;

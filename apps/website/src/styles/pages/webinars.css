@@ -54,7 +54,7 @@
     position: relative;
     background-image:
         linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)),
-        url("../../../public/images/hero.png");
+        url("/images/hero.png");
     background-size: cover;
     background-position: center;
     padding: 5rem 0;
