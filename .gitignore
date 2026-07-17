@@ -31,4 +31,7 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
-*.tmp
+*.tmpserviceAccountKey.json
+server/serviceAccountKey.json
+**/serviceAccountKey.json
+serviceAccountKey.json

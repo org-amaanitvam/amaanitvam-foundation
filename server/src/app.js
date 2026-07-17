@@ -39,6 +39,19 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(apiLimiter);
 
+
+
+// Compatibility endpoint used by admin/dashboard login pages.
+app.get('/api/public/settings', (_req, res) => {
+  res.json({
+    success: true,
+    settings: {
+      orgName: process.env.ORG_NAME || 'Amaanitvam Foundation',
+      enable2FA: String(process.env.ENABLE_2FA || 'false').toLowerCase() === 'true',
+    },
+  });
+});
+
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

@@ -3,7 +3,6 @@ import { connectDB } from "./config/database.js";
 import { validateEnv } from "./config/env.js";
 import logger from "./shared/logger/index.js";
 import app from "./app.js";
-
 const startServer = async () => {
   try {
     // Validate required env vars
@@ -13,7 +12,8 @@ const startServer = async () => {
     await connectDB();
 
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
+
+app.listen(PORT, () => {
       logger.info(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
     });
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, Loader2, Calendar, Phone, Mail, Building } from 'lucide-react';
-import api from '../config/api';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 export default function LearningHub() {
@@ -10,7 +10,7 @@ export default function LearningHub() {
   useEffect(() => {
     const fetchRegistrations = async () => {
       try {
-        const { data } = await api.get('http://localhost:5000/api/learning-hub');
+        const { data } = await api.get('/api/learning-hub');
         if (data.success) {
           setRegistrations(data.data);
         }

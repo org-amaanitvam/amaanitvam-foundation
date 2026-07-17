@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from '../../../config/api.js';
+import { useAuth } from '../../../contexts/AuthContext.jsx';
 import toast from 'react-hot-toast';
 
 export default function Tasks() {

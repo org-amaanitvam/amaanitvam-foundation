@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext.jsx';
 import axios from 'axios';
 
 export default function Login() {
@@ -25,7 +25,7 @@ export default function Login() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const baseURL = import.meta.env.VITE_API_URL || '/api';
         const res = await axios.get(`${baseURL}/public/settings`);
 
         if (res.data.settings) {
@@ -41,7 +41,7 @@ export default function Login() {
   }, []);
 
   if (user && !show2FA) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const handleLogin = async (e) => {
@@ -74,7 +74,7 @@ export default function Login() {
 
     try {
       await login(formEmail, formPassword);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError(err.message || 'Failed to sign in.');
     } finally {
@@ -90,7 +90,7 @@ export default function Login() {
     try {
       if (code2fa === '123456') {
         await login(tempCredentials.email, tempCredentials.password);
-        navigate('/dashboard');
+        navigate('/');
       } else {
         setError('Invalid verification code.');
       }

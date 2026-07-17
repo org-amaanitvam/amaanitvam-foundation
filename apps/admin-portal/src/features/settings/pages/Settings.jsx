@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Loader2, Server, Shield, Mail, CreditCard, Building2, Eye, EyeOff } from 'lucide-react';
-import api from '../config/api';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 export default function Settings() {

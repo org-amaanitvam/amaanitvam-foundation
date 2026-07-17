@@ -1,0 +1,59 @@
+/* Amaanitvam final recovery overrides.
+   Loaded after the restored portal styles so missing fonts/assets do not
+   silently collapse the design again. */
+:root {
+  --amaanitvam-body-font: "Inter", "Montserrat", Arial, sans-serif;
+  --amaanitvam-display-font: "Cormorant Garamond", Georgia, serif;
+}
+
+html,
+body,
+#root,
+button,
+input,
+select,
+textarea {
+  font-family: var(--amaanitvam-body-font);
+}
+
+.amaanitvam-wordmark,
+.brand-wordmark,
+.brand-name,
+.login-brand-name,
+.auth-brand-name,
+.login-page .login-title,
+.auth-page .auth-title,
+.login-container .login-title,
+.login-card .login-title,
+.login-panel .login-title,
+[class*="login"] [class*="brand"] {
+  font-family: var(--amaanitvam-display-font);
+}
+
+img {
+  max-width: 100%;
+}
+
+img[alt*="Amaanitvam" i],
+img[alt*="Foundation" i] {
+  object-fit: contain;
+}
+/* Emergency fallback used only because no healthy historical ngo-styles.css
+   was available. */
+@media (min-width: 768px) {
+  aside,
+  .sidebar,
+  .admin-sidebar,
+  [class~="sidebar"],
+  [class*="sidebar-container"] {
+    background: linear-gradient(180deg, #6b0d31 0%, #4b0a24 100%);
+    color: #fff;
+  }
+
+  aside a,
+  .sidebar a,
+  .admin-sidebar a,
+  [class~="sidebar"] a {
+    color: inherit;
+  }
+}

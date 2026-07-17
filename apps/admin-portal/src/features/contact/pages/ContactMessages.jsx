@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, Loader2, Calendar, Phone, Mail, User } from 'lucide-react';
-import api from '../config/api';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 export default function ContactMessages() {
@@ -11,7 +11,7 @@ export default function ContactMessages() {
     const fetchMessages = async () => {
       try {
         // Fetching from the contact API route
-        const { data } = await api.get('http://localhost:5000/api/contact');
+        const { data } = await api.get('/api/contact');
         if (data.success) {
           setMessages(data.data);
         }

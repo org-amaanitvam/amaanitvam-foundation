@@ -10,7 +10,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import api from '../config/api';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 const emptyCampaignForm = {
