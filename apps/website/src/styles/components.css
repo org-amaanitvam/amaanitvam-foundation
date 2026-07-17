@@ -1330,7 +1330,7 @@
 .moved-inline-style-002 {
     position: relative;
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("/images/about-heroo.png");
+        url("/public/images/heroes/about-hero.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
