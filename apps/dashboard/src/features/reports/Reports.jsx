@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { BarChart, CheckCircle, Calendar, Activity, Loader2 } from 'lucide-react';
-import api from '../config/api';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext'; 
 
 export default function Reports() {
   const [reportData, setReportData] = useState(null);

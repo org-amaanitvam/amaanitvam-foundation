@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Building2, Plus, Pencil, Trash2, Save, Eye, TrendingUp, FileText, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function DepartmentsPage() {
   const { userProfile } = useAuth();

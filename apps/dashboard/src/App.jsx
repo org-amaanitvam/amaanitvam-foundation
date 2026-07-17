@@ -1,17 +1,21 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
+
+// Layouts & Guards
+import ProtectedRoute from './components/guards/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
-import Reports from './pages/Reports';
-import Login from './pages/Login';
-import DashboardHome from './pages/DashboardHome';
-import MeetingsPage from './pages/MeetingsPage';
-import TasksPage from './pages/TasksPage';
-import AnnouncementsPage from './pages/AnnouncementsPage';
-import ProjectsPage from './pages/ProjectsPage';
-import ProfilePage from './pages/ProfilePage';
-import MemberReportsPage from './pages/MemberReportsPage'; 
-import AttendancePage from './pages/AttendancePage';
-import DepartmentsPage from './pages/DepartmentsPage';
+
+// Features (The New Architecture Paths)
+import Login from './features/auth/Login';
+import DashboardHome from './features/home/DashboardHome';
+import MeetingsPage from './features/meetings/MeetingsPage';
+import TasksPage from './features/tasks/TasksPage';
+import AnnouncementsPage from './features/announcements/AnnouncementsPage';
+import ProjectsPage from './features/projects/ProjectsPage';
+import ProfilePage from './features/profile/ProfilePage';
+import Reports from './features/reports/Reports';
+import MemberReportsPage from './features/reports/MemberReportsPage'; 
+import AttendancePage from './features/attendance/AttendancePage';
+import DepartmentsPage from './features/departments/DepartmentsPage';
 
 function DashPage({ children }) {
   return (
@@ -24,27 +28,29 @@ function DashPage({ children }) {
 export default function App() {
   return (
     <Routes>
+      {/* Public / Auth Route */}
       <Route path="/login" element={<Login />} />
 
+      {/* Core Dashboard Routes */}
       <Route path="/" element={<DashPage><DashboardHome /></DashPage>} />
       <Route path="/dashboard" element={<DashPage><DashboardHome /></DashPage>} />
 
+      {/* Feature Routes */}
       <Route path="/meetings" element={<DashPage><MeetingsPage /></DashPage>} />
       <Route path="/tasks" element={<DashPage><TasksPage /></DashPage>} />
       <Route path="/announcements" element={<DashPage><AnnouncementsPage /></DashPage>} />
       <Route path="/projects" element={<DashPage><ProjectsPage /></DashPage>} />
       <Route path="/profile" element={<DashPage><ProfilePage /></DashPage>} />
-      <Route path="/member-reports" element={<DashPage><Reports /></DashPage>} /> 
       
+      {/* Reports Feature Group */}
+      <Route path="/member-reports" element={<DashPage><Reports /></DashPage>} /> 
+      <Route path="/reports" element={<DashPage><Reports /></DashPage>} />
+      
+      {/* Admin/HR Feature Routes */}
       <Route path="/attendance" element={<DashPage><AttendancePage /></DashPage>} />
       <Route path="/departments" element={<DashPage><DepartmentsPage /></DashPage>} />
       
-      {/* 
-        Reports is now properly wrapped in DashPage so it 
-        gets the Sidebar and authentication checks! 
-      */}
-      <Route path="/reports" element={<DashPage><Reports /></DashPage>} />
-
+      {/* Catch-All Fallback */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

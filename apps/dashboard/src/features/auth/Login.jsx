@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import axios from 'axios';
 
 export default function Login() {

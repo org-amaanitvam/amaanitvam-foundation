@@ -4,7 +4,8 @@ import {
   BarChart3, Loader2, User, Calendar, Briefcase, 
   CheckCircle2, AlertCircle, Clock, Mail, Award, FileText, Users 
 } from 'lucide-react';
-import api from '../config/api';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
 
 export default function MemberReportsPage() {

@@ -1,4 +1,4 @@
-import "dotenv/config";
+  import "dotenv/config";
 import { connectDB } from "./config/database.js";
 import { validateEnv } from "./config/env.js";
 import logger from "./shared/logger/index.js";

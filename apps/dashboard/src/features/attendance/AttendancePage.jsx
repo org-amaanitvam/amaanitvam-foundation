@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CalendarCheck, ClipboardList, Eye, Loader2, Save, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 const STATUS_OPTIONS = [
   { value: 'present', label: 'Present' },
