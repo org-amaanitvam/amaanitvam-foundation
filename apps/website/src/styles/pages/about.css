@@ -366,3 +366,157 @@ body[data-page="about"] .team-row .card a {
         padding: 22px 18px !important;
     }
 }
+
+/* ===== About page content alignment and card heading refinements ===== */
+
+/* Keep the two introduction sections visually consistent */
+body[data-page="about"] section[aria-labelledby="origins-title"] .grid-2-col,
+body[data-page="about"] section[aria-labelledby="heart-title"] .grid-2-col {
+    align-items: center !important;
+    gap: clamp(2.5rem, 5vw, 4.5rem) !important;
+}
+
+body[data-page="about"] section[aria-labelledby="origins-title"] .origins-text,
+body[data-page="about"] section[aria-labelledby="heart-title"] .grid-2-col>div:first-child {
+    max-width: 640px !important;
+}
+
+body[data-page="about"] section[aria-labelledby="origins-title"] .section-title,
+body[data-page="about"] section[aria-labelledby="heart-title"] .section-title {
+    margin: 0 0 1.25rem !important;
+    text-align: left !important;
+    font-size: clamp(2.65rem, 4.2vw, 4.2rem) !important;
+}
+
+body[data-page="about"] section[aria-labelledby="origins-title"] .section-title span,
+body[data-page="about"] section[aria-labelledby="heart-title"] .section-title span {
+    display: inline-block !important;
+    position: relative !important;
+    padding-bottom: .35rem !important;
+}
+
+body[data-page="about"] section[aria-labelledby="origins-title"] .section-title span::after,
+body[data-page="about"] section[aria-labelledby="heart-title"] .section-title span::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 72px !important;
+    height: 3px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, var(--gold), var(--secondary)) !important;
+}
+
+body[data-page="about"] section[aria-labelledby="origins-title"] p,
+body[data-page="about"] section[aria-labelledby="heart-title"] p {
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    font-size: 1.05rem !important;
+    line-height: 1.9 !important;
+    margin-bottom: 1.05rem !important;
+}
+
+/* Core value cards: stronger visual hierarchy */
+body[data-page="about"] section[aria-labelledby="vmv-title"] .moved-inline-style-016 {
+    align-items: stretch !important;
+}
+
+body[data-page="about"] section[aria-labelledby="vmv-title"] .card {
+    min-height: 285px !important;
+    padding: 30px 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+body[data-page="about"] section[aria-labelledby="vmv-title"] .card-icon {
+    width: 60px !important;
+    height: 60px !important;
+    margin-bottom: 1rem !important;
+}
+
+body[data-page="about"] section[aria-labelledby="vmv-title"] .card h4 {
+    display: inline-block !important;
+    margin: 0 0 1rem !important;
+    padding: .45rem .95rem !important;
+    border-radius: 999px !important;
+    background: rgba(93, 15, 45, .08) !important;
+    color: var(--primary) !important;
+    font-family: var(--font-heading) !important;
+    font-size: 1.45rem !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+}
+
+body[data-page="about"] section[aria-labelledby="vmv-title"] .card p {
+    margin: 0 !important;
+    font-size: 1rem !important;
+    line-height: 1.75 !important;
+    text-align: center !important;
+}
+
+/* Team cards: clearer role hierarchy */
+body[data-page="about"] .team-row .card h3 {
+    font-size: 1.4rem !important;
+    color: var(--primary) !important;
+    margin-bottom: .6rem !important;
+}
+
+body[data-page="about"] .team-row .card>p.text-primary {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 auto .45rem !important;
+    padding: .35rem .7rem !important;
+    border-radius: 999px !important;
+    background: rgba(216, 161, 95, .16) !important;
+    color: var(--primary) !important;
+    font-family: var(--font-ui) !important;
+    font-size: .76rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+}
+
+/* Keep all major section headers consistent */
+body[data-page="about"] section>.container>.section-header {
+    max-width: 820px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+@media (max-width: 900px) {
+
+    body[data-page="about"] section[aria-labelledby="origins-title"] .section-title,
+    body[data-page="about"] section[aria-labelledby="heart-title"] .section-title {
+        text-align: center !important;
+    }
+
+    body[data-page="about"] section[aria-labelledby="origins-title"] .section-title span::after,
+    body[data-page="about"] section[aria-labelledby="heart-title"] .section-title span::after {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    body[data-page="about"] section[aria-labelledby="origins-title"] p,
+    body[data-page="about"] section[aria-labelledby="heart-title"] p {
+        text-align: left !important;
+    }
+}
+
+@media (max-width: 560px) {
+
+    body[data-page="about"] section[aria-labelledby="origins-title"] .section-title,
+    body[data-page="about"] section[aria-labelledby="heart-title"] .section-title {
+        font-size: clamp(2.2rem, 10vw, 3rem) !important;
+    }
+
+    body[data-page="about"] section[aria-labelledby="vmv-title"] .card {
+        min-height: 0 !important;
+        padding: 26px 20px !important;
+    }
+
+    body[data-page="about"] section[aria-labelledby="vmv-title"] .card h4 {
+        font-size: 1.3rem !important;
+    }
+}
