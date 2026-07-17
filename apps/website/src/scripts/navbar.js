@@ -25,83 +25,58 @@ export function initNavbar() {
 
     nav.dataset.initialized = 'true';
 
-    // 1. Highlight active links
-    // 1. Highlight active page + parent navbar section
-    const navGroups = {
-        home: ['home'],
+    // ACTIVE NAVBAR SECTION
+    function setActiveNavbar() {
+        const page = document.body.dataset.page || "";
 
-        about: [
-            'about',
-            'impact',
-            'programs',
-            'gallery'
-        ],
+        const groups = {
+            home: "home",
 
-        involved: [
-            'volunteer',
-            'internship',
-            'contact'
-        ],
+            about: "about",
+            impact: "about",
+            programs: "about",
+            gallery: "about",
 
-        learning: [
-            'digital-library',
-            'courses',
-            'webinars',
-            'webinars-competitions'
-        ],
+            volunteer: "involved",
+            internship: "involved",
+            contact: "involved",
 
-        resources: [
-            'verify',
-            'certificate-verification',
-            'collaborations',
-            'faq'
-        ],
+            "digital-library": "learning",
+            courses: "learning",
+            webinars: "learning",
+            "webinars-competitions": "learning",
 
-        portal: [
-            'portal',
-            'dashboard',
-            'admin'
-        ]
-    };
+            verify: "resources",
+            collaborations: "resources",
+            faq: "resources"
+        };
 
-    // Remove old active states
-    document.querySelectorAll('[data-nav]').forEach(function (link) {
-        link.classList.remove('is-active');
-        link.removeAttribute('aria-current');
-    });
+        const activeNav = groups[page];
 
-    // Find parent group of current page
-    let activeGroup = '';
+        // Sabse pehle Home सहित saare active states remove
+        document.querySelectorAll("[data-nav]").forEach((item) => {
+            item.classList.remove("is-active");
+            item.removeAttribute("aria-current");
+        });
 
-    Object.entries(navGroups).some(function ([group, pages]) {
-        if (pages.includes(currentPage)) {
-            activeGroup = group;
-            return true;
+        if (!activeNav) return;
+
+        // Correct top-level navbar item highlight
+        const activeItem = document.querySelector(
+            `[data-nav="${activeNav}"]`
+        );
+
+        if (activeItem) {
+            activeItem.classList.add("is-active");
         }
 
-        return false;
-    });
-
-    // Highlight exact current page link
-    document.querySelectorAll('[data-nav]').forEach(function (link) {
-        if (link.dataset.nav === currentPage) {
-            link.classList.add('is-active');
-            link.setAttribute('aria-current', 'page');
+        // Home direct page hai
+        if (page === "home" && activeItem) {
+            activeItem.setAttribute("aria-current", "page");
         }
-    });
-
-    // Highlight parent navbar item
-    if (activeGroup) {
-        document
-            .querySelectorAll(`[data-nav="${activeGroup}"]`)
-            .forEach(function (link) {
-                link.classList.add('is-active');
-
-                if (activeGroup === currentPage) {
-                    link.setAttribute('aria-current', 'page');
-                }
-            });
     }
+
+    setActiveNavbar();
 
     // 2. Navbar transparency scroll effect
     function updateNav() {
