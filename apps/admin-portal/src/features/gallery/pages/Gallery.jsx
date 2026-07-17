@@ -13,7 +13,7 @@ import {
   Video,
   X,
 } from 'lucide-react';
-import api from '../config/api';
+import api from '../../../config/api.js';
 
 const MAX_GALLERY_MEDIA_SIZE = 100 * 1024 * 1024;
 const GALLERY_UPLOAD_BATCH_SIZE = 5;

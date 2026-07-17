@@ -14,10 +14,10 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
-import FilterBar from '../components/Filters/FilterBar';
+import FilterBar from "../../components/Filters/FilterBar";
 
 const locales = {
   'en-US': enUS,

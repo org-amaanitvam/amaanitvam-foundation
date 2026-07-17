@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Users, Search, Mail, Filter, Eye } from 'lucide-react'; // Added Eye icon
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { firebaseConfig } from '../config/firebase';
-import api from '../config/api';
+import { firebaseConfig } from '../../../config/firebase.js';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 export default function Candidates() {

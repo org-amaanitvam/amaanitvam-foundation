@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import {
   Mail,
   Phone,
@@ -8,7 +7,8 @@ import {
   Edit2,
   Loader2,
 } from 'lucide-react';
-import api from '../config/api';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
 
 export default function ProfilePage() {

@@ -13,8 +13,8 @@ import {
   MessageSquare // <-- Added the new icon here
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../config/api';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import api from '../config/api.js';
 
 export default function Sidebar() {
   const { user, userProfile, logout } = useAuth();

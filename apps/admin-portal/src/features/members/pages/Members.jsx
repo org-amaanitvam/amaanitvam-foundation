@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Users, Plus, X, Pencil } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { firebaseConfig } from '../config/firebase';
-import api from '../config/api';
+import { firebaseConfig } from '../../../config/firebase.js';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 const INITIAL_FORM = { name: '', email: '', phone: '', role: 'member', department: '', designation: '',

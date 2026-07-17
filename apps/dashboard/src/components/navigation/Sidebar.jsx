@@ -12,8 +12,8 @@ import {
   Building2,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import logo from "../assets/images/logo.jpg";
+import { useAuth } from "../../contexts/AuthContext";
+import logo from "../../assets/images/logo.jpg";
 
 export default function Sidebar() {
   const { userProfile, logout } = useAuth();

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Activity, Clock, Loader2, Calendar, ClipboardList, CheckCircle, Megaphone, FolderKanban } from 'lucide-react';
-import api from '../../config/api';
+import api from "../../services/api";
 import toast from 'react-hot-toast';
 
 export default function ActivityFeed() {

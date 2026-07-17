@@ -10,10 +10,10 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
-import ActivityFeed from '../components/ActivityFeed/ActivityFeed';
+import ActivityFeed from "../../components/ActivityFeed/ActivityFeed";
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();

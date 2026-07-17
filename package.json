@@ -12,6 +12,11 @@
     "dev:dashboard": "npm run dev --workspace apps/dashboard",
     "dev:server": "npm run dev --workspace server",
     "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "dev:admin-stack": "bash scripts/start-admin-stack-final.sh",
+    "dev:all": "bash scripts/start-dev-stack.sh all",
+    "check:admin-api": "curl -fsS http://127.0.0.1:5000/api/recovery/health",
+    "dev:admin-gateway": "node server/src/adminApiGateway.js",
+    "check:admin-stack": "curl -fsS http://127.0.0.1:5000/api/recovery/health"
   }
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Megaphone, Loader2, Plus, Edit2 } from 'lucide-react';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
 
 const initialFormData = {

@@ -12,7 +12,7 @@ import {
   Loader2,
   Pencil,
 } from 'lucide-react';
-import api from '../config/api';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 const initialForm = {

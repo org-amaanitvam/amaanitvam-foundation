@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { User, Camera, Save, Loader2, Mail, Phone, Building, Shield } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../config/api';
+import { useAuth } from '../../../contexts/AuthContext.jsx';
+import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
