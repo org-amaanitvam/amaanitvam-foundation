@@ -1,5 +1,5 @@
-import Sidebar from '../components/Sidebar';
-import TopBar from '../components/TopBar';
+import Sidebar from "../components/navigation/Sidebar";
+import TopBar from "../components/navigation/GlobalSearch"; // Or whatever your topbar file is named now!
 import { Toaster } from 'react-hot-toast';
 
 export default function DashboardLayout({ children }) {

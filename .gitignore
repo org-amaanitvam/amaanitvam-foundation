@@ -13,6 +13,9 @@ build/
 **/.env.*
 !.env.example
 !**/.env.example
+# Firebase Credentials
+serviceAccountKey.json
+**/serviceAccountKey.json
 # Runtime
 uploads/
 server/uploads/

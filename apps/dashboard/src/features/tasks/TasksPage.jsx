@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
-import api from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
+import api from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
-import FilterBar from '../components/Filters/FilterBar';
+import FilterBar from "../../components/Filters/FilterBar";
 
 const initialFormData = {
   title: '',

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Loader2, ClipboardList, Calendar, FolderKanban, Users, Megaphone, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../config/api';
+import api from "../../services/api";
 
 export default function GlobalSearch() {
   const [query, setQuery] = useState('');
