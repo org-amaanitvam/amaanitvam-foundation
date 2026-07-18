@@ -3,6 +3,29 @@ import { MessageSquare, Loader2, Calendar, Phone, Mail, User } from 'lucide-reac
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.records)) return value.records;
+  if (Array.isArray(value?.docs)) return value.docs;
+  if (Array.isArray(value?.documents)) return value.documents;
+  if (Array.isArray(value?.candidates)) return value.candidates;
+  if (Array.isArray(value?.members)) return value.members;
+  if (Array.isArray(value?.users)) return value.users;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.donations)) return value.donations;
+  if (Array.isArray(value?.certificates)) return value.certificates;
+  if (Array.isArray(value?.messages)) return value.messages;
+  if (Array.isArray(value?.notifications)) return value.notifications;
+  if (Array.isArray(value?.media)) return value.media;
+  if (Array.isArray(value?.images)) return value.images;
+  if (Array.isArray(value?.albums)) return value.albums;
+  return [];
+};
+
 export default function ContactMessages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +34,7 @@ export default function ContactMessages() {
     const fetchMessages = async () => {
       try {
         // Fetching from the contact API route
-        const { data } = await api.get('/api/contact');
+        const { data } = await api.get('/contact');
         if (data.success) {
           setMessages(data.data);
         }
@@ -62,7 +85,7 @@ export default function ContactMessages() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {messages.length > 0 ? (
-                messages.map((msg) => (
+                asArray(messages).map((msg) => (
                   <tr key={msg._id} className="hover:bg-slate-50 transition-colors">
                     
                     {/* Sender Details */}

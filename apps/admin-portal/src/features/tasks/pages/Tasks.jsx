@@ -4,6 +4,29 @@ import api from '../../../config/api.js';
 import { useAuth } from '../../../contexts/AuthContext.jsx';
 import toast from 'react-hot-toast';
 
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.records)) return value.records;
+  if (Array.isArray(value?.docs)) return value.docs;
+  if (Array.isArray(value?.documents)) return value.documents;
+  if (Array.isArray(value?.candidates)) return value.candidates;
+  if (Array.isArray(value?.members)) return value.members;
+  if (Array.isArray(value?.users)) return value.users;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.donations)) return value.donations;
+  if (Array.isArray(value?.certificates)) return value.certificates;
+  if (Array.isArray(value?.messages)) return value.messages;
+  if (Array.isArray(value?.notifications)) return value.notifications;
+  if (Array.isArray(value?.media)) return value.media;
+  if (Array.isArray(value?.images)) return value.images;
+  if (Array.isArray(value?.albums)) return value.albums;
+  return [];
+};
+
 export default function Tasks() {
   const { userProfile } = useAuth();
   const [tasks, setTasks] = useState([]);
@@ -62,7 +85,7 @@ export default function Tasks() {
 
   if (loading) return <div className="flex justify-center items-center h-64"><Loader2 className="w-8 h-8 text-[#56051a] animate-spin" /></div>;
 
-  const myTasks = isAdmin ? tasks : tasks.filter(t => t.assignedTo?._id === userProfile?._id || t.assignedTo?.email === userProfile?.email);
+  const myTasks = isAdmin ? tasks : asArray(tasks).filter(t => t.assignedTo?._id === userProfile?._id || t.assignedTo?.email === userProfile?.email);
   const filtered = filter === 'all' ? myTasks : myTasks.filter(t => t.status === filter);
 
   const statusColors = {
@@ -97,7 +120,7 @@ export default function Tasks() {
                   <div><label className="block text-sm font-medium mb-1">Assign To</label>
                     <select required value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm">
                       <option value="">Select Member</option>
-                      {users.map(u => <option key={u._id} value={u._id}>{u.name} ({u.role})</option>)}
+                      {asArray(users).map(u => <option key={u._id} value={u._id}>{u.name} ({u.role})</option>)}
                     </select>
                   </div>
                   <div><label className="block text-sm font-medium mb-1">Deadline</label><input type="date" required value={formData.deadline} onChange={e => setFormData({...formData, deadline: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>

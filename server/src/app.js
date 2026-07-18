@@ -1,3 +1,5 @@
+import adminAssetProfileCompatibilityRoutes from "./adminAssetProfileCompatibilityRoutes.js";
+import adminEmergencyDataRoutes from "./adminEmergencyDataRoutes.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -26,33 +28,36 @@ import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
+import adminCompatibilityRoutes from "./adminCompatibilityRoutes.js";
+import adminLifetimeCompatibilityRoutes from "./adminLifetimeCompatibilityRoutes.js";
+import adminFinalApiRoutes from "./adminFinalApiRoutes.js";
 
-const app = express();
+const app = express(); if (process.env.NODE_ENV === "production") { app.set("trust proxy", 1); }
 
 // Security and utility middleware
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" })); app.use(adminAssetProfileCompatibilityRoutes); app.use(adminEmergencyDataRoutes); app.use(apiLimiter);
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+ app.use(morgan("dev"));
 }
-app.use(apiLimiter);
 
 
 
 // Compatibility endpoint used by admin/dashboard login pages.
 app.get('/api/public/settings', (_req, res) => {
-  res.json({
-    success: true,
-    settings: {
-      orgName: process.env.ORG_NAME || 'Amaanitvam Foundation',
-      enable2FA: String(process.env.ENABLE_2FA || 'false').toLowerCase() === 'true',
-    },
-  });
+ res.json({
+ success: true,
+ settings: {
+ orgName: process.env.ORG_NAME || 'Amaanitvam Foundation',
+ enable2FA: String(process.env.ENABLE_2FA || 'false').toLowerCase() === 'true',
+ },
+ });
 });
 
 // API Routes
+app.use(adminFinalApiRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/candidates", candidateRoutes);
@@ -72,6 +77,12 @@ app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+
+// Admin portal backward-compatible API aliases
+app.use("/api", adminCompatibilityRoutes);
+
+// Permanent admin portal backward-compatible API aliases
+app.use("/api", adminLifetimeCompatibilityRoutes);
 
 // Unhandled routes & errors
 app.use(notFound);

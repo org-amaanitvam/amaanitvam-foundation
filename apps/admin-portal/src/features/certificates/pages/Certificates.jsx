@@ -15,6 +15,29 @@ import {
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.records)) return value.records;
+  if (Array.isArray(value?.docs)) return value.docs;
+  if (Array.isArray(value?.documents)) return value.documents;
+  if (Array.isArray(value?.candidates)) return value.candidates;
+  if (Array.isArray(value?.members)) return value.members;
+  if (Array.isArray(value?.users)) return value.users;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.donations)) return value.donations;
+  if (Array.isArray(value?.certificates)) return value.certificates;
+  if (Array.isArray(value?.messages)) return value.messages;
+  if (Array.isArray(value?.notifications)) return value.notifications;
+  if (Array.isArray(value?.media)) return value.media;
+  if (Array.isArray(value?.images)) return value.images;
+  if (Array.isArray(value?.albums)) return value.albums;
+  return [];
+};
+
 const initialForm = {
   issuedTo: '',
   email: '',
@@ -406,7 +429,7 @@ export default function Certificates() {
                   </td>
                 </tr>
               ) : (
-                certificates.map((cert) => (
+                asArray(certificates).map((cert) => (
                   <tr key={getCertDbId(cert)} className="hover:bg-slate-50/60">
                     <td className="px-5 py-4 font-mono text-sm text-slate-800">{cert.certificateId || '—'}</td>
                     <td className="px-5 py-4"><div className="font-semibold text-slate-900">{cert.issuedTo || '—'}</div><div className="text-xs text-slate-500">{cert.email || '—'}</div></td>

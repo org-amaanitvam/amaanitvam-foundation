@@ -13,6 +13,29 @@ import {
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.records)) return value.records;
+  if (Array.isArray(value?.docs)) return value.docs;
+  if (Array.isArray(value?.documents)) return value.documents;
+  if (Array.isArray(value?.candidates)) return value.candidates;
+  if (Array.isArray(value?.members)) return value.members;
+  if (Array.isArray(value?.users)) return value.users;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.donations)) return value.donations;
+  if (Array.isArray(value?.certificates)) return value.certificates;
+  if (Array.isArray(value?.messages)) return value.messages;
+  if (Array.isArray(value?.notifications)) return value.notifications;
+  if (Array.isArray(value?.media)) return value.media;
+  if (Array.isArray(value?.images)) return value.images;
+  if (Array.isArray(value?.albums)) return value.albums;
+  return [];
+};
+
 const emptyCampaignForm = {
   title: '',
   description: '',
@@ -129,7 +152,7 @@ export default function Donations() {
   };
 
   const totals = useMemo(() => {
-    const paid = donations.filter((d) => (d.status || 'paid') === 'paid');
+    const paid = asArray(donations).filter((d) => (d.status || 'paid') === 'paid');
     const totalAmount = paid.reduce((sum, d) => sum + Number(d.amount || 0), 0);
     const campaignAmount = paid
       .filter((d) => d.campaign || d.donationType === 'campaign')
@@ -155,7 +178,7 @@ export default function Donations() {
     }
 
     const headers = ['Donor Name', 'Email', 'Amount', 'Donation Type', 'Campaign', 'Payment ID', 'Date', 'Status'];
-    const rows = donations.map((d) => [
+    const rows = asArray(donations).map((d) => [
       d.name || d.donorName || 'Anonymous',
       d.email || '',
       d.amount || 0,
@@ -166,7 +189,7 @@ export default function Donations() {
       d.status || 'paid',
     ]);
 
-    const csv = [headers.join(','), ...rows.map((r) => r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(','))].join('\n');
+    const csv = [headers.join(','), ...asArray(rows).map((r) => r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -250,7 +273,7 @@ export default function Donations() {
           <div className="text-center py-10 text-gray-500">No campaigns yet. Create one to accept campaign-specific donations.</div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {campaigns.map((campaign) => {
+            {asArray(campaigns).map((campaign) => {
               const progress = campaign.goalAmount > 0 ? Math.min(100, (Number(campaign.raisedAmount || 0) / Number(campaign.goalAmount)) * 100) : 0;
               return (
                 <div key={campaign._id} className="rounded-2xl border border-gray-100 p-4 bg-gray-50">
@@ -312,7 +335,7 @@ export default function Donations() {
               ) : donations.length === 0 ? (
                 <tr><td colSpan="7" className="p-10 text-center text-gray-500">No donations found.</td></tr>
               ) : (
-                donations.map((donation) => (
+                asArray(donations).map((donation) => (
                   <tr key={donation._id || donation.razorpayOrderId} className="border-t border-gray-100">
                     <td className="p-4 font-semibold text-gray-900">{donation.name || donation.donorName || 'Anonymous'}</td>
                     <td className="p-4 text-gray-600">{donation.email || '—'}</td>

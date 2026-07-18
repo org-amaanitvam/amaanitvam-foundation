@@ -1,3 +1,4 @@
+import { verifyFirebaseIdToken } from "./config/firebaseTokenVerifier.js";
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
@@ -495,7 +496,7 @@ async function optionalAdministrator(req, _res, next) {
     const authorization = clean(req.headers.authorization);
 
     if (authorization.toLowerCase().startsWith("bearer ")) {
-      const decodedToken = await getAuth().verifyIdToken(authorization.slice(7).trim());
+      const decodedToken = await verifyFirebaseIdToken(authorization.slice(7).trim());
       const profileResult = await adminProfileFor(decodedToken);
       req.firebaseUser = decodedToken;
       req.adminProfileResult = profileResult;

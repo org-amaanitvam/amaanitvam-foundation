@@ -10,7 +10,7 @@ export default function LearningHub() {
   useEffect(() => {
     const fetchRegistrations = async () => {
       try {
-        const { data } = await api.get('/api/learning-hub');
+        const { data } = await api.get('/learning-hub');
         if (data.success) {
           setRegistrations(data.data);
         }

@@ -1,0 +1,15 @@
+{
+  "name": "@amaanitvam/website",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.mjs",
+    "build": "vite build --config vite.config.mjs",
+    "preview": "vite preview --config vite.config.mjs",
+    "build:previous": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^8.1.0"
+  }
+}

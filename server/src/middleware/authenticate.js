@@ -1,29 +1,25 @@
-import admin from "../config/firebase.js";
+import { verifyFirebaseIdToken } from "../config/firebaseTokenVerifier.js";
 import { UnauthorizedError } from "../shared/errors/AppError.js";
-import User from "../modules/users/user.model.js";
 
-export const authenticate = async (req, res, next) => {
+export const authenticate = async (req, _res, next) => {
   try {
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedError("No token provided");
     }
 
-    const token = authHeader.split(" ")[1];
-    let decodedToken;
+    const token = authHeader.slice(7).trim();
+
     try {
-      decodedToken = await admin.auth().verifyIdToken(token);
-    } catch (err) {
+      req.user = await verifyFirebaseIdToken(token);
+    } catch (error) {
+      console.error("[AUTH] Firebase token rejected:", {
+        code: error?.code || "unknown",
+        message: error?.message || "Unknown Firebase verification error",
+      });
       throw new UnauthorizedError("Invalid or expired token");
     }
-
-    req.user = decodedToken;
-    
-    // Optionally fetch full user from DB if needed by controllers
-    // const dbUser = await User.findOne({ firebaseUid: decodedToken.uid });
-    // if (dbUser) {
-    //   req.user.role = dbUser.role;
-    // }
 
     next();
   } catch (error) {

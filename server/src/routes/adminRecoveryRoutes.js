@@ -1,3 +1,4 @@
+import { verifyFirebaseIdToken } from "../config/firebaseTokenVerifier.js";
 import express from "express";
 import mongoose from "mongoose";
 import { getAuth } from "firebase-admin/auth";
@@ -152,7 +153,7 @@ async function requireAdmin(req, res, next) {
     }
 
     const token = authorization.slice(7).trim();
-    const decodedToken = await getAuth().verifyIdToken(token);
+    const decodedToken = await verifyFirebaseIdToken(token);
     const profileResult = await findAdminDocument(decodedToken);
 
     if (!hasAdminRole(decodedToken, profileResult)) {

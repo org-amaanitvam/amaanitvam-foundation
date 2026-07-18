@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // 👈 Tells Vite to step up 3 levels to find the frontend root .env file
-  envDir: '../../../', 
+  envDir: '../../',
   server: {
     port: 5174,
     proxy: {
