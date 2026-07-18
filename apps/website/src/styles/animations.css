@@ -1,5 +1,10 @@
-@keyframes fadeIn {}
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(0);
+    }
 
-@keyframes slideUp {}
-
-@keyframes pulse {}
+    to {
+        opacity: 1;
+    }
+}

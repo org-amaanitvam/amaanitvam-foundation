@@ -2642,7 +2642,8 @@ body:has(.app-shell) .feature-detail p {
 }
 
 body:has(.app-shell) .feature-detail .primary-btn {
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 body:has(.app-shell) .module-workspace {
@@ -2893,17 +2894,6 @@ body:has(.app-shell) .status.alert {
 
     100% {
         box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(0);
-    }
-
-    to {
-        opacity: 1;
     }
 }
 
@@ -4074,7 +4064,8 @@ input[type="submit"] {
 .faq-text {
     flex: 1;
     text-align: left;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .faq-icon {
@@ -4174,8 +4165,6 @@ body[data-page="verify"] #verify-form {
 
 body[data-page="verify"] .form-label {
     width: 100%;
-    margin-bottom: 10px;
-
     text-align: center;
     font-weight: 600;
 }
@@ -4185,7 +4174,6 @@ body[data-page="verify"] .verify-input-row {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 22px;
 }
 
 body[data-page="verify"] .verify-input-row input {
@@ -4211,20 +4199,6 @@ body[data-page="verify"] .verify-input-row button {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-body[data-page="verify"] .card .section-label {
-    margin-bottom: 18px;
-}
-
-body[data-page="verify"] .card .section-title {
-    margin-bottom: 22px;
-    line-height: 1.2;
-}
-
-body[data-page="verify"] .card .section-desc {
-    margin-bottom: 28px;
-    line-height: 1.8;
 }
 
 body[data-page="verify"] .form-label {

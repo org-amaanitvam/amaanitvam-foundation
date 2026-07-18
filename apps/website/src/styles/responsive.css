@@ -52,20 +52,7 @@
     }
 }
 
-@media (max-width:900px) {
-    .footer-container {
-        grid-template-columns: 1fr 1fr;
-        padding: 0 28px 28px;
-        gap: 28px;
-    }
 
-    .footer-bottom {
-        padding: 16px 28px;
-        flex-direction: column;
-        gap: 8px;
-        text-align: center;
-    }
-}
 
 @media (max-width:768px) {
     :root {
@@ -123,11 +110,7 @@
     }
 }
 
-@media (max-width:600px) {
-    .footer-container {
-        grid-template-columns: 1fr;
-    }
-}
+
 
 @media (min-width: 768px) {
     .grid-2-col {
@@ -172,12 +155,7 @@
     }
 }
 
-@media (max-width: 992px) {
-    .footer-container {
-        grid-template-columns: 1fr !important;
-        gap: 2rem !important;
-    }
-}
+
 
 @media (max-width: 1180px) {
     body:has(.app-shell) .filter-strip {
@@ -334,18 +312,9 @@
     }
 }
 
-@media (min-width: 601px) and (max-width: 992px) {
-    .footer-container {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 28px !important;
-    }
-}
 
-@media (max-width: 600px) {
-    .footer-container {
-        grid-template-columns: 1fr !important;
-    }
-}
+
+
 
 @media (max-width: 900px) {
     .project-image-wrapper {
@@ -528,11 +497,6 @@
     .floating-socials,
     .social-sidebar {
         display: none !important;
-    }
-
-    .footer-container {
-        grid-template-columns: 1fr !important;
-        padding-inline: 18px !important;
     }
 }
 
@@ -754,5 +718,36 @@
     .social-sidebar a:active {
         background: #5d0f2d !important;
         color: #fff !important;
+    }
+}
+
+/* Consolidated footer responsiveness. */
+@media (min-width: 601px) and (max-width: 992px) {
+    .footer-container {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 28px !important;
+        padding: 0 28px 28px !important;
+    }
+
+    .footer-bottom {
+        padding: 16px 28px !important;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-container {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+        padding-inline: 18px !important;
+    }
+
+    .footer-bottom {
+        padding: 16px 18px !important;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
     }
 }
