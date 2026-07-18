@@ -6,6 +6,29 @@ import { firebaseConfig } from '../../../config/firebase.js';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.records)) return value.records;
+  if (Array.isArray(value?.docs)) return value.docs;
+  if (Array.isArray(value?.documents)) return value.documents;
+  if (Array.isArray(value?.candidates)) return value.candidates;
+  if (Array.isArray(value?.members)) return value.members;
+  if (Array.isArray(value?.users)) return value.users;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.donations)) return value.donations;
+  if (Array.isArray(value?.certificates)) return value.certificates;
+  if (Array.isArray(value?.messages)) return value.messages;
+  if (Array.isArray(value?.notifications)) return value.notifications;
+  if (Array.isArray(value?.media)) return value.media;
+  if (Array.isArray(value?.images)) return value.images;
+  if (Array.isArray(value?.albums)) return value.albums;
+  return [];
+};
+
 export default function Candidates() {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -164,7 +187,7 @@ export default function Candidates() {
                   </td>
                 </tr>
               ) : (
-                candidates.map((candidate) => (
+                asArray(candidates).map((candidate) => (
                   <tr key={candidate._id || candidate.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4 text-sm text-slate-600 font-medium">{candidate.name}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{candidate.email}</td>

@@ -6,7 +6,7 @@
     position: relative;
     overflow: hidden;
 
-    background-image: url("/public/images/team/hero.jpg") !important;
+    background-image: url("/images/heroes/hero.jpg") !important;
     background-size: cover !important;
     background-position: center 35% !important;
     background-repeat: no-repeat !important;
@@ -122,7 +122,7 @@ body[data-page="home"] .section.section-white .card p {
 
 body[data-page="home"] .home-hero,
 body:not([data-page]) .home-hero {
-    background-image: url("/public/images/heroes/hero.jpg") !important;
+    background-image: url("/images/heroes/hero.jpg") !important;
     background-size: cover !important;
     background-position: center 35% !important;
     background-repeat: no-repeat !important;

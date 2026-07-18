@@ -6,6 +6,29 @@ import { firebaseConfig } from '../../../config/firebase.js';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.results)) return value.results;
+  if (Array.isArray(value?.records)) return value.records;
+  if (Array.isArray(value?.docs)) return value.docs;
+  if (Array.isArray(value?.documents)) return value.documents;
+  if (Array.isArray(value?.candidates)) return value.candidates;
+  if (Array.isArray(value?.members)) return value.members;
+  if (Array.isArray(value?.users)) return value.users;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.donations)) return value.donations;
+  if (Array.isArray(value?.certificates)) return value.certificates;
+  if (Array.isArray(value?.messages)) return value.messages;
+  if (Array.isArray(value?.notifications)) return value.notifications;
+  if (Array.isArray(value?.media)) return value.media;
+  if (Array.isArray(value?.images)) return value.images;
+  if (Array.isArray(value?.albums)) return value.albums;
+  return [];
+};
+
 const INITIAL_FORM = { name: '', email: '', phone: '', role: 'member', department: '', designation: '',
   domain: '' };
 
@@ -317,7 +340,7 @@ const getRoleBadge = (role) => {
                   </td>
                 </tr>
               ) : (
-                members.map((member) => {
+                asArray(members).map((member) => {
                   const memberId = member._id || member.id;
                   return (
                     <tr key={memberId} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
@@ -444,7 +467,7 @@ const getRoleBadge = (role) => {
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
                 >
                   <option value="">Select a department</option>
-                  {departments.map((dept) => (
+                  {asArray(departments).map((dept) => (
                     <option key={dept} value={dept}>{dept}</option>
                   ))}
                 </select>
@@ -578,7 +601,7 @@ const getRoleBadge = (role) => {
             className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
           >
             <option value="">Select a department</option>
-            {departments.map((dept) => (
+            {asArray(departments).map((dept) => (
               <option key={dept} value={dept}>{dept}</option>
             ))}
           </select>

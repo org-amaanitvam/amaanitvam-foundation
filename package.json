@@ -18,5 +18,9 @@
     "check:admin-api": "curl -fsS http://127.0.0.1:5000/api/recovery/health",
     "dev:admin-gateway": "node server/src/adminApiGateway.js",
     "check:admin-stack": "curl -fsS http://127.0.0.1:5000/api/recovery/health"
+  },
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
   }
 }
