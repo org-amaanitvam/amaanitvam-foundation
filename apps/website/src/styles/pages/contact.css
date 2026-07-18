@@ -1,431 +1,384 @@
-.partnership-box h2 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: #fff !important;
-}
-
-.social-section h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    color: var(--maroon);
-    margin-bottom: 40px;
-    font-family: Georgia, serif;
-}
-
-.contact-hero {
-    padding: 140px 0 70px !important;
-    text-align: center !important;
-    background: linear-gradient(135deg, #5d0f2d, #7a1d44) !important;
-}
-
-.contact-hero .container {
-    max-width: 1000px !important;
-    margin: 0 auto !important;
-    text-align: center !important;
-}
-
-.contact-hero .section-label,
-.contact-hero .section-title,
-.contact-hero .section-desc {
-    color: #fff !important;
-    text-align: center !important;
-    opacity: 1 !important;
-}
-
-.contact-hero .section-label {
-    color: #d8a15f !important;
-}
-
-body[data-page="contact"] .floating-donate {
-    right: 25px !important;
-    bottom: 25px !important;
+body[data-page="contact"] main {
+    background: var(--bg, #f5efe6);
 }
 
 body[data-page="contact"] .section {
-    overflow: visible !important;
+    overflow: visible;
 }
 
-body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .section-header {
-    margin-bottom: 28px !important;
+/* Hero text */
+body[data-page="contact"] .page-hero.has-image .container {
+    position: relative;
+    z-index: 2;
 }
 
-body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .grid-4 {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 24px !important;
-    align-items: stretch !important;
-}
-
-body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .card {
-    height: auto !important;
-    min-height: 260px !important;
-    padding: 30px 28px !important;
-    background: var(--surface) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 22px !important;
-}
-
-body[data-page="contact"] main {
-    background: var(--bg) !important;
-}
-
-body[data-page="contact"] section[aria-labelledby="partnerships-heading"] {
-    padding: 52px 0 34px !important;
-    margin: 0 !important;
-    background: var(--bg) !important;
-}
-
-.contact-card {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 60px;
-    border-radius: 30px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05));
-    border: 1px solid rgba(255, 255, 255, .2);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, .2);
-}
-
-.partnership-box {
-    max-width: 1100px;
-    margin: 0 auto 100px;
-    padding: 60px 50px;
-    background: linear-gradient(135deg, #6f1235, #9b5a78);
-    border-radius: 30px;
-    text-align: center;
-    color: #fff;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, .15);
-}
-
-.partnership-box p {
-    max-width: 750px;
-    margin: 0 auto;
-    line-height: 1.9;
-    color: rgba(255, 255, 255, .9) !important;
-    font-size: 1.1rem;
-}
-
-.contact-grid {
-    max-width: 1200px;
-    margin: 80px auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 30px;
-}
-
-body[data-page="collaborations"] .contact-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 35px !important;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, .08);
-    transition: .3s;
-}
-
-body[data-page="collaborations"] .contact-card:hover {
-    transform: translateY(-6px);
-}
-
-.contact-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 18px;
-    background: rgba(216, 161, 90, .15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    margin-bottom: 20px;
-}
-
-body[data-page="collaborations"] .contact-card h3 {
-    color: var(--maroon);
-    margin-bottom: 15px;
-    font-size: 1.7rem;
-}
-
-body[data-page="collaborations"] .contact-card p {
-    color: #666;
-    line-height: 1.8;
-}
-
-.contact-link {
-    display: inline-block;
-    margin-top: 20px;
-    text-decoration: none;
-    background: var(--maroon);
-    color: #fff;
-    padding: 12px 22px;
-    border-radius: 12px;
-    font-weight: 600;
-}
-
-.contact-link:hover {
-    background: #531026;
-}
-
-.social-section {
-    max-width: 1100px;
-    margin: 0 auto 80px;
-    padding: 0 20px;
-}
-
-body[data-page="collaborations"] .partnership-box {
-    max-width: 1100px;
-    margin: 0 auto 100px;
-    padding: 50px;
-    background: linear-gradient(135deg, rgba(86, 5, 26, 0.97) 0%, rgba(58, 10, 35, 0.92) 50%, rgba(26, 34, 56, 0.95) 100%);
-    color: white;
-    border-radius: 30px;
+body[data-page="contact"] .page-hero.has-image .section-label,
+body[data-page="contact"] .page-hero.has-image .section-title,
+body[data-page="contact"] .page-hero.has-image .section-desc {
     text-align: center;
 }
 
-body[data-page="collaborations"] .partnership-box .cta-label {
+/* Contact section */
+body[data-page="contact"] .contact-section {
+    padding: 64px 0 72px;
+    background: #fff8f8;
+}
+
+body[data-page="contact"] .contact-section>.container {
+    width: min(1120px, calc(100% - 40px));
+    margin-inline: auto;
+}
+
+body[data-page="contact"] .contact-section-header {
+    max-width: 760px;
+    margin: 0 auto 30px;
+    text-align: center !important;
+}
+
+body[data-page="contact"] .contact-section-header .section-label,
+body[data-page="contact"] .contact-section-header .section-title {
     display: block;
-    color: var(--gold);
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    font-size: .9rem;
-    margin-bottom: 1rem;
+    width: 100%;
+    margin-inline: auto;
+    text-align: center !important;
 }
 
-body[data-page="collaborations"] .partnership-box h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+body[data-page="contact"] .contact-section-header .section-title {
+    margin-top: 8px;
+    margin-bottom: 0;
 }
 
-body[data-page="collaborations"] .partnership-box p {
-    max-width: 700px;
-    margin: auto;
-    line-height: 1.8;
-    opacity: .9;
-}
-
-body[data-page="contact"] .contact-hero {
-    padding: 140px 0 70px !important;
-}
-
-body[data-page="contact"] .section-title {
-    font-size: clamp(2.1rem, 3.4vw, 3.3rem) !important;
-}
-
-body[data-page="collaborations"] .section-title,
-body[data-page="collaborations"] .partnership-box h2 {
-    font-size: clamp(2.2rem, 3.8vw, 3.4rem) !important;
-}
-
-@media (max-width:1100px) {
-    body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .grid-4 {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-}
-
-@media (max-width:768px) {
-
-    .contact-card,
-    .partnership-box {
-        padding: 35px 24px;
-    }
-
-    body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .grid-4 {
-        grid-template-columns: 1fr !important;
-    }
-}
-
-.page-hero.has-image .container,
-.contact-hero .container,
-.collab-hero .container,
-.moved-inline-style-final-029 .container {
-    position: relative !important;
-    z-index: 2 !important;
-}
-
-.page-hero.has-image .section-label,
-.page-hero.has-image .section-title,
-.page-hero.has-image .section-desc,
-.page-hero.has-image h1,
-.page-hero.has-image p,
-.contact-hero .section-label,
-.contact-hero .section-title,
-.contact-hero .section-desc,
-.collab-hero .hero-label,
-.collab-hero h1,
-.collab-hero p,
-.moved-inline-style-final-029 .section-label,
-.moved-inline-style-final-029 .section-title,
-.moved-inline-style-final-029 .section-desc,
-.moved-inline-style-final-029 h1,
-.moved-inline-style-final-029 p {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    opacity: 1 !important;
-    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35) !important;
-}
-
-.page-hero.has-image .section-label,
-.contact-hero .section-label,
-.collab-hero .hero-label,
-.moved-inline-style-final-029 .section-label {
-    color: var(--gold) !important;
-    -webkit-text-fill-color: var(--gold) !important;
-}
-
-@media (max-width: 380px) {
-
-    .contact-card,
-    .partnership-box {
-        padding: 24px 16px !important;
-    }
-}
-
-@media (min-width: 1600px) {
-
-    .donation-card p,
-    .partnership-box p,
-    .contact-hero .section-desc {
-        max-width: 900px !important;
-    }
-}
-
-.contact-layout {
-    display: flex;
-    gap: 2.5rem;
+body[data-page="contact"] .contact-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.65fr) minmax(280px, .9fr);
+    gap: 28px;
     align-items: stretch;
 }
 
-.contact-left {
-    flex: 1.2;
-    display: flex;
-    flex-direction: column;
+body[data-page="contact"] .contact-form-card {
+    width: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 34px !important;
+    border: 1px solid var(--border, #dcc8b6);
+    border-radius: 22px;
+    background: var(--surface, #fffaf3);
+    box-shadow: 0 12px 28px rgba(93, 15, 45, .08);
 }
 
-.contact-right {
-    flex: 0.8;
-    display: flex;
-    flex-direction: column;
+body[data-page="contact"] .contact-field {
+    margin-bottom: 18px;
 }
 
-.contact-section-header {
-    margin-bottom: 1.5rem;
+body[data-page="contact"] .contact-form-card .form-label {
+    display: block;
+    margin-bottom: 7px;
     text-align: left;
 }
 
-.contact-title-reset {
-    margin-left: 0;
-}
-
-.contact-form-card {
-    margin: 0;
-    padding: 2.5rem;
-    flex: 1;
-}
-
-.contact-textarea {
-    resize: none;
-}
-
-.contact-submit-btn {
+body[data-page="contact"] .contact-form-card .form-input,
+body[data-page="contact"] .contact-form-card .form-textarea {
     width: 100%;
+    box-sizing: border-box;
+}
+
+body[data-page="contact"] .contact-textarea {
+    min-height: 132px;
+    resize: vertical;
+}
+
+body[data-page="contact"] .contact-submit-btn {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 4px;
     justify-content: center;
-    margin-top: 1rem;
 }
 
-.contact-status {
-    margin-top: 1rem;
+body[data-page="contact"] .contact-right {
+    display: grid !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    min-width: 0;
 }
 
-.contact-spacer {
-    visibility: hidden;
-    pointer-events: none;
-    margin-bottom: 1.5rem;
-}
-
-.contact-info-stack {
+body[data-page="contact"] .contact-info-card {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 28px 22px !important;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
-    margin: 0;
-    flex: 1;
-}
-
-.contact-info-card {
-    margin: 0;
-    padding: 1.5rem 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    flex: 1;
+    border: 1px solid var(--border, #dcc8b6);
+    border-radius: 22px;
+    background: var(--surface, #fffaf3);
+    box-shadow: 0 12px 28px rgba(93, 15, 45, .06);
 }
 
-.contact-info-icon {
-    margin-bottom: 0.75rem;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+body[data-page="contact"] .contact-info-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    margin: 0 0 14px;
+    display: grid;
+    place-items: center;
 }
 
-.contact-icon-symbol {
-    font-size: 20px;
+body[data-page="contact"] .contact-info-title {
+    margin: 0 0 8px;
+    font-size: 1.65rem;
 }
 
-.contact-info-title {
-    margin-bottom: 0.2rem;
-    font-size: 1.1rem;
+body[data-page="contact"] .contact-info-text,
+body[data-page="contact"] .contact-info-link {
+    margin: 0;
+    overflow-wrap: anywhere;
 }
 
-.contact-info-text {
-    margin-bottom: 0.2rem;
-    font-size: 0.85rem;
+/* FAQ — separate cards, no large surrounding box */
+body[data-page="contact"] #faq {
+    padding: 64px 0 72px !important;
+    background: var(--bg, #f5efe6);
 }
 
-.contact-info-link {
-    font-size: 0.95rem;
+body[data-page="contact"] #faq>.container {
+    width: min(1000px, calc(100% - 40px));
+    margin-inline: auto;
+}
+
+body[data-page="contact"] #faq .section-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+body[data-page="contact"] #faq [role="region"] {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+body[data-page="contact"] #faq .faq-item {
+    margin: 0 0 12px;
+    overflow: hidden;
+    border: 1px solid var(--border, #dcc8b6);
+    border-radius: 14px;
+    background: var(--surface, #fffaf3);
+}
+
+body[data-page="contact"] #faq .faq-question {
+    width: 100%;
+    min-height: 56px;
+    padding: 15px 18px;
+    background: transparent;
+}
+
+body[data-page="contact"] #faq .faq-answer {
+    padding: 0 18px 18px;
+}
+
+/* Donation section — centered and balanced */
+body[data-page="contact"] #donate {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 64px 0 76px !important;
+    background: #fff8f8 !important;
+}
+
+body[data-page="contact"] #donate>.container {
+    width: min(1080px, calc(100% - 40px)) !important;
+    max-width: 1080px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+}
+
+body[data-page="contact"] #donate .donation-layout {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 36px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.18fr) minmax(320px, .82fr) !important;
+    gap: 24px !important;
+    align-items: start !important;
+    box-sizing: border-box !important;
+    background: rgba(255, 250, 243, .72) !important;
+    border-radius: 26px !important;
+}
+
+body[data-page="contact"] #donate .donation-form-card,
+body[data-page="contact"] #donate .impact-card,
+body[data-page="contact"] #donate .tax-card,
+body[data-page="contact"] #donate .secure-card,
+body[data-page="contact"] #donate .transparency-card {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+body[data-page="contact"] #donate .donation-form-card {
+    padding: 32px !important;
+    border-radius: 22px !important;
+}
+
+body[data-page="contact"] #donate .donation-info {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    align-content: start !important;
+}
+
+body[data-page="contact"] #donate .impact-card,
+body[data-page="contact"] #donate .tax-card,
+body[data-page="contact"] #donate .secure-card,
+body[data-page="contact"] #donate .transparency-card {
+    padding: 20px 22px !important;
+    border-radius: 18px !important;
+}
+
+body[data-page="contact"] #donate .transparency-card {
+    background: var(--surface, #fffaf3) !important;
+    border: 1px solid var(--border, #dcc8b6) !important;
+    text-align: center !important;
+    box-shadow: 0 10px 24px rgba(93, 15, 45, .06) !important;
+}
+
+body[data-page="contact"] #donate .transparency-card h3 {
+    margin: 0 0 8px !important;
+    color: var(--maroon, #5d0f2d) !important;
+}
+
+body[data-page="contact"] #donate .transparency-card p {
+    margin: 0 !important;
+    line-height: 1.55 !important;
+}
+
+body[data-page="contact"] #donate .amount-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+}
+
+body[data-page="contact"] #donate .amount-btn {
+    min-width: 0 !important;
+}
+
+body[data-page="contact"] #donate .security-badges {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px 14px !important;
+}
+
+body[data-page="contact"] .floating-donate {
+    right: 24px !important;
+    bottom: 24px !important;
 }
 
 @media (max-width: 900px) {
-    .contact-layout {
+
+    body[data-page="contact"] .contact-layout,
+    body[data-page="contact"] #donate .donation-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    body[data-page="contact"] .contact-right {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: auto;
+    }
+}
+
+@media (max-width: 600px) {
+
+    body[data-page="contact"] .contact-section,
+    body[data-page="contact"] #faq,
+    body[data-page="contact"] #donate {
+        padding: 44px 0 52px !important;
+    }
+
+    body[data-page="contact"] .contact-section>.container,
+    body[data-page="contact"] #faq>.container,
+    body[data-page="contact"] #donate>.container {
+        width: min(100% - 28px, 1120px);
+    }
+
+    body[data-page="contact"] .contact-form-card,
+    body[data-page="contact"] #donate .donation-form-card {
+        padding: 22px 16px !important;
+        border-radius: 18px;
+    }
+
+    body[data-page="contact"] .contact-right {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-page="contact"] .contact-info-card {
+        padding: 24px 18px !important;
+    }
+
+    body[data-page="contact"] #donate .amount-buttons {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body[data-page="contact"] #donate .security-badges {
+        align-items: stretch;
         flex-direction: column;
     }
 
-    .contact-spacer {
-        display: none;
+    body[data-page="contact"] #donate .campaign-donation-selector {
+        overflow: visible;
     }
 
-    .contact-form-card {
-        padding: 2rem;
+    body[data-page="contact"] #donate .campaign-donation-selector>* {
+        max-width: 100%;
     }
-}
 
-@media (max-width: 520px) {
-
-    .contact-form-card,
-    .contact-info-card {
-        padding: 1.5rem;
+    body[data-page="contact"] .floating-donate {
+        right: 14px !important;
+        bottom: 14px !important;
     }
 }
 
-@media (max-width: 768px) {
 
-    .page-hero,
-    .contact-hero,
-    .collab-hero {
-        padding: calc(var(--nav-h) + 42px) 18px 52px !important;
-        min-height: auto !important;
+@media (max-width: 900px) {
+    body[data-page="contact"] #donate .donation-layout {
+        grid-template-columns: 1fr !important;
+        padding: 26px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    body[data-page="contact"] #donate>.container {
+        width: calc(100% - 24px) !important;
     }
 
-    .partnership-box h2 {
-        font-size: clamp(2rem, 10vw, 2.75rem);
+    body[data-page="contact"] #donate .donation-layout {
+        padding: 14px !important;
+        gap: 16px !important;
+        border-radius: 20px !important;
     }
 
-    .card,
-    .contact-form-card,
-    .contact-info-card,
-    .course-content {
-        padding: 1.35rem !important;
+    body[data-page="contact"] #donate .donation-form-card {
+        padding: 22px 16px !important;
+    }
+
+    body[data-page="contact"] #donate .amount-buttons {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    body[data-page="contact"] #donate .security-badges {
+        flex-direction: column !important;
+        align-items: stretch !important;
     }
 }

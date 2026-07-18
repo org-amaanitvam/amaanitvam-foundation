@@ -1,6 +1,9 @@
 import express from 'express';
-import { getAll } from './user.controller.js';
+import { getAllUsers, createUser } from './user.controller.js'; // Added createUser here
 
 const router = express.Router();
-router.get('/', getAll);
+
+router.get('/', getAllUsers);
+router.post('/', createUser); // This line unlocks Thunder Client!
+
 export default router;

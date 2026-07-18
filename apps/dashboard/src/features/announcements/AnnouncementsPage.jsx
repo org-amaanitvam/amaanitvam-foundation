@@ -28,7 +28,7 @@ export default function AnnouncementsPage() {
       setAnnouncements(data.announcements || []);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || 'Failed to load announcements');
+      //toast.error(err.response?.data?.message || 'Failed to load announcements');
     } finally {
       setLoading(false);
     }

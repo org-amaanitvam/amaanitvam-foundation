@@ -18,6 +18,7 @@
     name="description" />
   <link href="/images/logos/logo.jpg" rel="icon" type="image/jpeg" />
   <link href="../styles/styles.css" rel="stylesheet" />
+  <link href="../styles/contact.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 </head>
 
@@ -27,7 +28,7 @@
     <section class="page-hero has-image moved-inline-style-final-001" data-hero="">
       <div class="container moved-inline-style-final-002">
         <div class="moved-inline-style-final-003">
-          <br /><br /><span class="section-label moved-inline-style-final-007">Contact Us</span>
+          <span class="section-label moved-inline-style-final-007">Contact Us</span>
           <h1 class="section-title moved-inline-style-final-005">
             Let's Create Impact Together</h1>
           <p class="section-desc moved-inline-style-final-006">
@@ -38,88 +39,64 @@
         </div>
       </div>
     </section>
-
-    <section aria-labelledby="contact-form-heading" class="section section-white">
+    <section aria-labelledby="contact-form-heading" class="section section-white contact-section">
       <div class="container">
-        <div class="split-2 contact-layout">
+        <div class="section-header contact-section-header">
+          <span class="section-label">Send a Message</span>
+          <h2 class="section-title" id="contact-form-heading">Contact Form</h2>
+        </div>
 
-          <div class="contact-left">
-            <div class="section-header moved-inline-style-063 contact-section-header">
-              <span class="section-label">Send a Message</span>
-              <h2 class="section-title contact-title-reset" id="contact-form-heading">Contact Form</h2>
+        <div class="contact-layout">
+          <form aria-label="Contact inquiry form" class="card contact-form-card" id="contactForm" method="post">
+            <div class="contact-field">
+              <label class="form-label" for="contact-name">Full Name <span aria-hidden="true">*</span></label>
+              <input autocomplete="name" class="form-input" id="contact-name" name="name" placeholder="Jane Doe"
+                required type="text" />
             </div>
-
-            <form action="https://amaanitvam-foundation.onrender.com/api/contact" aria-label="Contact inquiry form"
-              data-api-url="https://amaanitvam-foundation.onrender.com/api/contact" id="contactForm" method="post"
-              class="card contact-form-card">
-              <div class="moved-inline-style-064">
-                <label class="form-label" for="contact-name">Full Name <span aria-hidden="true">*</span></label>
-                <input autocomplete="name" class="form-input" id="contact-name" name="name" placeholder="Jane Doe"
-                  required="" type="text" />
-              </div>
-
-              <div class="moved-inline-style-064">
-                <label class="form-label" for="contact-email">Email Address <span aria-hidden="true">*</span></label>
-                <input autocomplete="email" class="form-input" id="contact-email" name="email"
-                  placeholder="jane@example.com" required="" type="email" />
-              </div>
-
-              <div class="moved-inline-style-064">
-                <label class="form-label" for="contact-subject">Subject <span aria-hidden="true">*</span></label>
-                <input class="form-input" id="contact-subject" name="subject"
-                  placeholder="Brief subject of your message" required="" type="text" />
-              </div>
-
-              <div class="moved-inline-style-065">
-                <label class="form-label" for="contact-message">Message <span aria-hidden="true">*</span></label>
-                <textarea class="form-textarea contact-textarea" id="contact-message" name="message"
-                  placeholder="How can we collaborate?" required="" rows="5"></textarea>
-              </div>
-
-              <button class="btn btn-primary contact-submit-btn" type="submit">
-                <span aria-hidden="true" class="material-symbols-outlined">send</span>
-                Send Message
-              </button>
-
-              <div aria-live="polite" class="text-muted moved-inline-style-066 contact-status" id="contact-status"
-                role="status"></div>
-            </form>
-          </div>
+            <div class="contact-field">
+              <label class="form-label" for="contact-email">Email Address <span aria-hidden="true">*</span></label>
+              <input autocomplete="email" class="form-input" id="contact-email" name="email"
+                placeholder="jane@example.com" required type="email" />
+            </div>
+            <div class="contact-field">
+              <label class="form-label" for="contact-subject">Subject <span aria-hidden="true">*</span></label>
+              <input class="form-input" id="contact-subject" name="subject" placeholder="Brief subject of your message"
+                required type="text" />
+            </div>
+            <div class="contact-field">
+              <label class="form-label" for="contact-message">Message <span aria-hidden="true">*</span></label>
+              <textarea class="form-textarea contact-textarea" id="contact-message" name="message"
+                placeholder="How can we collaborate?" required rows="6"></textarea>
+            </div>
+            <button class="btn btn-primary contact-submit-btn" type="submit">
+              <span aria-hidden="true" class="material-symbols-outlined">send</span>
+              Send Message
+            </button>
+            <div aria-live="polite" class="text-muted contact-status" id="contact-status" role="status"></div>
+          </form>
 
           <aside aria-label="Contact information" class="contact-right">
-            <div class="section-header contact-spacer" aria-hidden="true">
-              <span class="section-label">Spacer</span>
-              <h2 class="section-title">Spacer</h2>
-            </div>
-
             <h2 class="sr-only">Contact Information</h2>
-            <div class="grid-2 moved-inline-style-067 margin-4px contact-info-stack">
-              <div class="card contact-info-card">
-                <div aria-hidden="true" class="card-icon card-icon-pink contact-info-icon">
-                  <span class="material-symbols-outlined contact-icon-symbol">mail</span>
-                </div>
-                <h3 class="moved-inline-style-068 contact-info-title">Email Us</h3>
-                <p class="text-muted moved-inline-style-038 contact-info-text">For general inquiries:</p>
-                <a class="text-primary moved-inline-style-069 contact-info-link"
-                  href="mailto:admin@amaanitvam.org">admin@amaanitvam.org</a>
+            <div class="card contact-info-card">
+              <div aria-hidden="true" class="card-icon card-icon-pink contact-info-icon">
+                <span class="material-symbols-outlined contact-icon-symbol">mail</span>
               </div>
-
-              <div class="card contact-info-card">
-                <div aria-hidden="true" class="card-icon card-icon-purple contact-info-icon">
-                  <span class="material-symbols-outlined contact-icon-symbol">call</span>
-                </div>
-                <h3 class="moved-inline-style-068 contact-info-title">Call Us</h3>
-                <p class="text-muted moved-inline-style-038 contact-info-text">Mon–Fri, 9am–6pm:</p>
-                <a class="text-primary moved-inline-style-069 contact-info-link" href="tel:+919899923266">+91 98999
-                  23266</a>
+              <h3 class="contact-info-title">Email Us</h3>
+              <p class="text-muted contact-info-text">For general inquiries:</p>
+              <a class="text-primary contact-info-link" href="mailto:admin@amaanitvam.org">admin@amaanitvam.org</a>
+            </div>
+            <div class="card contact-info-card">
+              <div aria-hidden="true" class="card-icon card-icon-purple contact-info-icon">
+                <span class="material-symbols-outlined contact-icon-symbol">call</span>
               </div>
+              <h3 class="contact-info-title">Call Us</h3>
+              <p class="text-muted contact-info-text">Mon–Fri, 9am–6pm:</p>
+              <a class="text-primary contact-info-link" href="tel:+919899923266">+91 98999 23266</a>
             </div>
           </aside>
-
         </div>
       </div>
     </section>
-
     <section aria-labelledby="faq-heading" class="section section-alt" id="faq">
       <div class="container moved-inline-style-070">
         <div class="section-header">
@@ -180,57 +157,9 @@
         </div>
       </div>
     </section>
-    <section aria-labelledby="partnerships-heading" class="section section-alt">
+    <section aria-labelledby="donation-heading" class="section section-white donation-section" id="donate">
       <div class="container">
-        <div class="section-header">
-          <span class="section-label">Collaborate</span>
-          <h2 class="section-title" id="partnerships-heading">Partnership Inquiries</h2>
-          <p class="section-desc">Join us in creating lasting social impact through structured collaboration.</p>
-        </div>
-        <div class="grid-4">
-          <div class="card moved-inline-style-071">
-            <div aria-hidden="true" class="card-icon card-icon-pink">
-              <span class="material-symbols-outlined">handshake</span>
-            </div>
-            <h3 class="moved-inline-style-072">NGO Partnerships</h3>
-            <p class="text-muted moved-inline-style-073">
-              Collaborate on large-scale social impact projects and community development initiatives.
-            </p>
-          </div>
-          <div class="card moved-inline-style-071">
-            <div aria-hidden="true" class="card-icon card-icon-purple">
-              <span class="material-symbols-outlined">school</span>
-            </div>
-            <h3 class="moved-inline-style-072">Education</h3>
-            <p class="text-muted moved-inline-style-073">
-              Bring social awareness and volunteering opportunities to your students and faculty.
-            </p>
-          </div>
-          <div class="card moved-inline-style-071">
-            <div aria-hidden="true" class="card-icon card-icon-gold">
-              <span class="material-symbols-outlined">business</span>
-            </div>
-            <h3 class="moved-inline-style-072">Corporate</h3>
-            <p class="text-muted moved-inline-style-073">
-              Create meaningful impact through structured corporate social responsibility programs.
-            </p>
-          </div>
-          <div class="card moved-inline-style-071">
-            <div aria-hidden="true" class="card-icon card-icon-navy">
-              <span class="material-symbols-outlined">diversity_3</span>
-            </div>
-            <h3 class="moved-inline-style-072">Community</h3>
-            <p class="text-muted moved-inline-style-073">
-              Partner with local groups to empower and support regional community growth.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section aria-labelledby="donation-heading"
-      class="section section-white donation-section moved-inline-style-final-008" id="donate">
-      <div class="container">
-        <div class="split-2 moved-inline-style-final-009">
+        <div class="donation-layout">
           <div class="donation-form-card">
             <h2 class="donation-heading" id="donation-heading">
               <span aria-hidden="true">❤️</span> Donation Details
@@ -257,8 +186,7 @@
               <span>🛡 PCI DSS Compliant</span>
               <span>💜 Razorpay Verified</span>
             </div>
-
-            <div id="campaignDonationSelector" class="campaign-donation-selector" aria-live="polite">
+            <div aria-live="polite" class="campaign-donation-selector" id="campaignDonationSelector">
               Loading active campaigns...
             </div>
             <button class="pay-button" id="payButton" type="button">Proceed to Pay Securely</button>
@@ -313,33 +241,26 @@
                 <li>✓ Powered by RBI-licensed Razorpay</li>
               </ul>
             </div>
+            <div class="transparency-card">
+              <h3>🤝 Transparent Contributions</h3>
+              <p>
+                Every donation is used responsibly to support our programs,
+                community initiatives, and beneficiaries. Official receipts
+                help maintain clear and accountable giving.
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </section>
   </main>
   <div id="footer"></div>
-  <a class="floating-donate" href="contact.html#donate">
+  <a class="floating-donate" href="#donate">
     ❤ Donate Now
   </a>
-  <div class="floating-socials">
-    <a aria-label="Facebook" href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/"
-      target="_blank">
-      <i class="fa-brands fa-facebook-f"></i>
-    </a>
-    <a aria-label="Instagram" href="https://www.instagram.com/amaanitvamfoundation" target="_blank">
-      <i class="fa-brands fa-instagram"></i>
-    </a>
-    <a aria-label="X" href="https://x.com/AmaanitvamOrg" target="_blank">
-      <i class="fa-brands fa-x-twitter"></i>
-    </a>
-    <a aria-label="LinkedIn" href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank">
-      <i class="fa-brands fa-linkedin-in"></i>
-    </a>
-  </div>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  <script type="module" src="../scripts/app.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="../scripts/app.js" type="module"></script>
 </body>
 
 </html>

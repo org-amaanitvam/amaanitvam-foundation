@@ -35,7 +35,12 @@ export default function TasksPage() {
       setLoading(true);
 
       const { data } = await api.get('/tasks');
-      setTasks(data.tasks || []);
+      
+      const taskList = Array.isArray(data) ? data
+                     : Array.isArray(data.tasks) ? data.tasks
+                     : Array.isArray(data.data) ? data.data
+                     : [];
+      setTasks(taskList);
 
       if (isAdmin) {
         const res = await api.get('/admin/members');
@@ -63,16 +68,22 @@ export default function TasksPage() {
     e.preventDefault();
 
     try {
+      const submissionData = {
+        ...formData,
+        priority: formData.priority.toLowerCase()
+      };
+
       if (editingId) {
-        await api.put(`/tasks/${editingId}`, formData);
+        await api.put(`/tasks/${editingId}`, submissionData);
         toast.success('Task updated');
       } else {
-        await api.post('/tasks/create', formData);
-        toast.success('Task created');
+        // THE FIX: Changed from '/tasks/create' to '/tasks' to match the backend router exactly!
+        await api.post('/tasks', submissionData);
+        toast.success('Task assigned successfully!');
       }
 
       resetForm();
-      fetchTasks();
+      fetchTasks(); // Refreshes the list instantly so the new task appears
     } catch (err) {
       console.error(err);
       toast.error(
@@ -91,7 +102,7 @@ export default function TasksPage() {
         ? new Date(task.deadline).toISOString().split('T')[0]
         : '',
       status: task.status || 'open',
-      priority: task.priority || 'medium',
+      priority: (task.priority || 'medium').toLowerCase(), 
       progress: Number(task.progress || 0),
       newComment: '',
     });
@@ -123,17 +134,17 @@ export default function TasksPage() {
       match = false;
     }
 
+    const taskPriority = (t.priority || 'medium').toLowerCase();
     if (
       filters.priority &&
       filters.priority !== 'all' &&
-      (t.priority || 'medium') !== filters.priority
+      taskPriority !== filters.priority
     ) {
       match = false;
     }
 
     if (filters.assignedTo && filters.assignedTo !== 'all') {
       const assignedId = t.assignedTo?._id || t.assignedTo;
-
       if (assignedId !== filters.assignedTo) {
         match = false;
       }
@@ -148,7 +159,6 @@ export default function TasksPage() {
     if (filters.deadline?.end && t.deadline) {
       const end = new Date(filters.deadline.end);
       end.setHours(23, 59, 59, 999);
-
       if (new Date(t.deadline) > end) {
         match = false;
       }
@@ -470,74 +480,77 @@ export default function TasksPage() {
         </div>
       ) : (
         <div className="grid gap-3">
-          {filtered.map((t) => (
-            <div
-              key={t._id}
-              className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
-            >
-              <span
-                className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'
-                  }`}
+          {filtered.map((t) => {
+            const safePriority = (t.priority || 'medium').toLowerCase();
+            return (
+              <div
+                key={t._id}
+                className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
               >
-                {getStatusLabel(t.status)}
-              </span>
+                <span
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'
+                    }`}
+                >
+                  {getStatusLabel(t.status)}
+                </span>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-slate-800 truncate">
-                    {t.title}
-                  </h3>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-slate-800 truncate">
+                      {t.title}
+                    </h3>
 
-                  <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">
-                    {t.progress || 0}%
-                  </span>
-                </div>
-
-                <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 mb-1 max-w-[200px]">
-                  <div
-                    className="bg-[#56051a] h-1.5 rounded-full"
-                    style={{ width: `${t.progress || 0}%` }}
-                  />
-                </div>
-
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Assigned to: {t.assignedTo?.name || 'Unassigned'}
-                  {t.deadline &&
-                    ` • Due: ${new Date(t.deadline).toLocaleDateString()}`}
-                </p>
-
-                {t.comments && t.comments.length > 0 && (
-                  <p className="text-xs text-slate-400 mt-1 italic line-clamp-1">
-                    Latest: {t.comments[t.comments.length - 1].text}
-                  </p>
-                )}
-
-                {t.priority && (
-                  <p className="text-xs mt-1">
-                    <span className="text-slate-500">Priority: </span>
-                    <span
-                      className={`font-medium ${t.priority === 'high'
-                          ? 'text-rose-500'
-                          : t.priority === 'low'
-                            ? 'text-slate-500'
-                            : 'text-amber-500'
-                        }`}
-                    >
-                      {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+                    <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">
+                      {t.progress || 0}%
                     </span>
-                  </p>
-                )}
-              </div>
+                  </div>
 
-              <button
-                onClick={() => openEdit(t)}
-                className="p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
-              >
-                <Edit2 className="w-4 h-4" />
-                {!isAdmin && <span>Update</span>}
-              </button>
-            </div>
-          ))}
+                  <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 mb-1 max-w-[200px]">
+                    <div
+                      className="bg-[#56051a] h-1.5 rounded-full"
+                      style={{ width: `${t.progress || 0}%` }}
+                    />
+                  </div>
+
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Assigned to: {t.assignedTo?.name || 'Unassigned'}
+                    {t.deadline &&
+                      ` • Due: ${new Date(t.deadline).toLocaleDateString()}`}
+                  </p>
+
+                  {t.comments && t.comments.length > 0 && (
+                    <p className="text-xs text-slate-400 mt-1 italic line-clamp-1">
+                      Latest: {t.comments[t.comments.length - 1].text}
+                    </p>
+                  )}
+
+                  {safePriority && (
+                    <p className="text-xs mt-1">
+                      <span className="text-slate-500">Priority: </span>
+                      <span
+                        className={`font-medium ${safePriority === 'high'
+                            ? 'text-rose-500'
+                            : safePriority === 'low'
+                              ? 'text-slate-500'
+                              : 'text-amber-500'
+                          }`}
+                      >
+                        {safePriority.charAt(0).toUpperCase() + safePriority.slice(1)}
+                      </span>
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => openEdit(t)}
+                  className="p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  {!isAdmin && <span>Update</span>}
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

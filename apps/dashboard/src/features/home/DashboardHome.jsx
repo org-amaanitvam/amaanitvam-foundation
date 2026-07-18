@@ -14,6 +14,10 @@ import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
 import ActivityFeed from "../../components/ActivityFeed/ActivityFeed";
+import AttendanceCard from "../attendance/AttendanceCard.jsx";
+import AddProjectManagement from "../../components/Projects/AddProjectManagement.jsx";
+import AddAnnouncementForm from "../../components/announcements/AddAnnouncementForm.jsx";
+import AssignTaskForm from "../../components/tasks/AssignTaskForm.jsx";
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();
@@ -53,7 +57,8 @@ export default function DashboardHome() {
       ]);
 
       if (statsRes.status === 'fulfilled') {
-        setStats(statsRes.value.data.stats || statsRes.value.data);
+        // THE FIX: Added the '?' so it doesn't crash on null data!
+        setStats(statsRes.value.data?.stats || statsRes.value.data);
       }
 
       if (meetingsRes.status === 'fulfilled') {
@@ -61,7 +66,12 @@ export default function DashboardHome() {
       }
 
       if (tasksRes.status === 'fulfilled') {
-        setTasks(tasksRes.value.data.tasks || []);
+        const taskData = tasksRes.value.data;
+        const taskList = Array.isArray(taskData) ? taskData
+                       : Array.isArray(taskData.tasks) ? taskData.tasks
+                       : Array.isArray(taskData.data) ? taskData.data
+                       : [];
+        setTasks(taskList);
       }
 
       if (announcementsRes.status === 'fulfilled') {
@@ -86,20 +96,10 @@ export default function DashboardHome() {
     );
   }
 
-  const myTasks = isAdmin
-    ? tasks
-    : tasks.filter(
-      (t) =>
-        t.assignedTo?._id === userProfile?._id ||
-        t.assignedTo?.email === userProfile?.email
-    );
-
+  const myTasks = tasks;
   const openTasks = myTasks.filter((t) => t.status === 'open').length;
-  const inProgressTasks = myTasks.filter(
-    (t) => t.status === 'inProgress'
-  ).length;
+  const inProgressTasks = myTasks.filter((t) => t.status === 'inProgress').length;
   const completedTasks = myTasks.filter((t) => t.status === 'completed').length;
-
   const upcomingMeetings = meetings
     .filter((m) => new Date(m.meetingDate) >= new Date())
     .sort((a, b) => new Date(a.meetingDate) - new Date(b.meetingDate))
@@ -108,195 +108,98 @@ export default function DashboardHome() {
   return (
     <div className="space-y-7 animate-fade-in">
       <div>
-        <p className="text-xs font-ui font-bold uppercase tracking-[0.22em] text-gold">
-          Dashboard Panel
-        </p>
-
+        <p className="text-xs font-ui font-bold uppercase tracking-[0.22em] text-gold">Dashboard Panel</p>
         <h1 className="mt-2 text-4xl font-heading font-bold text-primary tracking-tight">
-          {isAdmin
-            ? 'Team Dashboard'
-            : `Welcome, ${userProfile?.name?.split(' ')[0] || 'User'}`}
+          {isAdmin ? 'Team Dashboard' : `Welcome, ${userProfile?.name?.split(' ')[0] || 'User'}`}
         </h1>
-
         <p className="text-text-muted mt-2 font-body">
-          {isAdmin
-            ? "Overview of your organization's activity"
-            : "Here's your workspace overview"}
+          {isAdmin ? "Overview of your organization's activity" : "Here's your workspace overview"}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {isAdmin && stats ? (
           <>
-            <StatCard
-              icon={Users}
-              label="Total Members"
-              value={stats.activeMembers || 0}
-              tone="primary"
-            />
-            <StatCard
-              icon={FileText}
-              label="Pending Applications"
-              value={stats.totalCandidates || 0}
-              tone="gold"
-            />
-            <StatCard
-              icon={ClipboardList}
-              label="Open Tasks"
-              value={openTasks}
-              tone="secondary"
-            />
-            <StatCard
-              icon={TrendingUp}
-              label="Completed Tasks"
-              value={completedTasks}
-              tone="dark"
-            />
+            <StatCard icon={Users} label="Total Members" value={stats.activeMembers || 0} tone="primary" />
+            <StatCard icon={FileText} label="Pending Applications" value={stats.totalCandidates || 0} tone="gold" />
+            <StatCard icon={ClipboardList} label="Open Tasks" value={openTasks} tone="secondary" />
+            <StatCard icon={TrendingUp} label="Completed Tasks" value={completedTasks} tone="dark" />
           </>
         ) : (
           <>
-            <StatCard
-              icon={ClipboardList}
-              label="Open Tasks"
-              value={openTasks}
-              tone="gold"
-            />
-            <StatCard
-              icon={TrendingUp}
-              label="In Progress"
-              value={inProgressTasks}
-              tone="primary"
-            />
-            <StatCard
-              icon={UserCheck}
-              label="Completed"
-              value={completedTasks}
-              tone="secondary"
-            />
-            <StatCard
-              icon={Calendar}
-              label="Upcoming Meetings"
-              value={upcomingMeetings.length}
-              tone="dark"
-            />
+            <StatCard icon={ClipboardList} label="Open Tasks" value={openTasks} tone="gold" />
+            <StatCard icon={TrendingUp} label="In Progress" value={inProgressTasks} tone="primary" />
+            <StatCard icon={UserCheck} label="Completed" value={completedTasks} tone="secondary" />
+            <StatCard icon={Calendar} label="Upcoming Meetings" value={upcomingMeetings.length} tone="dark" />
           </>
         )}
+      </div>
+
+      {/* FIXED SECTION: Cleaned up the duplicates and closed the tags perfectly */}
+      <div className="flex flex-col gap-4 mb-6">
+        <AttendanceCard />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <AddProjectManagement onProjectAdded={fetchDashboardData} />
+          <AddAnnouncementForm onAnnouncementAdded={fetchDashboardData} />
+          <AssignTaskForm onTaskAssigned={fetchDashboardData} />
+        </div>
       </div>
 
       <div className="flex flex-col xl:flex-row gap-6">
         <div className="flex-1">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PanelCard
-              icon={Calendar}
-              title="Upcoming Meetings"
-              emptyText="No upcoming meetings scheduled"
-            >
+            <PanelCard icon={Calendar} title="Upcoming Meetings" emptyText="No upcoming meetings scheduled">
               {upcomingMeetings.map((m) => (
-                <div
-                  key={m._id}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors"
-                >
+                <div key={m._id} className="flex items-center gap-3 p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors">
                   <div className="w-11 h-11 bg-gold/20 text-primary rounded-xl flex items-center justify-center shrink-0">
                     <CalendarIcon date={m.meetingDate} />
                   </div>
-
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-ui font-semibold text-primary truncate">
-                      {m.title}
-                    </p>
+                    <p className="text-sm font-ui font-semibold text-primary truncate">{m.title}</p>
                     <p className="text-xs text-text-muted">
-                      {new Date(m.meetingDate).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
+                      {new Date(m.meetingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
                 </div>
               ))}
             </PanelCard>
 
-            <PanelCard
-              icon={Megaphone}
-              title="Announcements"
-              emptyText="No announcements yet"
-            >
+            <PanelCard icon={Megaphone} title="Announcements" emptyText="No announcements yet">
               {announcements.slice(0, 5).map((a) => (
-                <Link
-                  to="/announcements"
-                  key={a._id}
-                  className="block p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors"
-                >
-                  <p className="text-sm font-ui font-semibold text-primary">
-                    {a.title}
-                  </p>
-                  <p className="text-xs text-text-muted mt-1 line-clamp-2">
-                    {a.message || a.description || ''}
-                  </p>
+                <Link to="/announcements" key={a._id} className="block p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors">
+                  <p className="text-sm font-ui font-semibold text-primary">{a.title}</p>
+                  <p className="text-xs text-text-muted mt-1 line-clamp-2">{a.message || a.description || ''}</p>
                   <p className="text-xs text-text-muted/70 mt-1">
-                    {a.createdAt
-                      ? new Date(a.createdAt).toLocaleDateString('en-IN')
-                      : ''}
+                    {a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-IN') : ''}
                   </p>
                 </Link>
               ))}
             </PanelCard>
 
-            <PanelCard
-              icon={ClipboardList}
-              title={isAdmin ? 'All Tasks' : 'My Tasks'}
-              emptyText="No tasks found"
-            >
-              {myTasks.slice(0, 5).map((t) => (
-                <Link
-                  to="/tasks"
-                  key={t._id}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors"
-                >
+            <PanelCard icon={ClipboardList} title={isAdmin ? 'All Tasks' : 'My Tasks'} emptyText="No tasks found">
+              {myTasks.map((t) => (
+                <Link to="/tasks" key={t._id} className="flex items-center gap-3 p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors">
                   <StatusBadge status={t.status} />
-
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-ui font-semibold text-primary truncate">
-                      {t.title}
-                    </p>
+                    <p className="text-sm font-ui font-semibold text-primary truncate">{t.title}</p>
                     <p className="text-xs text-text-muted">
                       {t.assignedTo?.name || 'Unassigned'}
-                      {t.deadline &&
-                        ` • Due: ${new Date(t.deadline).toLocaleDateString(
-                          'en-IN'
-                        )}`}
+                      {t.deadline && ` • Due: ${new Date(t.deadline).toLocaleDateString('en-IN')}`}
                     </p>
                   </div>
                 </Link>
               ))}
             </PanelCard>
 
-            <PanelCard
-              icon={FolderKanban}
-              title="Project Progress"
-              emptyText="No projects yet"
-            >
+            <PanelCard icon={FolderKanban} title="Project Progress" emptyText="No projects yet">
               {projects.slice(0, 5).map((p) => (
-                <Link
-                  to="/projects"
-                  key={p._id}
-                  className="block p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors"
-                >
+                <Link to="/projects" key={p._id} className="block p-3 rounded-xl bg-background hover:bg-gold/10 transition-colors">
                   <div className="flex justify-between items-center mb-2 gap-3">
-                    <p className="text-sm font-ui font-semibold text-primary truncate">
-                      {p.title || p.name}
-                    </p>
-
-                    <span className="text-xs font-ui font-bold text-gold">
-                      {p.progress || 0}%
-                    </span>
+                    <p className="text-sm font-ui font-semibold text-primary truncate">{p.title || p.name}</p>
+                    <span className="text-xs font-ui font-bold text-gold">{p.progress || 0}%</span>
                   </div>
-
                   <div className="w-full bg-border-custom/60 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-gold h-2 rounded-full transition-all"
-                      style={{ width: `${p.progress || 0}%` }}
-                    ></div>
+                    <div className="bg-gold h-2 rounded-full transition-all" style={{ width: `${p.progress || 0}%` }}></div>
                   </div>
                 </Link>
               ))}
@@ -322,19 +225,12 @@ function StatCard({ icon: Icon, label, value, tone = 'primary' }) {
 
   return (
     <div className="card-premium flex items-center gap-4">
-      <div
-        className={`w-12 h-12 ${tones[tone]} rounded-xl flex items-center justify-center shadow-sm`}
-      >
+      <div className={`w-12 h-12 ${tones[tone]} rounded-xl flex items-center justify-center shadow-sm`}>
         <Icon className="w-6 h-6" />
       </div>
-
       <div>
-        <p className="text-3xl font-heading font-bold text-primary leading-none">
-          {value}
-        </p>
-        <p className="text-xs text-text-muted font-ui font-semibold mt-1">
-          {label}
-        </p>
+        <p className="text-3xl font-heading font-bold text-primary leading-none">{value}</p>
+        <p className="text-xs text-text-muted font-ui font-semibold mt-1">{label}</p>
       </div>
     </div>
   );
@@ -342,24 +238,14 @@ function StatCard({ icon: Icon, label, value, tone = 'primary' }) {
 
 function PanelCard({ icon: Icon, title, emptyText, children }) {
   const hasContent = Array.isArray(children) ? children.length > 0 : !!children;
-
   return (
     <div className="card-premium overflow-hidden p-0">
       <div className="px-6 py-4 border-b border-border-custom flex items-center gap-2 bg-background/60">
         <Icon className="w-4 h-4 text-gold" />
-        <h2 className="font-heading text-xl font-bold text-primary">
-          {title}
-        </h2>
+        <h2 className="font-heading text-xl font-bold text-primary">{title}</h2>
       </div>
-
       <div className="p-4 space-y-3">
-        {!hasContent ? (
-          <p className="text-sm text-text-muted text-center py-6">
-            {emptyText}
-          </p>
-        ) : (
-          children
-        )}
+        {!hasContent ? <p className="text-sm text-text-muted text-center py-6">{emptyText}</p> : children}
       </div>
     </div>
   );
@@ -372,19 +258,9 @@ function StatusBadge({ status }) {
     completed: 'bg-green-100 text-green-700',
     pending_approval: 'bg-primary/15 text-primary',
   };
-
-  const label =
-    status === 'inProgress'
-      ? 'In Progress'
-      : status === 'pending_approval'
-        ? 'Pending Approval'
-        : status || 'Open';
-
+  const label = status === 'inProgress' ? 'In Progress' : status === 'pending_approval' ? 'Pending Approval' : status || 'Open';
   return (
-    <span
-      className={`px-2 py-1 text-[10px] font-ui font-bold uppercase rounded-md ${colors[status] || 'bg-background text-text-muted'
-        }`}
-    >
+    <span className={`px-2 py-1 text-[10px] font-ui font-bold uppercase rounded-md ${colors[status] || 'bg-background text-text-muted'}`}>
       {label}
     </span>
   );
@@ -392,13 +268,10 @@ function StatusBadge({ status }) {
 
 function CalendarIcon({ date }) {
   const d = new Date(date);
-
   return (
     <div className="text-center leading-none">
-      <p className="text-[10px] font-ui font-bold uppercase">
-        {d.toLocaleDateString('en-IN', { month: 'short' })}
-      </p>
+      <p className="text-[10px] font-ui font-bold uppercase">{d.toLocaleDateString('en-IN', { month: 'short' })}</p>
       <p className="text-sm font-ui font-bold">{d.getDate()}</p>
     </div>
   );
-} 
+}
