@@ -1,124 +1,80 @@
-body[data-page="volunteer"] {
-    overflow-x: hidden;
-}
-
-/* Section spacing */
-body[data-page="volunteer"] .section-alt,
-body[data-page="volunteer"] .section-white {
-    padding: 5rem 0 !important;
-}
-
-/* Keep the section centered and away from screen edges */
-body[data-page="volunteer"] .section .container {
-    width: calc(100% - 7rem) !important;
-    max-width: 1440px !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-}
-
-/* Section heading */
-body[data-page="volunteer"] .section-header {
-    max-width: 850px;
-    margin: 0 auto 3.25rem !important;
-    text-align: center;
-}
-
-body[data-page="volunteer"] .section-header .section-label {
-    display: inline-block;
-    margin-bottom: 0.8rem;
-}
-
-body[data-page="volunteer"] .section-header .section-title {
-    margin: 0 !important;
-}
-
-body[data-page="volunteer"] .section-header .section-desc {
-    max-width: 720px;
-    margin: 1rem auto 0 !important;
-}
-
-/* Four equal cards */
 body[data-page="volunteer"] .moved-inline-style-139 {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 1.5rem !important;
+    gap: 1.4rem !important;
+    width: min(100%, 1050px) !important;
+    margin: 0 auto !important;
     align-items: stretch !important;
-    width: 100% !important;
-    margin: 0 !important;
 }
 
-/* Card */
 body[data-page="volunteer"] .moved-inline-style-139 .card {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 315px !important;
+    min-height: 255px !important;
     height: 100% !important;
-    box-sizing: border-box !important;
+    padding: 1.8rem 1.35rem !important;
+    margin: 0 !important;
 
     display: flex !important;
     flex-direction: column !important;
-    align-items: flex-start !important;
+    align-items: center !important;
     justify-content: flex-start !important;
 
-    margin: 0 !important;
-    padding: 2.2rem 2rem !important;
-
+    text-align: center !important;
     background: #fffaf5 !important;
-    border: 1px solid rgba(216, 161, 95, 0.38) !important;
-    border-radius: 24px !important;
-    box-shadow: 0 10px 28px rgba(93, 15, 45, 0.06) !important;
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        border-color 0.3s ease;
+    border: 1px solid rgba(216, 161, 95, 0.45) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 10px 24px rgba(93, 15, 45, 0.06) !important;
+    box-sizing: border-box !important;
 }
 
 body[data-page="volunteer"] .moved-inline-style-139 .card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(216, 161, 95, 0.68) !important;
-    box-shadow: 0 18px 38px rgba(93, 15, 45, 0.12) !important;
+    transform: translateY(-5px);
+    box-shadow: 0 16px 32px rgba(93, 15, 45, 0.12) !important;
 }
 
-/* Icon */
+/* Icon centered */
 body[data-page="volunteer"] .moved-inline-style-139 .card-icon {
-    width: 64px !important;
-    height: 64px !important;
-    min-width: 64px !important;
-    min-height: 64px !important;
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
 
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 
-    margin: 0 0 1.55rem !important;
-    border-radius: 18px !important;
-    flex-shrink: 0 !important;
+    margin: 0 0 0.9rem !important;
+    border-radius: 14px !important;
 }
 
 body[data-page="volunteer"] .moved-inline-style-139 .card-icon .material-symbols-outlined {
-    font-size: 26px !important;
-    line-height: 1 !important;
+    font-size: 23px !important;
 }
 
-/* Heading — same reserved height so paragraphs align */
+/* Heading pill style */
 body[data-page="volunteer"] .moved-inline-style-139 .card h3,
 body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-068 {
-    width: 100% !important;
-    min-height: 58px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    margin: 0 0 1rem !important;
-    padding: 0 !important;
+    min-height: auto !important;
+    width: auto !important;
+
+    margin: 0 0 0.9rem !important;
+    padding: 0.25rem 0.85rem !important;
 
     color: #5d0f2d !important;
+    background: rgba(93, 15, 45, 0.08) !important;
+    border-radius: 999px !important;
+
     font-family: "Cormorant Garamond", serif !important;
-    font-size: clamp(1.65rem, 1.8vw, 1.95rem) !important;
+    font-size: 1.25rem !important;
     font-weight: 600 !important;
-    line-height: 1.1 !important;
-    letter-spacing: 0 !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
 }
 
-/* Paragraph */
+/* Description centered */
 body[data-page="volunteer"] .moved-inline-style-139 .card p,
 body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-039 {
     width: 100% !important;
@@ -127,93 +83,47 @@ body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-03
 
     color: #655b57 !important;
     font-family: "Inter", sans-serif !important;
-    font-size: 1rem !important;
-    font-weight: 400 !important;
-    line-height: 1.7 !important;
+    font-size: 0.92rem !important;
+    line-height: 1.65 !important;
+    text-align: center !important;
 }
 
-/* Link */
+/* Credential link */
 body[data-page="volunteer"] .moved-inline-style-139 .card p a {
     color: #5d0f2d !important;
     font-weight: 600 !important;
     text-decoration: none !important;
 }
 
-body[data-page="volunteer"] .moved-inline-style-139 .card p a:hover,
-body[data-page="volunteer"] .moved-inline-style-139 .card p a:focus-visible {
-    text-decoration: underline !important;
-}
-
-/* Laptop */
-@media (max-width: 1250px) {
-    body[data-page="volunteer"] .section .container {
-        width: calc(100% - 4rem) !important;
-    }
-
-    body[data-page="volunteer"] .moved-inline-style-139 {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-
-    body[data-page="volunteer"] .moved-inline-style-139 .card {
-        min-height: 300px !important;
-    }
+/* Section heading spacing */
+body[data-page="volunteer"] .section-header {
+    margin-bottom: 2.5rem !important;
+    text-align: center !important;
 }
 
 /* Tablet */
-@media (max-width: 768px) {
-
-    body[data-page="volunteer"] .section-alt,
-    body[data-page="volunteer"] .section-white {
-        padding: 4rem 0 !important;
+@media (max-width: 1000px) {
+    body[data-page="volunteer"] .moved-inline-style-139 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        width: min(100%, 720px) !important;
     }
+}
 
-    body[data-page="volunteer"] .section .container {
-        width: calc(100% - 2rem) !important;
-    }
-
-    body[data-page="volunteer"] .section-header {
-        margin-bottom: 2.25rem !important;
-    }
-
+/* Mobile */
+@media (max-width: 600px) {
     body[data-page="volunteer"] .moved-inline-style-139 {
         grid-template-columns: 1fr !important;
-        gap: 1.25rem !important;
+        width: 100% !important;
+        gap: 1rem !important;
     }
 
     body[data-page="volunteer"] .moved-inline-style-139 .card {
         min-height: auto !important;
-        padding: 1.7rem !important;
-        border-radius: 20px !important;
+        padding: 1.5rem 1.2rem !important;
     }
 
     body[data-page="volunteer"] .moved-inline-style-139 .card h3,
     body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-068 {
-        min-height: auto !important;
-        font-size: 1.65rem !important;
-    }
-}
-
-/* Small mobile */
-@media (max-width: 480px) {
-    body[data-page="volunteer"] .section .container {
-        width: calc(100% - 1.5rem) !important;
-    }
-
-    body[data-page="volunteer"] .moved-inline-style-139 .card {
-        padding: 1.45rem !important;
-    }
-
-    body[data-page="volunteer"] .moved-inline-style-139 .card-icon {
-        width: 56px !important;
-        height: 56px !important;
-        min-width: 56px !important;
-        min-height: 56px !important;
-        margin-bottom: 1.25rem !important;
-    }
-
-    body[data-page="volunteer"] .moved-inline-style-139 .card p,
-    body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-039 {
-        font-size: 0.96rem !important;
-        line-height: 1.65 !important;
+        font-size: 1.15rem !important;
     }
 }
