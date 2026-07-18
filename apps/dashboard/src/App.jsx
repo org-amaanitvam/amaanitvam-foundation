@@ -43,8 +43,8 @@ export default function App() {
       <Route path="/profile" element={<DashPage><ProfilePage /></DashPage>} />
       
       {/* Reports Feature Group */}
-      <Route path="/member-reports" element={<DashPage><Reports /></DashPage>} /> 
       <Route path="/reports" element={<DashPage><Reports /></DashPage>} />
+      <Route path="/member-reports/:uid" element={<DashPage><MemberReportsPage /></DashPage>} />
       
       {/* Admin/HR Feature Routes */}
       <Route path="/attendance" element={<DashPage><AttendancePage /></DashPage>} />

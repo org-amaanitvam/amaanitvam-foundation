@@ -22,9 +22,18 @@ export default function Reports() {
     const fetchReport = async () => {
       try {
         setLoading(true);
+        // Fetch specific member report
         const { data } = await api.get(`/reports/member/${userId}`);
-        if (data.success) {
-          setReportData(data.data);
+        console.log("🔥 REPORTS DATA ARRIVED:", data);
+        
+        // FOOLPROOF UNPACKER: Handles both {success: true, data: {...}} OR direct {...}
+        const actualData = data.success !== undefined ? data.data : data;
+
+        // Ensure we actually have data before setting it
+        if (actualData && Object.keys(actualData).length > 0) {
+          setReportData(actualData);
+        } else {
+          setReportData(null);
         }
       } catch (err) {
         console.error("API Fetch Error:", err);
@@ -45,15 +54,18 @@ export default function Reports() {
     );
   }
 
-  if (!reportData) {
+  // 🛡️ THE FIX: Safe Bouncer
+  if (!reportData || !reportData.taskBreakdown) {
     return (
-      <div className="text-slate-500">
-        No report data available.
+      <div className="text-slate-500 p-6 flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-xl mt-6">
+        <Activity className="w-8 h-8 text-slate-300 mb-2" />
+        <p>No report data available yet. Please complete some tasks!</p>
       </div>
     );
   }
 
-  const { basicDetails, metrics, appraisalSummary, timeline } = reportData;
+  // Destructure safely now that the bouncer passed!
+  const { basicDetails, metrics, appraisalSummary, taskBreakdown, timeline } = reportData;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -64,7 +76,7 @@ export default function Reports() {
           My Performance Report
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Analytics and activity summary for {basicDetails.name} ({basicDetails.memberId})
+          Analytics and activity summary for {basicDetails?.name || 'Dashboard User'} 
         </p>
       </div>
 
@@ -73,7 +85,7 @@ export default function Reports() {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Attendance Rate</p>
-            <h3 className="text-3xl font-bold text-slate-800">{metrics.attendanceRate}%</h3>
+            <h3 className="text-3xl font-bold text-slate-800">{metrics?.attendanceRate || '0%'}</h3>
           </div>
           <div className="p-3 bg-blue-50 text-blue-600 rounded-full">
             <Calendar className="w-6 h-6" />
@@ -83,7 +95,7 @@ export default function Reports() {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500">Task Completion</p>
-            <h3 className="text-3xl font-bold text-slate-800">{metrics.taskCompletionRate}%</h3>
+            <h3 className="text-3xl font-bold text-slate-800">{metrics?.taskCompletion || '0%'}</h3>
           </div>
           <div className="p-3 bg-green-50 text-green-600 rounded-full">
             <CheckCircle className="w-6 h-6" />
@@ -95,19 +107,19 @@ export default function Reports() {
       <h2 className="text-lg font-bold text-slate-800 mt-8 mb-4">Appraisal Summary</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary.meetingsAttended}</p>
+          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary?.meetings || 0}</p>
           <p className="text-xs text-slate-500 uppercase tracking-wide mt-1">Meetings</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary.projectsWorkedOn}</p>
+          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary?.projects || 0}</p>
           <p className="text-xs text-slate-500 uppercase tracking-wide mt-1">Projects</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary.certificatesEarned}</p>
+          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary?.certificates || 0}</p>
           <p className="text-xs text-slate-500 uppercase tracking-wide mt-1">Certificates</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary.workUpdatesCount}</p>
+          <p className="text-2xl font-bold text-[#56051a]">{appraisalSummary?.tasksAssigned || 0}</p>
           <p className="text-xs text-slate-500 uppercase tracking-wide mt-1">Tasks Assigned</p>
         </div>
       </div>
@@ -122,19 +134,19 @@ export default function Reports() {
         </div>
         <div className="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
            <div>
-             <p className="text-xl font-semibold text-slate-700">{metrics.taskBreakdown.completed}</p>
+             <p className="text-xl font-semibold text-slate-700">{taskBreakdown?.completed || 0}</p>
              <p className="text-xs text-slate-500">Completed</p>
            </div>
            <div>
-             <p className="text-xl font-semibold text-blue-600">{metrics.taskBreakdown.inProgress}</p>
+             <p className="text-xl font-semibold text-blue-600">{taskBreakdown?.inProgress || 0}</p>
              <p className="text-xs text-slate-500">In Progress</p>
            </div>
            <div>
-             <p className="text-xl font-semibold text-orange-500">{metrics.taskBreakdown.pendingApproval}</p>
+             <p className="text-xl font-semibold text-orange-500">{taskBreakdown?.pendingReview || 0}</p>
              <p className="text-xs text-slate-500">Pending Review</p>
            </div>
            <div>
-             <p className="text-xl font-semibold text-red-600">{metrics.taskBreakdown.overdue}</p>
+             <p className="text-xl font-semibold text-red-600">{taskBreakdown?.overdue || 0}</p>
              <p className="text-xs text-slate-500">Overdue</p>
            </div>
         </div>
@@ -145,8 +157,8 @@ export default function Reports() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         {timeline && timeline.length > 0 ? (
           <div className="space-y-6">
-            {/* Reversing to show newest first */}
-            {[...timeline].reverse().slice(0, 10).map((event, index) => (
+            {/* Displaying newest first */}
+            {timeline.slice(0, 10).map((item, index) => (
               <div key={index} className="flex gap-4">
                 <div className="mt-1">
                   <div className="w-3 h-3 rounded-full bg-[#56051a]"></div>
@@ -155,12 +167,10 @@ export default function Reports() {
                   )}
                 </div>
                 <div className="pb-4">
-                  <p className="text-sm font-semibold text-slate-800">{event.title}</p>
-                  <p className="text-sm text-slate-500 mt-0.5">{event.description}</p>
+                  <p className="text-sm font-semibold text-slate-800">{item.event}</p>
+                  <p className="text-sm text-slate-500 mt-0.5">{item.description}</p>
                   <p className="text-xs text-slate-400 mt-1">
-                    {new Date(event.date).toLocaleDateString('en-IN', {
-                      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                    })}
+                    {item.date}
                   </p>
                 </div>
               </div>

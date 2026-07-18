@@ -1,365 +1,187 @@
-import { useEffect, useState } from 'react';
-import { CalendarCheck, ClipboardList, Eye, Loader2, Save, Users } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { CalendarCheck, Clock, Loader2, LogIn, LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 
-const STATUS_OPTIONS = [
-  { value: 'present', label: 'Present' },
-  { value: 'absent', label: 'Absent' },
-  { value: 'late', label: 'Late' },
-  { value: 'half-day', label: 'Half day' },
-  { value: 'leave', label: 'Leave' },
-];
-
-const statusClasses = {
-  present: 'bg-emerald-100 text-emerald-700',
-  absent: 'bg-rose-100 text-rose-700',
-  late: 'bg-amber-100 text-amber-700',
-  'half-day': 'bg-sky-100 text-sky-700',
-  leave: 'bg-violet-100 text-violet-700',
-};
-
 export default function AttendancePage() {
-  const { userProfile, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState('view');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
-  const [departmentOptions, setDepartmentOptions] = useState([]);
-  const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [myAttendance, setMyAttendance] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [savingUserId, setSavingUserId] = useState(null);
-  const [drafts, setDrafts] = useState({});
-
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isDepartmentHead, setIsDepartmentHead] = useState(false);
+  const { userProfile, user, loading: authLoading } = useAuth();
   
-  // Wait until we fetch API rights to determine if they can register
-  const [rightsLoaded, setRightsLoaded] = useState(false);
-  const canRegister = isAdmin || isDepartmentHead;
-  const isViewerOnly = rightsLoaded && !canRegister;
+  // Safely grab the ID depending on how your auth context stores it
+  const userId = userProfile?._id || userProfile?.uid || user?.uid || user?._id;
+
+  const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [todayRecord, setTodayRecord] = useState(null);
+
+  const fetchAttendance = useCallback(async () => {
+    if (!userId) return;
+    try {
+      setLoading(true);
+      // Calls the history route we just built!
+      const { data } = await api.get(`/attendance/member/${userId}`);
+      
+      const records = data.history || [];
+      setHistory(records);
+
+      // Check if we already punched in today
+      const todayString = new Date().toISOString().split('T')[0];
+      const todayData = records.find(r => r.date === todayString);
+      setTodayRecord(todayData || null);
+
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to load attendance history');
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
 
   useEffect(() => {
-    if (authLoading || !userProfile) return;
-    loadDepartmentOptions();
-  }, [authLoading, userProfile]);
-
-  useEffect(() => {
-    if (!rightsLoaded) return;
-    
-    if (isViewerOnly) {
-      setActiveTab('view');
-      loadMyAttendance();
-      return;
+    if (!authLoading) {
+      fetchAttendance();
     }
+  }, [authLoading, fetchAttendance]);
 
-    if (activeTab === 'view') {
-      loadDepartmentAttendance(selectedDepartmentId, selectedDate);
-    }
-
-    if (activeTab === 'register') {
-      if (!selectedDepartmentId) return;
-      loadDepartmentUsers(selectedDepartmentId);
-    }
-  }, [selectedDepartmentId, activeTab, selectedDate, isViewerOnly, rightsLoaded]);
-
-  const loadDepartmentOptions = async () => {
+  const handlePunchIn = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/attendance/users');
-      
-      setIsAdmin(data.isAdmin);
-      setIsDepartmentHead(data.isDepartmentHead || data.isAdmin);
-      
-      if (data.isAdmin) {
-        const options = [
-          { departmentId: 'all', departmentName: 'All Departments' },
-          ...(data.departments || []),
-        ];
-        setDepartmentOptions(options);
-        setSelectedDepartmentId('all');
-      } else if (data.isDepartmentHead) {
-        const options = [{ departmentId: data.departmentId, departmentName: data.departmentName }];
-        setDepartmentOptions(options);
-        setSelectedDepartmentId(data.departmentId || '');
-      }
-
-      if (data.users?.length) {
-        setUsers(data.users);
-      }
-      setRightsLoaded(true);
+      await api.post('/attendance/punch-in', { userId });
+      toast.success('Punched in successfully! Have a great shift! 🚀');
+      fetchAttendance();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to load attendance data');
-      setRightsLoaded(true);
+      toast.error(error.response?.data?.message || 'Failed to punch in');
     } finally {
       setLoading(false);
     }
   };
 
-  const loadDepartmentAttendance = async (departmentId, date) => {
-    if (!departmentId) return;
+  const handlePunchOut = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get(`/attendance/department/${departmentId}`, { params: { date } });
-      setAttendanceRecords(data.attendance || []);
+      await api.post('/attendance/punch-out', { userId });
+      toast.success('Punched out successfully! Great work today! 🌟');
+      fetchAttendance();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to load attendance');
+      toast.error(error.response?.data?.message || 'Failed to punch out');
     } finally {
       setLoading(false);
     }
   };
 
-  const loadDepartmentUsers = async (departmentId) => {
-    if (!departmentId) return;
-
-    try {
-      setLoading(true);
-      const { data } = await api.get('/attendance/users', { params: { departmentId } });
-      setUsers(data.users || []);
-      const nextDrafts = {};
-      (data.users || []).forEach((user) => {
-        nextDrafts[user._id] = 'present';
-      });
-      setDrafts(nextDrafts);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to load users');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadMyAttendance = async () => {
-    try {
-      setLoading(true);
-      // Fetch ALL records — no date param. Client filters for display.
-      const { data } = await api.get('/attendance/me');
-      setMyAttendance(data.attendance || []);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to load your attendance');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSaveAttendance = async (userItem) => {
-    try {
-      const targetDepartmentId = userItem.departmentId || (selectedDepartmentId !== 'all' ? selectedDepartmentId : null);
-      if (!targetDepartmentId) {
-        toast.error('Cannot mark attendance: User has no valid department assigned.');
-        return;
-      }
-      setSavingUserId(userItem._id);
-      const status = drafts[userItem._id] || 'present';
-      await api.post('/attendance/mark', {
-        departmentId: targetDepartmentId,
-        userId: userItem._id,
-        date: selectedDate,
-        status,
-        title: 'Attendance Register',
-        remark: '',
-      });
-      toast.success(`${userItem.name || userItem.email} marked`);
-      loadDepartmentAttendance(selectedDepartmentId, selectedDate);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to save attendance');
-    } finally {
-      setSavingUserId(null);
-    }
-  };
-
-  const handleDepartmentChange = (value) => {
-    setSelectedDepartmentId(value);
-  };
+  if (authLoading || (loading && history.length === 0)) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 text-[#56051a] animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-800">Attendance</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              View attendance records or register attendance for your department.
-            </p>
-          </div>
-          {canRegister && (
-            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1">
+      
+      {/* Header Section */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <Clock className="w-6 h-6 text-[#56051a]" />
+            Time & Attendance
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Log your daily hours and view your attendance history.
+          </p>
+        </div>
+
+        {/* Punch In / Out Controls */}
+        <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+          {!todayRecord ? (
+            <button
+              onClick={handlePunchIn}
+              disabled={loading}
+              className="flex items-center gap-2 bg-[#56051a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#7a0622] transition-colors disabled:opacity-70"
+            >
+              <LogIn className="w-4 h-4" />
+              Punch In
+            </button>
+          ) : !todayRecord.punchOut ? (
+            <div className="flex items-center gap-4">
+              <div className="text-sm font-medium text-emerald-600 flex items-center gap-1">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                Currently Clocked In
+              </div>
               <button
-                onClick={() => setActiveTab('view')}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium ${activeTab === 'view' ? 'bg-[#56051a] text-white' : 'text-slate-600'}`}
+                onClick={handlePunchOut}
+                disabled={loading}
+                className="flex items-center gap-2 bg-slate-800 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-slate-700 transition-colors disabled:opacity-70"
               >
-                <Eye className="mr-1 inline h-4 w-4" />
-                View Attendance
+                <LogOut className="w-4 h-4" />
+                Punch Out
               </button>
-              <button
-                onClick={() => setActiveTab('register')}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium ${activeTab === 'register' ? 'bg-[#56051a] text-white' : 'text-slate-600'}`}
-              >
-                <ClipboardList className="mr-1 inline h-4 w-4" />
-                Register Attendance
-              </button>
-            </div>
-          )}
-          {isViewerOnly && (
-            <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-600">
-              Viewing only your attendance
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-1 flex-col gap-3 md:flex-row">
-            <label className="flex flex-col text-sm font-medium text-slate-600">
-              Date
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="mt-1 rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-[#56051a]"
-              />
-            </label>
-
-            {!isViewerOnly && (
-              <label className="flex flex-col text-sm font-medium text-slate-600">
-                Department
-                <select
-                  value={selectedDepartmentId}
-                  onChange={(e) => handleDepartmentChange(e.target.value)}
-                  className="mt-1 min-w-[220px] rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-[#56051a]"
-                >
-                  {departmentOptions.length === 0 ? (
-                    <option value="">No department available</option>
-                  ) : (
-                    departmentOptions.map((dept) => (
-                      <option key={dept.departmentId} value={dept.departmentId}>
-                        {dept.departmentName}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </label>
-            )}
-          </div>
-
-          <div className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
-            {canRegister
-              ? 'Admins and department heads can register attendance for their team.'
-              : 'You can only view your own attendance records.'}
-          </div>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          Loading attendance...
-        </div>
-      ) : activeTab === 'register' && canRegister ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <Users className="h-5 w-5 text-[#56051a]" />
-            <h2 className="text-lg font-semibold text-slate-800">Register attendance</h2>
-          </div>
-
-          {users.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-              No users are available for this department today.
             </div>
           ) : (
-            <div className="space-y-3">
-              {users.map((userItem) => (
-                <div key={userItem._id} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="font-medium text-slate-800">{userItem.name || userItem.email}</p>
-                    <p className="text-sm text-slate-500">{userItem.email} • {userItem.role}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={drafts[userItem._id] || 'present'}
-                      onChange={(e) => setDrafts((prev) => ({ ...prev, [userItem._id]: e.target.value }))}
-                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#56051a]"
-                    >
-                      {STATUS_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      onClick={() => handleSaveAttendance(userItem)}
-                      disabled={savingUserId === userItem._id}
-                      className="inline-flex items-center gap-2 rounded-lg bg-[#56051a] px-3 py-2 text-sm font-semibold text-white hover:bg-[#7a0622] disabled:opacity-70"
-                    >
-                      {savingUserId === userItem._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                      Save
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="text-sm font-medium text-slate-600 bg-slate-200 px-4 py-2 rounded-lg">
+              Shift Completed ({todayRecord.totalHours} hrs)
             </div>
           )}
         </div>
-      ) : (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <CalendarCheck className="h-5 w-5 text-[#56051a]" />
-            <h2 className="text-lg font-semibold text-slate-800">
-              {canRegister ? 'Attendance summary' : 'Your attendance'}
-            </h2>
-          </div>
+      </div>
 
-          {canRegister ? (
-            attendanceRecords.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-                No attendance records found for this department and date.
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {attendanceRecords.map((record) => (
-                  <div key={record._id} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <p className="font-medium text-slate-800">{record.user?.name || record.user?.email || 'Unknown user'}</p>
-                      <p className="text-sm text-slate-500">{record.user?.email} • {record.user?.role}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${statusClasses[record.status] || 'bg-slate-100 text-slate-700'}`}>
-                        {record.status}
-                      </span>
-                      <span className="text-sm text-slate-500">Marked by {record.markedBy?.name || 'admin'}</span>
-                    </div>
+      {/* History Section */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-6 flex items-center gap-2">
+          <CalendarCheck className="h-5 w-5 text-[#56051a]" />
+          <h2 className="text-lg font-bold text-slate-800">My Attendance History</h2>
+        </div>
+
+        {history.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-300 p-12 text-center text-slate-500">
+            You don't have any attendance records yet. Punch in to get started!
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {history.map((record) => (
+              <div key={record._id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-slate-200 bg-slate-50/50 transition-colors gap-4">
+                
+                <div className="flex items-center gap-4">
+                  <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm text-center min-w-[70px]">
+                    <p className="text-xs font-bold text-slate-400 uppercase">
+                      {new Date(record.date).toLocaleDateString('en-US', { month: 'short' })}
+                    </p>
+                    <p className="text-lg font-black text-[#56051a]">
+                      {new Date(record.date).toLocaleDateString('en-US', { day: '2-digit' })}
+                    </p>
                   </div>
-                ))}
-              </div>
-            )
-          ) : (() => {
-            const filtered = selectedDate
-              ? myAttendance.filter((r) => new Date(r.date).toISOString().slice(0, 10) === selectedDate)
-              : myAttendance;
-            return filtered.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-                {selectedDate ? `No attendance record found for ${new Date(selectedDate).toLocaleDateString()}.` : 'No attendance records found for your account.'}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filtered.map((record) => (
-                  <div key={record._id} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <p className="font-medium text-slate-800">{record.department?.departmentName || 'Department'}</p>
-                      <p className="text-sm text-slate-500">{new Date(record.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                    </div>
-                    <span className={`rounded-full px-3 py-1 text-sm font-semibold capitalize ${statusClasses[record.status] || 'bg-slate-100 text-slate-700'}`}>
+                  <div>
+                    <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border bg-emerald-100 text-emerald-700 border-emerald-200">
                       {record.status}
                     </span>
+                    <p className="text-sm text-slate-500 mt-2 font-medium">
+                      Punched In: {new Date(record.punchIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
-                ))}
+                </div>
+
+                <div className="text-left md:text-right">
+                  {record.punchOut ? (
+                    <>
+                      <p className="text-lg font-bold text-slate-800">{record.totalHours} Hours</p>
+                      <p className="text-xs text-slate-400">
+                        Out: {new Date(record.punchOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm font-medium text-amber-600 animate-pulse">Shift in progress...</p>
+                  )}
+                </div>
+
               </div>
-            );
-          })()}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+} 

@@ -19,7 +19,7 @@ export default function ActivityFeed() {
       setError(false);
     } catch (err) {
       setError(true);
-      toast.error('Failed to load recent activity');
+      //toast.error('Failed to load recent activity');
     } finally {
       setLoading(false);
     }

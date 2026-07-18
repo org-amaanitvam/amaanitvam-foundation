@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { auth } from '../config/firebase';
+import { signOut } from 'firebase/auth'; // 1. THE FIX: Import the Firebase sign-out function
+
+const isDevelopment = import.meta.env.MODE === 'development';
+const defaultBaseURL = isDevelopment 
+  ? 'http://localhost:5000/api' 
+  : 'https://amaanitvam-foundation.onrender.com/api';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://amaanitvam-foundation.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultBaseURL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,7 +17,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    // 1. Give Firebase a split second to initialize if it's lagging
     if (!auth.currentUser) {
       await new Promise(resolve => {
         const unsubscribe = auth.onAuthStateChanged(user => {
@@ -27,7 +32,6 @@ api.interceptors.request.use(
       try {
         const token = await currentUser.getIdToken();
         
-        // 2. The Fix: Handle both older and newer Axios header injection
         if (config.headers && typeof config.headers.set === 'function') {
           config.headers.set('Authorization', `Bearer ${token}`);
         } else {
@@ -51,12 +55,16 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      console.warn("🚨 401 Unauthorized caught! Forcing a full Firebase logout to break the loop...");
       localStorage.clear();
       sessionStorage.clear();
 
-      if (window.location.pathname !== '/login') {
-        window.location.replace('/login');
-      }
+      // 2. THE FIX: Actually sign out of Firebase!
+      signOut(auth).then(() => {
+        if (window.location.pathname !== '/login') {
+          window.location.replace('/login');
+        }
+      });
     }
 
     return Promise.reject(error);

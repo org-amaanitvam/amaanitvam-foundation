@@ -1,4 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const schema = new mongoose.Schema({}, { timestamps: true });
-export default mongoose.models.Announcement || mongoose.model('Announcement', schema);
+const announcementSchema = new mongoose.Schema({
+  title: { 
+    type: String, 
+    required: true 
+  },
+  message: { 
+    type: String, 
+    required: true 
+  },
+  description: { 
+    type: String // In case older announcements used this field
+  }
+}, { 
+  timestamps: true // THIS IS THE MAGIC KEY! It auto-generates 'createdAt'
+});
+
+export default mongoose.model("Announcement", announcementSchema);
