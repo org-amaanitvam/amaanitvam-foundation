@@ -431,163 +431,115 @@ body[data-page="collaborations"] .partnership-box h2 {
 }
 
 /* =========================================================
-   CONTACT PAGE — FINAL ALIGNMENT & RESPONSIVE FIXES
-   Keep this block at the END of contact.css
+   CONTACT PAGE — FINAL OVERRIDES
    ========================================================= */
-
-/* 1) Contact form + info cards alignment */
 body[data-page="contact"] section[aria-labelledby="contact-form-heading"] {
     padding: 64px 0 !important;
-    background: var(--bg) !important;
+}
+
+body[data-page="contact"] section[aria-labelledby="contact-form-heading"]>.container,
+body[data-page="contact"] #faq>.container,
+body[data-page="contact"] section[aria-labelledby="partnerships-heading"]>.container,
+body[data-page="contact"] #donate>.container {
+    width: min(1280px, calc(100% - 40px)) !important;
+    max-width: 1280px !important;
+    margin-inline: auto !important;
 }
 
 body[data-page="contact"] .contact-layout {
     display: grid !important;
-    grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.95fr) !important;
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, .85fr) !important;
     gap: 32px !important;
-    align-items: stretch !important;
-    max-width: 1120px !important;
-    margin: 0 auto !important;
+    align-items: start !important;
 }
 
 body[data-page="contact"] .contact-left,
 body[data-page="contact"] .contact-right {
-    min-width: 0 !important;
     width: 100% !important;
-}
-
-body[data-page="contact"] .contact-left {
-    display: flex !important;
-    flex-direction: column !important;
+    min-width: 0 !important;
 }
 
 body[data-page="contact"] .contact-section-header {
-    width: 100% !important;
+    text-align: center !important;
     margin: 0 0 24px !important;
-    text-align: center !important;
 }
 
-body[data-page="contact"] .contact-section-header .section-label,
-body[data-page="contact"] .contact-section-header .section-title {
-    display: block !important;
-    width: 100% !important;
+body[data-page="contact"] .contact-section-header * {
+    text-align: center !important;
     margin-left: 0 !important;
-    margin-right: 0 !important;
-    text-align: center !important;
-}
-
-body[data-page="contact"] .contact-section-header .section-label {
-    margin-bottom: 8px !important;
-}
-
-body[data-page="contact"] .contact-section-header .section-title {
-    margin-bottom: 0 !important;
 }
 
 body[data-page="contact"] .contact-form-card {
     width: 100% !important;
-    height: 100% !important;
+    padding: 34px !important;
     margin: 0 !important;
-    padding: 32px !important;
-    box-sizing: border-box !important;
 }
 
 body[data-page="contact"] .contact-form-card>div {
-    width: 100% !important;
     margin-bottom: 18px !important;
 }
 
-body[data-page="contact"] .contact-form-card .form-input,
-body[data-page="contact"] .contact-form-card .form-textarea {
+body[data-page="contact"] .contact-form-card input,
+body[data-page="contact"] .contact-form-card textarea {
     width: 100% !important;
-    max-width: none !important;
     box-sizing: border-box !important;
 }
 
 body[data-page="contact"] .contact-right {
-    display: flex !important;
-    align-items: stretch !important;
-    padding-top: 88px !important;
+    padding-top: 91px !important;
 }
 
 body[data-page="contact"] .contact-info-stack {
     display: grid !important;
-    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
-    gap: 28px !important;
-    width: 100% !important;
-    height: 100% !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+    gap: 24px !important;
     margin: 0 !important;
 }
 
 body[data-page="contact"] .contact-info-card {
-    min-height: 0 !important;
-    height: 100% !important;
+    min-height: 250px !important;
     margin: 0 !important;
     padding: 28px !important;
-    box-sizing: border-box !important;
 }
 
-/* 2) FAQ — remove the single large white box */
+/* FAQ: no single outer white box */
 body[data-page="contact"] #faq [role="region"] {
-    max-width: 960px !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 1050px !important;
+    margin: 0 auto !important;
 }
 
 body[data-page="contact"] #faq .faq-item {
-    margin: 0 0 12px !important;
-    overflow: hidden !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 14px !important;
-    box-shadow: none !important;
+    margin-bottom: 12px !important;
+    overflow: hidden !important;
 }
 
 body[data-page="contact"] #faq .faq-question {
-    width: 100% !important;
-    padding: 18px 20px !important;
     background: transparent !important;
     border: 0 !important;
-    border-radius: 0 !important;
-    text-align: left !important;
+    width: 100% !important;
+    padding: 18px 20px !important;
 }
 
 body[data-page="contact"] #faq .faq-answer {
-    padding: 0 20px 18px !important;
     background: transparent !important;
+    padding: 0 20px 18px !important;
 }
 
-/* 3) Partnership cards — balanced sizing */
-body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .grid-4 {
-    max-width: 1120px !important;
-    margin: 0 auto !important;
-    gap: 20px !important;
-}
-
-body[data-page="contact"] section[aria-labelledby="partnerships-heading"] .card {
-    min-height: 230px !important;
-    height: 100% !important;
-    padding: 26px 22px !important;
-    box-sizing: border-box !important;
-}
-
-/* 4) Donation section — remove narrow/congested layout and empty space */
+/* Donation: full-width balanced two-column layout */
 body[data-page="contact"] #donate {
     padding: 64px 0 !important;
 }
 
-body[data-page="contact"] #donate>.container {
-    max-width: 1120px !important;
-    width: min(1120px, calc(100% - 40px)) !important;
-    margin: 0 auto !important;
-}
-
 body[data-page="contact"] #donate .split-2 {
     display: grid !important;
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr) !important;
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr) !important;
     gap: 28px !important;
     align-items: start !important;
     width: 100% !important;
@@ -610,7 +562,7 @@ body[data-page="contact"] #donate .secure-card {
 }
 
 body[data-page="contact"] #donate .donation-form-card {
-    padding: 30px !important;
+    padding: 32px !important;
 }
 
 body[data-page="contact"] #donate .donation-info {
@@ -619,33 +571,18 @@ body[data-page="contact"] #donate .donation-info {
     gap: 18px !important;
 }
 
-body[data-page="contact"] #donate .impact-card,
-body[data-page="contact"] #donate .tax-card,
-body[data-page="contact"] #donate .secure-card {
-    padding: 24px !important;
-}
-
-body[data-page="contact"] #donate input,
-body[data-page="contact"] #donate select,
-body[data-page="contact"] #donate textarea,
-body[data-page="contact"] #donate .pay-button {
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-}
-
 body[data-page="contact"] #donate .amount-buttons {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 10px !important;
 }
 
-body[data-page="contact"] #donate .amount-btn {
+body[data-page="contact"] #donate input,
+body[data-page="contact"] #donate .pay-button {
     width: 100% !important;
-    min-width: 0 !important;
+    box-sizing: border-box !important;
 }
 
-/* Tablet */
 @media (max-width: 900px) {
 
     body[data-page="contact"] .contact-layout,
@@ -658,36 +595,18 @@ body[data-page="contact"] #donate .amount-btn {
     }
 
     body[data-page="contact"] .contact-info-stack {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         grid-template-rows: auto !important;
-    }
-
-    body[data-page="contact"] .contact-info-card {
-        min-height: 220px !important;
     }
 }
 
-/* Mobile */
 @media (max-width: 600px) {
-
-    body[data-page="contact"] section[aria-labelledby="contact-form-heading"],
-    body[data-page="contact"] #faq,
-    body[data-page="contact"] section[aria-labelledby="partnerships-heading"],
-    body[data-page="contact"] #donate {
-        padding: 44px 0 !important;
-    }
 
     body[data-page="contact"] section[aria-labelledby="contact-form-heading"]>.container,
     body[data-page="contact"] #faq>.container,
     body[data-page="contact"] section[aria-labelledby="partnerships-heading"]>.container,
     body[data-page="contact"] #donate>.container {
-        width: min(100% - 28px, 1120px) !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-
-    body[data-page="contact"] .contact-layout {
-        gap: 22px !important;
+        width: calc(100% - 28px) !important;
     }
 
     body[data-page="contact"] .contact-form-card,
@@ -697,44 +616,13 @@ body[data-page="contact"] #donate .amount-btn {
     body[data-page="contact"] #donate .tax-card,
     body[data-page="contact"] #donate .secure-card {
         padding: 20px !important;
-        border-radius: 16px !important;
     }
 
     body[data-page="contact"] .contact-info-stack {
         grid-template-columns: 1fr !important;
-        gap: 16px !important;
-    }
-
-    body[data-page="contact"] .contact-info-card {
-        min-height: 190px !important;
-    }
-
-    body[data-page="contact"] #donate .split-2 {
-        gap: 18px !important;
     }
 
     body[data-page="contact"] #donate .amount-buttons {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-
-    body[data-page="contact"] #faq .faq-question {
-        padding: 16px !important;
-        gap: 12px !important;
-    }
-
-    body[data-page="contact"] #faq .faq-answer {
-        padding: 0 16px 16px !important;
-    }
-}
-
-@media (max-width: 380px) {
-
-    body[data-page="contact"] .contact-form-card,
-    body[data-page="contact"] .contact-info-card,
-    body[data-page="contact"] #donate .donation-form-card,
-    body[data-page="contact"] #donate .impact-card,
-    body[data-page="contact"] #donate .tax-card,
-    body[data-page="contact"] #donate .secure-card {
-        padding: 16px !important;
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 }
