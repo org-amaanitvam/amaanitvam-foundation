@@ -1763,6 +1763,494 @@ app.get(
   "/api/admin/gallery/gridfs/:bucket/:id",
   finalGalleryGridFsHandler
 );
+// FINAL_MEDIA_AND_CERTIFICATE_BINARY_DELIVERY_START
+// Public gallery media delivery is required because <img>/<video> requests do
+// not carry the Axios Authorization header. Certificate downloads remain admin-only.
+
+function finalToBuffer(value) {
+  if (!value) return null;
+  if (Buffer.isBuffer(value)) return value;
+
+  if (value.type === "Buffer" && Array.isArray(value.data)) {
+    return Buffer.from(value.data);
+  }
+
+  if (value._bsontype === "Binary") {
+    if (typeof value.value === "function") {
+      try {
+        const raw = value.value(true);
+        if (raw) return Buffer.from(raw);
+      } catch {
+        // Fall through to the buffer property.
+      }
+    }
+    if (value.buffer) return Buffer.from(value.buffer);
+  }
+
+  if (ArrayBuffer.isView(value)) {
+    return Buffer.from(value.buffer, value.byteOffset, value.byteLength);
+  }
+
+  if (value instanceof ArrayBuffer) {
+    return Buffer.from(value);
+  }
+
+  if (value.buffer && (Buffer.isBuffer(value.buffer) || ArrayBuffer.isView(value.buffer))) {
+    return Buffer.from(value.buffer);
+  }
+
+  return null;
+}
+
+function finalNestedValue(source, path) {
+  return path.split(".").reduce((value, key) => value?.[key], source);
+}
+
+function finalFirstBinary(source, paths) {
+  for (const path of paths) {
+    const buffer = finalToBuffer(finalNestedValue(source, path));
+    if (buffer?.length) return buffer;
+  }
+  return null;
+}
+
+function finalSafeFilename(value, fallback) {
+  const name = clean(value || fallback)
+    .replace(/[\r\n"]/g, "_")
+    .replace(/[\\/]/g, "_");
+  return name || fallback;
+}
+
+function finalMimeFromFilename(filename, fallback = "application/octet-stream") {
+  const lower = clean(filename).toLowerCase();
+  if (lower.endsWith(".pdf")) return "application/pdf";
+  if (lower.endsWith(".png")) return "image/png";
+  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+  if (lower.endsWith(".webp")) return "image/webp";
+  if (lower.endsWith(".gif")) return "image/gif";
+  if (lower.endsWith(".svg")) return "image/svg+xml";
+  if (lower.endsWith(".mp4")) return "video/mp4";
+  if (lower.endsWith(".webm")) return "video/webm";
+  if (lower.endsWith(".mov")) return "video/quicktime";
+  return fallback;
+}
+
+function finalSendBuffer(res, buffer, options = {}) {
+  const filename = finalSafeFilename(
+    options.filename,
+    options.download ? "certificate.pdf" : "gallery-file"
+  );
+  const contentType =
+    clean(options.contentType) ||
+    finalMimeFromFilename(filename, "application/octet-stream");
+
+  res.setHeader("Content-Type", contentType);
+  res.setHeader(
+    "Content-Disposition",
+    `${options.download ? "attachment" : "inline"}; filename="${filename}"`
+  );
+  res.setHeader(
+    "Cache-Control",
+    options.download ? "private, no-store" : "public, max-age=3600"
+  );
+  res.setHeader("Content-Length", String(buffer.length));
+  return res.end(buffer);
+}
+
+function finalAbsoluteMediaUrl(record) {
+  return clean(
+    finalFirstValue(
+      record.secure_url,
+      record.secureUrl,
+      record.cloudinaryUrl,
+      record.imageUrl,
+      record.mediaUrl,
+      record.fileUrl,
+      record.downloadUrl,
+      record.url,
+      record.path,
+      record.image?.secure_url,
+      record.image?.url,
+      record.file?.url,
+      record.media?.url,
+      record.metadata?.secure_url,
+      record.metadata?.url
+    )
+  );
+}
+
+function finalGalleryBinary(record) {
+  return finalFirstBinary(record, [
+    "buffer",
+    "data",
+    "imageData",
+    "fileData",
+    "mediaData",
+    "binary",
+    "image.buffer",
+    "image.data",
+    "file.buffer",
+    "file.data",
+    "media.buffer",
+    "media.data",
+    "metadata.buffer",
+    "metadata.data",
+  ]);
+}
+
+function finalCertificateBinary(record) {
+  return finalFirstBinary(record, [
+    "pdfBuffer",
+    "certificateBuffer",
+    "fileBuffer",
+    "pdf.data",
+    "pdf.buffer",
+    "certificate.data",
+    "certificate.buffer",
+    "file.data",
+    "file.buffer",
+  ]);
+}
+
+function finalObjectIdCandidates(...values) {
+  const ids = [];
+  const seen = new Set();
+
+  const add = (value) => {
+    if (value === undefined || value === null) return;
+    if (Array.isArray(value)) {
+      value.forEach(add);
+      return;
+    }
+    if (typeof value === "object" && !value._bsontype) {
+      for (const key of ["_id", "id", "fileId", "gridFsId", "gridfsId", "value"]) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) add(value[key]);
+      }
+      return;
+    }
+
+    const id = objectId(value);
+    if (!id) return;
+    const key = String(id);
+    if (seen.has(key)) return;
+    seen.add(key);
+    ids.push(id);
+  };
+
+  values.forEach(add);
+  return ids;
+}
+
+async function finalFindDocument(collectionNamesToSearch, rawId, extraQueries = []) {
+  const id = objectId(rawId);
+  const queries = [
+    ...(id ? [{ _id: id }] : []),
+    { _id: rawId },
+    { id: rawId },
+    ...extraQueries,
+  ];
+
+  for (const collectionName of collectionNamesToSearch) {
+    if (!finalCollectionIsReadable(collectionName)) continue;
+    const collection = mongoose.connection.db.collection(collectionName);
+    for (const query of queries) {
+      const record = await collection.findOne(query);
+      if (record) return finalPlainRecord(record, collectionName);
+    }
+  }
+  return null;
+}
+
+async function finalFindGridFsFile(record, requestedId) {
+  const allNames = await collectionNames();
+  const filesCollections = allNames.filter(
+    (name) =>
+      /\.files$/i.test(name) &&
+      finalCollectionIsReadable(name) &&
+      /(gallery|media|image|upload|file)/i.test(name)
+  );
+
+  const sourceCollection = clean(record?._sourceCollection);
+  if (/\.files$/i.test(sourceCollection)) {
+    return {
+      bucketName: sourceCollection.replace(/\.files$/i, ""),
+      file: record,
+    };
+  }
+
+  const candidateIds = finalObjectIdCandidates(
+    requestedId,
+    record?._id,
+    record?.fileId,
+    record?.gridFsId,
+    record?.gridfsId,
+    record?.mediaFileId,
+    record?.imageFileId,
+    record?.storageId,
+    record?.uploadId,
+    record?.metadata?.fileId,
+    record?.metadata?.gridFsId,
+    record?.metadata?.gridfsId,
+    record?.metadata?.uploadId
+  );
+
+  const recordId = objectId(record?._id || requestedId);
+  const filename = clean(
+    finalFirstValue(
+      record?.originalName,
+      record?.filename,
+      record?.fileName,
+      record?.name,
+      record?.metadata?.filename,
+      record?.metadata?.originalName
+    )
+  );
+
+  for (const filesCollection of filesCollections) {
+    const collection = mongoose.connection.db.collection(filesCollection);
+    const queries = [
+      ...candidateIds.map((candidateId) => ({ _id: candidateId })),
+      ...(recordId
+        ? [
+            { "metadata.mediaId": recordId },
+            { "metadata.galleryId": recordId },
+            { "metadata.sourceId": recordId },
+            { "metadata.recordId": recordId },
+          ]
+        : []),
+      ...(filename ? [{ filename }] : []),
+    ];
+
+    for (const query of queries) {
+      const file = await collection.findOne(query);
+      if (file) {
+        return {
+          bucketName: filesCollection.replace(/\.files$/i, ""),
+          file,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function finalStreamGridFs(res, next, bucketName, file, options = {}) {
+  const GridFSBucket = mongoose.mongo?.GridFSBucket;
+  if (!GridFSBucket) {
+    return res.status(500).json({
+      success: false,
+      message: "GridFS driver is unavailable",
+    });
+  }
+
+  const filename = finalSafeFilename(
+    options.filename ||
+      file.filename ||
+      file.metadata?.originalName ||
+      file.metadata?.filename,
+    options.download ? "certificate.pdf" : "gallery-file"
+  );
+  const contentType =
+    clean(
+      options.contentType ||
+        file.contentType ||
+        file.metadata?.contentType ||
+        file.metadata?.mimeType
+    ) || finalMimeFromFilename(filename);
+
+  res.setHeader("Content-Type", contentType);
+  res.setHeader(
+    "Content-Disposition",
+    `${options.download ? "attachment" : "inline"}; filename="${filename}"`
+  );
+  res.setHeader(
+    "Cache-Control",
+    options.download ? "private, no-store" : "public, max-age=3600"
+  );
+  if (Number.isFinite(Number(file.length))) {
+    res.setHeader("Content-Length", String(file.length));
+  }
+
+  const stream = new GridFSBucket(mongoose.connection.db, {
+    bucketName,
+  }).openDownloadStream(file._id);
+
+  stream.on("error", (error) => {
+    if (res.headersSent) {
+      res.destroy(error);
+    } else {
+      next(error);
+    }
+  });
+  stream.pipe(res);
+}
+
+async function finalGalleryMediaDeliveryHandler(req, res, next) {
+  try {
+    const requestedId = clean(req.params.id);
+    const names = (await collectionNames()).filter(
+      (name) =>
+        finalCollectionIsReadable(name) &&
+        !/folder|album/i.test(name) &&
+        (finalGalleryMediaCollection(name) || /\.files$/i.test(name))
+    );
+
+    const record = await finalFindDocument(names, requestedId, [
+      { mediaId: requestedId },
+      { fileId: requestedId },
+      { "metadata.mediaId": requestedId },
+    ]);
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "Gallery media was not found",
+      });
+    }
+
+    const binary = finalGalleryBinary(record);
+    if (binary) {
+      const filename = finalFirstValue(
+        record.originalName,
+        record.filename,
+        record.fileName,
+        record.name,
+        record.title,
+        "gallery-file"
+      );
+      const contentType = finalFirstValue(
+        record.contentType,
+        record.mimeType,
+        record.mimetype,
+        record.fileType,
+        record.metadata?.contentType,
+        record.metadata?.mimeType
+      );
+      return finalSendBuffer(res, binary, {
+        filename,
+        contentType,
+        download: false,
+      });
+    }
+
+    const gridFsFile = await finalFindGridFsFile(record, requestedId);
+    if (gridFsFile) {
+      return finalStreamGridFs(
+        res,
+        next,
+        gridFsFile.bucketName,
+        gridFsFile.file,
+        { download: false }
+      );
+    }
+
+    const url = finalAbsoluteMediaUrl(record);
+    if (url && url !== req.originalUrl) {
+      return res.redirect(302, url);
+    }
+
+    return res.status(404).json({
+      success: false,
+      message: "Gallery media file is missing from storage",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function finalCertificateDownloadHandler(req, res, next) {
+  try {
+    const requestedId = clean(req.params.id);
+    const names = (await collectionNames()).filter(
+      (name) =>
+        finalCollectionIsReadable(name) &&
+        (/^certificates?$/i.test(name) || /certificate/i.test(name))
+    );
+
+    const record = await finalFindDocument(names, requestedId, [
+      { certificateId: requestedId },
+      { certificateId: requestedId.toUpperCase() },
+      { certId: requestedId },
+    ]);
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "Certificate was not found",
+      });
+    }
+
+    const certificateName = finalSafeFilename(
+      `${clean(record.certificateId || requestedId) || "certificate"}.pdf`,
+      "certificate.pdf"
+    );
+
+    const pdf = finalCertificateBinary(record);
+    if (pdf) {
+      return finalSendBuffer(res, pdf, {
+        filename: finalFirstValue(record.pdfOriginalName, certificateName),
+        contentType: finalFirstValue(
+          record.pdfContentType,
+          record.contentType,
+          "application/pdf"
+        ),
+        download: true,
+      });
+    }
+
+    const gridFsFile = await finalFindGridFsFile(record, requestedId);
+    if (gridFsFile) {
+      return finalStreamGridFs(
+        res,
+        next,
+        gridFsFile.bucketName,
+        gridFsFile.file,
+        {
+          filename: finalFirstValue(record.pdfOriginalName, certificateName),
+          contentType: "application/pdf",
+          download: true,
+        }
+      );
+    }
+
+    const url = clean(
+      finalFirstValue(
+        record.pdfUrl,
+        record.certificateUrl,
+        record.downloadUrl,
+        record.fileUrl,
+        record.secure_url,
+        record.url,
+        record.file?.url,
+        record.pdf?.url
+      )
+    );
+    if (url && url !== req.originalUrl) {
+      return res.redirect(302, url);
+    }
+
+    return res.status(404).json({
+      success: false,
+      message: "No PDF is stored for this certificate. Use Replace PDF once.",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+app.get(
+  "/api/gallery/media/:id",
+  finalGalleryMediaDeliveryHandler
+);
+app.get(
+  "/api/admin/certificates/:id/download",
+  requireAdministrator,
+  finalCertificateDownloadHandler
+);
+// FINAL_MEDIA_AND_CERTIFICATE_BINARY_DELIVERY_END
+
+
 // FINAL_ADMIN_DATA_RECOVERY_END
 
 registerCrud("candidates", ["/api/admin/candidates"]);
