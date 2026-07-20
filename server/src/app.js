@@ -32,6 +32,7 @@ import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Che
 
 const app = express();
 
+import productionProfileRoutes from "./routes/productionProfile.routes.js";
 // Security and utility middleware
 app.use(helmet());
 
@@ -71,6 +72,7 @@ app.get('/api/public/settings', (_req, res) => {
   });
 });
 
+app.use("/api", productionProfileRoutes);
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use('/api/users', userRoutes);
