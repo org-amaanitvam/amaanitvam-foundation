@@ -288,6 +288,13 @@ async function collectionNames() {
 }
 
 function scoreCollectionName(name, spec) {
+  // GRIDFS_CHUNK_COLLECTION_GUARD:
+  // GridFS *.chunks collections contain binary file pieces, not media records.
+  // Querying/sorting them as normal resources causes large-memory failures.
+  if (/\.chunks$/i.test(name) || /^system\./i.test(name)) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
   let score = 0;
 
   for (let index = 0; index < spec.patterns.length; index += 1) {
@@ -333,6 +340,7 @@ async function listResource(resourceKey, options = {}) {
         updatedAt: -1,
         _id: -1,
       })
+      .allowDiskUse(true)
       .limit(options.limit || 2000);
 
     const rows = await cursor.toArray();
