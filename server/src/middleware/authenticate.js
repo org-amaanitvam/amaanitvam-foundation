@@ -1,5 +1,4 @@
-
-import admin from '../config/firebase.js';
+import { getAuth } from 'firebase-admin/auth';
 import { firebaseReady } from '../config/firebase.js';
 import { UnauthorizedError } from '../shared/errors/AppError.js';
 
@@ -20,7 +19,7 @@ export const authenticate = async (req, _res, next) => {
     }
 
     try {
-      req.user = await admin.auth().verifyIdToken(token);
+      req.user = await getAuth().verifyIdToken(token);
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
         console.error('[auth] Firebase token verification failed:', error?.code || error?.message || error);
