@@ -1,5 +1,6 @@
+
 import axios from 'axios';
-import { auth } from './firebase';
+import { auth } from './firebase.js';
 
 const productionApi = 'https://amaanitvam-foundation.onrender.com/api';
 const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : productionApi);
@@ -10,19 +11,53 @@ const api = axios.create({
   timeout: 30000,
 });
 
-api.interceptors.request.use(async (config) => {
-  const user = auth.currentUser;
-  if (user) {
-    const token = await user.getIdToken();
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+const waitForAuth = async () => {
+  if (typeof auth.authStateReady === 'function') {
+    await auth.authStateReady();
   }
+  return auth.currentUser;
+};
+
+const persistToken = (token) => {
+  if (!token) return;
+  localStorage.setItem('adminToken', token);
+  localStorage.setItem('firebaseToken', token);
+};
+
+api.interceptors.request.use(async (config) => {
+  const user = await waitForAuth();
+  if (!user) return config;
+
+  const token = await user.getIdToken();
+  persistToken(token);
+  config.headers = config.headers || {};
+  config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(error),
+  async (error) => {
+    const originalRequest = error?.config;
+    const shouldRetry =
+      error?.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest.__firebaseAuthRetried;
+
+    if (shouldRetry) {
+      const user = await waitForAuth();
+      if (user) {
+        originalRequest.__firebaseAuthRetried = true;
+        const freshToken = await user.getIdToken(true);
+        persistToken(freshToken);
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers.Authorization = `Bearer ${freshToken}`;
+        return api.request(originalRequest);
+      }
+    }
+
+    return Promise.reject(error);
+  },
 );
 
 export default api;

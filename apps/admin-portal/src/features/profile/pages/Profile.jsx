@@ -5,10 +5,8 @@ import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const { userProfile, setUserProfile } = useAuth();
-  const [formData, setFormData] = useState({ name: '', phone: '', department: '', designation: '',
-  department: '',
-  domain: '', });
+  const { userProfile, setUserProfile, profileError, refreshProfile } = useAuth();
+  const [formData, setFormData] = useState({ name: '', phone: '', designation: '', department: '', domain: '' });
   const [profileImage, setProfileImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [saving, setSaving] = useState(false);
@@ -63,8 +61,8 @@ export default function Profile() {
         payload.profileImage = base64Image;
       }
 
-      const res = await api.put('/admin/me', payload);
-      setUserProfile(res.data.user);
+      const res = await api.patch('/profile/me', payload);
+      setUserProfile(res.data?.user || res.data?.admin || res.data?.profile || res.data?.data || res.data);
       toast.success('Profile updated successfully!');
       setProfileImage(null);
     } catch (err) {
@@ -92,8 +90,18 @@ export default function Profile() {
 
   if (!userProfile) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#56051a]" />
+      <div className="max-w-xl mx-auto mt-10 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center">
+        <h1 className="text-lg font-semibold text-slate-800">Administrator profile could not be loaded</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          {profileError || 'Refresh the Firebase session and try again.'}
+        </p>
+        <button
+          type="button"
+          onClick={() => refreshProfile()}
+          className="mt-4 rounded-xl bg-[#56051a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#7a1e3a]"
+        >
+          Retry profile
+        </button>
       </div>
     );
   }

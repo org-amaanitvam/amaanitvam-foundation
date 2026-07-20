@@ -17,7 +17,7 @@ import ActivityFeed from "../../components/ActivityFeed/ActivityFeed";
 import AttendanceCard from "../attendance/AttendanceCard.jsx";
 import AddProjectManagement from "../../components/Projects/AddProjectManagement.jsx";
 import AddAnnouncementForm from "../../components/announcements/AddAnnouncementForm.jsx";
-import AssignTaskForm from "../../components/tasks/AssignTaskForm.jsx";
+import AssignTaskForm from "../../components/Tasks/AssignTaskForm.jsx";
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();

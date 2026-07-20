@@ -1,3 +1,4 @@
+
 import admin from 'firebase-admin';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import fs from 'node:fs';
@@ -7,8 +8,14 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const authProjectId =
+  process.env.FIREBASE_AUTH_PROJECT_ID ||
+  process.env.FIREBASE_PROJECT_ID ||
+  '';
+
 const candidates = [
   process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH,
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH,
   path.resolve(__dirname, '../../serviceAccountKey.json'),
   path.resolve(process.cwd(), 'serviceAccountKey.json'),
   path.resolve(process.cwd(), 'server/serviceAccountKey.json'),
@@ -26,12 +33,16 @@ if (!firebaseReady) {
       if (typeof serviceAccount.private_key === 'string') {
         serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
       }
+
       initializeApp({
         credential: cert(serviceAccount),
-        projectId: serviceAccount.project_id,
+        projectId: authProjectId || serviceAccount.project_id,
       });
+
       firebaseReady = true;
-      console.log(`Firebase Admin initialized using ${filename}`);
+      console.log(
+        `Firebase Admin initialized using ${filename} (auth project: ${authProjectId || serviceAccount.project_id})`,
+      );
       break;
     } catch (error) {
       initializationError = error;
@@ -44,5 +55,5 @@ if (!firebaseReady) {
   console.warn(`Firebase Admin initialization skipped: ${detail}`);
 }
 
-export { firebaseReady };
+export { firebaseReady, authProjectId };
 export default admin;

@@ -16,7 +16,13 @@
     "dev:admin-stack": "bash scripts/start-admin-stack-final.sh",
     "dev:all": "bash scripts/start-dev-stack.sh all",
     "check:admin-api": "curl -fsS http://127.0.0.1:5000/api/recovery/health",
-    "dev:admin-gateway": "node server/src/adminApiGateway.js",
-    "check:admin-stack": "curl -fsS http://127.0.0.1:5000/api/recovery/health"
+    "dev:admin-gateway": "cross-env ADMIN_GATEWAY_PORT=5000 UPSTREAM_API_PORT=5001 UPSTREAM_API_HOST=127.0.0.1 node server/src/adminApiGateway.js",
+    "check:admin-stack": "curl -fsS http://127.0.0.1:5000/api/recovery/health",
+    "dev": "concurrently --kill-others-on-fail --names API,GATEWAY,ADMIN,DASHBOARD,WEBSITE \"npm run dev:server:upstream\" \"npm run dev:admin-gateway\" \"npm run dev:admin\" \"npm run dev:dashboard\" \"npm run dev:website\"",
+    "dev:server:upstream": "cross-env PORT=5001 npm run dev --workspace server"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.1",
+    "cross-env": "7.0.3"
   }
 }
