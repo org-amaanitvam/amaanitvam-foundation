@@ -12,8 +12,9 @@ const startServer = async () => {
     await connectDB();
 
     const PORT = process.env.PORT || 5000;
+    const HOST = process.env.HOST || "0.0.0.0";
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
       logger.info(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
     });
 

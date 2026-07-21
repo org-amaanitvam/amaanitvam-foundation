@@ -3191,8 +3191,8 @@ app.use((error, _req, res, _next) => {
   });
 });
 
-const server = app.listen(GATEWAY_PORT, "127.0.0.1", () => {
-  console.log(`[admin-gateway] Listening on http://127.0.0.1:${GATEWAY_PORT}`);
+const server = app.listen(GATEWAY_PORT, "0.0.0.0", () => {
+  console.log(`[admin-gateway] Listening on http://0.0.0.0:${GATEWAY_PORT}`);
   console.log(`[admin-gateway] Forwarding unmatched requests to http://${UPSTREAM_HOST}:${UPSTREAM_PORT}`);
 });
 
