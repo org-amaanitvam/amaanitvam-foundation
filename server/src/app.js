@@ -69,7 +69,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(cors(corsOptions));
+
 //app.use("/api/public/settings", settingsRoutes);
 app.use("/api/activities", activityRoutes);
 app.use(express.json());

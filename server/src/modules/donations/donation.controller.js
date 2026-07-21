@@ -249,142 +249,83 @@ export const verifyDonationPayment = async (req, res) => {
 
     // Do not turn a successful payment into a failed payment when SMTP has a problem.
     // We DO await the attempts so Render logs/result explicitly show whether the donor email was sent.
+    const donationId = donation._id;
     const emailDonation = donation.toObject();
-    const emailTasks = [];
-    const emailTaskNames = [];
 
-    if (!donation.donorReceiptEmailSentAt) {
-      emailTasks.push(sendDonationReceiptEmail({ donation: emailDonation }));
-      emailTaskNames.push("donor");
-    }
-    if (!donation.adminDonationEmailSentAt) {
-      emailTasks.push(sendDonationAdminEmail({ donation: emailDonation }));
-      emailTaskNames.push("admin");
-    }
+    const donorNeedsEmail = !donation.donorReceiptEmailSentAt;
+    const adminNeedsEmail = !donation.adminDonationEmailSentAt;
+    const emailQueued = donorNeedsEmail || adminNeedsEmail;
 
-    await donation.save();
+    // Payment success must never wait for SMTP. Render/Gmail network delays can
+    // exceed the browser timeout even after Razorpay verification succeeded.
+    if (emailQueued) {
+      setImmediate(async () => {
+        try {
+          const emailTasks = [];
+          const emailTaskNames = [];
 
-const donationId = donation._id;
-const emailDonation = donation.toObject();
+          if (donorNeedsEmail) {
+            emailTasks.push(sendDonationReceiptEmail({ donation: emailDonation }));
+            emailTaskNames.push("donor");
+          }
 
-setImmediate(async () => {
-  try {
-    const [donorResult, adminResult] = await Promise.allSettled([
-      sendDonationReceiptEmail({
-        donation: emailDonation,
-      }),
+          if (adminNeedsEmail) {
+            emailTasks.push(sendDonationAdminEmail({ donation: emailDonation }));
+            emailTaskNames.push("admin");
+          }
 
-      sendDonationAdminEmail({
-        donation: emailDonation,
-      }),
-    ]);
+          const results = await Promise.allSettled(emailTasks);
+          const update = {};
 
-    const update = {};
+          results.forEach((settled, index) => {
+            const type = emailTaskNames[index];
+            const result =
+              settled.status === "fulfilled"
+                ? settled.value
+                : {
+                    success: false,
+                    error: settled.reason?.message || String(settled.reason),
+                  };
 
-    if (
-      donorResult.status === "fulfilled" &&
-      donorResult.value?.success === true
-    ) {
-      update.donorReceiptEmailSentAt = new Date();
-      update.donorReceiptEmailError = "";
-    } else {
-      update.donorReceiptEmailError =
-        donorResult.status === "rejected"
-          ? donorResult.reason?.message
-          : donorResult.value?.error || "Email failed";
-    }
+            if (type === "donor") {
+              if (result?.success === true) {
+                update.donorReceiptEmailSentAt = new Date();
+                update.donorReceiptEmailError = "";
+              } else {
+                update.donorReceiptEmailError = errorText(result) || "Email failed";
+              }
+            }
 
-    if (
-      adminResult.status === "fulfilled" &&
-      adminResult.value?.success === true
-    ) {
-      update.adminDonationEmailSentAt = new Date();
-      update.adminDonationEmailError = "";
-    } else {
-      update.adminDonationEmailError =
-        adminResult.status === "rejected"
-          ? adminResult.reason?.message
-          : adminResult.value?.error || "Email failed";
-    }
+            if (type === "admin") {
+              if (result?.success === true) {
+                update.adminDonationEmailSentAt = new Date();
+                update.adminDonationEmailError = "";
+              } else {
+                update.adminDonationEmailError = errorText(result) || "Email failed";
+              }
+            }
+          });
 
-    await Donation.findByIdAndUpdate(donationId, {
-      $set: update,
-    });
-  } catch (error) {
-    console.error(
-      "[email] Background donation email processing failed:",
-      error
-    );
-  }
-});
-
-return res.status(200).json({
-  success: true,
-  message: "Payment verified successfully. Thank you for your donation!",
-
-  wasAlreadyPaid,
-
-  email: {
-    queued: true,
-  },
-
-  donation: {
-    id: donation._id,
-    amount: donation.amount,
-    donationType: donation.donationType,
-    campaign: donation.campaign || null,
-    campaignTitle: donation.campaignTitleSnapshot || "",
-    campaignAmountAdded: donation.campaignAmountAdded,
-  },
-
-  campaign: updatedCampaign,
-});
-    let donorReceiptSent = Boolean(donation.donorReceiptEmailSentAt);
-    let adminNotificationSent = Boolean(donation.adminDonationEmailSentAt);
-
-    results.forEach((settled, index) => {
-      const type = emailTaskNames[index];
-      const result =
-        settled.status === "fulfilled"
-          ? settled.value
-          : { success: false, error: settled.reason?.message || String(settled.reason) };
-
-      if (type === "donor") {
-        donorReceiptSent = result?.success === true;
-        if (donorReceiptSent) {
-          donation.donorReceiptEmailSentAt = new Date();
-          donation.donorReceiptEmailError = "";
-        } else {
-          donation.donorReceiptEmailError = errorText(result);
+          if (Object.keys(update).length) {
+            await Donation.findByIdAndUpdate(donationId, { $set: update });
+          }
+        } catch (emailError) {
+          console.error(
+            "[email] Background donation email processing failed:",
+            emailError,
+          );
         }
-      }
-
-      if (type === "admin") {
-        adminNotificationSent = result?.success === true;
-        if (adminNotificationSent) {
-          donation.adminDonationEmailSentAt = new Date();
-          donation.adminDonationEmailError = "";
-        } else {
-          donation.adminDonationEmailError = errorText(result);
-        }
-      }
-    });
-
-    await donation.save();
+      });
+    }
 
     return res.status(200).json({
       success: true,
       message: "Payment verified successfully. Thank you for your donation!",
       wasAlreadyPaid,
       email: {
-        donorReceiptSent,
-        adminNotificationSent,
-        donorReceiptError: donorReceiptSent
-          ? null
-          : donation.donorReceiptEmailError || null,
-        adminNotificationError: adminNotificationSent
-          ? null
-          : donation.adminDonationEmailError || null,
+        queued: emailQueued,
+        donorReceiptSent: Boolean(donation.donorReceiptEmailSentAt),
+        adminNotificationSent: Boolean(donation.adminDonationEmailSentAt),
       },
       donation: {
         id: donation._id,

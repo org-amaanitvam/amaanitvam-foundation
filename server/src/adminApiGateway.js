@@ -139,8 +139,37 @@ function initializeFirebaseAdmin() {
     return;
   }
 
+  const projectId =
+    process.env.FIREBASE_PROJECT_ID ||
+    process.env.FIREBASE_AUTH_PROJECT_ID;
+  const clientEmail =
+    process.env.FIREBASE_CLIENT_EMAIL ||
+    process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+  const privateKey = String(
+    process.env.FIREBASE_PRIVATE_KEY ||
+    process.env.FIREBASE_ADMIN_PRIVATE_KEY ||
+    ""
+  ).replace(/\\n/g, "\n");
+
+  if (projectId && clientEmail && privateKey) {
+    initializeApp({
+      credential: cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      }),
+      projectId,
+    });
+    console.log(
+      `[admin-gateway] Firebase Admin initialized using environment credentials for ${projectId}`
+    );
+    return;
+  }
+
   initializeApp({ credential: applicationDefault() });
-  console.log("[admin-gateway] Firebase Admin initialized using application default credentials");
+  console.log(
+    "[admin-gateway] Firebase Admin initialized using application default credentials"
+  );
 }
 
 initializeFirebaseAdmin();
