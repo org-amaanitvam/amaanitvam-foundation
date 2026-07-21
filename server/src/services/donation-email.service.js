@@ -65,7 +65,15 @@ export const sendDonationReceiptEmail = async ({ donation } = {}) => {
     return { success: false, skipped: true, reason: "missing_donor_email" };
   }
   if (!smtpConfig.user || !smtpConfig.pass) {
-    return { success: false, skipped: true, reason: "missing_smtp_credentials" };
+    console.error(
+      "[email] Donation email skipped: SMTP credentials are missing. " +
+      "Check SMTP_USER and SMTP_PASS in Render environment variables."
+    );
+    return {
+      success: false,
+      skipped: true,
+      reason: "missing_smtp_credentials"
+    };
   }
 
   const { from, adminEmail } = mailIdentity();
@@ -119,7 +127,15 @@ export const sendDonationAdminEmail = async ({ donation } = {}) => {
     return { success: false, skipped: true, reason: "email_disabled" };
   }
   if (!smtpConfig.user || !smtpConfig.pass) {
-    return { success: false, skipped: true, reason: "missing_smtp_credentials" };
+    console.error(
+      "[email] Donation email skipped: SMTP credentials are missing. " +
+      "Check SMTP_USER and SMTP_PASS in Render environment variables."
+    );
+    return {
+      success: false,
+      skipped: true,
+      reason: "missing_smtp_credentials"
+    };
   }
 
   const { from, adminEmail } = mailIdentity();

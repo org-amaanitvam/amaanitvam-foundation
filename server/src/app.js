@@ -32,6 +32,13 @@ import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Che
 
 const app = express();
 
+//
+// Render -> public gateway -> localhost API
+// Trust only the local gateway proxy so express-rate-limit can
+// correctly process X-Forwarded-For without trusting arbitrary proxies.
+//
+app.set("trust proxy", "loopback");
+
 import productionProfileRoutes from "./routes/productionProfile.routes.js";
 // Security and utility middleware
 app.use(helmet());
