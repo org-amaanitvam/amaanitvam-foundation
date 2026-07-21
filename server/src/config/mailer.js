@@ -45,6 +45,7 @@ export const transporter = nodemailer.createTransport({
   host: smtpConfig.host,
   port: smtpConfig.port,
   secure: smtpConfig.secure,
+
   auth:
     smtpConfig.user && smtpConfig.pass
       ? {
@@ -52,4 +53,9 @@ export const transporter = nodemailer.createTransport({
           pass: smtpConfig.pass,
         }
       : undefined,
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 20000,
+  dnsTimeout: 10000,
 });

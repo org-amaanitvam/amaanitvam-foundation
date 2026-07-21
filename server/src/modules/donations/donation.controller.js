@@ -262,7 +262,83 @@ export const verifyDonationPayment = async (req, res) => {
       emailTaskNames.push("admin");
     }
 
-    const results = await Promise.allSettled(emailTasks);
+    await donation.save();
+
+const donationId = donation._id;
+const emailDonation = donation.toObject();
+
+setImmediate(async () => {
+  try {
+    const [donorResult, adminResult] = await Promise.allSettled([
+      sendDonationReceiptEmail({
+        donation: emailDonation,
+      }),
+
+      sendDonationAdminEmail({
+        donation: emailDonation,
+      }),
+    ]);
+
+    const update = {};
+
+    if (
+      donorResult.status === "fulfilled" &&
+      donorResult.value?.success === true
+    ) {
+      update.donorReceiptEmailSentAt = new Date();
+      update.donorReceiptEmailError = "";
+    } else {
+      update.donorReceiptEmailError =
+        donorResult.status === "rejected"
+          ? donorResult.reason?.message
+          : donorResult.value?.error || "Email failed";
+    }
+
+    if (
+      adminResult.status === "fulfilled" &&
+      adminResult.value?.success === true
+    ) {
+      update.adminDonationEmailSentAt = new Date();
+      update.adminDonationEmailError = "";
+    } else {
+      update.adminDonationEmailError =
+        adminResult.status === "rejected"
+          ? adminResult.reason?.message
+          : adminResult.value?.error || "Email failed";
+    }
+
+    await Donation.findByIdAndUpdate(donationId, {
+      $set: update,
+    });
+  } catch (error) {
+    console.error(
+      "[email] Background donation email processing failed:",
+      error
+    );
+  }
+});
+
+return res.status(200).json({
+  success: true,
+  message: "Payment verified successfully. Thank you for your donation!",
+
+  wasAlreadyPaid,
+
+  email: {
+    queued: true,
+  },
+
+  donation: {
+    id: donation._id,
+    amount: donation.amount,
+    donationType: donation.donationType,
+    campaign: donation.campaign || null,
+    campaignTitle: donation.campaignTitleSnapshot || "",
+    campaignAmountAdded: donation.campaignAmountAdded,
+  },
+
+  campaign: updatedCampaign,
+});
     let donorReceiptSent = Boolean(donation.donorReceiptEmailSentAt);
     let adminNotificationSent = Boolean(donation.adminDonationEmailSentAt);
 
