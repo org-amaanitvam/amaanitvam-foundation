@@ -605,7 +605,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     }
 }
 
-<<<<<<< HEAD
+/* <<<<<<< HEAD */
 /* =============================================================
    CURRENT UPDATES SECTION  —  cu-* namespace
    Designed to match the Amaanitvam Foundation design language.
@@ -1136,15 +1136,13 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 .credibility-card:hover .credibility-project-image img {
     transform: scale(1.06);
-=======
+
+
+}
 
 
 
 
-
-/* ===========================
-   TESTIMONIALS
-=========================== */
 
 /*===============================
       TESTIMONIAL SECTION
@@ -1412,5 +1410,5 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
     }
 
->>>>>>> f4d74265 (testimonial section done)
+
 }
