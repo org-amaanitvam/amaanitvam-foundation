@@ -1,3 +1,9 @@
+/* =========================================================
+   DONATION PAGE — COMPLETE STYLESHEET
+   Original styles preserved as-is below, new additions
+   appended in clearly marked sections at the bottom.
+   ========================================================= */
+
 h1,
 h2,
 h3,
@@ -173,20 +179,25 @@ h6,
 
 #donate .amount-buttons {
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 10px !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
     margin: 8px 0 12px !important;
 }
 
 #donate .amount-btn {
     width: 100% !important;
-    padding: 10px 8px !important;
+    min-width: 0 !important;
+    padding: 10px 2px !important;
     border: 1px solid #d8dce2 !important;
-    border-radius: 999px !important;
+    border-radius: 10px !important;
     background: #fff !important;
     color: #2d1c23 !important;
-    font-size: 14px !important;
-    font-weight: 800 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.3px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-align: center !important;
     cursor: pointer !important;
     box-shadow: none !important;
 }
@@ -298,7 +309,7 @@ h6,
 }
 
 .donation-banner {
-    background: var(--bg) !important;
+    background: var(--surface-pink) !important;
     padding: 40px 20px 50px !important;
 }
 
@@ -405,7 +416,12 @@ body:has(.app-shell) .donation-meter span::after {
 
 @media (max-width:768px) {
     #donate .amount-buttons {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    #donate .amount-btn {
+        font-size: 14px !important;
+        padding: 12px 8px !important;
     }
 
     .section:has(.donate-section) {
@@ -479,5 +495,1029 @@ body.dashboard-page .donation-meter span {
         width: 100%;
         font-size: 1.1rem !important;
         padding: 15px 20px !important;
+    }
+}
+
+
+/* =========================================================
+   NEW ADDITIONS — Donation form centering / heading / layout
+   (uses .donation-layout to match the actual markup;
+   !important added so it wins consistently alongside the
+   rules above)
+   ========================================================= */
+
+#donate .container {
+    display: block !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+}
+
+#donate .donation-heading-wrap {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+    clear: both !important;
+    text-align: center !important;
+    max-width: 700px !important;
+    margin: 0 auto 40px !important;
+}
+
+#donate .donation-heading-wrap .donation-heading {
+    text-align: center !important;
+    font-size: clamp(1.9rem, 3.2vw, 2.75rem) !important;
+    color: var(--primary) !important;
+    margin: 0 0 12px !important;
+}
+
+#donate .donation-intro {
+    color: #5f6368 !important;
+    font-size: 1.05rem !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+#donate .donation-layout {
+    display: grid !important;
+    width: 100% !important;
+    max-width: 1120px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    float: none !important;
+    clear: both !important;
+    grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr) !important;
+    gap: 28px !important;
+    align-items: start !important;
+    justify-content: center !important;
+    background: transparent !important;
+}
+
+#donate .donation-form-title {
+    margin: 0 0 18px !important;
+    color: var(--primary) !important;
+    font-size: 1.4rem !important;
+    text-align: left !important;
+}
+
+#donate .custom-amount-wrapper {
+    margin-bottom: 8px !important;
+}
+
+#donate .custom-amount-wrapper input {
+    width: 100% !important;
+    height: 46px !important;
+    padding: 10px 16px !important;
+    border: 1px solid #d8dce2 !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+}
+
+#donate .pay-button {
+    margin-top: 18px !important;
+}
+
+@media (max-width: 1100px) {
+    #donate .donation-layout {
+        grid-template-columns: 1fr !important;
+        max-width: 680px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #donate .donation-form-card {
+        padding: 24px 20px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #donate .donation-heading-wrap .donation-heading {
+        font-size: 1.6rem !important;
+    }
+
+    #donate .donation-intro {
+        font-size: .95rem !important;
+    }
+}
+
+
+/* =========================================================
+   MERGED DONATION CARD — new eye-catching design
+   Everything (heading + form + info panels) now lives inside
+   one unified white card floating on the soft pink section
+   background, with subtle motion and glow effects.
+   ========================================================= */
+
+#donate.donation-section {
+    background: linear-gradient(180deg, #fff3f5 0%, #fff7f8 55%, #fdf1ee 100%) !important;
+}
+
+#donate .donation-outer-card {
+    position: relative !important;
+    background: #fffaf3 !important;
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    padding: 48px 48px 52px !important;
+    border-radius: 32px !important;
+    border: 1px solid rgba(216, 161, 95, .3) !important;
+    box-shadow:
+        0 30px 70px -20px rgba(93, 15, 45, .22),
+        0 10px 30px -12px rgba(93, 15, 45, .12) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    animation: donationCardRise .6s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+#donate .donation-outer-card::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 6px !important;
+    background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)) !important;
+    background-size: 200% 100% !important;
+    animation: donationShimmer 6s linear infinite !important;
+}
+
+@keyframes donationCardRise {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes donationShimmer {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 200% 0%;
+    }
+}
+
+#donate .donation-heading-wrap {
+    margin: 6px auto 36px !important;
+}
+
+#donate .donation-heading-wrap .donation-heading {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+}
+
+#donate .donation-heart {
+    display: inline-block !important;
+    animation: donationHeartBeat 1.8s ease-in-out infinite !important;
+}
+
+@keyframes donationHeartBeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    15% {
+        transform: scale(1.18);
+    }
+
+    30% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.1);
+    }
+
+    60% {
+        transform: scale(1);
+    }
+}
+
+#donate .donation-layout {
+    max-width: none !important;
+    padding-top: 8px !important;
+    align-items: stretch !important;
+}
+
+/* Left column: its own clearly bordered, elevated card */
+#donate .donation-form-card {
+    background: #fff !important;
+    border: 1px solid rgba(216, 161, 95, .28) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 16px 34px -18px rgba(93, 15, 45, .28) !important;
+    padding: 32px !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    animation: cardFadeUp .5s ease .05s both !important;
+    transition: box-shadow .2s ease, border-color .2s ease !important;
+}
+
+#donate .donation-form-card:hover {
+    border-color: var(--gold) !important;
+    box-shadow: 0 22px 42px -16px rgba(93, 15, 45, .32) !important;
+}
+
+#donate .donation-form-title {
+    position: relative !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 22px !important;
+}
+
+#donate .donation-form-title::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 46px !important;
+    height: 3px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, var(--gold), var(--primary)) !important;
+}
+
+/* Inputs — soft glow on focus */
+#donate .donation-form-card input {
+    transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease !important;
+}
+
+#donate .donation-form-card input:hover {
+    border-color: rgba(93, 15, 45, .35) !important;
+}
+
+#donate .donation-form-card input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(93, 15, 45, .12) !important;
+}
+
+#donate .custom-amount-wrapper input:hover {
+    border-color: rgba(93, 15, 45, .35) !important;
+}
+
+#donate .custom-amount-wrapper input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(93, 15, 45, .12) !important;
+    outline: none !important;
+}
+
+/* Amount buttons — lively hover + active state */
+#donate .amount-btn {
+    transition: transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease !important;
+}
+
+#donate .amount-btn:hover {
+    transform: translateY(-2px) !important;
+    background: linear-gradient(135deg, var(--primary), #8a164b) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 8px 18px -6px rgba(93, 15, 45, .45) !important;
+}
+
+#donate .amount-btn.active {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark, var(--gold))) !important;
+    color: #4a0b23 !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 8px 18px -6px rgba(216, 161, 95, .55) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Pay button — gradient + glow + press feedback */
+#donate .pay-button {
+    background: linear-gradient(135deg, var(--primary) 0%, #8a164b 60%, var(--primary) 100%) !important;
+    background-size: 200% auto !important;
+    box-shadow: 0 14px 30px -10px rgba(93, 15, 45, .5) !important;
+    transition: background-position .4s ease, transform .15s ease, box-shadow .2s ease !important;
+}
+
+#donate .pay-button:hover {
+    background-position: right center !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 18px 36px -8px rgba(93, 15, 45, .55) !important;
+}
+
+#donate .pay-button:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 8px 18px -8px rgba(93, 15, 45, .45) !important;
+}
+
+/* Security badges — subtle hover pop */
+#donate .security-badges span {
+    transition: transform .15s ease !important;
+    display: inline-flex !important;
+}
+
+#donate .security-badges span:hover {
+    transform: translateY(-1px) scale(1.03) !important;
+}
+
+/* Right column: info panels */
+#donate .donation-info {
+    padding-left: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+/* "Your Impact" — its own bordered, elevated card matching the form card */
+#donate .impact-card {
+    background: #fff !important;
+    border: 1px solid rgba(216, 161, 95, .28) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 16px 34px -18px rgba(93, 15, 45, .28) !important;
+    padding: 26px !important;
+    box-sizing: border-box !important;
+    animation: cardFadeUp .5s ease .12s both !important;
+    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease !important;
+}
+
+#donate .impact-card:hover {
+    border-color: var(--gold) !important;
+    box-shadow: 0 22px 42px -16px rgba(93, 15, 45, .32) !important;
+}
+
+#donate .impact-card h3 {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 0 14px !important;
+}
+
+#donate .impact-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    background: #f8f4f1 !important;
+    border: 1px solid rgba(216, 161, 95, .18) !important;
+    border-radius: 16px !important;
+    padding: 12px 16px !important;
+    margin-bottom: 10px !important;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease !important;
+}
+
+#donate .impact-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+#donate .impact-item:hover {
+    transform: translateX(4px) !important;
+    background: #fdf1e9 !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 8px 20px -10px rgba(93, 15, 45, .25) !important;
+}
+
+#donate .impact-icon {
+    flex: 0 0 auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.2rem !important;
+    background: #fff !important;
+    border: 1px solid rgba(216, 161, 95, .25) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .06) !important;
+}
+
+#donate .impact-content strong {
+    color: var(--primary) !important;
+    font-size: 1.05rem !important;
+}
+
+#donate .impact-content p {
+    margin: 2px 0 0 !important;
+    color: #5f6368 !important;
+    font-size: .92rem !important;
+}
+
+/* Tax benefits — richer gradient accent card, now with a visible gold border */
+#donate .tax-card {
+    background: linear-gradient(135deg, var(--primary), #8a164b) !important;
+    border: 1px solid var(--gold) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 14px 28px -12px rgba(93, 15, 45, .45) !important;
+    transition: transform .18s ease, box-shadow .18s ease !important;
+    animation: cardFadeUp .5s ease .18s both !important;
+}
+
+#donate .tax-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 20px 38px -12px rgba(93, 15, 45, .5) !important;
+}
+
+/* Secure + transparency cards — clean white cards, clearly bordered, matching the form/impact cards */
+#donate .secure-card,
+#donate .transparency-card {
+    background: #fff !important;
+    border: 1px solid rgba(216, 161, 95, .3) !important;
+    border-radius: 18px !important;
+    padding: 22px !important;
+    box-sizing: border-box !important;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease !important;
+}
+
+#donate .secure-card {
+    animation: cardFadeUp .5s ease .24s both !important;
+}
+
+#donate .transparency-card {
+    animation: cardFadeUp .5s ease .3s both !important;
+}
+
+#donate .secure-card:hover,
+#donate .transparency-card:hover {
+    transform: translateY(-3px) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 18px 34px -16px rgba(93, 15, 45, .3) !important;
+}
+
+#donate .transparency-card h3 {
+    color: var(--primary) !important;
+    margin: 0 0 10px !important;
+}
+
+#donate .transparency-card p {
+    margin: 0 !important;
+    color: #3d2b2b !important;
+    line-height: 1.6 !important;
+}
+
+/* Responsive adjustments for the merged card */
+@media (max-width: 1100px) {
+    #donate .donation-outer-card {
+        padding: 36px 28px 40px !important;
+    }
+
+    #donate .donation-form-card,
+    #donate .impact-card {
+        height: auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #donate .donation-outer-card {
+        padding: 28px 18px 32px !important;
+        border-radius: 24px !important;
+    }
+
+    #donate .donation-form-card,
+    #donate .impact-card,
+    #donate .secure-card,
+    #donate .transparency-card {
+        padding: 22px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #donate .donation-outer-card {
+        padding: 24px 14px 28px !important;
+        border-radius: 20px !important;
+    }
+}
+
+
+/* =========================================================
+   NEW SECTION — "Where Your Money Goes" / Trust & FAQ section
+   ========================================================= */
+
+.donation-trust-section {
+    width: 100% !important;
+    padding: 60px 20px 76px !important;
+    background: #fffaf3 !important;
+    box-sizing: border-box !important;
+}
+
+.donation-trust-section .container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+.trust-heading-wrap {
+    text-align: center !important;
+    max-width: 700px !important;
+    margin: 0 auto 40px !important;
+}
+
+.trust-heading {
+    text-align: center !important;
+    font-size: clamp(1.9rem, 3.2vw, 2.75rem) !important;
+    color: var(--primary) !important;
+    margin: 0 0 12px !important;
+}
+
+.trust-intro {
+    color: #5f6368 !important;
+    font-size: 1.05rem !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+/* ---- Impact cards: equal-height grid, visible border + shadow + hover lift ---- */
+.trust-impact-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+    max-width: 1040px !important;
+    margin: 0 auto 44px !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+}
+
+.trust-impact-card {
+    background: #fff !important;
+    border: 1.5px solid rgba(93, 15, 45, .14) !important;
+    border-radius: 20px !important;
+    padding: 30px 22px !important;
+    text-align: center !important;
+    box-shadow: 0 10px 26px -14px rgba(93, 15, 45, .22) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease !important;
+    animation: trustCardFadeUp .5s ease both !important;
+}
+
+.trust-impact-card:nth-child(1) {
+    animation-delay: .05s !important;
+}
+
+.trust-impact-card:nth-child(2) {
+    animation-delay: .15s !important;
+}
+
+.trust-impact-card:nth-child(3) {
+    animation-delay: .25s !important;
+}
+
+.trust-impact-card:hover {
+    transform: translateY(-6px) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 18px 36px -14px rgba(93, 15, 45, .32) !important;
+}
+
+.trust-impact-icon {
+    font-size: 2.1rem !important;
+    margin-bottom: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 56px !important;
+    height: 56px !important;
+    background: #fdf1e9 !important;
+    border-radius: 50% !important;
+    transition: transform .22s ease !important;
+}
+
+.trust-impact-card:hover .trust-impact-icon {
+    transform: scale(1.08) rotate(-4deg) !important;
+}
+
+.trust-impact-card strong {
+    display: block !important;
+    font-size: 1.55rem !important;
+    color: var(--primary) !important;
+    margin-bottom: 6px !important;
+}
+
+.trust-impact-card p {
+    margin: 0 !important;
+    color: #3d2b2b !important;
+}
+
+@keyframes trustCardFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- Secure + registration cards: equal-height, visible border + shadow + hover lift ---- */
+.trust-secondary-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px !important;
+    max-width: 1040px !important;
+    margin: 0 auto 44px !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+}
+
+.trust-secure-card,
+.trust-registration-card {
+    background: #fff !important;
+    border: 1.5px solid rgba(93, 15, 45, .14) !important;
+    border-radius: 20px !important;
+    padding: 26px !important;
+    text-align: left !important;
+    box-shadow: 0 10px 26px -14px rgba(93, 15, 45, .22) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease !important;
+    animation: trustCardFadeUp .5s ease both !important;
+}
+
+.trust-secure-card {
+    animation-delay: .1s !important;
+}
+
+.trust-registration-card {
+    animation-delay: .2s !important;
+}
+
+.trust-secure-card:hover,
+.trust-registration-card:hover {
+    transform: translateY(-6px) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 18px 36px -14px rgba(93, 15, 45, .32) !important;
+}
+
+.trust-secure-card h3,
+.trust-registration-card h3 {
+    color: var(--primary) !important;
+    margin: 0 0 10px !important;
+    font-size: 1.2rem !important;
+}
+
+.trust-secure-card p,
+.trust-registration-card p {
+    margin: 0 !important;
+    color: #3d2b2b !important;
+    line-height: 1.65 !important;
+}
+
+/* ---- Trust & credibility cards: legal, awards, projects ---- */
+.trust-credibility-wrap {
+    max-width: 1100px !important;
+    margin: 0 auto 56px !important;
+}
+
+.trust-section-divider {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 36px !important;
+    max-width: 1000px !important;
+}
+
+.trust-section-divider span {
+    display: block !important;
+    width: 100% !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, rgba(216, 161, 95, 0) 0%, rgba(216, 161, 95, .6) 50%, rgba(216, 161, 95, 0) 100%) !important;
+}
+
+.trust-credibility-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+    align-items: stretch !important;
+}
+
+.credibility-card {
+    background: #fff !important;
+    border: 1.5px solid rgba(93, 15, 45, .14) !important;
+    border-radius: 18px !important;
+    padding: 26px 20px !important;
+    text-align: center !important;
+    box-shadow: 0 10px 24px -14px rgba(93, 15, 45, .2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
+    animation: trustCardFadeUp .5s ease both !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(1) {
+    animation-delay: .04s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(2) {
+    animation-delay: .1s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(3) {
+    animation-delay: .16s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(4) {
+    animation-delay: .22s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(5) {
+    animation-delay: .28s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(6) {
+    animation-delay: .34s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(7) {
+    animation-delay: .4s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(8) {
+    animation-delay: .46s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(9) {
+    animation-delay: .52s !important;
+}
+
+.trust-credibility-grid .credibility-card:nth-child(10) {
+    animation-delay: .58s !important;
+}
+
+.credibility-card:hover {
+    transform: translateY(-6px) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 18px 34px -14px rgba(93, 15, 45, .3) !important;
+}
+
+.credibility-icon {
+    width: 52px !important;
+    height: 52px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #fdf1e9 !important;
+    border-radius: 50% !important;
+    margin-bottom: 14px !important;
+    transition: transform .2s ease !important;
+}
+
+.credibility-icon .material-symbols-outlined {
+    font-size: 24px !important;
+    color: var(--primary) !important;
+}
+
+.credibility-card:hover .credibility-icon {
+    transform: scale(1.08) rotate(-4deg) !important;
+}
+
+.credibility-card h4 {
+    font-family: var(--font-heading) !important;
+    color: var(--primary) !important;
+    font-size: 1.05rem !important;
+    margin: 0 0 8px !important;
+    line-height: 1.25 !important;
+}
+
+.credibility-card p {
+    margin: 0 !important;
+    color: #5f6368 !important;
+    font-size: .88rem !important;
+    line-height: 1.55 !important;
+}
+
+/* Project cards — image placeholder (swap for real photos later) */
+.credibility-project-image {
+    width: 100% !important;
+    height: 130px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    background: #f3ece1 !important;
+    border: 1.5px dashed rgba(93, 15, 45, .25) !important;
+    border-radius: 14px !important;
+    margin-bottom: 14px !important;
+    color: rgba(93, 15, 45, .45) !important;
+    transition: border-color .2s ease, background .2s ease !important;
+}
+
+.credibility-project:hover .credibility-project-image {
+    border-color: var(--gold) !important;
+    background: #fdf1e9 !important;
+}
+
+.credibility-project-image .material-symbols-outlined {
+    font-size: 30px !important;
+}
+
+.credibility-project-image .placeholder-label {
+    font-size: .72rem !important;
+    font-weight: 600 !important;
+    letter-spacing: .02em !important;
+}
+
+.credibility-project-tag {
+    display: inline-block !important;
+    color: var(--gold-dark, #8a164b) !important;
+    font-weight: 700 !important;
+    font-size: .72rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: .08em !important;
+    margin-bottom: 4px !important;
+}
+
+.credibility-project h4 {
+    margin: 0 0 6px !important;
+}
+
+.credibility-project p {
+    color: #5f6368 !important;
+    font-size: .92rem !important;
+    line-height: 1.55 !important;
+}
+
+@media (max-width: 1024px) {
+    .trust-credibility-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .trust-credibility-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.trust-faq-band {
+    background: #f5efe6 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    padding: 64px 20px !important;
+    margin-bottom: 56px !important;
+    box-sizing: border-box !important;
+}
+
+.trust-faq-wrap {
+    max-width: 900px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+.trust-faq-label {
+    display: block !important;
+    color: var(--gold) !important;
+    font-family: var(--font-ui) !important;
+    font-size: .85rem !important;
+    font-weight: 700 !important;
+    letter-spacing: .28em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 10px !important;
+    text-align: center !important;
+}
+
+.trust-faq-heading {
+    font-family: var(--font-heading) !important;
+    color: var(--primary) !important;
+    font-size: clamp(1.8rem, 3vw, 2.5rem) !important;
+    margin: 0 0 32px !important;
+    text-align: center !important;
+}
+
+.trust-faq-item {
+    text-align: left !important;
+    background: #fff !important;
+    border: 1.5px solid rgba(93, 15, 45, .14) !important;
+    border-radius: 16px !important;
+    padding: 20px 24px !important;
+    margin: 0 auto 14px !important;
+    box-shadow: 0 8px 20px -14px rgba(93, 15, 45, .2) !important;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
+}
+
+.trust-faq-item:hover {
+    transform: translateY(-3px) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 14px 28px -14px rgba(93, 15, 45, .3) !important;
+}
+
+.trust-faq-item summary {
+    cursor: pointer !important;
+    font-weight: 700 !important;
+    font-size: 1.02rem !important;
+    color: #2d1c23 !important;
+    list-style: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+}
+
+.trust-faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.trust-faq-item summary::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+    transform: rotate(45deg);
+    transition: transform .2s ease;
+    margin-top: -4px;
+}
+
+.trust-faq-item[open] summary::after {
+    transform: rotate(-135deg);
+    margin-top: 4px;
+}
+
+.trust-faq-item p {
+    margin: 14px 0 0 !important;
+    color: #5f6368 !important;
+    line-height: 1.65 !important;
+}
+
+.trust-cta-wrap {
+    text-align: center !important;
+    max-width: 640px !important;
+    margin: 0 auto !important;
+}
+
+.trust-cta-wrap h3 {
+    color: var(--primary) !important;
+    margin: 0 0 10px !important;
+    text-align: center !important;
+}
+
+.trust-cta-wrap p {
+    color: #5f6368 !important;
+    margin: 0 0 22px !important;
+    text-align: center !important;
+}
+
+.trust-cta-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px 44px !important;
+    border-radius: 999px !important;
+    background: var(--gold) !important;
+    color: var(--primary) !important;
+    font-weight: 800 !important;
+    font-size: 1.1rem !important;
+    text-decoration: none !important;
+    margin: 0 auto !important;
+    box-shadow: 0 12px 28px -12px rgba(216, 161, 95, .55) !important;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease !important;
+}
+
+.trust-cta-btn:hover {
+    background: var(--gold-dark, var(--gold)) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 18px 36px -12px rgba(216, 161, 95, .65) !important;
+}
+
+/* Tablet/mobile for trust section */
+@media (max-width: 900px) {
+    .trust-impact-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .trust-secondary-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .trust-impact-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .donation-trust-section {
+        padding: 44px 16px 56px !important;
     }
 }

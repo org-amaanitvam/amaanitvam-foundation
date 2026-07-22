@@ -158,97 +158,328 @@
     </section>
     <section aria-labelledby="donation-heading" class="section section-white donation-section" id="donate">
       <div class="container">
-        <div class="donation-layout">
-          <div class="donation-form-card">
+        <div class="donation-outer-card">
+          <div class="donation-heading-wrap">
             <h2 class="donation-heading" id="donation-heading">
-              <span aria-hidden="true">❤️</span> Donation Details
+              <span aria-hidden="true" class="donation-heart">❤️</span> Make a Donation
             </h2>
-            <label for="donorName">Full Name</label>
-            <input id="donorName" placeholder="Enter your full name" required="" type="text" />
-            <label for="donorEmail">Email Address</label>
-            <input id="donorEmail" placeholder="your.email@example.com" required="" type="email" />
-            <label for="donorPhone">Phone Number</label>
-            <input id="donorPhone" maxlength="10" pattern="\d{10}" placeholder="10-digit phone number" type="tel" />
-            <label>Select Amount</label>
-            <div class="amount-buttons">
-              <button class="amount-btn" data-amount="500" type="button">₹500</button>
-              <button class="amount-btn" data-amount="1000" type="button">₹1,000</button>
-              <button class="amount-btn" data-amount="2500" type="button">₹2,500</button>
-              <button class="amount-btn" data-amount="5000" type="button">₹5,000</button>
-            </div>
-            <div class="custom-amount-wrapper">
-              <input id="customAmount" min="1" placeholder="Enter custom amount" type="number" />
-            </div>
-            <p class="minimum-note">ℹ Minimum donation: ₹1</p>
-            <div class="security-badges">
-              <span>🔒 256-bit SSL</span>
-              <span>🛡 PCI DSS Compliant</span>
-              <span>💜 Razorpay Verified</span>
-            </div>
-            <div aria-live="polite" class="campaign-donation-selector" id="campaignDonationSelector">
-              Loading active campaigns...
-            </div>
-            <button class="pay-button" id="payButton" type="button">Proceed to Pay Securely</button>
-            <div class="moved-inline-style-074" id="donate-status"></div>
-            <p class="payment-note">🔒 Your payment information is encrypted and never stored on our servers</p>
+            <p class="donation-intro">
+              Your contribution directly supports our programs and the children and
+              communities we serve. Every rupee is used responsibly and transparently.
+            </p>
           </div>
-          <div class="donation-info">
-            <div class="impact-card">
-              <h3>✨ Your Impact</h3>
-              <div class="impact-item">
-                <div class="impact-icon">📚</div>
-                <div class="impact-content">
-                  <strong>₹500</strong>
-                  <p>Meals for a child for 1 month</p>
-                </div>
+
+          <div class="donation-layout">
+            <div class="donation-form-card">
+              <h3 class="donation-form-title">Donation Details</h3>
+              <label for="donorName">Full Name</label>
+              <input id="donorName" placeholder="Enter your full name" required="" type="text" />
+              <label for="donorEmail">Email Address</label>
+              <input id="donorEmail" placeholder="your.email@example.com" required="" type="email" />
+              <label for="donorPhone">Phone Number</label>
+              <input id="donorPhone" maxlength="10" pattern="\d{10}" placeholder="10-digit phone number" type="tel" />
+              <label>Select Amount</label>
+              <div class="amount-buttons">
+                <button class="amount-btn" data-amount="500" type="button">₹500</button>
+                <button class="amount-btn" data-amount="1000" type="button">₹1,000</button>
+                <button class="amount-btn" data-amount="2500" type="button">₹2,500</button>
+                <button class="amount-btn" data-amount="5000" type="button">₹5,000</button>
               </div>
-              <div class="impact-item">
-                <div class="impact-icon">📖</div>
-                <div class="impact-content">
-                  <strong>₹1,000</strong>
-                  <p>School supplies &amp; books</p>
-                </div>
+              <div class="custom-amount-wrapper">
+                <input id="customAmount" min="1" placeholder="Enter custom amount" type="number" />
               </div>
-              <div class="impact-item">
-                <div class="impact-icon">🏥</div>
-                <div class="impact-content">
-                  <strong>₹2,500</strong>
-                  <p>Health check-up for 5 children</p>
-                </div>
+              <p class="minimum-note">ℹ Minimum donation: ₹1</p>
+              <div class="security-badges">
+                <span>🔒 256-bit SSL</span>
+                <span>🛡 PCI DSS Compliant</span>
+                <span>💜 Razorpay Verified</span>
               </div>
-              <div class="impact-item">
-                <div class="impact-icon">🎓</div>
-                <div class="impact-content">
-                  <strong>₹5,000</strong>
-                  <p>Education support for 1 month</p>
-                </div>
+              <div aria-live="polite" class="campaign-donation-selector" id="campaignDonationSelector">
+                Loading active campaigns...
               </div>
+              <button class="pay-button" id="payButton" type="button">Proceed to Pay Securely</button>
+              <div class="moved-inline-style-074" id="donate-status"></div>
+              <p class="payment-note">🔒 Your payment information is encrypted and never stored on our servers</p>
             </div>
-            <div class="tax-card">
-              <h3>📜 Tax Benefits</h3>
-              <p>
-                All donations are eligible for tax deduction under
-                <strong>Section 80G</strong> of the Income Tax Act.
-                You'll receive an official receipt via email.
-              </p>
-            </div>
-            <div class="secure-card">
-              <h3>🛡 100% Secure Donation</h3>
-              <ul>
-                <li>✓ Bank-grade 256-bit SSL encryption</li>
-                <li>✓ Payment data never stored on our servers</li>
-                <li>✓ Powered by RBI-licensed Razorpay</li>
-              </ul>
-            </div>
-            <div class="transparency-card">
-              <h3>🤝 Transparent Contributions</h3>
-              <p>
-                Every donation is used responsibly to support our programs,
-                community initiatives, and beneficiaries. Official receipts
-                help maintain clear and accountable giving.
-              </p>
+
+            <div class="donation-info">
+              <div class="impact-card">
+                <h3>✨ Your Impact</h3>
+                <div class="impact-item">
+                  <div class="impact-icon">📚</div>
+                  <div class="impact-content">
+                    <strong>₹500</strong>
+                    <p>Learning kit support</p>
+                  </div>
+                </div>
+                <div class="impact-item">
+                  <div class="impact-icon">📖</div>
+                  <div class="impact-content">
+                    <strong>₹1,000</strong>
+                    <p>Books and study materials</p>
+                  </div>
+                </div>
+                <div class="impact-item">
+                  <div class="impact-icon">🏥</div>
+                  <div class="impact-content">
+                    <strong>₹2,500</strong>
+                    <p>Workshop or student sponsorship</p>
+                  </div>
+                </div>
+                <div class="impact-item">
+                  <div class="impact-icon">🎓</div>
+                  <div class="impact-content">
+                    <strong>₹5,000</strong>
+                    <p>Education support for 1 month</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tax-card">
+                <h3>📜 Tax Benefits</h3>
+                <p>
+                  All donations are eligible for tax deduction under
+                  <strong>Section 80G</strong> of the Income Tax Act.
+                  You'll receive an official receipt via email.
+                </p>
+              </div>
+
+              <div class="secure-card">
+                <h3>🛡 100% Secure Donation</h3>
+                <ul>
+                  <li>✓ Bank-grade 256-bit SSL encryption</li>
+                  <li>✓ Payment data never stored on our servers</li>
+                  <li>✓ Powered by RBI-licensed Razorpay</li>
+                </ul>
+              </div>
+
+              <div class="transparency-card">
+                <h3>🤝 Transparent Contributions</h3>
+                <p>
+                  Every donation is used responsibly to support our programs,
+                  community initiatives, and beneficiaries. Official receipts
+                  help maintain clear and accountable giving.
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+    <section aria-labelledby="trust-heading" class="section section-white donation-trust-section" id="donation-trust">
+      <div class="container">
+        <div class="trust-heading-wrap">
+          <h2 class="trust-heading" id="trust-heading">Where Your Money Goes</h2>
+          <p class="trust-intro">
+            Complete transparency in how your contribution creates real, lasting change.
+          </p>
+        </div>
+
+        <div class="trust-impact-grid">
+          <div class="trust-impact-card">
+            <div class="trust-impact-icon">📚</div>
+            <strong>₹500</strong>
+            <p>Learning kit support</p>
+          </div>
+          <div class="trust-impact-card">
+            <div class="trust-impact-icon">📖</div>
+            <strong>₹1,000</strong>
+            <p>Books and study materials</p>
+          </div>
+          <div class="trust-impact-card">
+            <div class="trust-impact-icon">🎓</div>
+            <strong>₹2,500</strong>
+            <p>Workshop or student sponsorship</p>
+          </div>
+        </div>
+
+        <div class="trust-secondary-grid">
+          <div class="trust-secure-card">
+            <h3>🛡 Secure Payment Assurance</h3>
+            <p>
+              All transactions are processed through our RBI-licensed payment
+              partner with bank-grade 256-bit SSL encryption. Your payment
+              details are never stored on our servers.
+            </p>
+          </div>
+          <div class="trust-registration-card">
+            <h3>📜 Registered &amp; Compliant</h3>
+            <p>
+              Our organization is registered under <strong>Section 12A</strong>
+              and <strong>Section 80G</strong> of the Income Tax Act, so your
+              donation is eligible for applicable tax benefits, with an official
+              receipt provided for every contribution.
+            </p>
+          </div>
+        </div>
+
+        <div class="trust-credibility-wrap">
+          <div class="trust-section-divider" aria-hidden="true"><span></span></div>
+
+          <div class="trust-credibility-grid">
+          <div class="credibility-card credibility-project">
+            <div class="credibility-project-image">
+              <img src="/public/images/awards/Best-Social-Worker-Award.jpeg" alt="Best Social Worker Award" loading="lazy">
+            </div>
+          
+            <span class="credibility-project-tag">Award</span>
+          
+            <h4>Best Social Worker Award — RSS</h4>
+          
+            <p>
+              Presented at Shankar Nagar, Shahdara, during the
+              100 Years of RSS celebration.
+            </p>
+          </div>
+
+          <div class="credibility-card credibility-project">
+            <div class="credibility-project-image">
+              <img src="/public/images/programs/education-outreach.jpg" alt="Project Shiksha" loading="lazy">
+            </div>
+          
+            <span class="credibility-project-tag">
+              Education Support
+            </span>
+          
+            <h4>Project Shiksha</h4>
+          
+            <p>
+              From 2 students to 50+ children through school
+              admissions, mentoring, and learning support.
+            </p>
+          </div>
+<div class="credibility-card credibility-project">
+  <div class="credibility-project-image">
+    <img src="/public/images/programs/community-impact.jpg" alt="Project Manthan" loading="lazy">
+  </div>
+
+  <span class="credibility-project-tag">
+    Counselling &amp; Awareness
+  </span>
+
+  <h4>Project Manthan</h4>
+
+  <p>
+    Counselling, awareness, and mentorship helping
+    children make informed and positive life choices.
+  </p>
+</div>
+          <div class="credibility-card credibility-project">
+            <div class="credibility-project-image">
+              <img src="/public/images/programs/volunteer-community.jpg" alt="Project Pravah" loading="lazy">
+            </div>
+          
+            <span class="credibility-project-tag">
+              Youth Empowerment
+            </span>
+          
+            <h4>Project Pravah</h4>
+          
+            <p>
+              A pilot initiative in Hisar, Haryana focused on
+              leadership, confidence building, and opportunities
+              for youth.
+            </p>
+          </div>
+          <div class="credibility-card credibility-project">
+            <div class="credibility-project-image">
+              <img src="/public/images/team/about_section2.png" alt="Project Udaan" loading="lazy">
+            </div>
+          
+            <span class="credibility-project-tag">
+              Research &amp; Outreach
+            </span>
+          
+            <h4>Project Udaan</h4>
+          
+            <p>
+              Grassroots research and outreach initiatives focused
+              on improving children's education and wellbeing.
+            </p>
+          </div>
+          <div class="credibility-card credibility-project">
+            <div class="credibility-project-image">
+              <img src="/public/images/team/about_section1.png" alt="Clothes Drive" loading="lazy">
+            </div>
+          
+            <span class="credibility-project-tag">
+              Community Support
+            </span>
+          
+            <h4>Clothes Drive</h4>
+          
+            <p>
+              Collecting and distributing clothes to underserved
+              families while encouraging community participation.
+            </p>
+          </div>
+          </div>
+        </div>
+
+        <div class="trust-faq-band">
+          <div class="trust-faq-wrap">
+            <span class="trust-faq-label">FAQ</span>
+            <h3 class="trust-faq-heading">Frequently Asked Questions</h3>
+
+            <details class="trust-faq-item">
+              <summary>Is my donation tax deductible?</summary>
+              <p>Yes, all donations are eligible for tax deduction under Section 80G of the Income Tax Act. You'll
+                receive an
+                official receipt via email for your records.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>How is my donation used?</summary>
+              <p>Your donation directly supports our programs, community initiatives, and beneficiaries, and is used
+                responsibly with full accountability.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>Is online payment secure?</summary>
+              <p>Yes. All payments are processed via our RBI-licensed payment partner with bank-grade SSL encryption,
+                and no
+                payment information is stored on our servers.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>Will I get a receipt for my donation?</summary>
+              <p>Yes, an official donation receipt is sent to your registered email address automatically after a
+                successful
+                payment.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>What payment methods can I use?</summary>
+              <p>You can donate securely using credit/debit cards, net banking, UPI, and popular wallets, all processed
+                through our verified payment gateway.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>Is there a minimum donation amount?</summary>
+              <p>You can contribute any amount starting from ₹1. Preset options are available for convenience, or you
+                can
+                enter a custom amount.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>Can I donate on behalf of someone else, or anonymously?</summary>
+              <p>Yes, you're welcome to make a donation in someone else's name. If you'd prefer your details not be
+                publicly listed, please mention this when you contact us.</p>
+            </details>
+
+            <details class="trust-faq-item">
+              <summary>Who can I contact if I have questions about my donation?</summary>
+              <p>You can reach out to us through the contact details listed on our website, and our team will be happy
+                to
+                assist with any questions about your contribution or receipt.</p>
+            </details>
+          </div>
+        </div>
+
+        <div class="trust-cta-wrap">
+          <h3>Every Contribution Makes a Difference</h3>
+          <p>Join us in creating lasting impact — your support today shapes a better tomorrow.</p>
+          <a class="trust-cta-btn" href="#donate">Donate Now</a>
         </div>
       </div>
     </section>
