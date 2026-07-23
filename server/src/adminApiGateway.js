@@ -188,22 +188,7 @@ await mongoose.connect(mongoUri);
 console.log(`[admin-gateway] MongoDB connected: ${mongoose.connection.host}`);
 
 const app = express();
-app.use(cors(corsOptions));
-app.use(express.json());
-
-// TEST ROUTE TO CHECK DB COLLECTIONS
-app.get("/api/test-db", async (req, res) => {
-  try {
-    const db = mongoose.connection.db;
-    const inGallery = await db.collection("gallery").countDocuments();
-    const inGalleries = await db.collection("galleries").countDocuments();
-    const inGalleryMedia = await db.collection("gallerymedia").countDocuments();
-    const inGalleryFolders = await db.collection("galleryfolders").countDocuments();
-    res.json({ inGallery, inGalleries, inGalleryMedia, inGalleryFolders });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+app.disable("x-powered-by");
 
 
 // FINAL ADMIN CORS START
