@@ -2894,7 +2894,6 @@ app.get(
     "/api/gallery/folder/:id/media",
     "/api/admin/gallery/media/folder/:id",
   ],
-  requireAdministrator,
   async (req, res, next) => {
     try {
       const media = await galleryMediaForFolder(
@@ -2902,7 +2901,7 @@ app.get(
       );
 
       res.json(
-        listPayload("galleryMedia", media)
+        listPayload("galleryMedia", projectPublicGalleryMedia(media, req))
       );
     } catch (error) {
       next(error);
@@ -2911,8 +2910,38 @@ app.get(
 );
 // GALLERY FOLDER MEDIA ROUTES END
 
-registerCrud("galleryFolders", ["/api/admin/gallery/folders", "/api/gallery/folders"], { listHandler: galleryFoldersHandler });
-registerCrud("galleryMedia", ["/api/admin/gallery/media", "/api/gallery/media", "/api/admin/gallery", "/api/gallery"]);
+function projectPublicGalleryMedia(rows, req) {
+  if (req && req.path && req.path.includes("/admin/")) {
+    return rows;
+  }
+  return rows.map(row => {
+    const norm = row.imageUrl ? row : finalNormalizeGalleryMedia(row);
+    return {
+      id: norm.id,
+      title: norm.title,
+      url: norm.imageUrl || norm.url || norm.secure_url,
+      folder: norm.folder || norm.album,
+      contentType: norm.contentType,
+      mediaType: norm.mediaType,
+      size: norm.size,
+      description: norm.description,
+      createdAt: norm.createdAt,
+      _gridFsBucket: norm._gridFsBucket
+    };
+  });
+}
+
+const publicGalleryMediaHandler = async (req, res, next) => {
+  try {
+    const rawMedia = await listResource("galleryMedia");
+    res.json(listPayload("galleryMedia", projectPublicGalleryMedia(rawMedia, req)));
+  } catch (error) {
+    next(error);
+  }
+};
+
+registerCrud("galleryFolders", ["/api/admin/gallery/folders", "/api/gallery/folders"], { listHandler: galleryFoldersHandler, publicGet: true });
+registerCrud("galleryMedia", ["/api/admin/gallery/media", "/api/gallery/media", "/api/admin/gallery", "/api/gallery"], { publicGet: true, listHandler: publicGalleryMediaHandler });
 
 app.get("/api/donate/campaigns", publicList("campaigns"));
 app.get("/api/donations/summary", requireAdministrator, donationSummaryHandler);
@@ -3026,7 +3055,6 @@ app.get(
     "/api/admin/gallery/folder/:id/media",
     "/api/gallery/folder/:id/media"
   ],
-  requireAdministrator,
   async (req, res, next) => {
     try {
       const folderId = clean(req.params.id);
@@ -3134,7 +3162,7 @@ app.get(
       return res.json(
         listPayload(
           "galleryMedia",
-          uniqueMedia
+          projectPublicGalleryMedia(uniqueMedia, req)
         )
       );
     } catch (error) {
