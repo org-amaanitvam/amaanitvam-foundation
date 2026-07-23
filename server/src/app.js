@@ -47,10 +47,14 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
+  "http://localhost:5176",
+  "http://localhost:5177",
+
   "https://admin.amaanitvam.org",
   "https://dashboard.amaanitvam.org",
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
+
   ...String(process.env.ADMIN_PORTAL_ORIGIN || process.env.CORS_ORIGINS || "")
     .split(",")
     .map((origin) => origin.trim())
