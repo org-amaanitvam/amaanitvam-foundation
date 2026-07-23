@@ -1,0 +1,22 @@
+# ══════════════════════════════════════════════════════════════════════
+# requirements-ai.txt  — AI/LLM/Vector DB dependencies (Phase 6+)
+#
+# ⚠️  WINDOWS: Requires Microsoft C++ Build Tools before installing.
+#     Download: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+#     Select "Desktop development with C++" workload.
+#
+# 🐧  LINUX (Render/Docker): Install without any extra setup.
+#     pip install -r requirements-ai.txt --prefer-binary
+# ══════════════════════════════════════════════════════════════════════
+
+# Install core deps first:
+-r requirements.txt
+
+# ── LLM ──────────────────────────────────────────────────────────────
+langchain==0.3.0
+langchain-google-genai==2.0.0
+langchain-community==0.3.0
+
+# ── Vector DB ────────────────────────────────────────────────────────
+# Needs C++ Build Tools on Windows. Works out of the box on Linux.
+chromadb==0.5.15

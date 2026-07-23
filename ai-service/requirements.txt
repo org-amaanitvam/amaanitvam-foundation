@@ -1,0 +1,28 @@
+# ══════════════════════════════════════════════════════════════════════
+# requirements.txt  — Core dependencies (Phases 1-5)
+# Install with:  pip install -r requirements.txt --prefer-binary
+#
+# NOTE: ChromaDB + LangChain are in requirements-ai.txt (Phase 6+).
+# Those require Microsoft C++ Build Tools on Windows, OR run on Linux.
+# ══════════════════════════════════════════════════════════════════════
+
+# ── Web framework ────────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# ── Database ─────────────────────────────────────────────────────────
+sqlalchemy[asyncio]==2.0.35
+asyncpg==0.29.0
+alembic==1.13.3
+
+# ── HTTP client (for internal API calls to Node.js) ───────────────────
+httpx==0.27.2
+
+# ── Validation & config ───────────────────────────────────────────────
+pydantic>=2.9.0
+pydantic-settings>=2.5.0
+python-dotenv==1.0.1
+
+# ── Testing ───────────────────────────────────────────────────────────
+pytest==8.3.3
+pytest-asyncio==0.24.0
