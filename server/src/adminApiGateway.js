@@ -2929,9 +2929,7 @@ async function galleryMediaForFolder(folderId) {
 app.get(
   [
     "/api/admin/gallery/folders/:id/media",
-    "/api/gallery/folders/:id/media",
     "/api/admin/gallery/folder/:id/media",
-    "/api/gallery/folder/:id/media",
     "/api/admin/gallery/media/folder/:id",
   ],
   async (req, res, next) => {
@@ -2980,8 +2978,12 @@ const publicGalleryMediaHandler = async (req, res, next) => {
   }
 };
 
-registerCrud("galleryFolders", ["/api/admin/gallery/folders", "/api/gallery/folders"], { listHandler: galleryFoldersHandler, publicGet: true });
-registerCrud("galleryMedia", ["/api/admin/gallery/media", "/api/gallery/media", "/api/admin/gallery", "/api/gallery"], { publicGet: true, listHandler: publicGalleryMediaHandler });
+registerCrud("galleryFolders", ["/api/admin/gallery/folders"], {
+  listHandler: galleryFoldersHandler,
+});
+registerCrud("galleryMedia", ["/api/admin/gallery/media", "/api/admin/gallery"], {
+  listHandler: publicGalleryMediaHandler,
+});
 
 app.get("/api/donate/campaigns", publicList("campaigns"));
 app.get("/api/donations/summary", requireAdministrator, donationSummaryHandler);

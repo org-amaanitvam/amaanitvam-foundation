@@ -65,4 +65,4 @@ const gallerySchema = new mongoose.Schema(
 gallerySchema.index({ folderId: 1, createdAt: 1 });
 
 export default mongoose.models.Gallery ||
-    mongoose.model("Gallery", gallerySchema);
+    mongoose.model("Gallery", gallerySchema, "gallery");
