@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════════════════════════════
-# requirements.txt  — Core dependencies (Phases 1-5)
+# requirements.txt  — Core dependencies (Phases 1-6)
 # Install with:  pip install -r requirements.txt --prefer-binary
 #
 # NOTE: ChromaDB + LangChain are in requirements-ai.txt (Phase 6+).
@@ -22,6 +22,11 @@ httpx==0.27.2
 pydantic>=2.9.0
 pydantic-settings>=2.5.0
 python-dotenv==1.0.1
+
+# ── Google Generative AI (Gemini embeddings + chat) ───────────────────
+# google-genai is the new official SDK (replaces deprecated google-generativeai).
+# No C++ required — pure Python. ChromaDB stays in requirements-ai.txt.
+google-genai>=1.0.0
 
 # ── Testing ───────────────────────────────────────────────────────────
 pytest==8.3.3
