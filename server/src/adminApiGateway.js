@@ -878,9 +878,9 @@ async function departmentsHandler(_req, res, next) {
 async function galleryFoldersHandler(_req, res, next) {
   try {
     let rows = await listResource("galleryFolders");
+    const media = await listResource("galleryMedia").catch(() => []);
 
     if (!rows.length) {
-      const media = await listResource("galleryMedia").catch(() => []);
       const map = new Map();
 
       for (const item of media) {
@@ -900,14 +900,37 @@ async function galleryFoldersHandler(_req, res, next) {
             title: name,
             album: name,
             folder: name,
-            count: 0,
+            mediaCount: 0,
           });
         }
 
-        map.get(name).count += 1;
+        map.get(name).mediaCount += 1;
       }
 
       rows = [...map.values()];
+    } else {
+      // Calculate mediaCount for actual folders from DB
+      rows = rows.map((folder) => {
+        const folderId = clean(folder._id || folder.id);
+        const count = media.filter((item) =>
+          [
+            item.folderId,
+            item.folder_id,
+            item.albumId,
+            item.album_id,
+            item.folder,
+            item.album,
+            item.galleryFolderId,
+            item.parentFolderId,
+            item.categoryId,
+          ].some((val) => galleryValueMatchesFolder(val, folderId))
+        ).length;
+        
+        return {
+          ...folder,
+          mediaCount: count,
+        };
+      });
     }
 
     res.json(listPayload("galleryFolders", rows));
@@ -2796,6 +2819,7 @@ function galleryValueMatchesFolder(value, folderId) {
 
   if (typeof value === "object") {
     return [
+      value,
       value._id,
       value.id,
       value.folderId,
