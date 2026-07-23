@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/productionLauncher.js",
     "dev": "nodemon src/server.js",
-    "check": "find src -type f -name '*.js' -print0 | xargs -0 -n1 node --check"
+    "check": "find src -type f -name '*.js' -print0 | xargs -0 -n1 node --check",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "keywords": [],
   "author": "",
@@ -30,9 +31,12 @@
     "pdf-parse": "^2.4.5",
     "pdfkit": "^0.19.1",
     "razorpay": "^2.9.6",
+    "resend": "^6.18.0",
     "winston": "^3.19.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.14"
   }
 }
