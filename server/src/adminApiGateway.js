@@ -199,7 +199,8 @@ app.use((req, res, next) => {
     /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin) ||
     origin === "https://admin.amaanitvam.org" ||
       origin === "https://www.amaanitvam.org" ||
-      origin === "https://amaanitvam.org";
+      origin === "https://amaanitvam.org" ||
+      origin === "https://dashboard.amaanitvam.org";
 
   if (origin && allowed) {
     res.setHeader(
@@ -249,6 +250,7 @@ app.use((req, res, next) => {
     origin === "https://admin.amaanitvam.org" ||
       origin === "https://www.amaanitvam.org" ||
       origin === "https://amaanitvam.org" ||
+      origin === "https://dashboard.amaanitvam.org" ||
     configuredOrigins.includes(origin);
 
   if (origin && originAllowed) {
