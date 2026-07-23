@@ -18,6 +18,7 @@ import AttendanceCard from "../attendance/AttendanceCard.jsx";
 import DashboardStatCard from "../../components/common/DashboardStatCard";
 import QuickActionButton from "../../components/common/QuickActionButton";
 import GrowthAnalytics from "../../components/dashboard/GrowthAnalytics";
+import AnalyticsCharts from "../../components/dashboard/AnalyticsCharts";
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();
@@ -235,6 +236,12 @@ export default function DashboardHome() {
     completedTasks={completedTasks}
     totalProjects={projects.length}
     totalMembers={stats?.activeMembers || 0}
+  />
+
+  <AnalyticsCharts
+    openTasks={openTasks}
+    completedTasks={completedTasks}
+    projects={projects}
   />
 
   <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
