@@ -1191,7 +1191,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 .testimonial-grid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(3,1fr);
     gap:30px;
 }
 
