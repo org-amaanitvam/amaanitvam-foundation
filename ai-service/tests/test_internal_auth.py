@@ -1,37 +1,33 @@
 """
 Phase 4 tests — Internal auth middleware + rate limiter.
-All tests mock DB and ChromaDB so no infrastructure needed.
+Uses the shared session-scoped app from conftest.py.
 """
 
 import pytest
-from unittest.mock import AsyncMock, patch
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 
 from app.config import settings
 
 
 @pytest.fixture
-def client():
-    with (
-        patch("app.database.session.init_db", new_callable=AsyncMock),
-        patch("app.database.chroma.init_chroma", return_value=None),
-    ):
-        from main import app
-        with TestClient(app) as c:
-            yield c
+async def client(app):
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        yield ac
 
 
 # ── Internal auth tests ───────────────────────────────────────────────
 
-def test_internal_health_without_secret_returns_403(client):
+async def test_internal_health_without_secret_returns_403(client):
     """No X-Internal-Secret header → must be rejected."""
-    response = client.get("/internal/health")
+    response = await client.get("/internal/health")
     assert response.status_code == 422  # FastAPI rejects missing required header
 
 
-def test_internal_health_with_wrong_secret_returns_403(client):
+async def test_internal_health_with_wrong_secret_returns_403(client):
     """Wrong secret → 403 with INTERNAL_SECRET_INVALID code."""
-    response = client.get(
+    response = await client.get(
         "/internal/health",
         headers={"X-Internal-Secret": "totally_wrong_secret"},
     )
@@ -41,9 +37,9 @@ def test_internal_health_with_wrong_secret_returns_403(client):
     assert body["detail"]["error"]["code"] == "INTERNAL_SECRET_INVALID"
 
 
-def test_internal_health_with_correct_secret_returns_200(client):
+async def test_internal_health_with_correct_secret_returns_200(client):
     """Correct secret → 200 with status ok."""
-    response = client.get(
+    response = await client.get(
         "/internal/health",
         headers={"X-Internal-Secret": settings.INTERNAL_SHARED_SECRET},
     )

@@ -1,36 +1,28 @@
 """
-Phase 1 smoke test — verifies the service starts and /health responds.
-No DB or ChromaDB required; both are mocked.
+Phase 1 smoke test — /health endpoint.
+Uses the shared session-scoped app from conftest.py.
 """
 
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 
 
 @pytest.fixture
-def client():
-    """
-    Create a test client with DB init and ChromaDB init mocked out
-    so the test doesn't need a real PostgreSQL or ChromaDB instance.
-    """
-    with (
-        patch("app.database.session.init_db", new_callable=AsyncMock),
-        patch("app.database.chroma.init_chroma", return_value=None),
-    ):
-        from main import app
-        with TestClient(app) as c:
-            yield c
+async def client(app):
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        yield ac
 
 
-def test_health_returns_ok(client):
-    response = client.get("/health")
+async def test_health_returns_ok(client: AsyncClient):
+    response = await client.get("/health")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
     assert body["service"] == "amaanitvam-ai-service"
 
 
-def test_unknown_route_returns_404(client):
-    response = client.get("/api/does-not-exist")
+async def test_unknown_route_returns_404(client: AsyncClient):
+    response = await client.get("/api/does-not-exist")
     assert response.status_code == 404
