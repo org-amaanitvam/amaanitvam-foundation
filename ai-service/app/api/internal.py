@@ -20,9 +20,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.session import get_db
 from app.middleware.internal_auth import verify_internal_secret
 from app.middleware.user_header import get_firebase_uid
+from app.middleware.rate_limiter import check_message_rate_limit
 from app.schemas.indexing import IndexCourseRequest, IndexResourceRequest, IndexResponse
+from app.schemas.message import InternalChatRequest, InternalChatResponse, MessageResponse
 from app.services import indexing_service
 from app.services.indexing_service import IndexingUnavailableError, IndexingError
+from app.services.chat_service import handle_chat, ChatError
 from app.schemas.common import ErrorCode
 
 logger = logging.getLogger("ai_service")
@@ -47,6 +50,66 @@ async def internal_health():
         "status": "ok",
         "chroma": "ready" if chroma_ok() else "unavailable (install requirements-ai.txt)",
     }
+
+
+# ── Chat ────────────────────────────────────────────────────────────────
+@router.post(
+    "/chat",
+    response_model=InternalChatResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def internal_chat(
+    data: InternalChatRequest,
+    db: AsyncSession = Depends(get_db),
+    _rate: None = Depends(check_message_rate_limit),
+):
+    """
+    POST /internal/chat — called exclusively by the Node.js Main API.
+
+    Node.js has already:
+      1. Verified the Firebase token (verifyIdToken)
+      2. Populated firebase_uid in the request body
+      3. Added X-Internal-Secret for service-to-service auth
+
+    This endpoint:
+      - Runs the RAG retrieval pipeline
+      - Calls Gemini for the AI response
+      - Saves both the user and AI messages to PostgreSQL
+      - Creates an AINotification
+      - Returns the AI message to Node.js
+    """
+    try:
+        ai_message, conversation_id = await handle_chat(db, data)
+        return InternalChatResponse(
+            success=True,
+            data=MessageResponse.from_orm_model(ai_message),
+            conversation_id=conversation_id,
+        )
+    except ValueError as exc:
+        # Conversation not found or archived
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "success": False,
+                "error": {
+                    "code": ErrorCode.CONVERSATION_NOT_FOUND,
+                    "message": str(exc),
+                    "details": [],
+                },
+            },
+        )
+    except ChatError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "success": False,
+                "error": {
+                    "code": ErrorCode.LLM_UNAVAILABLE,
+                    "message": str(exc),
+                    "details": [],
+                },
+            },
+        )
 
 
 # ── Course indexing ────────────────────────────────────────────────────

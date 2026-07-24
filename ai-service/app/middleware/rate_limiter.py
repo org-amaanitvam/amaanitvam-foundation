@@ -18,9 +18,7 @@ Usage as a FastAPI dependency:
 
 import time
 from collections import defaultdict, deque
-from fastapi import Depends, HTTPException, status
-
-from app.schemas.message import InternalChatRequest
+from fastapi import Depends, HTTPException, Request, status
 
 # ── Config ────────────────────────────────────────────────────────────
 MAX_MESSAGES = 30          # per window
@@ -51,12 +49,21 @@ def _is_rate_limited(firebase_uid: str) -> bool:
     return False
 
 
-async def check_message_rate_limit(payload: InternalChatRequest) -> None:
+async def check_message_rate_limit(request: Request) -> None:
     """
     FastAPI dependency for /internal/chat.
-    Reads firebase_uid from the already-parsed request body.
+
+    Reads firebase_uid from the raw request body JSON so it does NOT
+    conflict with the route's own body parameter (FastAPI only allows
+    one Pydantic body binding per endpoint).
     """
-    if _is_rate_limited(payload.firebase_uid):
+    try:
+        body = await request.json()
+        firebase_uid = body.get("firebase_uid", "")
+    except Exception:
+        firebase_uid = ""
+
+    if firebase_uid and _is_rate_limited(firebase_uid):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={

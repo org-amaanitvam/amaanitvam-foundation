@@ -41,6 +41,8 @@ def _mock_chroma_collection():
     col = MagicMock()
     col.upsert = MagicMock()
     col.delete = MagicMock()
+    # get() is called by _delete_by_prefix to find chunks to delete
+    col.get = MagicMock(return_value={"ids": ["course::course123::chunk_0", "resource::res001::chunk_0"]})
     return col
 
 
@@ -97,7 +99,7 @@ async def test_index_course_success(client: AsyncClient):
     call_args = mock_col.upsert.call_args[0]
     # Check ids contains the right chroma_id (either positional or keyword)
     ids_arg = call_kwargs.get("ids") or (call_args[0] if call_args else None)
-    assert ids_arg == ["course::course123"]
+    assert ids_arg == ["course::course123::chunk_0"]
 
 
 async def test_index_course_minimal_fields(client: AsyncClient):

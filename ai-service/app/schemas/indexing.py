@@ -13,17 +13,23 @@ class IndexCourseRequest(BaseModel):
     """
     POST /internal/index-course/:courseId
 
-    Node.js sends the fields needed to build a meaningful text representation
-    for embedding. We concatenate them into one document before embedding.
+    Node.js sends the fields needed to build a meaningful text representation.
+    content_blocks: optional list of lesson/section text from the course
+    (e.g. lesson description, content_text). These are chunked and embedded
+    separately for richer RAG retrieval.
     """
     title: str = Field(..., min_length=1, max_length=500)
     description: str | None = Field(default=None, max_length=5000)
-    category: str | None = None          # skill | academic | competitive | etc.
-    grade_level: str | None = None       # 9 | 10 | 11 | 12 | open
+    category: str | None = None
+    grade_level: str | None = None
     subject: str | None = None
     module_titles: list[str] = Field(
         default=[],
         description="Titles of all modules in the course",
+    )
+    content_blocks: list[str] = Field(
+        default=[],
+        description="Full text of course lessons/sections for chunked embedding",
     )
 
 
@@ -31,16 +37,20 @@ class IndexResourceRequest(BaseModel):
     """
     POST /internal/index-resource/:resourceId
 
-    Library resource indexing. Mirrors Sourav's resource schema fields
-    that are useful for semantic search.
+    Library resource indexing. Optional content_blocks allows Node.js to
+    send extracted text (e.g. PDF content) for richer semantic indexing.
     """
     title: str = Field(..., min_length=1, max_length=500)
     description: str | None = Field(default=None, max_length=5000)
-    category: str | None = None         # textbook | notes | video | etc.
+    category: str | None = None
     subject: str | None = None
     domain: str | None = None
     grade: str | None = None
     resource_type: Literal["pdf", "video", "link", "document", "other"] | None = None
+    content_blocks: list[str] = Field(
+        default=[],
+        description="Extracted text content from the resource for chunked embedding",
+    )
 
 
 class IndexResponse(BaseModel):
