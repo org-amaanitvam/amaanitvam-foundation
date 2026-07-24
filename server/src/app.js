@@ -40,6 +40,7 @@ const app = express();
 app.set("trust proxy", "loopback");
 
 import productionProfileRoutes from "./routes/productionProfile.routes.js";
+import memberAdministrationRoutes from "./modules/auth/memberAdministration.routes.js";
 // Security and utility middleware
 app.use(helmet());
 
@@ -82,6 +83,9 @@ app.use(cors(corsOptions));
 
 
 //app.use("/api/public/settings", settingsRoutes);
+// Super Admin member mutation routes.
+app.use("/api/admin/members", memberAdministrationRoutes);
+
 app.use("/api/activities", activityRoutes);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

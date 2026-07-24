@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
 import { Users, Plus, X, Pencil } from 'lucide-react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { firebaseConfig } from '../../../config/firebase.js';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
 const INITIAL_FORM = { name: '', email: '', phone: '', role: 'member', department: '', designation: '',
   domain: '' };
+
+const getDepartmentLabel = (department) => {
+  if (typeof department === 'string') return department;
+  if (!department || typeof department !== 'object') return '';
+
+  return String(
+    department.departmentName ||
+    department.name ||
+    department.title ||
+    ''
+  );
+};
+
+const getDepartmentValue = (department) => getDepartmentLabel(department);
 
 export default function Members() {
   const [members, setMembers] = useState([]);
@@ -60,41 +71,95 @@ const [editMember, setEditMember] = useState({
 
   const handleAddMember = async (e) => {
     e.preventDefault();
-    if (!newMember.name || !newMember.email) {
+
+    const cleanName = String(newMember.name || '').trim();
+    const cleanEmail = String(newMember.email || '').trim().toLowerCase();
+
+    if (!cleanName || !cleanEmail) {
       toast.error('Name and email are required');
       return;
     }
+
     setSubmitting(true);
+
     try {
-      // 1. Create User in Firebase silently using a secondary app instance
-      // This prevents the admin from being automatically logged out
-      const secondaryApp = initializeApp(firebaseConfig, 'SecondaryApp');
-      const secondaryAuth = getAuth(secondaryApp);
-      
-      const defaultPassword = 'Password123!'; // Default password for new members
-      
-      try {
-        await createUserWithEmailAndPassword(secondaryAuth, newMember.email, defaultPassword);
-      } catch (fbError) {
-        if (fbError.code === 'auth/email-already-in-use') {
-          // If already in Firebase, we just continue to add them to MongoDB
-          console.log('User already exists in Firebase Auth, proceeding to sync with DB.');
-        } else {
-          throw new Error(fbError.message);
+      const department =
+        typeof newMember.department === 'string'
+          ? newMember.department
+          : newMember.department?.departmentName ||
+            newMember.department?.name ||
+            newMember.department?.title ||
+            '';
+
+      const provisionRes = await api.post('/auth/users/provision', {
+        name: cleanName,
+        email: cleanEmail,
+        role: newMember.role || 'member',
+        department,
+        team: newMember.team || newMember.domain || '',
+        permissions: [],
+      });
+
+      const createdUser = provisionRes.data?.user || {};
+      const credentialEmail = provisionRes.data?.credentialEmail || {};
+      const createdId = createdUser.id || createdUser._id || '';
+      const uniqueId = createdUser.uniqueId || createdUser.memberId || '';
+
+      if (
+        createdId &&
+        (newMember.phone || newMember.designation || newMember.domain)
+      ) {
+        try {
+          await api.put(`/admin/members/${createdId}`, {
+            name: cleanName,
+            email: cleanEmail,
+            phone: newMember.phone || '',
+            department,
+            designation: newMember.designation || '',
+            domain: newMember.domain || '',
+          });
+        } catch (metadataError) {
+          console.warn(
+            'Member login provisioned, but optional profile metadata update failed:',
+            metadataError?.response?.data || metadataError?.message || metadataError,
+          );
         }
-      } finally {
-        await signOut(secondaryAuth); // Clear the secondary session
       }
 
-      // 2. Save user in our MongoDB Database
-      await api.post('/admin/members', newMember);
-      
-      toast.success('Member added and synced with Firebase successfully! Default password is: Password123!');
+      if (credentialEmail.sent) {
+        toast.success(
+          `Member created successfully.${uniqueId ? ` Unique ID: ${uniqueId}.` : ''} Dashboard credentials were emailed to ${cleanEmail}.`,
+          { duration: 9000 },
+        );
+      } else {
+        const reason =
+          credentialEmail.reason ||
+          'The email service did not confirm delivery. Check backend email configuration/logs.';
+
+        toast.error(
+          `Member account was created${uniqueId ? ` with Unique ID ${uniqueId}` : ''}, but the credential email was not sent: ${reason}`,
+          { duration: 12000 },
+        );
+      }
+
       setShowAddModal(false);
       setNewMember(INITIAL_FORM);
-      fetchMembers();
+      await fetchMembers();
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to add member');
+      const code = err.response?.data?.code;
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to add member';
+
+      if (code === 'FIREBASE_USER_ALREADY_EXISTS') {
+        toast.error(
+          `${message} This email was likely created by the old Password123 flow. Use a fresh test email, or remove/repair the old Firebase account before recreating it.`,
+          { duration: 12000 },
+        );
+      } else {
+        toast.error(message, { duration: 9000 });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -339,7 +404,7 @@ const getRoleBadge = (role) => {
       email: member.email || "",
       phone: member.phone || "",
       role: member.role || "member",
-      department: member.department || "",
+      department: getDepartmentValue(member.department),
     });
     setShowEditModal(true);
   }}
@@ -445,7 +510,7 @@ const getRoleBadge = (role) => {
                 >
                   <option value="">Select a department</option>
                   {departments.map((dept) => (
-                    <option key={dept} value={dept}>{dept}</option>
+                    <option key={getDepartmentLabel(dept)} value={getDepartmentValue(dept)}>{getDepartmentLabel(dept)}</option>
                   ))}
                 </select>
               </div>
@@ -568,7 +633,7 @@ const getRoleBadge = (role) => {
           </label>
 
           <select
-            value={editMember.department}
+            value={getDepartmentValue(editMember.department)}
             onChange={(e) =>
               setEditMember({
                 ...editMember,
@@ -579,7 +644,7 @@ const getRoleBadge = (role) => {
           >
             <option value="">Select a department</option>
             {departments.map((dept) => (
-              <option key={dept} value={dept}>{dept}</option>
+              <option key={getDepartmentLabel(dept)} value={getDepartmentValue(dept)}>{getDepartmentLabel(dept)}</option>
             ))}
           </select>
         </div>
