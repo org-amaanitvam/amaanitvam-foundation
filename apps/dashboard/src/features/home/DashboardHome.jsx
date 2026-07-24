@@ -15,9 +15,10 @@ import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
 import ActivityFeed from "../../components/ActivityFeed/ActivityFeed";
 import AttendanceCard from "../attendance/AttendanceCard.jsx";
-import AddProjectManagement from "../../components/Projects/AddProjectManagement.jsx";
-import AddAnnouncementForm from "../../components/announcements/AddAnnouncementForm.jsx";
-import AssignTaskForm from "../../components/Tasks/AssignTaskForm.jsx";
+import DashboardStatCard from "../../components/common/DashboardStatCard";
+import QuickActionButton from "../../components/common/QuickActionButton";
+import GrowthAnalytics from "../../components/dashboard/GrowthAnalytics";
+import AnalyticsCharts from "../../components/dashboard/AnalyticsCharts";
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();
@@ -107,43 +108,188 @@ export default function DashboardHome() {
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <div>
-        <p className="text-xs font-ui font-bold uppercase tracking-[0.22em] text-gold">Dashboard Panel</p>
-        <h1 className="mt-2 text-4xl font-heading font-bold text-primary tracking-tight">
-          {isAdmin ? 'Team Dashboard' : `Welcome, ${userProfile?.name?.split(' ')[0] || 'User'}`}
-        </h1>
-        <p className="text-text-muted mt-2 font-body">
-          {isAdmin ? "Overview of your organization's activity" : "Here's your workspace overview"}
+      <div className="rounded-3xl overflow-hidden bg-linear-to-r from-[#56051a] via-[#6f0b24] to-[#8b1730] text-white p-8 shadow-xl">
+  <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8">
+    <div>
+      <p className="uppercase tracking-[0.3em] text-[#d8a15f] text-xs font-bold">
+        Dashboard Overview
+      </p>
+      <h1 className="mt-3 text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg">
+        Good{" "}
+        {new Date().getHours() < 12
+          ? "Morning"
+          : new Date().getHours() < 18
+          ? "Afternoon"
+          : "Evening"}
+        , {userProfile?.name?.split(" ")[0] || "Member"} 👋
+      </h1>
+      <p className="mt-4 text-lg text-pink-100 max-w-xl leading-relaxed">
+        Welcome back. Here's everything happening across the foundation today.
+      </p>
+    </div>
+    <div className="grid grid-cols-2 gap-4">
+      <div className="rounded-2xl bg-white/10 backdrop-blur-md px-6 py-5">
+        <p className="text-xs uppercase text-white/70">
+          Open Tasks
         </p>
+        <h2 className="text-4xl font-extrabold text-white mt-2">
+          {openTasks}
+        </h2>
       </div>
+      <div className="rounded-2xl bg-white/10 backdrop-blur-md px-6 py-5">
+        <p className="text-xs uppercase text-white/70">
+          Meetings
+        </p>
+        <h2 className="text-4xl font-extrabold text-white mt-2">
+          {upcomingMeetings.length}
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {isAdmin && stats ? (
-          <>
-            <StatCard icon={Users} label="Total Members" value={stats.activeMembers || 0} tone="primary" />
-            <StatCard icon={FileText} label="Pending Applications" value={stats.totalCandidates || 0} tone="gold" />
-            <StatCard icon={ClipboardList} label="Open Tasks" value={openTasks} tone="secondary" />
-            <StatCard icon={TrendingUp} label="Completed Tasks" value={completedTasks} tone="dark" />
-          </>
-        ) : (
-          <>
-            <StatCard icon={ClipboardList} label="Open Tasks" value={openTasks} tone="gold" />
-            <StatCard icon={TrendingUp} label="In Progress" value={inProgressTasks} tone="primary" />
-            <StatCard icon={UserCheck} label="Completed" value={completedTasks} tone="secondary" />
-            <StatCard icon={Calendar} label="Upcoming Meetings" value={upcomingMeetings.length} tone="dark" />
-          </>
-        )}
+  <>
+    <DashboardStatCard
+      title="Total Members"
+      value={stats.activeMembers || 0}
+      icon={Users}
+      subtitle="Currently Active"
+      trend="+12%"
+      color="bg-[#56051a]"
+    />
+
+    <DashboardStatCard
+      title="Applications"
+      value={stats.totalCandidates || 0}
+      icon={FileText}
+      subtitle="Pending Review"
+      trend="+4%"
+      color="bg-[#d8a15f]"
+    />
+
+    <DashboardStatCard
+      title="Open Tasks"
+      value={openTasks}
+      icon={ClipboardList}
+      subtitle="Needs Attention"
+      trend="+9%"
+      color="bg-blue-600"
+    />
+
+    <DashboardStatCard
+      title="Completed"
+      value={completedTasks}
+      icon={TrendingUp}
+      subtitle="Finished Tasks"
+      trend="+18%"
+      color="bg-green-600"
+    />
+  </>
+) : (
+  <>
+    <DashboardStatCard
+      title="Open Tasks"
+      value={openTasks}
+      icon={ClipboardList}
+      subtitle="Assigned"
+      trend="+5%"
+      color="bg-[#56051a]"
+    />
+
+    <DashboardStatCard
+      title="In Progress"
+      value={inProgressTasks}
+      icon={TrendingUp}
+      subtitle="Ongoing"
+      trend="+2%"
+      color="bg-blue-600"
+    />
+
+    <DashboardStatCard
+      title="Completed"
+      value={completedTasks}
+      icon={UserCheck}
+      subtitle="Finished"
+      trend="+11%"
+      color="bg-green-600"
+    />
+
+    <DashboardStatCard
+      title="Meetings"
+      value={upcomingMeetings.length}
+      icon={Calendar}
+      subtitle="Upcoming"
+      trend="Today"
+      color="bg-[#d8a15f]"
+    />
+  </>
+)}
       </div>
 
       {/* FIXED SECTION: Cleaned up the duplicates and closed the tags perfectly */}
-      <div className="flex flex-col gap-4 mb-6">
-        <AttendanceCard />
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <AddProjectManagement onProjectAdded={fetchDashboardData} />
-          <AddAnnouncementForm onAnnouncementAdded={fetchDashboardData} />
-          <AssignTaskForm onTaskAssigned={fetchDashboardData} />
-        </div>
+      <div className="space-y-6">
+  <AttendanceCard />
+  <GrowthAnalytics
+    openTasks={openTasks}
+    completedTasks={completedTasks}
+    totalProjects={projects.length}
+    totalMembers={stats?.activeMembers || 0}
+  />
+
+  <AnalyticsCharts
+    openTasks={openTasks}
+    completedTasks={completedTasks}
+    projects={projects}
+  />
+
+  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900">
+          Quick Actions
+        </h2>
+        <p className="text-sm text-slate-500 mt-1">
+          Frequently used dashboard actions
+        </p>
       </div>
+    </div>
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+
+      <QuickActionButton
+        icon={FolderKanban}
+        label="New Project"
+        onClick={() => {}}
+      />
+
+      <QuickActionButton
+        icon={ClipboardList}
+        label="Assign Task"
+        onClick={() => {}}
+      />
+
+      <QuickActionButton
+        icon={Megaphone}
+        label="Announcement"
+        onClick={() => {}}
+      />
+
+      <QuickActionButton
+        icon={Calendar}
+        label="Meeting"
+        onClick={() => {}}
+      />
+
+      <QuickActionButton
+        icon={FileText}
+        label="Reports"
+        onClick={() => {}}
+      />
+
+    </div>
+  </div>
+</div>
 
       <div className="flex flex-col xl:flex-row gap-6">
         <div className="flex-1">

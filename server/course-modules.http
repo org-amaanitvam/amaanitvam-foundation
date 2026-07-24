@@ -1,0 +1,47 @@
+### Course Modules API Tests
+@baseUrl = http://localhost:5000/api
+@courseId = <PLACE_YOUR_COURSE_ID_HERE>
+@moduleId = <PLACE_YOUR_MODULE_ID_HERE>
+@token = <PLACE_YOUR_AUTH_TOKEN_HERE>
+
+### Create a new module (Protected)
+POST {{baseUrl}}/courses/{{courseId}}/modules
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Module 1: Getting Started",
+    "description": "This is the first module"
+}
+
+### Get all modules for a course
+GET {{baseUrl}}/courses/{{courseId}}/modules
+
+### Get a specific module
+GET {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
+
+### Update a module (Protected)
+PUT {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Module 1: Introduction",
+    "description": "Updated description"
+}
+
+### Reorder modules (Protected)
+PATCH {{baseUrl}}/courses/{{courseId}}/modules/reorder
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "moduleIds": [
+        "{{moduleId}}",
+        "<ANOTHER_MODULE_ID>"
+    ]
+}
+
+### Soft delete a module (Protected)
+DELETE {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
+Authorization: Bearer {{token}}

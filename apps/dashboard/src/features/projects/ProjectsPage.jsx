@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FolderKanban, Loader2, Plus, Edit2 } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -15,7 +15,36 @@ export default function ProjectsPage() {
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [filters, setFilters] = useState({});
+  const [search, setSearch] = useState("");
   const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  const filterConfig = [
+  {
+    name: "status",
+    label: "Status",
+    type: "select",
+    options: [
+      { label: "All Statuses", value: "all" },
+      { label: "Ongoing", value: "ongoing" },
+      { label: "Completed", value: "completed" },
+      { label: "Pending Approval", value: "pending_approval" },
+    ],
+  },
+  {
+    name: "startDate",
+    label: "Start Date Range",
+    type: "dateRange",
+  },
+  {
+    name: "endDate",
+    label: "End Date Range",
+    type: "dateRange",
+  },
+  {
+    name: "progress",
+    label: "Progress (%)",
+    type: "numberRange",
+  },
+];
 
   const fetchProjects = async () => {
     try {
@@ -76,55 +105,112 @@ export default function ProjectsPage() {
     }));
   };
 
-  if (loading) return <div className="flex justify-center items-center h-64"><Loader2 className="w-8 h-8 text-[#56051a] animate-spin" /></div>;
-
-  const filtered = projects.filter(p => {
+  const filtered = useMemo(() => projects.filter((p) => {
     let match = true;
-    if (filters.status && filters.status !== 'all' && p.status !== filters.status) match = false;
 
-    if (filters.startDate?.start && p.startDate) {
-      if (new Date(p.startDate) < new Date(filters.startDate.start)) match = false;
+    // Search
+    if (
+      search &&
+      !(p.title || p.name || "")
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    ) {
+      match = false;
     }
+
+    // Status
+    if (
+      filters.status &&
+      filters.status !== "all" &&
+      p.status !== filters.status
+    ) {
+      match = false;
+    }
+
+    // Start Date
+    if (filters.startDate?.start && p.startDate) {
+      if (new Date(p.startDate) < new Date(filters.startDate.start))
+        match = false;
+    }
+
     if (filters.startDate?.end && p.startDate) {
       const end = new Date(filters.startDate.end);
       end.setHours(23, 59, 59, 999);
-      if (new Date(p.startDate) > end) match = false;
+
+      if (new Date(p.startDate) > end)
+        match = false;
     }
 
+    // End Date
     if (filters.endDate?.start && p.endDate) {
-      if (new Date(p.endDate) < new Date(filters.endDate.start)) match = false;
+      if (new Date(p.endDate) < new Date(filters.endDate.start))
+        match = false;
     }
+
     if (filters.endDate?.end && p.endDate) {
       const end = new Date(filters.endDate.end);
       end.setHours(23, 59, 59, 999);
-      if (new Date(p.endDate) > end) match = false;
+
+      if (new Date(p.endDate) > end)
+        match = false;
     }
 
-    if (filters.progress?.min !== undefined && filters.progress.min !== '') {
-      if ((p.progress || 0) < Number(filters.progress.min)) match = false;
+    // Progress
+    if (
+      filters.progress?.min !== undefined &&
+      filters.progress.min !== ""
+    ) {
+      if ((p.progress || 0) < Number(filters.progress.min))
+        match = false;
     }
-    if (filters.progress?.max !== undefined && filters.progress.max !== '') {
-      if ((p.progress || 0) > Number(filters.progress.max)) match = false;
+
+    if (
+      filters.progress?.max !== undefined &&
+      filters.progress.max !== ""
+    ) {
+      if ((p.progress || 0) > Number(filters.progress.max))
+        match = false;
     }
 
     return match;
-  });
+  }), [projects, filters, search]);
 
-  const filterConfig = [
-    { name: 'status', label: 'Status', type: 'select', options: [
-      { label: 'All Statuses', value: 'all' },
-      { label: 'Ongoing', value: 'ongoing' },
-      { label: 'Completed', value: 'completed' },
-      { label: 'Pending Approval', value: 'pending_approval' }
-    ]},
-    { name: 'startDate', label: 'Start Date Range', type: 'dateRange' },
-    { name: 'endDate', label: 'End Date Range', type: 'dateRange' },
-    { name: 'progress', label: 'Progress (%)', type: 'numberRange' }
-  ];
+if (loading) return <div className="flex justify-center items-center h-64"><Loader2 className="w-8 h-8 text-[#56051a] animate-spin" /></div>;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center flex-wrap gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+
+  <div className="bg-white rounded-2xl border p-5">
+    <p className="text-sm text-slate-500">Total Projects</p>
+    <h2 className="text-3xl font-bold mt-2">
+      {projects.length}
+    </h2>
+  </div>
+
+  <div className="bg-white rounded-2xl border p-5">
+    <p className="text-sm text-slate-500">Completed</p>
+    <h2 className="text-3xl font-bold text-green-600 mt-2">
+      {projects.filter(p=>p.status==="completed").length}
+    </h2>
+  </div>
+
+  <div className="bg-white rounded-2xl border p-5">
+    <p className="text-sm text-slate-500">Ongoing</p>
+    <h2 className="text-3xl font-bold text-blue-600 mt-2">
+      {projects.filter(p=>p.status==="ongoing").length}
+    </h2>
+  </div>
+
+  <div className="bg-white rounded-2xl border p-5">
+    <p className="text-sm text-slate-500">Pending</p>
+    <h2 className="text-3xl font-bold text-amber-600 mt-2">
+      {projects.filter(p=>p.status==="pending_approval").length}
+    </h2>
+  </div>
+
+</div>
+      <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
           <p className="text-sm text-slate-500 mt-1">Track project progress</p>
@@ -135,6 +221,15 @@ export default function ProjectsPage() {
           </button>
         )}
       </div>
+
+<div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm mb-8">
+  <input
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    placeholder="🔍 Search projects..."
+    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#56051a] outline-none"
+  />
+</div>
 
       {showCreate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -210,35 +305,62 @@ export default function ProjectsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map(p => (
-            <div key={p._id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-sm transition-shadow relative">
-              <button onClick={() => openEdit(p)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors">
+            <div key={p._id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative flex flex-col justify-between">
+              <button onClick={() => openEdit(p)} className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-[#56051a] hover:text-white transition-all duration-300">
                 <Edit2 className="w-4 h-4" />
               </button>
-              <div className="flex justify-between items-start mb-3 pr-10">
+              <div className="mb-3 pr-10">
                 <div>
-                  <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                     {p.title || p.name}
-                    {p.status === 'pending_approval' && <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-lg border bg-purple-100 text-purple-700 border-purple-200">Pending Approval</span>}
+                    <span
+  className={`px-3 py-1 text-[11px] font-semibold rounded-full ${
+    p.status === "completed"
+      ? "bg-green-100 text-green-700"
+      : p.status === "ongoing"
+      ? "bg-blue-100 text-blue-700"
+      : "bg-purple-100 text-purple-700"
+  }`}
+>
+  {p.status === "completed"
+    ? "Completed"
+    : p.status === "ongoing"
+    ? "Ongoing"
+    : "Pending Approval"}
+</span>
                   </h3>
                   {p.department?.departmentName && (
-                    <span className="text-xs text-slate-400 font-medium">{p.department.departmentName}</span>
+                    <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full bg-[#56051a]/10 text-[#56051a] text-xs font-semibold">
+  {p.department.departmentName}
+</span>
                   )}
                 </div>
-                <span className="text-sm font-bold text-[#56051a]">{p.progress || 0}%</span>
               </div>
 
               {(p.startDate || p.endDate) && (
-                <div className="text-xs text-slate-400 mb-2 flex items-center gap-2 font-medium">
+                <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mb-4">
                   {p.startDate && <span>Starts: {new Date(p.startDate).toLocaleDateString()}</span>}
                   {p.startDate && p.endDate && <span>•</span>}
                   {p.endDate && <span>Ends: {new Date(p.endDate).toLocaleDateString()}</span>}
                 </div>
               )}
 
-              <p className="text-xs text-slate-500 mb-3">{p.description || 'No description'}</p>
-              <div className="w-full bg-slate-100 rounded-full h-2.5 mb-3">
-                <div className="bg-[#56051a] h-2.5 rounded-full transition-all duration-500" style={{ width: `${p.progress || 0}%` }}></div>
-              </div>
+              <p className="text-sm text-slate-600 leading-6 mt-4 mb-5 line-clamp-3">{p.description || 'No description'}</p>
+<div className="space-y-3 mt-auto">
+<div className="flex justify-between items-center text-sm font-semibold text-slate-700">
+<span>Progress</span>
+<span>{p.progress || 0}%</span>
+</div>
+
+<div className="w-full h-4 rounded-full bg-slate-100 overflow-hidden shadow-inner">
+
+<div
+className="h-4 rounded-full bg-linear-to-r from-[#56051a] via-[#8b1238] to-[#d8a15f] transition-all duration-700"
+style={{width:`${p.progress || 0}%`}}
+/>
+
+</div>
+</div>
 
               {p.status === 'pending_approval' && isAdmin && (
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
@@ -247,7 +369,7 @@ export default function ProjectsPage() {
                       await api.put(`/projects/${p._id}`, { status: 'completed', progress: 100 });
                       fetchProjects();
                     } catch { toast.error('Error approving project'); }
-                  }} className="px-3 py-1.5 flex-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-medium hover:bg-emerald-100 text-center">
+                  }} className="px-4 py-2 flex-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-medium hover:bg-emerald-100 text-center">
                     Approve
                   </button>
                   <button onClick={async () => {
@@ -255,7 +377,7 @@ export default function ProjectsPage() {
                       await api.put(`/projects/${p._id}`, { status: 'ongoing', progress: 90 });
                       fetchProjects();
                     } catch { toast.error('Error rejecting project'); }
-                  }} className="px-3 py-1.5 flex-1 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 text-center">
+                  }} className="px-4 py-2 flex-1 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 text-center">
                     Reject
                   </button>
                 </div>

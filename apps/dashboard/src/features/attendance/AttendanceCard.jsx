@@ -22,7 +22,7 @@ export default function AttendanceCard() {
   };
 
   return (
-    <div className="card-premium p-6 flex items-center justify-between bg-gradient-to-r from-background to-gold/10">
+    <div className="card-premium p-6 flex items-center justify-between bg-linear-to-r from-background to-gold/10">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-gold/20 text-primary rounded-xl flex items-center justify-center shadow-sm">
           <UserCheck className="w-6 h-6" />

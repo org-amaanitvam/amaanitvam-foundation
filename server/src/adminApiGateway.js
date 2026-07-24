@@ -190,6 +190,7 @@ console.log(`[admin-gateway] MongoDB connected: ${mongoose.connection.host}`);
 const app = express();
 app.disable("x-powered-by");
 
+
 // FINAL ADMIN CORS START
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -199,7 +200,8 @@ app.use((req, res, next) => {
     /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin) ||
     origin === "https://admin.amaanitvam.org" ||
       origin === "https://www.amaanitvam.org" ||
-      origin === "https://amaanitvam.org";
+      origin === "https://amaanitvam.org" ||
+      origin === "https://dashboard.amaanitvam.org";
 
   if (origin && allowed) {
     res.setHeader(
@@ -249,6 +251,7 @@ app.use((req, res, next) => {
     origin === "https://admin.amaanitvam.org" ||
       origin === "https://www.amaanitvam.org" ||
       origin === "https://amaanitvam.org" ||
+      origin === "https://dashboard.amaanitvam.org" ||
     configuredOrigins.includes(origin);
 
   if (origin && originAllowed) {
@@ -876,9 +879,9 @@ async function departmentsHandler(_req, res, next) {
 async function galleryFoldersHandler(_req, res, next) {
   try {
     let rows = await listResource("galleryFolders");
+    const media = await listResource("galleryMedia").catch(() => []);
 
     if (!rows.length) {
-      const media = await listResource("galleryMedia").catch(() => []);
       const map = new Map();
 
       for (const item of media) {
@@ -898,14 +901,37 @@ async function galleryFoldersHandler(_req, res, next) {
             title: name,
             album: name,
             folder: name,
-            count: 0,
+            mediaCount: 0,
           });
         }
 
-        map.get(name).count += 1;
+        map.get(name).mediaCount += 1;
       }
 
       rows = [...map.values()];
+    } else {
+      // Calculate mediaCount for actual folders from DB
+      rows = rows.map((folder) => {
+        const folderId = clean(folder._id || folder.id);
+        const count = media.filter((item) =>
+          [
+            item.folderId,
+            item.folder_id,
+            item.albumId,
+            item.album_id,
+            item.folder,
+            item.album,
+            item.galleryFolderId,
+            item.parentFolderId,
+            item.categoryId,
+          ].some((val) => galleryValueMatchesFolder(val, folderId))
+        ).length;
+        
+        return {
+          ...folder,
+          mediaCount: count,
+        };
+      });
     }
 
     res.json(listPayload("galleryFolders", rows));
@@ -2794,6 +2820,7 @@ function galleryValueMatchesFolder(value, folderId) {
 
   if (typeof value === "object") {
     return [
+      value,
       value._id,
       value.id,
       value.folderId,
@@ -2887,12 +2914,9 @@ async function galleryMediaForFolder(folderId) {
 app.get(
   [
     "/api/admin/gallery/folders/:id/media",
-    "/api/gallery/folders/:id/media",
     "/api/admin/gallery/folder/:id/media",
-    "/api/gallery/folder/:id/media",
     "/api/admin/gallery/media/folder/:id",
   ],
-  requireAdministrator,
   async (req, res, next) => {
     try {
       const media = await galleryMediaForFolder(
@@ -2900,7 +2924,7 @@ app.get(
       );
 
       res.json(
-        listPayload("galleryMedia", media)
+        listPayload("galleryMedia", projectPublicGalleryMedia(media, req))
       );
     } catch (error) {
       next(error);
@@ -2909,8 +2933,42 @@ app.get(
 );
 // GALLERY FOLDER MEDIA ROUTES END
 
-registerCrud("galleryFolders", ["/api/admin/gallery/folders", "/api/gallery/folders"], { listHandler: galleryFoldersHandler });
-registerCrud("galleryMedia", ["/api/admin/gallery/media", "/api/gallery/media", "/api/admin/gallery", "/api/gallery"]);
+function projectPublicGalleryMedia(rows, req) {
+  if (req && req.path && req.path.includes("/admin/")) {
+    return rows;
+  }
+  return rows.map(row => {
+    const norm = row.imageUrl ? row : finalNormalizeGalleryMedia(row);
+    return {
+      id: norm.id,
+      title: norm.title,
+      url: norm.imageUrl || norm.url || norm.secure_url,
+      folder: norm.folder || norm.album,
+      contentType: norm.contentType,
+      mediaType: norm.mediaType,
+      size: norm.size,
+      description: norm.description,
+      createdAt: norm.createdAt,
+      _gridFsBucket: norm._gridFsBucket
+    };
+  });
+}
+
+const publicGalleryMediaHandler = async (req, res, next) => {
+  try {
+    const rawMedia = await listResource("galleryMedia");
+    res.json(listPayload("galleryMedia", projectPublicGalleryMedia(rawMedia, req)));
+  } catch (error) {
+    next(error);
+  }
+};
+
+registerCrud("galleryFolders", ["/api/admin/gallery/folders"], {
+  listHandler: galleryFoldersHandler,
+});
+registerCrud("galleryMedia", ["/api/admin/gallery/media", "/api/admin/gallery"], {
+  listHandler: publicGalleryMediaHandler,
+});
 
 app.get("/api/donate/campaigns", publicList("campaigns"));
 app.get("/api/donations/summary", requireAdministrator, donationSummaryHandler);
@@ -3024,7 +3082,6 @@ app.get(
     "/api/admin/gallery/folder/:id/media",
     "/api/gallery/folder/:id/media"
   ],
-  requireAdministrator,
   async (req, res, next) => {
     try {
       const folderId = clean(req.params.id);
@@ -3132,7 +3189,7 @@ app.get(
       return res.json(
         listPayload(
           "galleryMedia",
-          uniqueMedia
+          projectPublicGalleryMedia(uniqueMedia, req)
         )
       );
     } catch (error) {
