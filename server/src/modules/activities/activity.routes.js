@@ -1,9 +1,9 @@
-import express from 'express';
-import { getActivities, createActivity } from './activity.controller.js';
+import { Router } from 'express';
+import { getRecentActivity } from './activity.controller.js';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/', getActivities);
-router.post('/', createActivity);
+// GET: Fetch the latest 50 logs for the Black Box UI
+router.get('/', getRecentActivity);
 
 export default router;

@@ -1,6 +1,9 @@
-import express from 'express';
-import { getAll } from './meeting.controller.js';
+import { Router } from 'express';
+import { getMeetings, createMeeting } from './meeting.controller.js';
 
-const router = express.Router();
-router.get('/', getAll);
+const router = Router();
+
+router.get('/', getMeetings);
+router.post('/', createMeeting);
+
 export default router;

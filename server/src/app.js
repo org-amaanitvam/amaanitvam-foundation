@@ -28,6 +28,7 @@ import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
+import dashboardRoutes from './modules/dashboard/dashboard.routes.js';
 import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
 
 const app = express();
@@ -91,6 +92,8 @@ app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/activity', activityRoutes);
 
 
 // Unhandled routes & errors

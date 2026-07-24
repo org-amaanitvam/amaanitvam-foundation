@@ -1,19 +1,9 @@
-import express from 'express';
-import { 
-  getAllAnnouncements, 
-  createAnnouncement, 
-  updateAnnouncement 
-} from './announcement.controller.js';
+import { Router } from 'express';
+import { getAnnouncements, createAnnouncement } from './announcement.controller.js';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/', getAllAnnouncements);
-
-// Catch BOTH the Dashboard widget and the AnnouncementsPage form
-router.post('/', createAnnouncement); 
-router.post('/create', createAnnouncement); 
-
-// Catch the Edit button
-router.put('/:id', updateAnnouncement);
+router.get('/', getAnnouncements);
+router.post('/', createAnnouncement);
 
 export default router;

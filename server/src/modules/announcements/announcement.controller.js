@@ -1,33 +1,39 @@
-import Announcement from "./announcement.model.js";
+import Announcement from './announcement.model.js';
 
-// 1. GET ALL ANNOUNCEMENTS
-export const getAllAnnouncements = async (req, res) => {
+// 1. GET ACTIVE ANNOUNCEMENTS
+export const getAnnouncements = async (req, res) => {
   try {
-    const announcements = await Announcement.find({}).sort({ createdAt: -1 });
-    res.json({ success: true, announcements }); 
+    // Only fetch announcements that are active and not deleted
+    const announcements = await Announcement.find({ is_deleted: false, is_active: true })
+      .sort({ created_at: -1 }); // Newest broadcasts first
+      
+    res.json({ 
+      success: true, 
+      data: announcements, 
+      meta: { total: announcements.length }
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error fetching announcements:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: { code: 'SERVER_ERROR', message: 'Failed to load announcements', details: [] }
+    });
   }
 };
 
-// 2. CREATE A NEW ANNOUNCEMENT
+// 2. CREATE ANNOUNCEMENT
 export const createAnnouncement = async (req, res) => {
   try {
-    const newAnnouncement = new Announcement(req.body);
-    await newAnnouncement.save();
-    res.status(201).json({ success: true, announcement: newAnnouncement });
+    const newAnnouncement = await Announcement.create(req.body);
+    res.status(201).json({ 
+      success: true, 
+      data: newAnnouncement 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// 3. UPDATE ANNOUNCEMENT (Added for the Edit button!)
-export const updateAnnouncement = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedAnnouncement = await Announcement.findByIdAndUpdate(id, req.body, { new: true });
-    res.json({ success: true, announcement: updatedAnnouncement });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error creating announcement:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: { code: 'VALIDATION_ERROR', message: error.message, details: [] }
+    });
   }
 };
