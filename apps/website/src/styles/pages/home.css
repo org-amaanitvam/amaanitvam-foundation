@@ -1136,3 +1136,528 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 .credibility-card:hover .credibility-project-image img {
     transform: scale(1.06);
 }
+
+
+/* =========================================================
+   1) IMPACT — impx-*  (background updated only)
+========================================================= */
+:root {
+    --surface-pink: #fff7f8;
+}
+
+.impx-section {
+    position: relative;
+    padding: 5rem 0;
+    background: var(--surface-pink, #fff7f8);
+    overflow: hidden;
+}
+
+.impx-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.impx-lede {
+    max-width: 780px;
+    margin: 0 auto 3.25rem;
+    text-align: center;
+}
+
+.impx-label {
+    display: inline-block;
+    font-family: var(--font-ui);
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--gold-dark, var(--gold));
+    margin-bottom: 1.1rem;
+}
+
+.impx-quote {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+    line-height: 1.28;
+    color: var(--primary);
+    margin: 0 0 1.1rem;
+}
+
+.impx-sub {
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.impx-stats {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid rgba(93, 15, 45, .14);
+    border-bottom: 1px solid rgba(93, 15, 45, .14);
+    padding: 2.75rem 0;
+}
+
+.impx-stat {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 1.75rem;
+    border-left: 1px solid rgba(93, 15, 45, .12);
+}
+
+.impx-stat:first-child {
+    border-left: none;
+}
+
+.impx-icon {
+    font-size: 26px;
+    color: var(--gold-dark, var(--gold));
+    margin-bottom: .9rem;
+}
+
+.impx-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: .35rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 2.6vw, 2.6rem);
+    color: var(--primary);
+    line-height: 1;
+    margin-bottom: .85rem;
+}
+
+.impx-arrow {
+    font-family: var(--font-ui);
+    font-size: 1.3rem;
+    color: var(--muted);
+}
+
+.impx-arrow--plus {
+    font-size: clamp(2.1rem, 2.6vw, 2.6rem);
+    color: var(--primary);
+}
+
+.impx-caption {
+    font-family: var(--font-ui);
+    font-size: .88rem;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 220px;
+    margin: 0;
+}
+
+.impx-credentials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-top: 2.25rem;
+    font-family: var(--font-ui);
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.impx-credentials span:not(.impx-dot) {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.impx-credentials .material-symbols-outlined {
+    font-size: 1.05rem;
+    color: var(--gold-dark, var(--gold));
+}
+
+.impx-dot {
+    color: var(--border);
+}
+
+@media (max-width: 900px) {
+    .impx-stats {
+        flex-wrap: wrap;
+        row-gap: 2rem;
+    }
+
+    .impx-stat {
+        flex: 1 1 45%;
+        border-left: none;
+        border-top: 1px solid rgba(93, 15, 45, .12);
+        padding-top: 1.75rem;
+    }
+
+    .impx-stat:nth-child(1),
+    .impx-stat:nth-child(2) {
+        border-top: none;
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .impx-section {
+        padding: 3.5rem 0;
+    }
+
+    .impx-stat {
+        flex: 1 1 100%;
+    }
+
+    .impx-stat:nth-child(2) {
+        border-top: 1px solid rgba(93, 15, 45, .12);
+        padding-top: 1.75rem;
+    }
+}
+
+
+/* =========================================================
+   2) SUCCESS STORIES — story-*  (unchanged from v2)
+========================================================= */
+.story-section {
+    padding: 5rem 0;
+    background: var(--bg);
+}
+
+.story-row {
+    display: grid;
+    grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+    gap: 3.25rem;
+    align-items: center;
+    margin-bottom: 4.5rem;
+}
+
+.story-row:last-child {
+    margin-bottom: 0;
+}
+
+.story-row--reverse {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+}
+
+.story-row--reverse .story-media {
+    order: 2;
+}
+
+.story-row--reverse .story-copy {
+    order: 1;
+}
+
+.story-media {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    aspect-ratio: 4 / 3;
+}
+
+.story-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s ease;
+}
+
+.story-media:hover .story-img {
+    transform: scale(1.045);
+}
+
+.story-tag {
+    position: absolute;
+    left: 1.1rem;
+    bottom: 1.1rem;
+    background: rgba(93, 15, 45, .88);
+    color: #fdf6ec;
+    font-family: var(--font-ui);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    padding: .45rem 1rem;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+}
+
+.story-copy {
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+}
+
+.story-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    align-self: flex-start;
+    font-family: var(--font-ui);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold-dark, var(--gold));
+}
+
+.story-eyebrow .material-symbols-outlined {
+    font-size: 1.05rem;
+    color: var(--secondary);
+}
+
+.story-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    color: var(--primary);
+    line-height: 1.22;
+    margin: 0;
+}
+
+.story-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--muted);
+    margin: 0;
+}
+
+.story-pull {
+    margin: .25rem 0 .25rem 0;
+    padding: .2rem 0 .2rem 1.15rem;
+    border-left: 3px solid var(--gold, #d8a15f);
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--primary-dark, var(--primary));
+    line-height: 1.5;
+}
+
+.story-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    align-self: flex-start;
+    font-family: var(--font-ui);
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1.5px solid transparent;
+    transition: border-color .2s ease, gap .2s ease;
+}
+
+.story-link:hover {
+    border-color: var(--primary);
+    gap: .6rem;
+}
+
+.story-link .material-symbols-outlined {
+    font-size: 1.05rem;
+}
+
+@media (max-width: 900px) {
+
+    .story-row,
+    .story-row--reverse {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+    }
+
+    .story-row--reverse .story-media,
+    .story-row--reverse .story-copy {
+        order: initial;
+    }
+
+    .story-row {
+        margin-bottom: 3.25rem;
+    }
+}
+
+
+/* =========================================================
+   3) UPCOMING WEBINAR — evtc-*
+   Single minimal card: image + essentials only.
+   Replaces the old evt-feature / evt-onground layout.
+========================================================= */
+.evt-section {
+    padding: 5rem 0;
+    background: var(--surface);
+}
+
+.evtc-card {
+    display: grid;
+    grid-template-columns: minmax(0, .44fr) minmax(0, .56fr);
+    align-items: stretch;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    max-width: 880px;
+    margin: 0 auto;
+}
+
+.evtc-media {
+    position: relative;
+    min-height: 260px;
+}
+
+.evtc-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.evtc-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: rgba(20, 10, 16, .82);
+    color: #fdf6ec;
+    font-family: var(--font-ui);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: .4rem .85rem;
+    backdrop-filter: blur(3px);
+}
+
+.evtc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: evtc-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes evtc-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: .6;
+    }
+}
+
+.evtc-body {
+    display: flex;
+    flex-direction: column;
+    padding: 2.25rem 2.25rem;
+}
+
+.evtc-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.35rem, 2vw, 1.65rem);
+    color: var(--primary);
+    line-height: 1.25;
+    margin: 0 0 .6rem;
+}
+
+.evtc-desc {
+    font-size: .95rem;
+    line-height: 1.65;
+    color: var(--muted);
+    margin: 0 0 1.4rem;
+}
+
+.evtc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.2rem;
+    margin-bottom: 1.6rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+}
+
+.evtc-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-family: var(--font-ui);
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.evtc-meta .material-symbols-outlined {
+    font-size: 1.05rem;
+    color: var(--gold-dark, var(--gold));
+}
+
+.evtc-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+@media (max-width: 780px) {
+    .evtc-card {
+        grid-template-columns: 1fr;
+    }
+
+    .evtc-media {
+        min-height: 200px;
+    }
+
+    .evtc-body {
+        padding: 1.75rem;
+    }
+}
+
+.evtc-highlights {
+    margin: 1rem 0;
+}
+
+.evtc-highlights h4 {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+    color: #1f2937;
+}
+
+.evtc-highlights ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.evtc-highlights li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.evtc-extra {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.evtc-extra p {
+    margin: 0.5rem 0;
+}
+
+.evtc-quote {
+    margin-top: 1rem;
+    padding: 0.9rem;
+    border-left: 4px solid #16a34a;
+    background: #f8fafc;
+    font-style: italic;
+    color: #374151;
+    border-radius: 6px;
+}
