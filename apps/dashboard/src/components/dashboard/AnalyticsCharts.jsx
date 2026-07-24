@@ -41,10 +41,12 @@ export default function AnalyticsCharts({
   ];
 
   const COLORS = [
-    "#56051a",
-    "#d8a15f",
-    "#10b981",
-  ];
+  "#7a1921",
+  "#d8a15f",
+  "#16a34a",
+  "#2563eb",
+  "#9333ea",
+];
 
   return (
     <div className="grid lg:grid-cols-2 gap-6">
@@ -53,15 +55,38 @@ export default function AnalyticsCharts({
           Task Analytics
         </h2>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={taskData}>
-            <XAxis dataKey="name" />
-            <Tooltip />
-            <Bar
-              dataKey="value"
-              fill="#56051a"
-              radius={[6, 6, 0, 0]}
-            />
-          </BarChart>
+          <BarChart
+  data={taskData}
+  margin={{
+    top: 10,
+    right: 20,
+    left: -20,
+    bottom: 0,
+  }}
+>
+  <XAxis
+    dataKey="name"
+    axisLine={false}
+    tickLine={false}
+  />
+
+  <Tooltip
+    cursor={{ fill: "#f8fafc" }}
+    contentStyle={{
+      borderRadius: 14,
+      border: "none",
+      boxShadow: "0 12px 25px rgba(0,0,0,.12)",
+    }}
+  />
+
+  <Bar
+    dataKey="value"
+    radius={[12, 12, 0, 0]}
+  >
+    <Cell fill="#7a1921" />
+    <Cell fill="#d8a15f" />
+  </Bar>
+</BarChart>
         </ResponsiveContainer>
       </div>
 
@@ -73,10 +98,13 @@ export default function AnalyticsCharts({
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
             <Pie
-              data={projectData}
-              dataKey="value"
-              outerRadius={90}
-            >
+  data={projectData}
+  dataKey="value"
+  innerRadius={50}
+  outerRadius={90}
+  paddingAngle={3}
+  label
+>
               {projectData.map((entry, index) => (
                 <Cell
                   key={index}
