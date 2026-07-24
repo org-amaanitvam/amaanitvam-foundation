@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "check": "find src -type f -name '*.js' -print0 | xargs -0 -n1 node --check"
   },
   "keywords": [],
   "author": "",

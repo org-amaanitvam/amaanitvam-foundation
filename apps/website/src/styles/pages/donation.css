@@ -114,12 +114,13 @@ h6,
     visibility: visible !important;
     opacity: 1 !important;
     width: 100% !important;
-    max-width: 1180px !important;
-    margin: 0 auto !important;
-    padding: 40px !important;
-    border-radius: 28px !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 64px 20px 76px !important;
+    border-radius: 0 !important;
     background: #fff7f8 !important;
     overflow: visible !important;
+    box-sizing: border-box !important;
 }
 
 #donate .donation-container {
@@ -467,7 +468,9 @@ body.dashboard-page .donation-meter span {
     }
 
     #donate.donation-section {
-        padding: 20px !important;
+        padding: 44px 12px 52px !important;
+        border-radius: 0 !important;
+        max-width: none !important;
     }
 }
 

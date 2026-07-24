@@ -177,36 +177,61 @@ body[data-page="contact"] #faq .faq-answer {
     padding: 0 18px 18px;
 }
 
-/* Donation section — centered and balanced */
-body[data-page="contact"] #donate {
+/* Donation section on Contact page */
+body[data-page="contact"] #donate.donation-section {
+    position: relative !important;
+    inset: auto !important;
+    float: none !important;
+    display: block !important;
+
     width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+
     margin: 0 !important;
-    padding: 64px 0 76px !important;
+    padding: 64px 20px 76px !important;
+    border-radius: 0 !important;
     background: #fff8f8 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    clear: both !important;
 }
 
-body[data-page="contact"] #donate>.container {
-    width: min(1080px, calc(100% - 40px)) !important;
-    max-width: 1080px !important;
+body[data-page="contact"] #donate.donation-section>.container {
+    display: block !important;
+    width: 100% !important;
+    max-width: 1320px !important;
+    min-width: 0 !important;
+
     margin: 0 auto !important;
     padding: 0 !important;
+    box-sizing: border-box !important;
 }
 
 body[data-page="contact"] #donate .donation-layout {
+    position: static !important;
+    float: none !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(340px, .85fr) !important;
+    align-items: start !important;
+    justify-content: center !important;
+
     width: 100% !important;
-    max-width: none !important;
+    max-width: 1180px !important;
+    min-width: 0 !important;
+
     margin: 0 auto !important;
     padding: 36px !important;
-    display: grid !important;
-    grid-template-columns: minmax(0, 1.18fr) minmax(320px, .82fr) !important;
-    gap: 24px !important;
-    align-items: start !important;
-    box-sizing: border-box !important;
-    background: rgba(255, 250, 243, .72) !important;
+    gap: 28px !important;
+
     border-radius: 26px !important;
+    background: rgba(255, 250, 243, .72) !important;
+    box-sizing: border-box !important;
 }
 
 body[data-page="contact"] #donate .donation-form-card,
+body[data-page="contact"] #donate .donation-info,
 body[data-page="contact"] #donate .impact-card,
 body[data-page="contact"] #donate .tax-card,
 body[data-page="contact"] #donate .secure-card,
@@ -214,10 +239,14 @@ body[data-page="contact"] #donate .transparency-card {
     position: static !important;
     inset: auto !important;
     transform: none !important;
+    float: none !important;
+
     width: 100% !important;
     max-width: none !important;
+    min-width: 0 !important;
     height: auto !important;
     min-height: 0 !important;
+
     margin: 0 !important;
     box-sizing: border-box !important;
     visibility: visible !important;
@@ -230,11 +259,8 @@ body[data-page="contact"] #donate .donation-form-card {
 }
 
 body[data-page="contact"] #donate .donation-info {
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 14px !important;
     align-content: start !important;
 }
@@ -271,6 +297,7 @@ body[data-page="contact"] #donate .amount-buttons {
 }
 
 body[data-page="contact"] #donate .amount-btn {
+    width: 100% !important;
     min-width: 0 !important;
 }
 
@@ -287,80 +314,16 @@ body[data-page="contact"] .floating-donate {
 }
 
 @media (max-width: 900px) {
-
-    body[data-page="contact"] .contact-layout,
     body[data-page="contact"] #donate .donation-layout {
-        grid-template-columns: 1fr !important;
-    }
-
-    body[data-page="contact"] .contact-right {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        grid-template-rows: auto;
-    }
-}
-
-@media (max-width: 600px) {
-
-    body[data-page="contact"] .contact-section,
-    body[data-page="contact"] #faq,
-    body[data-page="contact"] #donate {
-        padding: 44px 0 52px !important;
-    }
-
-    body[data-page="contact"] .contact-section>.container,
-    body[data-page="contact"] #faq>.container,
-    body[data-page="contact"] #donate>.container {
-        width: min(100% - 28px, 1120px);
-    }
-
-    body[data-page="contact"] .contact-form-card,
-    body[data-page="contact"] #donate .donation-form-card {
-        padding: 22px 16px !important;
-        border-radius: 18px;
-    }
-
-    body[data-page="contact"] .contact-right {
-        grid-template-columns: 1fr;
-    }
-
-    body[data-page="contact"] .contact-info-card {
-        padding: 24px 18px !important;
-    }
-
-    body[data-page="contact"] #donate .amount-buttons {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    body[data-page="contact"] #donate .security-badges {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    body[data-page="contact"] #donate .campaign-donation-selector {
-        overflow: visible;
-    }
-
-    body[data-page="contact"] #donate .campaign-donation-selector>* {
-        max-width: 100%;
-    }
-
-    body[data-page="contact"] .floating-donate {
-        right: 14px !important;
-        bottom: 14px !important;
-    }
-}
-
-
-@media (max-width: 900px) {
-    body[data-page="contact"] #donate .donation-layout {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        max-width: 720px !important;
         padding: 26px !important;
     }
 }
 
 @media (max-width: 600px) {
-    body[data-page="contact"] #donate>.container {
-        width: calc(100% - 24px) !important;
+    body[data-page="contact"] #donate.donation-section {
+        padding: 44px 12px 52px !important;
     }
 
     body[data-page="contact"] #donate .donation-layout {
@@ -371,6 +334,7 @@ body[data-page="contact"] .floating-donate {
 
     body[data-page="contact"] #donate .donation-form-card {
         padding: 22px 16px !important;
+        border-radius: 18px !important;
     }
 
     body[data-page="contact"] #donate .amount-buttons {
@@ -380,5 +344,10 @@ body[data-page="contact"] .floating-donate {
     body[data-page="contact"] #donate .security-badges {
         flex-direction: column !important;
         align-items: stretch !important;
+    }
+
+    body[data-page="contact"] .floating-donate {
+        right: 14px !important;
+        bottom: 14px !important;
     }
 }
