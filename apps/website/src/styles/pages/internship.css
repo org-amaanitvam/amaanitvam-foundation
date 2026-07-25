@@ -214,3 +214,26 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
         font-size: 1.65rem !important;
     }
 }
+
+/* =========================================================
+   OUTCOMES GRID — 4 cards (overrides default 3-col .grid-3)
+   Desktop: 4 per row
+   Tablet: 2 per row
+   Mobile: 1 per row
+   ========================================================= */
+
+body[data-page="internship"] .grid-outcomes-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 992px) {
+    body[data-page="internship"] .grid-outcomes-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    body[data-page="internship"] .grid-outcomes-4 {
+        grid-template-columns: 1fr !important;
+    }
+}
