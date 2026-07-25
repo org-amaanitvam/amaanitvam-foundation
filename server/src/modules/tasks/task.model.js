@@ -5,12 +5,12 @@ const taskSchema = new mongoose.Schema({
   description: { type: String },
   status: {
     type: String,
-    enum: ['open', 'inProgress', 'pending_approval', 'completed', 'overdue'],
+    //enum: ['open', 'inProgress', 'pending_approval', 'completed', 'overdue'],
     default: 'open',
   },
   priority: {
     type: String,
-    enum: ['low', 'medium', 'high'],
+    //enum: ['low', 'medium', 'high'],
     default: 'medium'
   },
   progress: { type: Number, default: 0 },

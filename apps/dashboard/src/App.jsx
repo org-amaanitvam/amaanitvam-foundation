@@ -37,7 +37,7 @@ export default function App() {
 
       {/* Feature Routes */}
       <Route path="/meetings" element={<DashPage><MeetingsPage /></DashPage>} />
-      <Route path="/tasks" element={<DashPage><TasksPage /></DashPage>} />
+      <Route path="/tasks" element={<DashPage><TasksPage /></DashPage>} />                                                                 
       <Route path="/announcements" element={<DashPage><AnnouncementsPage /></DashPage>} />
       <Route path="/projects" element={<DashPage><ProjectsPage /></DashPage>} />
       <Route path="/profile" element={<DashPage><ProfilePage /></DashPage>} />

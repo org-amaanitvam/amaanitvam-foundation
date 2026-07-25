@@ -1,14 +1,52 @@
-import express from 'express';
-import { getAllProjects, createProject, updateProject } from './project.controller.js';
+import express from "express";
+import {
+  getAllProjects,
+  createProject,
+  updateProject,
+} from "./project.controller.js";
+import {
+  authenticate,
+} from "../../middleware/authenticate.js";
+import {
+  requireDashboardAccess,
+  requirePermission,
+} from "../../middleware/dashboardAccess.js";
+import {
+  auditDashboardMutation,
+} from "../../middleware/auditDashboardMutation.js";
 
 const router = express.Router();
 
-router.get('/', getAllProjects);
+router.use(
+  authenticate,
+  requireDashboardAccess,
+);
 
-// THE FIX: We map BOTH routes to the exact same create function!
-router.post('/', createProject);       // Catches the Dashboard widget form
-router.post('/create', createProject); // Catches the dedicated ProjectsPage form
+router.get(
+  "/",
+  requirePermission(
+    "projects.read",
+    "projects.manage",
+  ),
+  getAllProjects,
+);
 
-router.put('/:id', updateProject);
+for (const path of ["/", "/create"]) {
+  router.post(
+    path,
+    requirePermission("projects.manage"),
+    auditDashboardMutation("PROJECT_CREATED"),
+    createProject,
+  );
+}
+
+for (const method of ["put", "patch"]) {
+  router[method](
+    "/:id",
+    requirePermission("projects.manage"),
+    auditDashboardMutation("PROJECT_UPDATED"),
+    updateProject,
+  );
+}
 
 export default router;

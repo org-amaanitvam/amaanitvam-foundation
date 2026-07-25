@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -20,7 +20,7 @@ export default function Login() {
   const [code2fa, setCode2fa] = useState('');
   const [tempCredentials, setTempCredentials] = useState(null);
 
-  const { user, login, resetPassword } = useAuth();
+  const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,12 +40,7 @@ export default function Login() {
 
     fetchSettings();
   }, []);
-
-  if (user && !show2FA) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  const handleLogin = async (e) => {
+const handleLogin = async (e) => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -280,7 +275,7 @@ export default function Login() {
                   <input
                     id="email"
                     name="email"
-                    type="email"
+                    type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@amaanitvam.org"

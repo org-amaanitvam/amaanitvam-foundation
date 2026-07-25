@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
+
+
 import {
   Users,
   UserCheck,
   FileText,
   ClipboardList,
+  CalendarDays,
   Calendar,
   Megaphone,
   FolderKanban,
@@ -15,9 +19,9 @@ import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
 import ActivityFeed from "../../components/ActivityFeed/ActivityFeed";
 import AttendanceCard from "../attendance/AttendanceCard.jsx";
-import AddProjectManagement from "../../components/Projects/AddProjectManagement.jsx";
-import AddAnnouncementForm from "../../components/announcements/AddAnnouncementForm.jsx";
-import AssignTaskForm from "../../components/tasks/AssignTaskForm.jsx";
+import DashboardStatCard from "../../components/common/DashboardStatCard";
+import QuickActionButton from "../../components/common/QuickActionButton";
+import GrowthAnalytics from "../../components/dashboard/GrowthAnalytics";
 
 export default function DashboardHome() {
   const { userProfile } = useAuth();
@@ -36,7 +40,7 @@ export default function DashboardHome() {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       const statsReq = (userProfile?.role === 'admin' || userProfile?.role === 'super_admin')
         ? api.get('/admin/stats')
@@ -68,9 +72,9 @@ export default function DashboardHome() {
       if (tasksRes.status === 'fulfilled') {
         const taskData = tasksRes.value.data;
         const taskList = Array.isArray(taskData) ? taskData
-                       : Array.isArray(taskData.tasks) ? taskData.tasks
-                       : Array.isArray(taskData.data) ? taskData.data
-                       : [];
+          : Array.isArray(taskData.tasks) ? taskData.tasks
+            : Array.isArray(taskData.data) ? taskData.data
+              : [];
         setTasks(taskList);
       }
 
@@ -86,7 +90,7 @@ export default function DashboardHome() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userProfile?.role]);
 
   if (loading) {
     return (
@@ -107,43 +111,497 @@ export default function DashboardHome() {
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <div>
-        <p className="text-xs font-ui font-bold uppercase tracking-[0.22em] text-gold">Dashboard Panel</p>
-        <h1 className="mt-2 text-4xl font-heading font-bold text-primary tracking-tight">
-          {isAdmin ? 'Team Dashboard' : `Welcome, ${userProfile?.name?.split(' ')[0] || 'User'}`}
-        </h1>
-        <p className="text-text-muted mt-2 font-body">
-          {isAdmin ? "Overview of your organization's activity" : "Here's your workspace overview"}
-        </p>
+      <div className="rounded-3xl overflow-hidden bg-linear-to-r from-[#56051a] via-[#6f0b24] to-[#8b1730] text-white p-8 shadow-xl">
+        <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8">
+          <div>
+            <p className="uppercase tracking-[0.3em] text-[#d8a15f] text-xs font-bold">
+              Dashboard Overview
+            </p>
+            <h1 className="mt-3 text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg">
+              Good{" "}
+              {new Date().getHours() < 12
+                ? "Morning"
+                : new Date().getHours() < 18
+                  ? "Afternoon"
+                  : "Evening"}
+              , {userProfile?.name?.split(" ")[0] || "Member"} 👋
+            </h1>
+            <p className="mt-4 text-lg text-pink-100 max-w-xl leading-relaxed">
+              Welcome back! Here's today's overview of your tasks, meetings and activities.
+            </p>
+
+
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+
+              {/* Date Badge */}
+              <div className="inline-flex items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-5 py-3 backdrop-blur-md shadow-lg">
+                <CalendarDays className="h-5 w-5 text-[#d8a15f]" />
+                <span className="text-sm font-medium tracking-wide text-white">
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+
+              {/* Primary Button */}
+              {/* <button
+                className="rounded-xl bg-white px-7 py-3 font-semibold text-[#56051a]
+               shadow-lg transition-all duration-300
+               hover:-translate-y-1 hover:shadow-2xl hover:bg-[#f8f3ef]
+               active:scale-95"
+              >
+                Start Attendance
+              </button> */}
+
+              {/* Secondary Button */}
+              <button
+                className="rounded-xl border border-white/30 px-7 py-3 font-semibold text-white
+               backdrop-blur-md transition-all duration-300
+               hover:-translate-y-1 hover:border-white
+               hover:bg-white hover:text-[#56051a]
+               hover:shadow-xl active:scale-95"
+              >
+                View Tasks
+              </button>
+
+            </div>
+            {/* <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-md px-4 py-2 border border-white/10">
+            <CalendarDays className="h-5 w-5 text-[#d8a15f]" />
+            <span className="text-sm font-medium">
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+          </div> */}
+
+          </div>
+
+
+
+
+
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+            {/* Open Tasks Card */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-2xl">
+
+              {/* Background Glow */}
+              <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[#d8a15f]/10 blur-2xl"></div>
+
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-white/70">
+                    Open Tasks
+                  </p>
+
+                  <h2 className="mt-3 text-5xl font-bold text-white">
+                    {openTasks}
+                  </h2>
+
+                  <div className="mt-4 flex items-center gap-2 text-sm text-green-300">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>+5% this week</span>
+                  </div>
+                </div>
+
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/15">
+                  <ClipboardList className="h-7 w-7 text-[#d8a15f]" />
+                </div>
+              </div>
+            </div>
+
+            {/* Meetings Card */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-2xl">
+
+              <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-[#d8a15f]/10 blur-2xl"></div>
+
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-white/70">
+                    Meetings
+                  </p>
+
+                  <h2 className="mt-3 text-5xl font-bold text-white">
+                    {upcomingMeetings.length}
+                  </h2>
+
+                  <div className="mt-4 flex items-center gap-2 text-sm text-blue-300">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>Upcoming</span>
+                  </div>
+                </div>
+
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/15">
+                  <CalendarDays className="h-7 w-7 text-[#d8a15f]" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+
+
+
+
+
+          {/* <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md px-6 py-5">
+              <p className="text-xs uppercase text-white/70">
+                Open Tasks
+              </p>
+              <h2 className="text-4xl font-extrabold text-white mt-2">
+                {openTasks}
+              </h2>
+            </div>
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md px-6 py-5">
+              <p className="text-xs uppercase text-white/70">
+                Meetings
+              </p>
+              <h2 className="text-4xl font-extrabold text-white mt-2">
+                {upcomingMeetings.length}
+              </h2>
+            </div>
+          </div> */}
+
+
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {isAdmin && stats ? (
           <>
-            <StatCard icon={Users} label="Total Members" value={stats.activeMembers || 0} tone="primary" />
-            <StatCard icon={FileText} label="Pending Applications" value={stats.totalCandidates || 0} tone="gold" />
-            <StatCard icon={ClipboardList} label="Open Tasks" value={openTasks} tone="secondary" />
-            <StatCard icon={TrendingUp} label="Completed Tasks" value={completedTasks} tone="dark" />
+            <DashboardStatCard
+              title="Total Members"
+              value={stats.activeMembers || 0}
+              icon={Users}
+              subtitle="Currently Active"
+              trend="+12%"
+              color="bg-[#56051a]"
+            />
+
+            <DashboardStatCard
+              title="Applications"
+              value={stats.totalCandidates || 0}
+              icon={FileText}
+              subtitle="Pending Review"
+              trend="+4%"
+              color="bg-[#d8a15f]"
+            />
+
+            <DashboardStatCard
+              title="Open Tasks"
+              value={openTasks}
+              icon={ClipboardList}
+              subtitle="Needs Attention"
+              trend="+9%"
+              color="bg-blue-600"
+            />
+
+            <DashboardStatCard
+              title="Completed"
+              value={completedTasks}
+              icon={TrendingUp}
+              subtitle="Finished Tasks"
+              trend="+18%"
+              color="bg-green-600"
+            />
           </>
         ) : (
           <>
-            <StatCard icon={ClipboardList} label="Open Tasks" value={openTasks} tone="gold" />
-            <StatCard icon={TrendingUp} label="In Progress" value={inProgressTasks} tone="primary" />
-            <StatCard icon={UserCheck} label="Completed" value={completedTasks} tone="secondary" />
-            <StatCard icon={Calendar} label="Upcoming Meetings" value={upcomingMeetings.length} tone="dark" />
+            <DashboardStatCard
+              title="Open Tasks"
+              value={openTasks}
+              icon={ClipboardList}
+              subtitle="Assigned"
+              trend="+5%"
+              color="bg-[#56051a]"
+            />
+
+            <DashboardStatCard
+              title="In Progress"
+              value={inProgressTasks}
+              icon={TrendingUp}
+              subtitle="Ongoing"
+              trend="+2%"
+              color="bg-blue-600"
+            />
+
+            <DashboardStatCard
+              title="Completed"
+              value={completedTasks}
+              icon={UserCheck}
+              subtitle="Finished"
+              trend="+11%"
+              color="bg-green-600"
+            />
+
+            <DashboardStatCard
+              title="Meetings"
+              value={upcomingMeetings.length}
+              icon={Calendar}
+              subtitle="Upcoming"
+              trend="Today"
+              color="bg-[#d8a15f]"
+            />
           </>
         )}
       </div>
 
       {/* FIXED SECTION: Cleaned up the duplicates and closed the tags perfectly */}
-      <div className="flex flex-col gap-4 mb-6">
+      {/* <div className="space-y-6">
         <AttendanceCard />
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <AddProjectManagement onProjectAdded={fetchDashboardData} />
-          <AddAnnouncementForm onAnnouncementAdded={fetchDashboardData} />
-          <AssignTaskForm onTaskAssigned={fetchDashboardData} />
+        <GrowthAnalytics
+          openTasks={openTasks}
+          completedTasks={completedTasks}
+          totalProjects={projects.length}
+          totalMembers={stats?.activeMembers || 0}
+        />
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">
+                Quick Actions
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Frequently used dashboard actions
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+
+            <QuickActionButton
+              icon={FolderKanban}
+              label="New Project"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={ClipboardList}
+              label="Assign Task"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={Megaphone}
+              label="Announcement"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={Calendar}
+              label="Meeting"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={FileText}
+              label="Reports"
+              onClick={() => { }}
+            />
+
+          </div>
         </div>
+      </div> */}
+
+
+      <div className="space-y-8">
+
+        <AttendanceCard />
+
+        <GrowthAnalytics
+          openTasks={openTasks}
+          completedTasks={completedTasks}
+          totalProjects={projects.length}
+          totalMembers={stats?.activeMembers || 0}
+        />
+
+        {/* Quick Actions */}
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-md">
+
+          {/* Background Decoration */}
+          <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[#8b1730]/5 blur-3xl"></div>
+          <div className="absolute bottom-0 left-1/3 h-24 w-24 rounded-full bg-[#d8a15f]/10 blur-2xl"></div>
+
+          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#8b1730]">
+                Productivity
+              </p>
+
+              <h2 className="mt-2 text-3xl font-bold text-slate-900">
+                Quick Actions
+              </h2>
+
+              <p className="mt-2 max-w-xl text-sm text-slate-500">
+                Access your most frequently used actions to manage projects,
+                meetings and announcements faster.
+              </p>
+            </div>
+
+            {/* <button
+              className="
+        rounded-xl
+        border
+        border-[#8b1730]/20
+        px-5
+        py-3
+        font-medium
+        text-[#8b1730]
+        transition-all
+        duration-300
+        hover:bg-[#8b1730]
+        hover:text-white
+        hover:shadow-lg
+      "
+            >
+              Customize Dashboard
+            </button> */}
+
+          </div>
+
+
+
+
+
+          <div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-5">
+
+            {/* <QuickActionButton
+              icon={FolderKanban}
+              label="New Project"
+              description="Create project"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={ClipboardList}
+              label="Assign Task"
+              description="Manage tasks"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={Megaphone}
+              label="Announcement"
+              description="Notify members"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={Calendar}
+              label="Meeting"
+              description="Schedule meeting"
+              onClick={() => { }}
+            />
+
+            <QuickActionButton
+              icon={FileText}
+              label="Reports"
+              description="View analytics"
+              onClick={() => { }}
+            /> */}
+
+
+            {/* const QuickActionButton = ({
+              icon: Icon,
+            label,
+            description,
+            color,
+            onClick,
+}) => {
+  return ( */}
+            <QuickActionButton
+  icon={FolderKanban}
+  label="New Project"
+  description="Create project"
+  color="bg-blue-100 text-blue-600"
+  onClick={() => {}}
+  openLink="/tasks"
+/>
+
+<QuickActionButton
+  icon={ClipboardList}
+  label="Assign Task"
+  description="Manage tasks"
+  color="bg-green-100 text-green-600"
+  onClick={() => {}}
+  openLink="/tasks"
+/>
+
+<QuickActionButton
+  icon={Megaphone}
+  label="Announcement"
+  description="Notify members"
+  color="bg-orange-100 text-orange-600"
+  onClick={() => {}}
+  openLink="/announcements"
+/>
+
+<QuickActionButton
+  icon={Calendar}
+  label="Meeting"
+  description="Schedule meeting"
+  color="bg-violet-100 text-violet-600"
+  onClick={() => {}}
+  openLink="/meetings"
+/>
+
+<QuickActionButton
+  icon={FileText}
+  label="Reports"
+  description="View analytics"
+  color="bg-rose-100 text-rose-600"
+  onClick={() => {}}
+  openLink="/reports"
+/>
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+        </div>
+
       </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       <div className="flex flex-col xl:flex-row gap-6">
         <div className="flex-1">

@@ -1,8 +1,3 @@
-/* =========================================================
-   FAQ PAGE
-   ========================================================= */
-
-/* Hero */
 body[data-page="faq"] .page-hero.has-image {
     background-image:
         linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.60)),

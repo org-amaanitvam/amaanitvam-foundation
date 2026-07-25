@@ -3,7 +3,6 @@
 @import url("./base.css");
 @import url("./layout.css");
 @import url("./components.css");
-@import url("./utilities.css");
 @import url("./animations.css");    
 
 /* Page-specific styles */
@@ -21,6 +20,8 @@
 @import url("./pages/donation.css");
 @import url("./pages/legal.css");
 @import url("./pages/webinars.css");
+
+
 
 /* Must remain last */
 @import url("./responsive.css");
