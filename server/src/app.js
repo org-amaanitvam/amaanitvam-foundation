@@ -30,6 +30,9 @@ import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
 import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
 
+import conversationRoutes from './modules/conversations/conversation.routes.js';
+import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
+
 const app = express();
 
 //
@@ -132,6 +135,8 @@ app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/ai-notifications", aiNotificationRoutes);
 
 
 // Unhandled routes & errors
