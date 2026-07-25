@@ -15,7 +15,7 @@
     rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 
-  <link href="/public/images/logo.jpg" rel="icon" type="image/jpg" />
+  <link href="/images/logos/logo.jpg" rel="icon" type="image/jpg" />
   <link href="../styles/styles.css" rel="stylesheet" />
 </head>
 
@@ -40,16 +40,16 @@
         <div class="left-gallery-card">
           <div class="top-poster-row">
             <div class="main-poster">
-              <img alt="नारी शक्ति: Dharma, Samman aur Vikas Poster" src="/public/images/webinars/Webinar1.jpeg" />
+              <img alt="नारी शक्ति: Dharma, Samman aur Vikas Poster" src="/images/webinars/Webinar1.jpeg" />
             </div>
           </div>
 
           <div class="bottom-snapshots-row">
             <div class="snapshot-card">
-              <img alt="Webinar Interactive View 1" src="/public/images/webinars/Webinar2.jpeg" />
+              <img alt="Webinar Interactive View 1" src="/images/webinars/Webinar2.jpeg" />
             </div>
             <div class="snapshot-card">
-              <img alt="Webinar Interactive View 2" src="/public/images/webinars/webinar3.jpeg" />
+              <img alt="Webinar Interactive View 2" src="/images/webinars/webinar3.jpeg" />
             </div>
           </div>
         </div>
@@ -87,140 +87,92 @@
           Inquire For Sessions
         </a>
       </div>
-    </section>
+    </div>
+
     <section class="section section-white" id="registration-form-section">
-      <div class="container moved-inline-style-070">
+      <div class="container webinar-registration-container">
         <div class="section-header">
-          <span class="section-label">Register Now</span>
+          <span class="section-label">Join Us</span>
           <h2 class="section-title">Webinar &amp; Competition Registration</h2>
-          <p class="text-muted">Register your interest and our team will share the event details with you.</p>
         </div>
 
-        <form class="moved-inline-style-112" id="registrationForm" method="post">
-          <div class="moved-inline-style-064">
-            <label class="form-label" for="reg-name">Full Name <span aria-hidden="true">*</span></label>
-            <input class="form-input" id="reg-name" name="name" required type="text" placeholder="Jane Doe" />
+        <form class="webinar-registration-form" id="registrationForm">
+          <div class="webinar-form-group">
+            <label class="form-label" for="reg-name">
+              Full Name <span aria-hidden="true" class="required-star">*</span>
+            </label>
+            <input class="form-input" id="reg-name" name="name" pattern="[A-Za-z\s]+" placeholder="Jane Doe" required
+              title="Please enter only letters and spaces" type="text" />
           </div>
 
-          <div class="moved-inline-style-064">
-            <label class="form-label" for="reg-email">Email Address <span aria-hidden="true">*</span></label>
-            <input class="form-input" id="reg-email" name="email" required type="email" placeholder="jane@example.com" />
+          <div class="webinar-form-group">
+            <label class="form-label" for="reg-email">
+              Email Address <span aria-hidden="true" class="required-star">*</span>
+            </label>
+            <input class="form-input" id="reg-email" name="email" placeholder="jane@example.com" required
+              type="email" />
           </div>
 
-          <div class="moved-inline-style-064">
-            <label class="form-label" for="reg-phone">Phone Number <span aria-hidden="true">*</span></label>
-            <input class="form-input" id="reg-phone" name="phone" required type="tel" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number" />
+          <div class="webinar-form-group">
+            <label class="form-label" for="reg-phone">
+              Phone Number <span aria-hidden="true" class="required-star">*</span>
+            </label>
+            <input class="form-input" id="reg-phone" maxlength="10" name="phone" pattern="\d{10}"
+              placeholder="10-digit number" required title="Please enter exactly 10 digits" type="text" />
           </div>
 
-          <div class="moved-inline-style-064">
-            <label class="form-label" for="reg-event">Event / Webinar <span aria-hidden="true">*</span></label>
-            <input class="form-input" id="reg-event" name="event" required type="text" placeholder="Enter the webinar or competition name" />
+          <div class="webinar-form-group">
+            <label class="form-label" for="reg-type">
+              Register For <span aria-hidden="true" class="required-star">*</span>
+            </label>
+            <select class="form-input" id="reg-type" name="type" required>
+              <option disabled selected value="">Select an option</option>
+              <option value="Webinar">Webinar</option>
+              <option value="Competition">Competition</option>
+            </select>
           </div>
 
-          <div class="moved-inline-style-064">
-            <label class="form-label" for="reg-organization">College / Organisation</label>
-            <input class="form-input" id="reg-organization" name="organization" type="text" placeholder="Your college or organisation" />
+          <div class="webinar-form-group">
+            <label class="form-label" for="reg-event">
+              Event Name <span aria-hidden="true" class="required-star">*</span>
+            </label>
+            <input class="form-input" id="reg-event" name="event" placeholder="e.g. Dharma, Samman aur Vikas" required
+              type="text" />
           </div>
 
-          <div class="moved-inline-style-065">
-            <label class="form-label" for="reg-message">Message or Questions</label>
-            <textarea class="form-textarea" id="reg-message" name="message" rows="4" placeholder="Anything you would like us to know"></textarea>
+          <div class="webinar-form-group">
+            <label class="form-label" for="reg-organization">
+              Organization/Institution (Optional)
+            </label>
+            <input class="form-input" id="reg-organization" name="organization"
+              placeholder="e.g. School, College, Company" type="text" />
           </div>
 
-          <button class="btn btn-primary moved-inline-style-140" type="submit">Register</button>
-          <div class="moved-inline-style-122" id="reg-status" role="status" aria-live="polite"></div>
+          <div class="webinar-form-group-full">
+            <label class="form-label" for="reg-message">
+              Message/Query (Optional)
+            </label>
+            <textarea class="form-textarea" id="reg-message" name="message"
+              placeholder="Any questions or additional details..." rows="4"></textarea>
+          </div>
+
+          <button class="btn btn-primary webinar-submit-btn" type="submit">
+            Submit Registration
+          </button>
+
+          <div class="registration-status" id="reg-status"></div>
         </form>
       </div>
     </section>
   </main>
-  <!-- Floating Donate CTA -->
-    </div>
-  </main>
-
-  <section class="section section-white" id="registration-form-section">
-    <div class="container webinar-registration-container">
-      <div class="section-header">
-        <span class="section-label">Join Us</span>
-        <h2 class="section-title">Webinar &amp; Competition Registration</h2>
-      </div>
-
-      <form class="webinar-registration-form" id="registrationForm">
-        <div class="webinar-form-group">
-          <label class="form-label" for="reg-name">
-            Full Name <span aria-hidden="true" class="required-star">*</span>
-          </label>
-          <input class="form-input" id="reg-name" name="name" pattern="[A-Za-z\s]+" placeholder="Jane Doe" required
-            title="Please enter only letters and spaces" type="text" />
-        </div>
-
-        <div class="webinar-form-group">
-          <label class="form-label" for="reg-email">
-            Email Address <span aria-hidden="true" class="required-star">*</span>
-          </label>
-          <input class="form-input" id="reg-email" name="email" placeholder="jane@example.com" required type="email" />
-        </div>
-
-        <div class="webinar-form-group">
-          <label class="form-label" for="reg-phone">
-            Phone Number <span aria-hidden="true" class="required-star">*</span>
-          </label>
-          <input class="form-input" id="reg-phone" maxlength="10" name="phone" pattern="\d{10}"
-            placeholder="10-digit number" required title="Please enter exactly 10 digits" type="text" />
-        </div>
-
-        <div class="webinar-form-group">
-          <label class="form-label" for="reg-type">
-            Register For <span aria-hidden="true" class="required-star">*</span>
-          </label>
-          <select class="form-input" id="reg-type" name="type" required>
-            <option disabled selected value="">Select an option</option>
-            <option value="Webinar">Webinar</option>
-            <option value="Competition">Competition</option>
-          </select>
-        </div>
-
-        <div class="webinar-form-group">
-          <label class="form-label" for="reg-event">
-            Event Name <span aria-hidden="true" class="required-star">*</span>
-          </label>
-          <input class="form-input" id="reg-event" name="event" placeholder="e.g. Dharma, Samman aur Vikas" required
-            type="text" />
-        </div>
-
-        <div class="webinar-form-group">
-          <label class="form-label" for="reg-organization">
-            Organization/Institution (Optional)
-          </label>
-          <input class="form-input" id="reg-organization" name="organization"
-            placeholder="e.g. School, College, Company" type="text" />
-        </div>
-
-        <div class="webinar-form-group-full">
-          <label class="form-label" for="reg-message">
-            Message/Query (Optional)
-          </label>
-          <textarea class="form-textarea" id="reg-message" name="message"
-            placeholder="Any questions or additional details..." rows="4"></textarea>
-        </div>
-
-        <button class="btn btn-primary webinar-submit-btn" type="submit">
-          Submit Registration
-        </button>
-
-        <div class="registration-status" id="reg-status"></div>
-      </form>
-    </div>
-  </section>
 
   <div id="footer"></div>
 
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 
   <script src="../scripts/app.js" type="module"></script>
-  <script src="../scripts/app.js" type="module"></script>
-<script type="module"
-        src="/src/scripts/public-form-handlers.js"
-        data-amaanitvam-public-forms></script>
+
+  <script type="module" src="/src/scripts/public-form-handlers.js" data-amaanitvam-public-forms></script>
 </body>
 
 </html>
