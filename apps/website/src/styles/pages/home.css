@@ -1448,12 +1448,12 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     position: relative;
     padding: 5.5rem 0;
     background:
-        linear-gradient(rgba(255, 247, 248, .58), rgba(255, 247, 248, .68)),
+        rgba(255, 255, 255, .82),
         radial-gradient(circle at 12% 18%, rgba(216, 161, 95, .05), transparent 28%),
         radial-gradient(circle at 88% 82%, rgba(196, 107, 135, .06), transparent 30%),
         url("/public/images/programs/volunteer-community.jpg") center center / cover no-repeat;
-    background-attachment: fixed;
-    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .impx-inner {
