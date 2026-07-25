@@ -605,7 +605,6 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     }
 }
 
-/* <<<<<<< HEAD */
 /* =============================================================
    CURRENT UPDATES SECTION  —  cu-* namespace
    Designed to match the Amaanitvam Foundation design language.
@@ -1449,9 +1448,10 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     position: relative;
     padding: 5.5rem 0;
     background:
+        linear-gradient(rgba(255, 247, 248, .88), rgba(255, 247, 248, .92)),
         radial-gradient(circle at 12% 18%, rgba(216, 161, 95, .08), transparent 28%),
         radial-gradient(circle at 88% 82%, rgba(196, 107, 135, .09), transparent 30%),
-        var(--surface-pink, #fff7f8);
+        url("/public/images/programs/volunteer-community.jpg") center / cover no-repeat;
     overflow: hidden;
 }
 
