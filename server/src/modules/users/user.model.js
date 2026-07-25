@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-    firebaseUid: {
+    firebase_uid: {
         type: String,
         unique: true,
-        sparse: true
+        sparse: true,
+        index: true
     },
     name: {
         type: String,
@@ -24,12 +25,25 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['super_admin', 'admin', 'department_head', 'member', 'intern', 'volunteer'],
-        default: 'intern'
+        enum: ['super_admin', 'admin', 'faculty', 'student', 'content_manager'],
+        default: 'student'
+    },
+    auth_provider: {
+        type: String,
+        enum: ['firebase', 'local', 'google', 'github'],
+        default: 'firebase'
+    },
+    email_verified: {
+        type: Boolean,
+        default: false
+    },
+    phone_verified: {
+        type: Boolean,
+        default: false
     },
     status: {
         type: String,
-        enum: ['active', 'inactive'],
+        enum: ['active', 'inactive', 'suspended'],
         default: 'active'
     },
     department: {
@@ -41,28 +55,45 @@ const userSchema = new mongoose.Schema({
         trim: true,
         default: ''
     },
-
     domain: {
         type: String,
         trim: true,
         default: ''
     },
-
-    memberId: {
+    member_id: {
         type: String,
         trim: true,
         unique: true,
         sparse: true
     },
-
-    profileImage: {
+    profile_image: {
         type: String,
         default: ''
     },
-    joinedAt: {
+    bio: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    last_login: {
+        type: Date
+    },
+    joined_at: {
         type: Date,
         default: Date.now
     }
 }, { timestamps: true });
+
+userSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
+});
+
+userSchema.set('toObject', { virtuals: true });
 
 export default mongoose.model('User', userSchema);

@@ -28,7 +28,10 @@ import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
-import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
+import attendanceRoutes from './modules/attendance/attendance.routes.js';
+import facultyRoutes from './modules/faculty/faculty.routes.js';
+import doubtRoutes from './modules/doubts/doubts.routes.js';
+import internalRoutes from './modules/internal/internal.routes.js';
 
 const app = express();
 
@@ -91,6 +94,9 @@ app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/doubts", doubtRoutes);
+app.use("/internal", internalRoutes);
 
 
 // Unhandled routes & errors

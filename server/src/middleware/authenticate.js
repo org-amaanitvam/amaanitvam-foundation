@@ -6,7 +6,7 @@ export const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new UnauthorizedError("No token provided");
+      throw new UnauthorizedError("No token provided", "AUTH_TOKEN_INVALID");
     }
 
     const token = authHeader.split(" ")[1];
@@ -14,16 +14,27 @@ export const authenticate = async (req, res, next) => {
     try {
       decodedToken = await admin.auth().verifyIdToken(token);
     } catch (err) {
-      throw new UnauthorizedError("Invalid or expired token");
+      throw new UnauthorizedError("Invalid or expired token", "AUTH_TOKEN_INVALID");
     }
 
-    req.user = decodedToken;
-    
-    // Optionally fetch full user from DB if needed by controllers
-    // const dbUser = await User.findOne({ firebaseUid: decodedToken.uid });
-    // if (dbUser) {
-    //   req.user.role = dbUser.role;
-    // }
+    if (!decodedToken.uid) {
+      throw new UnauthorizedError("Invalid token payload", "AUTH_TOKEN_INVALID");
+    }
+
+    const user = await User.findOne({ firebase_uid: decodedToken.uid });
+    if (!user) {
+      throw new UnauthorizedError("User not found", "USER_NOT_FOUND");
+    }
+
+    if (user.status !== "active") {
+      throw new UnauthorizedError("Account is inactive or suspended");
+    }
+
+    req.user = {
+      id: user.id,
+      role: user.role,
+      firebase_uid: decodedToken.uid,
+    };
 
     next();
   } catch (error) {
