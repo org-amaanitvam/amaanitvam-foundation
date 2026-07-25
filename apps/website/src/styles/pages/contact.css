@@ -137,6 +137,7 @@ body[data-page="contact"] .contact-info-link {
 }
 
 /* FAQ — separate cards, no large surrounding box */
+/* FAQ — flat rows with divider lines, no card box */
 body[data-page="contact"] #faq {
     padding: 64px 0 72px !important;
     background: var(--bg, #f5efe6);
@@ -159,24 +160,41 @@ body[data-page="contact"] #faq [role="region"] {
 }
 
 body[data-page="contact"] #faq .faq-item {
-    margin: 0 0 12px;
-    overflow: hidden;
-    border: 1px solid var(--border, #dcc8b6);
-    border-radius: 14px;
-    background: var(--surface, #fffaf3);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--border, #dcc8b6) !important;
+}
+
+body[data-page="contact"] #faq .faq-item:last-child {
+    border-bottom: none !important;
 }
 
 body[data-page="contact"] #faq .faq-question {
     width: 100%;
     min-height: 56px;
-    padding: 15px 18px;
+    padding: 22px 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    color: var(--primary, #5d0f2d);
+}
+
+body[data-page="contact"] #faq .faq-question:hover {
     background: transparent;
 }
 
 body[data-page="contact"] #faq .faq-answer {
-    padding: 0 18px 18px;
+    padding: 0 0 22px;
+    color: var(--muted, #7a7a7a);
+    line-height: 1.7;
 }
-
 /* Donation section on Contact page */
 body[data-page="contact"] #donate.donation-section {
     position: relative !important;

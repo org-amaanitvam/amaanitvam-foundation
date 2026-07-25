@@ -1167,195 +1167,9 @@ body.dashboard-page .donation-meter span {
     line-height: 1.65 !important;
 }
 
-/* ---- Trust & credibility cards: legal, awards, projects ---- */
-.trust-credibility-wrap {
-    max-width: 1100px !important;
-    margin: 0 auto 56px !important;
-}
 
-.trust-section-divider {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 auto 36px !important;
-    max-width: 1000px !important;
-}
 
-.trust-section-divider span {
-    display: block !important;
-    width: 100% !important;
-    height: 2px !important;
-    border-radius: 999px !important;
-    background: linear-gradient(90deg, rgba(216, 161, 95, 0) 0%, rgba(216, 161, 95, .6) 50%, rgba(216, 161, 95, 0) 100%) !important;
-}
-
-.trust-credibility-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 20px !important;
-    align-items: stretch !important;
-}
-
-.credibility-card {
-    background: #fff !important;
-    border: 1.5px solid rgba(93, 15, 45, .14) !important;
-    border-radius: 18px !important;
-    padding: 26px 20px !important;
-    text-align: center !important;
-    box-shadow: 0 10px 24px -14px rgba(93, 15, 45, .2) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
-    animation: trustCardFadeUp .5s ease both !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(1) {
-    animation-delay: .04s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(2) {
-    animation-delay: .1s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(3) {
-    animation-delay: .16s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(4) {
-    animation-delay: .22s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(5) {
-    animation-delay: .28s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(6) {
-    animation-delay: .34s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(7) {
-    animation-delay: .4s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(8) {
-    animation-delay: .46s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(9) {
-    animation-delay: .52s !important;
-}
-
-.trust-credibility-grid .credibility-card:nth-child(10) {
-    animation-delay: .58s !important;
-}
-
-.credibility-card:hover {
-    transform: translateY(-6px) !important;
-    border-color: var(--gold) !important;
-    box-shadow: 0 18px 34px -14px rgba(93, 15, 45, .3) !important;
-}
-
-.credibility-icon {
-    width: 52px !important;
-    height: 52px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: #fdf1e9 !important;
-    border-radius: 50% !important;
-    margin-bottom: 14px !important;
-    transition: transform .2s ease !important;
-}
-
-.credibility-icon .material-symbols-outlined {
-    font-size: 24px !important;
-    color: var(--primary) !important;
-}
-
-.credibility-card:hover .credibility-icon {
-    transform: scale(1.08) rotate(-4deg) !important;
-}
-
-.credibility-card h4 {
-    font-family: var(--font-heading) !important;
-    color: var(--primary) !important;
-    font-size: 1.05rem !important;
-    margin: 0 0 8px !important;
-    line-height: 1.25 !important;
-}
-
-.credibility-card p {
-    margin: 0 !important;
-    color: #5f6368 !important;
-    font-size: .88rem !important;
-    line-height: 1.55 !important;
-}
-
-/* Project cards — image placeholder (swap for real photos later) */
-.credibility-project-image {
-    width: 100% !important;
-    height: 130px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    background: #f3ece1 !important;
-    border: 1.5px dashed rgba(93, 15, 45, .25) !important;
-    border-radius: 14px !important;
-    margin-bottom: 14px !important;
-    color: rgba(93, 15, 45, .45) !important;
-    transition: border-color .2s ease, background .2s ease !important;
-}
-
-.credibility-project:hover .credibility-project-image {
-    border-color: var(--gold) !important;
-    background: #fdf1e9 !important;
-}
-
-.credibility-project-image .material-symbols-outlined {
-    font-size: 30px !important;
-}
-
-.credibility-project-image .placeholder-label {
-    font-size: .72rem !important;
-    font-weight: 600 !important;
-    letter-spacing: .02em !important;
-}
-
-.credibility-project-tag {
-    display: inline-block !important;
-    color: var(--gold-dark, #8a164b) !important;
-    font-weight: 700 !important;
-    font-size: .72rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: .08em !important;
-    margin-bottom: 4px !important;
-}
-
-.credibility-project h4 {
-    margin: 0 0 6px !important;
-}
-
-.credibility-project p {
-    color: #5f6368 !important;
-    font-size: .92rem !important;
-    line-height: 1.55 !important;
-}
-
-@media (max-width: 1024px) {
-    .trust-credibility-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-}
-
-@media (max-width: 560px) {
-    .trust-credibility-grid {
-        grid-template-columns: 1fr !important;
-    }
-}
-
+/* Faq */
 .trust-faq-band {
     background: #f5efe6 !important;
     width: 100vw !important;
@@ -1399,33 +1213,40 @@ body.dashboard-page .donation-meter span {
     text-align: center !important;
 }
 
+/* Flat rows with divider lines — no card box, no shadow */
 .trust-faq-item {
     text-align: left !important;
-    background: #fff !important;
-    border: 1.5px solid rgba(93, 15, 45, .14) !important;
-    border-radius: 16px !important;
-    padding: 20px 24px !important;
-    margin: 0 auto 14px !important;
-    box-shadow: 0 8px 20px -14px rgba(93, 15, 45, .2) !important;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--border, #dcc8b6) !important;
+    border-radius: 0 !important;
+    padding: 20px 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    transition: none !important;
+}
+
+.trust-faq-item:last-child {
+    border-bottom: none !important;
 }
 
 .trust-faq-item:hover {
-    transform: translateY(-3px) !important;
-    border-color: var(--gold) !important;
-    box-shadow: 0 14px 28px -14px rgba(93, 15, 45, .3) !important;
+    transform: none !important;
+    border-color: var(--border, #dcc8b6) !important;
+    box-shadow: none !important;
 }
 
 .trust-faq-item summary {
     cursor: pointer !important;
     font-weight: 700 !important;
     font-size: 1.02rem !important;
-    color: #2d1c23 !important;
+    color: var(--primary) !important;
     list-style: none !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
     gap: 16px !important;
+    padding: 0 !important;
 }
 
 .trust-faq-item summary::-webkit-details-marker {
@@ -1451,7 +1272,7 @@ body.dashboard-page .donation-meter span {
 
 .trust-faq-item p {
     margin: 14px 0 0 !important;
-    color: #5f6368 !important;
+    color: var(--muted, #7a7a7a) !important;
     line-height: 1.65 !important;
 }
 
