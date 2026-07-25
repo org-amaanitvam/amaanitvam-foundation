@@ -690,7 +690,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 .cu-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem;
+    gap: 1.4rem;
     align-items: stretch;
 }
 
@@ -700,14 +700,14 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     position: relative;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    min-width: 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
-
-    /* Fade-up entrance animation — stagger via nth-child */
     animation: cu-fadeUp 0.55s ease both;
 }
 
@@ -775,7 +775,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 .cu-card__image-wrap {
     position: relative;
     width: 100%;
-    height: 180px;
+    height: 185px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -799,7 +799,8 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 1.35rem 1.3rem 1.55rem;
+    min-width: 0;
+    padding: 1.3rem 1.25rem 1.45rem;
     gap: 0.6rem;
 }
 
@@ -842,11 +843,12 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 /* ─── Card title ───────────────────────────────────────────── */
 .cu-card__title {
+    min-height: 3.1rem;
     font-family: var(--font-heading);
-    font-size: 1.22rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--text);
-    line-height: 1.25;
+    line-height: 1.3;
     margin: 0.2rem 0 0;
     transition: color 0.22s ease;
 }
@@ -858,9 +860,10 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 /* ─── Card description ─────────────────────────────────────── */
 .cu-card__desc {
-    font-size: 0.95rem;
+    min-height: 8.3rem;
+    font-size: 0.92rem;
     color: var(--muted);
-    line-height: 1.72;
+    line-height: 1.65;
     flex: 1;
     margin: 0;
 }
@@ -868,8 +871,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 /* ─── Read More button ─────────────────────────────────────── */
 .cu-read-more {
-    /* Inherits .btn .btn-primary styles. Extend here. */
-    margin-top: 1rem;
+    margin-top: auto;
     align-self: flex-start;
     font-size: 0.875rem;
     padding: 0.65rem 1.4rem !important;
@@ -885,6 +887,27 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 .cu-read-more:hover .material-symbols-outlined {
     transform: translateX(4px);
+}
+
+
+
+/* Current Updates alignment refinements */
+@media (max-width: 1200px) {
+
+    .cu-card__title,
+    .cu-card__desc {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .cu-card__image-wrap {
+        height: 190px;
+    }
+
+    .cu-card__body {
+        padding: 1.2rem;
+    }
 }
 
 
