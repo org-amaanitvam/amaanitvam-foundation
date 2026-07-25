@@ -1,5 +1,6 @@
 import { loadSharedComponents } from "./component-loader.js";
 import { initNavbar } from "./navbar.js";
+import { startCmsContentSync } from "./cms-content.js";
 
 function initFAQ() {
     const faqButtons = document.querySelectorAll(".faq-question");
@@ -35,6 +36,7 @@ async function initApp() {
         initNavbar();
 
         initFAQ();
+        await startCmsContentSync();
 
         import("./forms.js").catch((error) => {
             console.error("Forms module error:", error);

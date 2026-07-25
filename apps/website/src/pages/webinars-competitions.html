@@ -87,6 +87,53 @@
           Inquire For Sessions
         </a>
       </div>
+    </section>
+    <section class="section section-white" id="registration-form-section">
+      <div class="container moved-inline-style-070">
+        <div class="section-header">
+          <span class="section-label">Register Now</span>
+          <h2 class="section-title">Webinar &amp; Competition Registration</h2>
+          <p class="text-muted">Register your interest and our team will share the event details with you.</p>
+        </div>
+
+        <form class="moved-inline-style-112" id="registrationForm" method="post">
+          <div class="moved-inline-style-064">
+            <label class="form-label" for="reg-name">Full Name <span aria-hidden="true">*</span></label>
+            <input class="form-input" id="reg-name" name="name" required type="text" placeholder="Jane Doe" />
+          </div>
+
+          <div class="moved-inline-style-064">
+            <label class="form-label" for="reg-email">Email Address <span aria-hidden="true">*</span></label>
+            <input class="form-input" id="reg-email" name="email" required type="email" placeholder="jane@example.com" />
+          </div>
+
+          <div class="moved-inline-style-064">
+            <label class="form-label" for="reg-phone">Phone Number <span aria-hidden="true">*</span></label>
+            <input class="form-input" id="reg-phone" name="phone" required type="tel" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number" />
+          </div>
+
+          <div class="moved-inline-style-064">
+            <label class="form-label" for="reg-event">Event / Webinar <span aria-hidden="true">*</span></label>
+            <input class="form-input" id="reg-event" name="event" required type="text" placeholder="Enter the webinar or competition name" />
+          </div>
+
+          <div class="moved-inline-style-064">
+            <label class="form-label" for="reg-organization">College / Organisation</label>
+            <input class="form-input" id="reg-organization" name="organization" type="text" placeholder="Your college or organisation" />
+          </div>
+
+          <div class="moved-inline-style-065">
+            <label class="form-label" for="reg-message">Message or Questions</label>
+            <textarea class="form-textarea" id="reg-message" name="message" rows="4" placeholder="Anything you would like us to know"></textarea>
+          </div>
+
+          <button class="btn btn-primary moved-inline-style-140" type="submit">Register</button>
+          <div class="moved-inline-style-122" id="reg-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+  <!-- Floating Donate CTA -->
     </div>
   </main>
 
@@ -169,23 +216,11 @@
 
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 
-  <div class="floating-socials">
-    <a aria-label="Facebook" href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/"
-      target="_blank">
-      <i class="fa-brands fa-facebook-f"></i>
-    </a>
-    <a aria-label="Instagram" href="https://www.instagram.com/amaanitvamfoundation" target="_blank">
-      <i class="fa-brands fa-instagram"></i>
-    </a>
-    <a aria-label="X" href="https://x.com/AmaanitvamOrg" target="_blank">
-      <i class="fa-brands fa-x-twitter"></i>
-    </a>
-    <a aria-label="LinkedIn" href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank">
-      <i class="fa-brands fa-linkedin-in"></i>
-    </a>
-  </div>
-
-  <script type="module" src="../scripts/app.js"></script>
+  <script src="../scripts/app.js" type="module"></script>
+  <script src="../scripts/app.js" type="module"></script>
+<script type="module"
+        src="/src/scripts/public-form-handlers.js"
+        data-amaanitvam-public-forms></script>
 </body>
 
 </html>

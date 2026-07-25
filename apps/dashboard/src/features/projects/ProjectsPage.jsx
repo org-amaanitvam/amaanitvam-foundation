@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { FolderKanban, Loader2, Plus, Edit2 } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { canAccessPermission } from "../../utils/accessControl";
 import toast from 'react-hot-toast';
 import FilterBar from "../../components/Filters/FilterBar";
 
@@ -16,7 +17,11 @@ export default function ProjectsPage() {
   const [departments, setDepartments] = useState([]);
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState("");
-  const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  const canManageProjects =
+    userProfile?.role === 'admin' ||
+    userProfile?.role === 'super_admin' ||
+    userProfile?.role === 'department_head' ||
+    canAccessPermission(userProfile, 'projects.manage');
   const filterConfig = [
   {
     name: "status",
@@ -50,14 +55,22 @@ export default function ProjectsPage() {
     try {
       const { data } = await api.get('/projects');
       setProjects(data.projects || []);
-      if (isAdmin) {
+      if (canManageProjects) {
         const res = await api.get('/admin/members');
         setUsers(res.data.members || []);
         const deptRes = await api.get('/departments');
         setDepartments(deptRes.data.departments || []);
       }
-    } catch {
-      toast.error('Failed to load data');
+    } catch (error) {
+      console.error('Projects load failed:', error);
+      toast.error(
+        error.response?.data?.message ||
+          `Failed to load projects${
+            error.response?.status
+              ? ` (HTTP ${error.response.status})`
+              : ''
+          }`,
+      );
     } finally {
       setLoading(false);
     }
@@ -79,7 +92,15 @@ export default function ProjectsPage() {
       setEditingId(null);
       setFormData({ title: '', description: '', progress: 0, assignedMembers: [], startDate: '', endDate: '', department: '' });
       fetchProjects();
-    } catch { toast.error(editingId ? 'Failed to update project' : 'Failed to create project'); }
+    } catch (error) {
+      console.error('Project save failed:', error);
+      toast.error(
+        error.response?.data?.message ||
+          (editingId
+            ? 'Failed to update project'
+            : 'Failed to create project'),
+      );
+    }
   };
 
   const openEdit = (p) => {
@@ -215,7 +236,7 @@ if (loading) return <div className="flex justify-center items-center h-64"><Load
           <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
           <p className="text-sm text-slate-500 mt-1">Track project progress</p>
         </div>
-        {isAdmin && (
+        {canManageProjects && (
           <button onClick={() => { setEditingId(null); setFormData({ title: '', description: '', progress: 0, assignedMembers: [], startDate: '', endDate: '', department: '' }); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
             <Plus className="w-4 h-4" /> New Project
           </button>
@@ -236,7 +257,7 @@ if (loading) return <div className="flex justify-center items-center h-64"><Load
           <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in">
             <h2 className="text-lg font-bold text-slate-900 mb-4">{editingId ? 'Edit Project' : 'Create Project'}</h2>
             <form onSubmit={handleCreateOrUpdate} className="space-y-4">
-              {isAdmin ? (
+              {canManageProjects ? (
                 <div><label className="block text-sm font-medium mb-1">Title</label><input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
               ) : (
                 <div className="mb-2"><h3 className="font-semibold text-slate-800">{formData.title}</h3></div>
@@ -245,7 +266,7 @@ if (loading) return <div className="flex justify-center items-center h-64"><Load
               <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" rows="3"></textarea></div>
               <div><label className="block text-sm font-medium mb-1">Progress (%)</label><input type="number" min="0" max="100" required value={formData.progress} onChange={e => setFormData({...formData, progress: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
 
-              {isAdmin && (
+              {canManageProjects && (
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">Department (Domain)</label>
@@ -362,7 +383,7 @@ style={{width:`${p.progress || 0}%`}}
 </div>
 </div>
 
-              {p.status === 'pending_approval' && isAdmin && (
+              {p.status === 'pending_approval' && canManageProjects && (
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
                   <button onClick={async () => {
                     try {

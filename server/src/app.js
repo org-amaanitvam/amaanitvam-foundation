@@ -26,6 +26,7 @@ import libraryRoutes from "./modules/digital-library/library.routes.js";
 import courseRoutes from "./modules/courses/course.routes.js";
 import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
+import publicFormRoutes from "./modules/public-forms/publicForm.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
 import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
@@ -44,6 +45,7 @@ app.set("trust proxy", "loopback");
 
 import productionProfileRoutes from "./routes/productionProfile.routes.js";
 import memberAdministrationRoutes from "./modules/auth/memberAdministration.routes.js";
+import adminStatsRoutes from "./modules/admin-stats/adminStats.routes.js";
 // Security and utility middleware
 app.use(helmet());
 
@@ -87,7 +89,12 @@ app.use(cors(corsOptions));
 
 //app.use("/api/public/settings", settingsRoutes);
 // Super Admin member mutation routes.
-app.use("/api/admin/members", memberAdministrationRoutes);
+app.use(
+  "/api/admin/members",
+  express.json({ limit: "10mb" }),
+  express.urlencoded({ extended: true }),
+  memberAdministrationRoutes,
+);
 
 app.use("/api/activities", activityRoutes);
 app.use(express.json());
@@ -118,6 +125,7 @@ app.use("/api", adminRecoveryRoutes);
 app.use("/api/auth", authRoutes);
 app.use('/api/users', userRoutes);
 app.use("/api/candidates", candidateRoutes);
+app.use("/api/admin/candidates", candidateRoutes);
 app.use("/api/members", memberRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/tasks", taskRoutes);
@@ -133,6 +141,9 @@ app.use("/api/digital-library", libraryRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
+app.use("/api/volunteer", volunteerRoutes);
+app.use("/api/internship", internshipRoutes);
+app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/conversations", conversationRoutes);
@@ -140,6 +151,8 @@ app.use("/api/ai-notifications", aiNotificationRoutes);
 
 
 // Unhandled routes & errors
+app.use("/api/admin/stats", adminStatsRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 

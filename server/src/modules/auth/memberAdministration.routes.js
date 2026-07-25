@@ -5,6 +5,7 @@ import {
   requireDashboardAccess,
   requireRole,
 } from "../../middleware/dashboardAccess.js";
+import Department from "../departments/department.model.js";
 import User from "../users/user.model.js";
 import UserAccess from "./userAccess.model.js";
 import {
@@ -17,11 +18,9 @@ import {
 
 const router = express.Router();
 
-router.use(
-  authenticate,
-  requireDashboardAccess,
-  requireRole("super_admin"),
-);
+router.use(authenticate, requireDashboardAccess);
+
+const requireSuperAdmin = requireRole("super_admin");
 
 const memberPayload = (user, access = null) => ({
   _id: user._id,
@@ -37,10 +36,335 @@ const memberPayload = (user, access = null) => ({
   memberId: user.memberId || access?.uniqueId || "",
   firebaseUid: user.firebaseUid || access?.firebaseUid || "",
   accessRole: access?.role || "",
+  permissions: Array.isArray(access?.permissions) ? access.permissions : [],
+  team: access?.team || "",
+  mustChangePassword: access?.mustChangePassword === true,
   isActive:
     user.status !== "inactive" &&
     access?.isActive !== false,
+  createdAt: user.createdAt || null,
+  updatedAt: user.updatedAt || null,
 });
+
+
+const normalizeText = (value) => String(value ?? "").trim();
+
+const canReadMember = (req, user) => {
+  if (req.userAccess?.role === "super_admin") return true;
+
+  if (String(user?._id || "") === String(req.dbUser?._id || "")) {
+    return true;
+  }
+
+  if (req.userAccess?.role === "department_head") {
+    const ownDepartment = normalizeText(req.dbUser?.department).toLowerCase();
+    const targetDepartment = normalizeText(user?.department).toLowerCase();
+    return Boolean(
+      ownDepartment &&
+      targetDepartment &&
+      ownDepartment === targetDepartment
+    );
+  }
+
+  return false;
+};
+
+const listMembers = async (req, res, next) => {
+  try {
+    let query = {};
+
+    if (req.userAccess?.role === "department_head") {
+      const department = normalizeText(req.dbUser?.department);
+      if (!department) {
+        return res.json({ success: true, members: [], scope: "department" });
+      }
+      query = { department };
+    } else if (req.userAccess?.role !== "super_admin") {
+      query = { _id: req.dbUser._id };
+    }
+
+    const users = await User.find(query).sort({ name: 1, createdAt: -1 });
+    const ids = users.map((user) => user._id);
+    const accesses = ids.length
+      ? await UserAccess.find({ user: { $in: ids } })
+      : [];
+    const accessByUser = new Map(
+      accesses.map((access) => [String(access.user), access]),
+    );
+
+    return res.json({
+      success: true,
+      members: users.map((user) =>
+        memberPayload(user, accessByUser.get(String(user._id))),
+      ),
+      scope:
+        req.userAccess?.role === "super_admin"
+          ? "all"
+          : req.userAccess?.role === "department_head"
+            ? "department"
+            : "self",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMember = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Member not found." });
+    }
+    if (!canReadMember(req, user)) {
+      return res.status(403).json({
+        success: false,
+        code: "MEMBER_SCOPE_DENIED",
+        message: "You cannot view this member.",
+      });
+    }
+    const access = await UserAccess.findOne({ user: user._id });
+    return res.json({ success: true, member: memberPayload(user, access) });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const syncDepartmentMembership = async (user, requestedDepartment) => {
+  const cleanDepartment = normalizeText(requestedDepartment);
+  let target = null;
+
+  if (cleanDepartment) {
+    target = await Department.findOne({ departmentName: cleanDepartment });
+    if (!target) {
+      const error = new Error(`Department "${cleanDepartment}" was not found.`);
+      error.statusCode = 404;
+      throw error;
+    }
+  }
+
+  const currentDepartments = await Department.find({ "members.user": user._id });
+  for (const department of currentDepartments) {
+    department.members = department.members.filter(
+      (member) => String(member.user) !== String(user._id),
+    );
+    if (
+      department.departmentHead &&
+      String(department.departmentHead) === String(user._id) &&
+      (!target || String(target._id) !== String(department._id))
+    ) {
+      department.departmentHead = null;
+    }
+    department.totalMembers = department.members.length;
+    await department.save();
+  }
+
+  if (target) {
+    const exists = target.members.some(
+      (member) => String(member.user) === String(user._id),
+    );
+    if (!exists) {
+      target.members.push({
+        user: user._id,
+        role: user.role === "department_head" ? "department_head" : "member",
+        joinedAt: new Date(),
+      });
+    }
+    target.totalMembers = target.members.length;
+    await target.save();
+    user.department = target.departmentName;
+  } else {
+    user.department = "";
+  }
+};
+
+const updateMemberDetails = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Member not found." });
+    }
+
+    const previous = {
+      name: user.name,
+      phone: user.phone || "",
+      department: user.department || "",
+      designation: user.designation || "",
+      domain: user.domain || "",
+    };
+
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "name")) {
+      const name = normalizeText(req.body.name);
+      if (!name) {
+        return res.status(400).json({ success: false, message: "Name cannot be empty." });
+      }
+      user.name = name;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "phone")) {
+      user.phone = normalizeText(req.body.phone);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "designation")) {
+      user.designation = normalizeText(req.body.designation);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "domain")) {
+      user.domain = normalizeText(req.body.domain);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "department")) {
+      await syncDepartmentMembership(user, req.body.department);
+    }
+
+    await user.save();
+
+    const access = await getOrCreateAccessForExistingUser(
+      user,
+      { uid: user.firebaseUid || "", email: user.email, name: user.name },
+      { mustChangePassword: false },
+    );
+
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "team")) {
+      access.team = normalizeText(req.body.team);
+      await access.save();
+    }
+
+    await writeAuthAudit({
+      req,
+      user,
+      access,
+      action: "MEMBER_PROFILE_UPDATED",
+      success: true,
+      metadata: {
+        previous,
+        current: {
+          name: user.name,
+          phone: user.phone || "",
+          department: user.department || "",
+          designation: user.designation || "",
+          domain: user.domain || "",
+          team: access.team || "",
+        },
+      },
+    });
+
+    return res.json({
+      success: true,
+      message: "Member profile updated successfully.",
+      member: memberPayload(user, access),
+    });
+  } catch (error) {
+    if (error?.statusCode) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
+const updateOrganization = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Member not found." });
+    }
+
+    const access = await getOrCreateAccessForExistingUser(
+      user,
+      { uid: user.firebaseUid || "", email: user.email, name: user.name },
+      { mustChangePassword: false },
+    );
+
+    const previous = { department: user.department || "", team: access.team || "" };
+
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "department")) {
+      await syncDepartmentMembership(user, req.body.department);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "team")) {
+      access.team = normalizeText(req.body.team);
+    }
+
+    await user.save();
+    await access.save();
+
+    await writeAuthAudit({
+      req,
+      user,
+      access,
+      action: "MEMBER_ORGANIZATION_UPDATED",
+      success: true,
+      metadata: {
+        previous,
+        current: { department: user.department || "", team: access.team || "" },
+      },
+    });
+
+    return res.json({
+      success: true,
+      message: "Department and team assignment updated successfully.",
+      member: memberPayload(user, access),
+    });
+  } catch (error) {
+    if (error?.statusCode) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+};
+
+const updatePermissions = async (req, res, next) => {
+  try {
+    if (!Array.isArray(req.body?.permissions)) {
+      return res.status(400).json({
+        success: false,
+        message: "permissions must be an array of permission keys.",
+      });
+    }
+
+    const permissions = [...new Set(
+      req.body.permissions
+        .map((value) => normalizeText(value).toLowerCase())
+        .filter(Boolean),
+    )];
+
+    const invalid = permissions.find(
+      (value) => value.length > 80 || !/^[a-z0-9:_.*-]+$/.test(value),
+    );
+    if (invalid) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid permission key: ${invalid}`,
+      });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Member not found." });
+    }
+
+    const access = await getOrCreateAccessForExistingUser(
+      user,
+      { uid: user.firebaseUid || "", email: user.email, name: user.name },
+      { mustChangePassword: false },
+    );
+
+    const previousPermissions = [...(access.permissions || [])];
+    access.permissions = permissions.slice(0, 100);
+    await access.save();
+
+    await writeAuthAudit({
+      req,
+      user,
+      access,
+      action: "MEMBER_PERMISSIONS_UPDATED",
+      success: true,
+      metadata: { previousPermissions, permissions: access.permissions },
+    });
+
+    return res.json({
+      success: true,
+      message: "Member permissions updated successfully.",
+      member: memberPayload(user, access),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const resolveFirebaseUid = async (user, access = null) => {
   const storedUid = String(
@@ -330,12 +654,22 @@ const permanentlyDeleteMember = async (req, res, next) => {
   }
 };
 
+router.get("/", listMembers);
+router.get("/:id", getMember);
+
+router.put("/:id", requireSuperAdmin, updateMemberDetails);
+router.patch("/:id", requireSuperAdmin, updateMemberDetails);
+router.put("/:id/organization", requireSuperAdmin, updateOrganization);
+router.patch("/:id/organization", requireSuperAdmin, updateOrganization);
+router.put("/:id/permissions", requireSuperAdmin, updatePermissions);
+router.patch("/:id/permissions", requireSuperAdmin, updatePermissions);
+
 for (const method of ["patch", "put", "post"]) {
-  router[method]("/:id/deactivate", deactivateMember);
-  router[method]("/:id/activate", activateMember);
-  router[method]("/:id/role", updateMemberRole);
+  router[method]("/:id/deactivate", requireSuperAdmin, deactivateMember);
+  router[method]("/:id/activate", requireSuperAdmin, activateMember);
+  router[method]("/:id/role", requireSuperAdmin, updateMemberRole);
 }
 
-router.delete("/:id", permanentlyDeleteMember);
+router.delete("/:id", requireSuperAdmin, permanentlyDeleteMember);
 
 export default router;
