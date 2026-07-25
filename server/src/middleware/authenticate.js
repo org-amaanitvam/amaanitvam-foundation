@@ -1,9 +1,13 @@
-import admin from "../config/firebase.js";
+import admin, { firebaseReady } from "../config/firebase.js";
 import { UnauthorizedError } from "../shared/errors/AppError.js";
 import User from "../modules/users/user.model.js";
 
 export const authenticate = async (req, res, next) => {
   try {
+    if (!firebaseReady) {
+      throw new UnauthorizedError("Firebase Admin is not configured");
+    }
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedError("No token provided", "AUTH_TOKEN_INVALID");
