@@ -160,7 +160,7 @@ body[data-page="contact"] .contact-hero,
     overflow: hidden !important;
     background-color: var(--primary) !important;
     background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.84), rgba(86, 5, 26, 0.62)),
-        url("/public/images/heroes/about-hero.png") !important;
+        url("/images/heroes/about-hero.png") !important;
     background-size: cover !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
@@ -565,9 +565,6 @@ body[data-page="about"] section[aria-labelledby="achievements-title"] .achieveme
     box-shadow: 0 14px 36px rgba(61, 20, 35, 0.08) !important;
 }
 
-body[data-page="about"] section[aria-labelledby="achievements-title"] .achievement-row:last-child {
-    margin-bottom: 0 !important;
-}
 
 body[data-page="about"] section[aria-labelledby="achievements-title"] .achievement-row>div {
     justify-content: center !important;

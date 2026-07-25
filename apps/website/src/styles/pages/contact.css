@@ -195,6 +195,7 @@ body[data-page="contact"] #faq .faq-answer {
     color: var(--muted, #7a7a7a);
     line-height: 1.7;
 }
+
 /* Donation section on Contact page */
 body[data-page="contact"] #donate.donation-section {
     position: relative !important;

@@ -19,13 +19,6 @@ body[data-page="verify"] .grid-3 {
     }
 }
 
-/* =========================================================
-   INTERNSHIP TRACKS — FINAL CLEAN FIX
-   Desktop: 4 cards in one row
-   Tablet: 2 cards per row
-   Mobile: 1 card per row
-   ========================================================= */
-
 body[data-page="internship"] section[aria-labelledby="tracks-heading"] {
     padding: 5rem 0 !important;
     background: #fffaf3 !important;
@@ -214,13 +207,6 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
         font-size: 1.65rem !important;
     }
 }
-
-/* =========================================================
-   OUTCOMES GRID — 4 cards (overrides default 3-col .grid-3)
-   Desktop: 4 per row
-   Tablet: 2 per row
-   Mobile: 1 per row
-   ========================================================= */
 
 body[data-page="internship"] .grid-outcomes-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;

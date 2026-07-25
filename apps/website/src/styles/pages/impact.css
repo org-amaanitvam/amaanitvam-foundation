@@ -632,7 +632,6 @@ body[data-page="impact"] .section-navy .stat-value {
     text-shadow: none !important;
 }
 
-/* Labels */
 body[data-page="impact"] .section-navy .stat-label {
     color: rgba(255, 255, 255, 0.95) !important;
     font-family: "Montserrat", sans-serif !important;
@@ -641,14 +640,12 @@ body[data-page="impact"] .section-navy .stat-label {
     line-height: 1.5 !important;
 }
 
-/* Tablet */
 @media (max-width: 900px) {
     body[data-page="impact"] .moved-inline-style-final-025 {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 }
 
-/* Mobile */
 @media (max-width: 560px) {
     body[data-page="impact"] .section-navy {
         padding: 3.5rem 0 !important;
