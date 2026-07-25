@@ -1,44 +1,148 @@
-body[data-page="verify"] .section-white {
-    position: relative;
-    z-index: 2;
-    margin-top: 0;
+
+body[data-page="verify"] .grid-3 {
+    align-items: start;
 }
 
-body[data-page="verify"] .card {
+body[data-page="verify"] .grid-3 .card {
+    width: 400px;
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.75rem;
+    background: var(--surface-pink) !important;
+}
+
+body[data-page="verify"] .grid-3 .card .card-icon,
+body[data-page="verify"] .grid-3 .card [class*="icon"] {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+}
+
+body[data-page="verify"] .grid-3 .card h3,
+body[data-page="verify"] .grid-3 .card .card-title {
+    margin: 0 0 .6rem;
+}
+
+body[data-page="verify"] .grid-3 .card p,
+body[data-page="verify"] .grid-3 .card .card-desc {
+    margin: 0;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   5) VERIFY PAGE — trust cards locked to equal width/height
+========================================================= */
+body[data-page="verify"] .grid-3 {
+    grid-template-columns: repeat(3, 400px);
+    grid-auto-rows: 1fr;
+    justify-content: center;
+    row-gap: 1.5rem;
+}
+
+body[data-page="verify"] .grid-3 .card {
+    width: 400px;
+    height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 2rem 1.75rem;
+    box-sizing: border-box;
+    background: var(--surface-pink) !important;
+}
+
+@media (max-width: 900px) {
+    body[data-page="verify"] .grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-page="verify"] .grid-3 .card {
+        width: 100%;
+        height: auto;
+        min-height: 240px;
+    }
+}
+
+
+/* =========================================================
+   5b) VERIFY PAGE — verify-form card (the "Enter Certificate ID" card)
+========================================================= */
+body[data-page="verify"] .section-white .card {
+    background: var(--surface-pink) !important;
+}
+
+
+/* =========================================================
+   6) VERIFY PAGE — FAQ, styled as elegant white cards
+========================================================= */
+body[data-page="verify"] [role="region"][aria-label*="requently asked"] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+body[data-page="verify"] .faq-item {
+    background: var(--bg) !important;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 14px);
+    box-shadow: var(--shadow);
     overflow: hidden;
-    position: relative;
-    z-index: 2;
-    margin-top: 0;
-    isolation: isolate;
-    background: #fff;
+}
+
+body[data-page="verify"] .faq-question {
+    background: transparent;
+    border-radius: inherit;
+    font-family: var(--font-ui);
+    color: var(--primary);
+}
+
+body[data-page="verify"] .faq-question:hover {
+    background: rgba(93, 15, 45, .03);
+}
+
+body[data-page="verify"] .faq-icon {
+    color: var(--gold-dark, var(--gold));
+}
+
+body[data-page="verify"] .faq-answer {
+    background: var(--bg) !important;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+}
+
+body[data-page="verify"] .faq-answer a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   7) VERIFY PAGE — trim the oversized gaps between sections
+========================================================= */
+body[data-page="verify"] .section {
+    padding: 3.5rem 0;
+}
+
+body[data-page="verify"] .section-header {
+    margin-bottom: 2.5rem;
 }
 
 body[data-page="verify"] .card .section-header {
-    position: relative;
-    text-align: center !important;
-    margin: 0 auto 2rem !important;
+    margin-bottom: 1.5rem !important;
 }
 
-body[data-page="verify"] .card .section-header .section-label {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    transform: none !important;
-    display: inline-block;
-    max-width: 100%;
-    background: none;
-    padding: 0;
-    margin: 0 0 0.5rem;
-    white-space: nowrap;
-    overflow: visible;
-}
 
-body[data-page="verify"] .card .section-header .section-label::before,
-body[data-page="verify"] .card .section-header .section-label::after {
-    content: none;
-    display: none;
-}
-
+/* =========================================================
+   8) VERIFY PAGE — Certificate ID input: fix height + remove extra margin
+========================================================= */
 .verify-input-row {
     display: flex;
     gap: 1rem;
@@ -68,6 +172,7 @@ body[data-page="verify"] .verify-input-row .form-input {
     padding: 12px 16px;
     text-align: center;
 }
+
 body[data-page="verify"] .verify-input-row .btn {
     min-width: 180px;
 }
@@ -77,114 +182,4 @@ body[data-page="verify"] .verify-input-row .btn {
         flex-direction: column;
         align-items: stretch;
     }
-}
-
-body:has(.app-shell) .certificate-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-body:has(.app-shell) .certificate-strip .workspace-card {
-    border-style: dashed;
-}
-
-@media (max-width: 640px) {
-
-    body:has(.app-shell) .workspace-grid,
-    body:has(.app-shell) .workspace-board,
-    body:has(.app-shell) .pipeline,
-    body:has(.app-shell) .report-shelf,
-    body:has(.app-shell) .certificate-strip {
-        grid-template-columns: 1fr;
-    }
-}
-
-body.dashboard-page .welcome-panel,
-body.dashboard-page .panel,
-body.dashboard-page .section-hero article,
-body.dashboard-page .module-card,
-body.dashboard-page .stat-card,
-body.dashboard-page .workspace-card,
-body.dashboard-page .people-row,
-body.dashboard-page .pipeline-item,
-body.dashboard-page .report-item,
-body.dashboard-page .certificate-item {
-    border: 1px solid rgba(220, 200, 182, .88);
-    border-radius: 16px;
-    background: rgba(255, 250, 243, .94);
-    box-shadow: var(--shadow);
-}
-
-body.dashboard-page .workspace-grid,
-body.dashboard-page .workspace-board,
-body.dashboard-page .pipeline,
-body.dashboard-page .report-shelf,
-body.dashboard-page .certificate-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-}
-
-body.dashboard-page .workspace-card,
-body.dashboard-page .pipeline-item,
-body.dashboard-page .report-item,
-body.dashboard-page .certificate-item {
-    padding: 16px;
-}
-
-body.dashboard-page .workspace-card p,
-body.dashboard-page .pipeline-item p,
-body.dashboard-page .report-item p,
-body.dashboard-page .certificate-item p {
-    color: var(--muted);
-    margin: 8px 0 14px;
-}
-
-#verify-result[hidden] {
-    display: none !important;
-}
-
-body[data-page="verify"] .card .section-header {
-    position: relative;
-    text-align: center !important;
-    margin: 0 auto 2rem !important;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.9rem;   /* controls spacing between each line */
-}
-
-body[data-page="verify"] .card .section-label {
-    margin: 0 0 12px 0;
-}
-
-body[data-page="verify"] .card .section-title {
-    text-align: center !important;
-    margin: 0 0 18px 0;
-    line-height: 1.2;
-}
-
-body[data-page="verify"] .card .section-desc {
-    text-align: center !important;
-    margin: 0 0 24px 0;
-    line-height: 1.7;
-    max-width: 320px;
-}
-
-/* Trust Indicators - Center the grid */
-body[data-page="verify"] .grid-3 {
-    justify-content: center !important;
-    justify-items: center !important;
-}
-
-/* Keep each card the same size */
-body[data-page="verify"] .grid-3 .card {
-    width: 400px; /* or whatever width you're currently using */
-}
-
-body[data-page="verify"] .grid-3 {
-    grid-template-columns: repeat(3, 400px);
-    justify-content: center !important;
 }

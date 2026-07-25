@@ -286,7 +286,7 @@ const radialData = [
           </ResponsiveContainer>
 
         </div>
-        <div className="bg-slate-50 rounded-3xl border border-slate-100 p-6 min-h-[420px] shadow-sm hover:shadow-lg transition flex flex-col">
+        <div className="bg-slate-50 rounded-3xl border border-slate-100 p-6 min-h-105 shadow-sm hover:shadow-lg transition flex flex-col">
 <div className="flex justify-between items-center mb-5">
   <div>
     <h3 className="text-lg font-bold text-slate-800">
