@@ -689,8 +689,8 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 /* ─── Card grid ────────────────────────────────────────────── */
 .cu-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.75rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
     align-items: stretch;
 }
 
@@ -775,7 +775,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 .cu-card__image-wrap {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 180px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -799,7 +799,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 1.5rem 1.6rem 1.75rem;
+    padding: 1.35rem 1.3rem 1.55rem;
     gap: 0.6rem;
 }
 
@@ -843,7 +843,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 /* ─── Card title ───────────────────────────────────────────── */
 .cu-card__title {
     font-family: var(--font-heading);
-    font-size: 1.35rem;
+    font-size: 1.22rem;
     font-weight: 600;
     color: var(--text);
     line-height: 1.25;
@@ -1009,9 +1009,10 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 /* ─── Responsive breakpoints ────────────────────────────────── */
 
-/* 1200px and below: keep 3 columns but tighten gap */
+/* 1200px and below: switch to two balanced columns */
 @media (max-width: 1200px) {
     .cu-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1.5rem;
     }
 }
