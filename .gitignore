@@ -38,3 +38,16 @@ temp/
 server/serviceAccountKey.json
 **/serviceAccountKey.json
 serviceAccountKey.json
+
+# ── Python / AI Service ──────────────────────────────────────────────
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+ai-service/.venv/
+ai-service/chroma_data/
+ai-service/.pytest_cache/
+.pytest_cache/

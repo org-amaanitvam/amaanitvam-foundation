@@ -146,7 +146,7 @@ export default function AttendancePage() {
               <div key={record._id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-slate-200 bg-slate-50/50 transition-colors gap-4">
                 
                 <div className="flex items-center gap-4">
-                  <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm text-center min-w-[70px]">
+                  <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm text-center min-w-17.5">
                     <p className="text-xs font-bold text-slate-400 uppercase">
                       {new Date(record.date).toLocaleDateString('en-US', { month: 'short' })}
                     </p>

@@ -40,7 +40,7 @@ export default function FilterBar({ config, filters, setFilters }) {
   const activeCount = getActiveFilterCount();
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-4 animate-fade-in shadow-sm mb-6">
+    <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-fade-in shadow-sm mb-6">
       <div className="flex items-center justify-between lg:hidden mb-2 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-slate-600" />
@@ -50,15 +50,15 @@ export default function FilterBar({ config, filters, setFilters }) {
         <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </div>
 
-      <div className={`lg:flex items-center gap-4 flex-wrap ${isOpen ? 'flex flex-col lg:flex-row items-stretch' : 'hidden'}`}>
+      <div className={`lg:flex items-end gap-8 flex-wrap ${isOpen ? 'flex flex-col lg:flex-row items-stretch' : 'hidden'}`}>
         {config.map((field) => (
           <div key={field.name} className="flex flex-col">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 hidden lg:block">{field.label}</label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 hidden lg:block">{field.label}</label>
             {field.type === 'select' && (
               <select
                 value={filters[field.name] || 'all'}
                 onChange={(e) => updateFilter(field.name, e.target.value)}
-                className="w-full lg:w-40 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                className="w-full lg:w-48 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
               >
                 {field.options.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -80,14 +80,14 @@ export default function FilterBar({ config, filters, setFilters }) {
                   type="date"
                   value={filters[field.name]?.start || ''}
                   onChange={(e) => updateFilter(field.name, { ...filters[field.name], start: e.target.value })}
-                  className="w-full lg:w-[130px] px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                  className="w-full lg:w-32.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
                 />
                 <span className="text-slate-400 text-xs">to</span>
                 <input
                   type="date"
                   value={filters[field.name]?.end || ''}
                   onChange={(e) => updateFilter(field.name, { ...filters[field.name], end: e.target.value })}
-                  className="w-full lg:w-[130px] px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                  className="w-full lg:w-32.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
                 />
               </div>
             )}
@@ -98,7 +98,7 @@ export default function FilterBar({ config, filters, setFilters }) {
                   placeholder="Min"
                   value={filters[field.name]?.min !== undefined ? filters[field.name].min : ''}
                   onChange={(e) => updateFilter(field.name, { ...filters[field.name], min: e.target.value })}
-                  className="w-full lg:w-20 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                  className="w-full lg:w-24 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
                 />
                 <span className="text-slate-400 text-xs">-</span>
                 <input
@@ -115,8 +115,8 @@ export default function FilterBar({ config, filters, setFilters }) {
 
         {activeCount > 0 && (
           <div className="flex flex-col justify-end mt-2 lg:mt-5">
-            <button onClick={handleClear} className="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-rose-500 bg-slate-100 hover:bg-rose-50 rounded-xl transition-colors flex items-center justify-center gap-1">
-              <X className="w-3.5 h-3.5" /> Clear Filters
+            <button onClick={handleClear} className="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-rose-500 bg-slate-100 hover:bg-rose-50 rounded-xl transition-colors flex items-center justify-center gap-2">
+              <X className="w-4 h-4" /> Clear Filters
             </button>
           </div>
         )}

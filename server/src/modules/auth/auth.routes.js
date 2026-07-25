@@ -2,7 +2,11 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import User from '../users/user.model.js';
 
+import accountAccessRoutes from "./accountAccess.routes.js";
 const router = express.Router();
+
+// Authentication and User Access additive authentication/user-management routes.
+router.use("/", accountAccessRoutes);
 
 const verifyEmailLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

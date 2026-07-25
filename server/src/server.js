@@ -1,4 +1,4 @@
-  import "dotenv/config";
+import "dotenv/config";
 import { connectDB } from "./config/database.js";
 import { validateEnv } from "./config/env.js";
 import logger from "./shared/logger/index.js";
@@ -12,8 +12,9 @@ const startServer = async () => {
     await connectDB();
 
     const PORT = process.env.PORT || 5000;
+    const HOST = process.env.HOST || "0.0.0.0";
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
       logger.info(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
     });
 

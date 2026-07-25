@@ -10,7 +10,7 @@ export default function GlobalSearch() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const dropdownRef = useRef(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate();    
 
   // Handle click outside to close dropdown
   useEffect(() => {

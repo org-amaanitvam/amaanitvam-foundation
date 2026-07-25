@@ -79,7 +79,7 @@ export default function ActivityFeed() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full min-h-[300px] flex items-center justify-center">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full min-h-75 flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-[#56051a] animate-spin" />
       </div>
     );
@@ -87,7 +87,7 @@ export default function ActivityFeed() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full min-h-[300px] flex flex-col items-center justify-center text-center">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full min-h-75 flex flex-col items-center justify-center text-center">
         <Activity className="w-8 h-8 text-red-300 mx-auto mb-2" />
         <p className="text-sm font-medium text-slate-800">Could not load activity</p>
         <button onClick={fetchActivities} className="mt-2 text-xs text-[#56051a] font-semibold hover:underline">Try Again</button>
@@ -96,7 +96,7 @@ export default function ActivityFeed() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-full max-h-[500px]">
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-full max-h-125">
       <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2 shrink-0">
         <Activity className="w-4 h-4 text-[#56051a]" />
         <h2 className="font-semibold text-slate-900">Recent Activity</h2>
