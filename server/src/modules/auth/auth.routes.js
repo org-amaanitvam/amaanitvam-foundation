@@ -6,6 +6,7 @@ import Session from './session.model.js';
 import { sendSuccess } from '../../shared/response/index.js';
 import { UnauthorizedError } from '../../shared/errors/AppError.js';
 import { authenticate } from '../../middleware/authenticate.js';
+import admin, { firebaseReady } from '../../config/firebase.js';
 
 import accountAccessRoutes from "./accountAccess.routes.js";
 const router = express.Router();
