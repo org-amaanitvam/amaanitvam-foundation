@@ -122,7 +122,7 @@ export default function Login() {
         {/* Visual side */}
         <div className="relative flex flex-col justify-between p-6 sm:p-8 md:p-10 overflow-hidden min-h-[220px] sm:min-h-[260px] md:min-h-0">
           <img
-            src="assets/images/hero.jpg"
+            src="/images/hero.jpg"
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
           />
