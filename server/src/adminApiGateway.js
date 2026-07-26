@@ -8,6 +8,8 @@ import express from "express";
 import mongoose from "mongoose";
 import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { provisionUser } from "./modules/auth/accountAccess.controller.js";
+import { requireDashboardAccess, requireRole } from "./middleware/dashboardAccess.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -3419,6 +3421,27 @@ app.get(
   },
 );
 // AMAANITVAM_ADMIN_CMS_REGISTRATIONS_GATEWAY_FIX_END
+
+
+// ADMIN_MEMBER_PROVISION_GATEWAY_START
+// Keep Admin Portal user provisioning inside the gateway authentication stack.
+// Unmatched requests otherwise fall through to the upstream API and are rejected
+// by its separate Firebase authentication middleware.
+const bridgeGatewayFirebaseUser = (req, _res, next) => {
+  req.user = req.firebaseUser;
+  next();
+};
+
+app.post(
+  "/api/auth/users/provision",
+  requireAdministrator,
+  jsonParser,
+  bridgeGatewayFirebaseUser,
+  requireDashboardAccess,
+  requireRole("super_admin"),
+  provisionUser
+);
+// ADMIN_MEMBER_PROVISION_GATEWAY_END
 
 function proxyToExistingBackend(req, res) {
   const headers = { ...req.headers };
