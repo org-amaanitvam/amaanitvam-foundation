@@ -44,12 +44,6 @@ body[data-page="programs"] .programs-5col .card .btn {
     }
 }
 
-
-/* =========================================================
-   PROJECT / SUCCESS STORY SHOWCASE
-   Image on the left, scrollable narrative on the right
-   ========================================================= */
-
 body[data-page="impact"] .success-stories-section,
 body[data-page="programs"] section[aria-labelledby="initiatives-title"] {
     background: var(--bg) !important;
@@ -278,15 +272,12 @@ body[data-page="programs"] .project-btn-group {
 body[data-page="impact"] .project-content,
 body[data-page="programs"] .project-content {
     scrollbar-width: none !important;
-    /* Firefox */
     -ms-overflow-style: none !important;
-    /* Old Edge */
 }
 
 body[data-page="impact"] .project-content::-webkit-scrollbar,
 body[data-page="programs"] .project-content::-webkit-scrollbar {
     display: none !important;
-    /* Chrome, Safari, Edge */
     width: 0 !important;
     height: 0 !important;
 }

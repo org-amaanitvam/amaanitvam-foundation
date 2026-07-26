@@ -505,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Success State
@@ -601,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // 5. Success State
@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const DEPT_API_URL = `${API_BASE_URL}/public/departments`;
 
             const response = await fetch(DEPT_API_URL);
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Clear existing hardcoded HTML options and set the default placeholder
@@ -669,9 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Trigger the fetch immediately when the page loads
-    if (!document.querySelector('[data-amaanitvam-public-forms]')) {
-        fetchDepartments();
-    }
+    fetchDepartments();
 
 
     // ==========================================
@@ -721,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Success State
@@ -804,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // 5. Success State
