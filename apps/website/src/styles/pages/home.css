@@ -2020,17 +2020,14 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     margin-bottom: 0.5rem;
     line-height: 1.6;
 }
-
 .evtc-extra {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #e5e7eb;
 }
-
 .evtc-extra p {
     margin: 0.5rem 0;
 }
-
 .evtc-quote {
     margin-top: 1rem;
     padding: 0.9rem;
