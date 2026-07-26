@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Users, Search, Mail, Filter, Eye } from 'lucide-react'; // Added Eye icon
+import { Users, Search, Eye } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { firebaseConfig } from '../../../config/firebase.js';
@@ -25,7 +25,7 @@ export default function Candidates() {
       const res = await api.get('/admin/candidates', { params });
       setCandidates(res.data.candidates || res.data || []);
       setDomains(res.data.domains || []);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load candidates');
     } finally {
       setLoading(false);
@@ -37,20 +37,21 @@ export default function Candidates() {
       fetchCandidates();
     }, search ? 400 : 0);
     return () => clearTimeout(timer);
-  }, [fetchCandidates]);
+  }, [fetchCandidates, search]);
 
   const handleStatusChange = async (candidate, status) => {
     const id = candidate._id || candidate.id;
     setActionLoading(id);
+    const secondaryAppName = `SecondaryApp_${Date.now()}`; // eslint-disable-line react-hooks/purity
     try {
       if (status === 'shortlisted') {
-        const secondaryApp = initializeApp(firebaseConfig, `SecondaryApp_${Date.now()}`);
+        const secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
         const secondaryAuth = getAuth(secondaryApp);
         try {
           await createUserWithEmailAndPassword(secondaryAuth, candidate.email, 'Password123!');
         } catch (fbError) {
           if (fbError.code !== 'auth/email-already-in-use') {
-             throw new Error(fbError.message);
+             throw new Error(fbError.message, { cause: fbError });
           }
         } finally {
           await signOut(secondaryAuth);

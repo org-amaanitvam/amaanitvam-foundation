@@ -30,11 +30,6 @@ const [editMember, setEditMember] = useState({
   const [submitting, setSubmitting] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
 
-  useEffect(() => {
-    fetchMembers();
-    fetchDepartments();
-  }, []);
-
   const fetchDepartments = async () => {
     try {
       const res = await api.get('/public/departments');
@@ -51,12 +46,18 @@ const [editMember, setEditMember] = useState({
     try {
       const res = await api.get(`/admin/members?t=${new Date().getTime()}`);
       setMembers(res.data.members || res.data || []);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load members');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchMembers();
+    fetchDepartments();
+  }, []);
 
   const handleAddMember = async (e) => {
     e.preventDefault();
@@ -80,7 +81,7 @@ const [editMember, setEditMember] = useState({
           // If already in Firebase, we just continue to add them to MongoDB
           console.log('User already exists in Firebase Auth, proceeding to sync with DB.');
         } else {
-          throw new Error(fbError.message);
+          throw new Error(fbError.message, { cause: fbError });
         }
       } finally {
         await signOut(secondaryAuth); // Clear the secondary session
@@ -100,6 +101,7 @@ const [editMember, setEditMember] = useState({
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleRoleChange = async (id, newRole) => {
   const previousMembers = members;
 

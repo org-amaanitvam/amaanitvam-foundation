@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
 import api from '../../../config/api.js';
 import { useAuth } from '../../../contexts/AuthContext.jsx';
@@ -15,9 +15,7 @@ export default function Tasks() {
   const [users, setUsers] = useState([]);
   const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
-  useEffect(() => { fetchTasks(); }, []);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const { data } = await api.get('/tasks');
       setTasks(data.tasks || []);
@@ -27,7 +25,12 @@ export default function Tasks() {
       }
     } catch { toast.error('Failed to load tasks'); }
     finally { setLoading(false); }
-  };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchTasks();
+  }, [fetchTasks]);
 
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();

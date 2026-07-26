@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Loader2, Globe, LayoutTemplate, MessageSquare } from 'lucide-react';
+import { Save, Loader2, Globe, LayoutTemplate } from 'lucide-react';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
@@ -11,22 +11,23 @@ export default function CMS() {
     aboutUs: { mission: '', vision: '', history: '' }
   });
 
-  useEffect(() => {
-    fetchCMS();
-  }, []);
-
   const fetchCMS = async () => {
     try {
       const res = await api.get('/cms');
       if (res.data.content) {
         setCms(res.data.content);
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to load CMS content');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCMS();
+  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -34,7 +35,7 @@ export default function CMS() {
     try {
       await api.put('/cms', cms);
       toast.success('Website content updated successfully');
-    } catch (err) {
+    } catch {
       toast.error('Failed to update website content');
     } finally {
       setSaving(false);

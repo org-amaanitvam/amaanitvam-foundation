@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       await storeToken(result.user);
@@ -83,9 +83,9 @@ export function AuthProvider({ children }) {
         error?.code === "auth/invalid-credential" || error?.code === "auth/wrong-password"
           ? "Invalid email or password."
           : error?.message || "Failed to sign in.";
-      throw new Error(message);
+      throw new Error(message, { cause: error });
     }
-  };
+  }, []);
 
   const logout = async () => {
     await signOut(auth);
@@ -94,7 +94,7 @@ export function AuthProvider({ children }) {
     setUserProfile(null);
   };
 
-  const resetPassword = async (email) => sendPasswordResetEmail(auth, email);
+  const resetPassword = useCallback(async (email) => sendPasswordResetEmail(auth, email), []);
 
   const value = useMemo(
     () => ({
@@ -107,12 +107,13 @@ export function AuthProvider({ children }) {
       refreshProfile: fetchUserProfile,
       isAuthenticated: Boolean(user),
     }),
-    [user, userProfile, loading]
+    [user, userProfile, loading, login, resetPassword]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

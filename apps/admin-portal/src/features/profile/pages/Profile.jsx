@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { User, Camera, Save, Loader2, Mail, Phone, Building, Shield } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext.jsx';
 import api from '../../../config/api.js';
@@ -6,26 +6,17 @@ import toast from 'react-hot-toast';
 
 export default function Profile() {
   const { userProfile, setUserProfile } = useAuth();
-  const [formData, setFormData] = useState({ name: '', phone: '', department: '', designation: '',
-  department: '',
-  domain: '', });
+  const [formData, setFormData] = useState(() => ({
+    name: userProfile?.name || '',
+    phone: userProfile?.phone || '',
+    designation: userProfile?.designation || '',
+    department: userProfile?.department || '',
+    domain: userProfile?.domain || '',
+  }));
   const [profileImage, setProfileImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const previewUrl = profileImage ? URL.createObjectURL(profileImage) : (userProfile?.profileImage || '');
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    if (userProfile) {
-      setFormData({
-        name: userProfile.name || '',
-        phone: userProfile.phone || '',
-        designation: userProfile?.designation || '',
-        department: userProfile.department || '',
-        domain: userProfile?.domain || '',
-      });
-      setPreviewUrl(userProfile.profileImage || '');
-    }
-  }, [userProfile]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -35,7 +26,6 @@ export default function Profile() {
         return;
       }
       setProfileImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 

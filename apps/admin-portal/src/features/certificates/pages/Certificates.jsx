@@ -39,6 +39,79 @@ const toDateInputValue = (value) => {
 
 const getCertDbId = (cert) => cert?._id || cert?.id;
 
+function CertificateForm({ mode, form, domains, creating, updating, certificateFile, handleFormChange, handleCreateCertificate, handleUpdateCertificate, closeAddModal, closeEditModal, setCertificateFile }) {
+  const isEdit = mode === 'edit';
+  const busy = isEdit ? updating : creating;
+
+  return (
+    <form onSubmit={isEdit ? handleUpdateCertificate : handleCreateCertificate} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Intern Name *</span>
+          <input name="issuedTo" value={form.issuedTo} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Email *</span>
+          <input name="email" type="email" value={form.email} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Phone</span>
+          <input name="phone" value={form.phone} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Certificate Type</span>
+          <select name="type" value={form.type} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
+            {certificateTypes.map((type) => <option key={type}>{type}</option>)}
+          </select>
+        </label>
+        <label className="block md:col-span-2">
+          <span className="text-sm font-semibold text-slate-700">Internship Domain *</span>
+          <select name="domain" value={form.domain} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
+            <option value="" disabled>Select a domain</option>
+            {domains.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Status</span>
+          <select name="isValid" value={form.isValid} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
+            <option value="true">Valid</option>
+            <option value="false">Revoked</option>
+          </select>
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Issue Date</span>
+          <input name="issueDate" type="date" value={form.issueDate} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">Start Date *</span>
+          <input name="startDate" type="date" value={form.startDate} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-700">End Date *</span>
+          <input name="endDate" type="date" value={form.endDate} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+        </label>
+        <label className="block md:col-span-2">
+          <span className="text-sm font-semibold text-slate-700">Tenure / Duration</span>
+          <input name="duration" value={form.duration} onChange={handleFormChange} placeholder="Leave blank to auto-calculate" className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
+          <p className="text-xs text-slate-500 mt-1">Leave blank to auto-calculate from start/end date.</p>
+        </label>
+        <label className="block md:col-span-2 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-[#56051a]/40 transition-colors">
+          <span className="text-sm font-semibold text-slate-700 flex items-center gap-2"><Upload className="w-4 h-4" /> {isEdit ? 'Replace Certificate PDF' : 'Upload Certificate PDF *'}</span>
+          <span className="block text-sm text-slate-500 mt-2">{certificateFile ? certificateFile.name : isEdit ? 'Optional: choose a new PDF to replace existing file' : 'Click to upload PDF certificate'}</span>
+          <input type="file" accept="application/pdf" className="hidden" onChange={(e) => setCertificateFile(e.target.files?.[0] || null)} />
+        </label>
+      </div>
+      <div className="flex justify-end gap-3 pt-3">
+        <button type="button" onClick={isEdit ? closeEditModal : closeAddModal} className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50" disabled={busy}>Cancel</button>
+        <button type="submit" disabled={busy} className="bg-[#56051a] hover:bg-[#6f0a24] disabled:opacity-60 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
+          {busy && <Loader2 className="w-4 h-4 animate-spin" />}
+          {isEdit ? (busy ? 'Updating...' : 'Update Certificate') : (busy ? 'Adding...' : 'Add Certificate')}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export default function Certificates() {
   const [uploadingCertId, setUploadingCertId] = useState(null);
   const [certificates, setCertificates] = useState([]);
@@ -55,11 +128,6 @@ export default function Certificates() {
   const [form, setForm] = useState(initialForm);
   const [certificateFile, setCertificateFile] = useState(null);
   const [domains, setDomains] = useState([]);
-
-  useEffect(() => {
-    fetchCertificates();
-    fetchDomains();
-  }, []);
 
   const fetchDomains = async () => {
     try {
@@ -83,6 +151,12 @@ export default function Certificates() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCertificates();
+    fetchDomains();
+  }, []);
 
   const resetForm = () => {
     setForm(initialForm);
@@ -283,79 +357,6 @@ export default function Certificates() {
     }
   };
 
-  const CertificateForm = ({ mode }) => {
-    const isEdit = mode === 'edit';
-    const busy = isEdit ? updating : creating;
-
-    return (
-      <form onSubmit={isEdit ? handleUpdateCertificate : handleCreateCertificate} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Intern Name *</span>
-            <input name="issuedTo" value={form.issuedTo} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Email *</span>
-            <input name="email" type="email" value={form.email} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Phone</span>
-            <input name="phone" value={form.phone} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Certificate Type</span>
-            <select name="type" value={form.type} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
-              {certificateTypes.map((type) => <option key={type}>{type}</option>)}
-            </select>
-          </label>
-          <label className="block md:col-span-2">
-            <span className="text-sm font-semibold text-slate-700">Internship Domain *</span>
-            <select name="domain" value={form.domain} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
-              <option value="" disabled>Select a domain</option>
-              {domains.map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Status</span>
-            <select name="isValid" value={form.isValid} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
-              <option value="true">Valid</option>
-              <option value="false">Revoked</option>
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Issue Date</span>
-            <input name="issueDate" type="date" value={form.issueDate} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Start Date *</span>
-            <input name="startDate" type="date" value={form.startDate} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">End Date *</span>
-            <input name="endDate" type="date" value={form.endDate} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-          </label>
-          <label className="block md:col-span-2">
-            <span className="text-sm font-semibold text-slate-700">Tenure / Duration</span>
-            <input name="duration" value={form.duration} onChange={handleFormChange} placeholder="Leave blank to auto-calculate" className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20" />
-            <p className="text-xs text-slate-500 mt-1">Leave blank to auto-calculate from start/end date.</p>
-          </label>
-          <label className="block md:col-span-2 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-[#56051a]/40 transition-colors">
-            <span className="text-sm font-semibold text-slate-700 flex items-center gap-2"><Upload className="w-4 h-4" /> {isEdit ? 'Replace Certificate PDF' : 'Upload Certificate PDF *'}</span>
-            <span className="block text-sm text-slate-500 mt-2">{certificateFile ? certificateFile.name : isEdit ? 'Optional: choose a new PDF to replace existing file' : 'Click to upload PDF certificate'}</span>
-            <input type="file" accept="application/pdf" className="hidden" onChange={(e) => setCertificateFile(e.target.files?.[0] || null)} />
-          </label>
-        </div>
-        <div className="flex justify-end gap-3 pt-3">
-          <button type="button" onClick={isEdit ? closeEditModal : closeAddModal} className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50" disabled={busy}>Cancel</button>
-          <button type="submit" disabled={busy} className="bg-[#56051a] hover:bg-[#6f0a24] disabled:opacity-60 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
-            {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isEdit ? (busy ? 'Updating...' : 'Update Certificate') : (busy ? 'Adding...' : 'Add Certificate')}
-          </button>
-        </div>
-      </form>
-    );
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -446,7 +447,7 @@ export default function Certificates() {
               <div><h2 className="text-xl font-bold text-slate-900">Add New Certificate</h2><p className="text-sm text-slate-500 mt-1">A unique certificate ID will be generated automatically.</p></div>
               <button onClick={closeAddModal} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
             </div>
-            <CertificateForm mode="add" />
+            <CertificateForm mode="add" form={form} domains={domains} creating={creating} updating={updating} certificateFile={certificateFile} handleFormChange={handleFormChange} handleCreateCertificate={handleCreateCertificate} handleUpdateCertificate={handleUpdateCertificate} closeAddModal={closeAddModal} closeEditModal={closeEditModal} setCertificateFile={setCertificateFile} />
           </div>
         </div>
       )}
@@ -458,7 +459,7 @@ export default function Certificates() {
               <div><h2 className="text-xl font-bold text-slate-900">Update Certificate</h2><p className="text-sm text-slate-500 mt-1">Editing: <span className="font-mono">{editingCertificate?.certificateId}</span></p></div>
               <button onClick={closeEditModal} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
             </div>
-            <CertificateForm mode="edit" />
+            <CertificateForm mode="edit" form={form} domains={domains} creating={creating} updating={updating} certificateFile={certificateFile} handleFormChange={handleFormChange} handleCreateCertificate={handleCreateCertificate} handleUpdateCertificate={handleUpdateCertificate} closeAddModal={closeAddModal} closeEditModal={closeEditModal} setCertificateFile={setCertificateFile} />
           </div>
         </div>
       )}
