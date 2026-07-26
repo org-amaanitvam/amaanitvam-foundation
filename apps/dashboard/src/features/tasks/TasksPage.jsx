@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { canAccessPermission } from "../../utils/accessControl";
 import toast from 'react-hot-toast';
 import FilterBar from "../../components/Filters/FilterBar";
 
@@ -27,8 +28,11 @@ export default function TasksPage() {
   const [formData, setFormData] = useState(initialFormData);
   const [users, setUsers] = useState([]);
 
-  const isAdmin =
-    userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  const canManageTasks =
+    userProfile?.role === 'admin' ||
+    userProfile?.role === 'super_admin' ||
+    userProfile?.role === 'department_head' ||
+    canAccessPermission(userProfile, 'tasks.manage');
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -42,7 +46,7 @@ export default function TasksPage() {
                      : [];
       setTasks(taskList);
 
-      if (isAdmin) {
+      if (canManageTasks) {
         const res = await api.get('/admin/members');
         setUsers(res.data.members || []);
       }
@@ -52,7 +56,7 @@ export default function TasksPage() {
     } finally {
       setLoading(false);
     }
-  }, [isAdmin]);
+  }, [canManageTasks]);
 
   useEffect(() => {
     fetchTasks();
@@ -119,7 +123,7 @@ export default function TasksPage() {
     );
   }
 
-  const myTasks = isAdmin
+  const myTasks = canManageTasks
     ? tasks
     : tasks.filter(
       (t) =>
@@ -191,7 +195,7 @@ export default function TasksPage() {
         { label: 'High', value: 'high' },
       ],
     },
-    ...(isAdmin
+    ...(canManageTasks
       ? [
         {
           name: 'assignedTo',
@@ -232,14 +236,14 @@ export default function TasksPage() {
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
-            {isAdmin ? 'All Tasks' : 'My Tasks'}
+            {canManageTasks ? 'All Tasks' : 'My Tasks'}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             Track tasks and deadlines
           </p>
         </div>
 
-        {isAdmin && (
+        {canManageTasks && (
           <button
             onClick={() => {
               setEditingId(null);
@@ -259,14 +263,14 @@ export default function TasksPage() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in">
             <h2 className="text-lg font-bold text-slate-900 mb-4">
               {editingId
-                ? isAdmin
+                ? canManageTasks
                   ? 'Edit Task'
                   : 'Update Task Progress'
                 : 'Create New Task'}
             </h2>
 
             <form onSubmit={handleCreateOrUpdate} className="space-y-4">
-              {isAdmin && (
+              {canManageTasks && (
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">
@@ -367,7 +371,7 @@ export default function TasksPage() {
                 </>
               )}
 
-              {!isAdmin && (
+              {!canManageTasks && (
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
                   <h3 className="font-semibold text-slate-800">
                     {formData.title}
@@ -546,7 +550,7 @@ export default function TasksPage() {
                   className="p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
                 >
                   <Edit2 className="w-4 h-4" />
-                  {!isAdmin && <span>Update</span>}
+                  {!canManageTasks && <span>Update</span>}
                 </button>
               </div>
             );

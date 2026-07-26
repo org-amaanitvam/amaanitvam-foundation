@@ -15,7 +15,7 @@
     rel="stylesheet" />
   <meta content="Gain real-world experience and make social impact through Amaanitvam Foundation's internship program."
     name="description" />
-  <link href="/public/images/logos/logo.jpg" rel="icon" type="image/jpeg" />
+  <link href="../../public/images/logos/logo.jpg" rel="icon" type="image/jpeg" />
   <link href="../styles/styles.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 </head>
@@ -110,7 +110,7 @@
           <span class="section-label">What You'll Gain</span>
           <h2 class="section-title" id="outcomes-heading">Learning Outcomes</h2>
         </div>
-        <div class="grid-3">
+        <div class="grid-3 grid-outcomes-4">
           <div class="card">
             <div aria-hidden="true" class="card-icon card-icon-pink">
               <span class="material-symbols-outlined icon-fill">work</span>
@@ -135,22 +135,7 @@
             <p class="text-muted moved-inline-style-020">Acquire technical and soft skills essential for careers in
               social impact and development.</p>
           </div>
-          <div class="card">
-            <div aria-hidden="true" class="card-icon card-icon-navy">
-              <span class="material-symbols-outlined icon-fill">folder_special</span>
-            </div>
-            <h3 class="moved-inline-style-068">Portfolio Building</h3>
-            <p class="text-muted moved-inline-style-020">Build a strong portfolio with tangible outcomes from your
-              internship projects.</p>
-          </div>
-          <div class="card">
-            <div aria-hidden="true" class="card-icon card-icon-pink">
-              <span class="material-symbols-outlined icon-fill">hub</span>
-            </div>
-            <h3 class="moved-inline-style-068">Professional Networking</h3>
-            <p class="text-muted moved-inline-style-020">Connect with industry professionals, fellow interns, and
-              organizational leaders.</p>
-          </div>
+
           <div class="card">
             <div aria-hidden="true" class="card-icon card-icon-purple">
               <span class="material-symbols-outlined icon-fill">volunteer_activism</span>
@@ -168,7 +153,7 @@
           <span class="section-label">Apply Now</span>
           <h2 class="section-title">Internship Application</h2>
         </div>
-        <form class="moved-inline-style-112" id="internshipForm">
+        <form class="moved-inline-style-112" id="internshipForm" method="post" enctype="multipart/form-data">
           <div class="moved-inline-style-064">
             <label class="form-label" for="int-name">Full Name
               <span aria-hidden="true" class="moved-inline-style-113">*</span>
@@ -225,7 +210,18 @@
             </label>
             <select class="form-input" id="int-track" name="track" required="">
               <option disabled="" selected="" value="">Select a domain</option>
-              <option value="Web Development">Web Development</option>
+              <option value="FullStack">FullStack</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Backend">Backend</option>
+              <option value="CSR">CSR</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Management">Management</option>
+              <option value="Content">Content</option>
+              <option value="Social media">Social media</option>
+              <option value="Graphics">Graphics</option>
+              <option value="Fundraising executive">Fundraising executive</option>
+              <option value="HR">HR</option>
+              <option value="Creative">Creative</option>
             </select>
           </div>
           <div class="moved-inline-style-065">
@@ -233,7 +229,7 @@
               <span aria-hidden="true" class="moved-inline-style-113">*</span>
             </label>
             <textarea class="form-textarea" id="int-motivation" name="motivation"
-              placeholder="Tell us your motivation..." required="" rows="4"></textarea>
+              placeholder="Tell us your motivation..." required="" rows="4" minlength="10"></textarea>
           </div>
           <button class="btn btn-primary submit-btn moved-inline-style-117" id="int-submit-btn" type="submit">
             <span class="submit-btn-text">Submit Application</span>
@@ -265,6 +261,7 @@
   </a>
 
   <script src="../scripts/app.js" type="module"></script>
+  <script type="module" src="/src/scripts/public-form-handlers.js" data-amaanitvam-public-forms></script>
 </body>
 
 </html>

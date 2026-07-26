@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext.jsx';
-import axios from 'axios';
-
+import api from '../../../config/api.js';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,8 +24,7 @@ export default function Login() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const baseURL = import.meta.env.VITE_API_URL || '/api';
-        const res = await axios.get(`${baseURL}/public/settings`);
+        const res = await api.get('/public/settings');
 
         if (res.data.settings) {
           setIs2FARequired(Boolean(res.data.settings.enable2FA));

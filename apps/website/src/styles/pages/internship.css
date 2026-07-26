@@ -19,13 +19,6 @@ body[data-page="verify"] .grid-3 {
     }
 }
 
-/* =========================================================
-   INTERNSHIP TRACKS — FINAL CLEAN FIX
-   Desktop: 4 cards in one row
-   Tablet: 2 cards per row
-   Mobile: 1 card per row
-   ========================================================= */
-
 body[data-page="internship"] section[aria-labelledby="tracks-heading"] {
     padding: 5rem 0 !important;
     background: #fffaf3 !important;
@@ -212,5 +205,21 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
     body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-103 {
         min-height: auto !important;
         font-size: 1.65rem !important;
+    }
+}
+
+body[data-page="internship"] .grid-outcomes-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 992px) {
+    body[data-page="internship"] .grid-outcomes-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    body[data-page="internship"] .grid-outcomes-4 {
+        grid-template-columns: 1fr !important;
     }
 }

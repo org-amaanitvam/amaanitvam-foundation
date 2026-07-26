@@ -11,7 +11,7 @@ export default function ContactMessages() {
     const fetchMessages = async () => {
       try {
         // Fetching from the contact API route
-        const { data } = await api.get('/api/contact');
+        const { data } = await api.get('/contact');
         if (data.success) {
           setMessages(data.data);
         }

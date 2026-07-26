@@ -468,55 +468,11 @@ if (verifyForm) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    // ==========================================
-    // 1. FETCH & POPULATE DEPARTMENTS (NEW)
-    // ==========================================
-    async function fetchDepartments() {
-        // Select the dropdown by name or ID (Update this selector if your HTML is different)
-        const roleDropdown = document.querySelector('select[name="role"]') || document.getElementById('role');
-        if (!roleDropdown) return;
-
-        try {
-            // Dynamic URL for fetching departments (Port 5500 will ask Port 5000)
-            const DEPT_API_URL = `${API_BASE_URL}/public/departments`;
-
-            const response = await fetch(DEPT_API_URL);
-            const result = await response.json();
-
-            if (response.ok) {
-                // Clear existing hardcoded HTML options and set the default placeholder
-                roleDropdown.innerHTML = '<option value="" disabled selected>Select a role</option>';
-
-                // Extract the array depending on how your backend sends it
-                // (Adjust this if your backend wraps it in result.data or result.departments)
-                const departments = result.departments || result.data || result;
-
-                if (Array.isArray(departments)) {
-                    departments.forEach(dept => {
-                        const option = document.createElement('option');
-                        // Assuming your department object has a 'departmentName' property
-                        const deptName = dept.departmentName || dept;
-                        option.value = deptName;
-                        option.textContent = deptName;
-                        roleDropdown.appendChild(option);
-                    });
-                }
-            }
-        } catch (error) {
-            console.error("Failed to load departments:", error);
-        }
-    }
-
-    // Trigger the fetch immediately when the page loads
-    fetchDepartments();
-
-
-    // ==========================================
-    // 2. FORM SUBMISSION LOGIC (YOUR EXACT CODE)
-    // ==========================================
+    // Volunteer roles are intentionally defined in volunteer.html.
+    // Departments must never overwrite the Preferred Role dropdown.
     const form = document.getElementById('volunteerForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -542,14 +498,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(this);
 
         try {
-            const API_URL = `${API_BASE_URL}/volunteer/apply`;
+            const API_URL = `${API_BASE_URL}/volunteers/apply`;
 
             const response = await fetch(API_URL, {
                 method: 'POST',
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Success State
@@ -586,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registrationForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -644,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // 5. Success State
@@ -688,7 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const DEPT_API_URL = `${API_BASE_URL}/public/departments`;
 
             const response = await fetch(DEPT_API_URL);
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Clear existing hardcoded HTML options and set the default placeholder
@@ -720,6 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const form = document.getElementById('internshipForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -754,14 +712,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(this);
 
         try {
-            const API_URL = `${API_BASE_URL}/internship/apply`;
+            const API_URL = `${API_BASE_URL}/internships/apply`;
 
             const response = await fetch(API_URL, {
                 method: 'POST',
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Success State
@@ -810,6 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make sure your form tag in contact.html has id="contactForm"
     const form = document.getElementById('contactForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -832,9 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // 3. Dynamic API URL (Matches your server.js setup)
-            const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:5000/api/contact' // Adjust if your route adds '/submit'
-                : 'https://amaanitvam-foundation.onrender.com/api/contact';
+            const API_URL = `${API_BASE_URL}/contact`;
 
             // 4. Send the Request
             const response = await fetch(API_URL, {
@@ -845,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // 5. Success State

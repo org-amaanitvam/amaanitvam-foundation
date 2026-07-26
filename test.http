@@ -1,0 +1,24 @@
+### Test 1: Create a new Course
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer dev-token
+
+{
+  "title": "Introduction to Web Development",
+  "category": "skill",
+  "grade_level": "open",
+  "price": 499,
+  "is_free": false
+}
+
+### Test 2: Get all Courses
+GET http://localhost:5000/api/courses
+
+### Test 3: Validation Error Test (Missing Title)
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+
+{
+  "category": "skill",
+  "price": 499
+}

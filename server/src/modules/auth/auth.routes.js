@@ -7,7 +7,11 @@ import { sendSuccess } from '../../shared/response/index.js';
 import { UnauthorizedError } from '../../shared/errors/AppError.js';
 import { authenticate } from '../../middleware/authenticate.js';
 
+import accountAccessRoutes from "./accountAccess.routes.js";
 const router = express.Router();
+
+// Authentication and User Access additive authentication/user-management routes.
+router.use("/", accountAccessRoutes);
 
 const verifyEmailLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

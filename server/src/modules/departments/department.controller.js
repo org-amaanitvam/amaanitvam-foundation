@@ -2,8 +2,12 @@ import Department from "./department.model.js";
 import User from "../users/user.model.js";
 
 const requireAdminUser = (req, res) => {
-  if (req.user?.role !== "admin" && req.user?.role !== "super_admin") {
-    return res.status(403).json({ message: "Admin access required." });
+  if (req.userAccess?.role !== "super_admin") {
+    return res.status(403).json({
+      success: false,
+      code: "INSUFFICIENT_ROLE",
+      message: "Super Admin access required.",
+    });
   }
   return null;
 };
@@ -12,8 +16,16 @@ const requireAdminUser = (req, res) => {
 // Admins/super_admins → all departments
 // Everyone else → only their own department
 const canAccessDepartment = (req, department) => {
-  if (["admin", "super_admin"].includes(req.user?.role)) return true;
-  return department.departmentName === req.user?.department;
+  if (req.userAccess?.role === "super_admin") return true;
+
+  const ownDepartment = String(req.dbUser?.department || "").trim().toLowerCase();
+  const targetDepartment = String(department?.departmentName || "").trim().toLowerCase();
+
+  return Boolean(
+    ownDepartment &&
+    targetDepartment &&
+    ownDepartment === targetDepartment
+  );
 };
 
 //CREATE Department
@@ -124,11 +136,11 @@ export const getDepartments = async (req, res) => {
   try {
     let query = {};
 
-    if (!["admin", "super_admin"].includes(req.user?.role)) {
-      if (!req.user?.department) {
+    if (req.userAccess?.role !== "super_admin") {
+      if (!req.dbUser?.department) {
         return res.json({ departments: [] });
       }
-      query = { departmentName: req.user.department };
+      query = { departmentName: req.dbUser.department };
     }
 
     const departments = await Department.find(query)
@@ -170,8 +182,12 @@ export const getDepartmentById = async (req, res) => {
 // delete — super_admin only
 export const deleteDepartment = async (req, res) => {
   //  Only super_admin can delete departments
-  if (req.user?.role !== "super_admin") {
-    return res.status(403).json({ message: "Only super_admin can delete departments." });
+  if (req.userAccess?.role !== "super_admin") {
+    return res.status(403).json({
+      success: false,
+      code: "INSUFFICIENT_ROLE",
+      message: "Only Super Admin can delete departments.",
+    });
   }
 
   try {
@@ -235,11 +251,19 @@ export const assignMember = async (req, res) => {
 
 // department performance
 const canUpdatePerformance = (req, department) => {
-  if (req.user?.role === "admin" || req.user?.role === "super_admin") return true;
+  if (req.userAccess?.role === "super_admin") return true;
+
   if (
+    req.userAccess?.role === "department_head" &&
     department.departmentHead &&
-    req.user?._id?.toString() === department.departmentHead.toString()
+    String(req.dbUser?._id || "") === String(department.departmentHead)
   ) return true;
+
+  if (
+    req.userAccess?.role === "department_head" &&
+    canAccessDepartment(req, department)
+  ) return true;
+
   return false;
 };
 

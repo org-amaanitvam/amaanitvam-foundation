@@ -1,13 +1,40 @@
 import { useState, useEffect } from 'react';
 import { Users, Plus, X, Pencil } from 'lucide-react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { firebaseConfig } from '../../../config/firebase.js';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
-const INITIAL_FORM = { name: '', email: '', phone: '', role: 'member', department: '', designation: '',
-  domain: '' };
+const INITIAL_FORM = {
+  name: '',
+  email: '',
+  phone: '',
+  role: 'member',
+  department: '',
+  designation: '',
+  domain: '',
+  team: '',
+  permissions: '',
+};
+
+const getDepartmentLabel = (department) => {
+  if (typeof department === 'string') return department;
+  if (!department || typeof department !== 'object') return '';
+
+  return String(
+    department.departmentName ||
+    department.name ||
+    department.title ||
+    ''
+  );
+};
+
+const getDepartmentValue = (department) => getDepartmentLabel(department);
+
+const parsePermissions = (value) =>
+  [...new Set(
+    (Array.isArray(value) ? value : String(value || '').split(','))
+      .map((permission) => String(permission).trim().toLowerCase())
+      .filter(Boolean),
+  )];
 
 export default function Members() {
   const [members, setMembers] = useState([]);
@@ -23,7 +50,9 @@ const [editMember, setEditMember] = useState({
   role: '',
   department: '',
   designation: '',
-  domain: ''
+  domain: '',
+  team: '',
+  permissions: '',
 });
   const [newMember, setNewMember] = useState(INITIAL_FORM);
   const [departments, setDepartments] = useState([]);
@@ -61,41 +90,96 @@ const [editMember, setEditMember] = useState({
 
   const handleAddMember = async (e) => {
     e.preventDefault();
-    if (!newMember.name || !newMember.email) {
+
+    const cleanName = String(newMember.name || '').trim();
+    const cleanEmail = String(newMember.email || '').trim().toLowerCase();
+
+    if (!cleanName || !cleanEmail) {
       toast.error('Name and email are required');
       return;
     }
+
     setSubmitting(true);
+
     try {
-      // 1. Create User in Firebase silently using a secondary app instance
-      // This prevents the admin from being automatically logged out
-      const secondaryApp = initializeApp(firebaseConfig, 'SecondaryApp');
-      const secondaryAuth = getAuth(secondaryApp);
-      
-      const defaultPassword = 'Password123!'; // Default password for new members
-      
-      try {
-        await createUserWithEmailAndPassword(secondaryAuth, newMember.email, defaultPassword);
-      } catch (fbError) {
-        if (fbError.code === 'auth/email-already-in-use') {
-          // If already in Firebase, we just continue to add them to MongoDB
-          console.log('User already exists in Firebase Auth, proceeding to sync with DB.');
-        } else {
-          throw new Error(fbError.message, { cause: fbError });
+      const department =
+        typeof newMember.department === 'string'
+          ? newMember.department
+          : newMember.department?.departmentName ||
+            newMember.department?.name ||
+            newMember.department?.title ||
+            '';
+
+      const provisionRes = await api.post('/auth/users/provision', {
+        name: cleanName,
+        email: cleanEmail,
+        role: newMember.role || 'member',
+        department,
+        team: newMember.team || '',
+        permissions: parsePermissions(newMember.permissions),
+      });
+
+      const createdUser = provisionRes.data?.user || {};
+      const credentialEmail = provisionRes.data?.credentialEmail || {};
+      const createdId = createdUser.id || createdUser._id || '';
+      const uniqueId = createdUser.uniqueId || createdUser.memberId || '';
+
+      if (
+        createdId &&
+        (newMember.phone || newMember.designation || newMember.domain || newMember.team)
+      ) {
+        try {
+          await api.put(`/admin/members/${createdId}`, {
+            name: cleanName,
+            email: cleanEmail,
+            phone: newMember.phone || '',
+            department,
+            designation: newMember.designation || '',
+            domain: newMember.domain || '',
+            team: newMember.team || '',
+          });
+        } catch (metadataError) {
+          console.warn(
+            'Member login provisioned, but optional profile metadata update failed:',
+            metadataError?.response?.data || metadataError?.message || metadataError,
+          );
         }
-      } finally {
-        await signOut(secondaryAuth); // Clear the secondary session
       }
 
-      // 2. Save user in our MongoDB Database
-      await api.post('/admin/members', newMember);
-      
-      toast.success('Member added and synced with Firebase successfully! Default password is: Password123!');
+      if (credentialEmail.sent) {
+        toast.success(
+          `Member created successfully.${uniqueId ? ` Unique ID: ${uniqueId}.` : ''} Dashboard credentials were emailed to ${cleanEmail}.`,
+          { duration: 9000 },
+        );
+      } else {
+        const reason =
+          credentialEmail.reason ||
+          'The email service did not confirm delivery. Check backend email configuration/logs.';
+
+        toast.error(
+          `Member account was created${uniqueId ? ` with Unique ID ${uniqueId}` : ''}, but the credential email was not sent: ${reason}`,
+          { duration: 12000 },
+        );
+      }
+
       setShowAddModal(false);
       setNewMember(INITIAL_FORM);
-      fetchMembers();
+      await fetchMembers();
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to add member');
+      const code = err.response?.data?.code;
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to add member';
+
+      if (code === 'FIREBASE_USER_ALREADY_EXISTS') {
+        toast.error(
+          `${message} This email was likely created by the old Password123 flow. Use a fresh test email, or remove/repair the old Firebase account before recreating it.`,
+          { duration: 12000 },
+        );
+      } else {
+        toast.error(message, { duration: 9000 });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -172,6 +256,38 @@ const handleDeactivate = async (id) => {
   }
 };
 
+
+const handleActivate = async (id) => {
+  const previousMembers = members;
+
+  setActionLoading(id);
+
+  try {
+    const res = await api.put(`/admin/members/${id}/activate`);
+    const updatedMember = res.data?.member;
+
+    setMembers((currentMembers) =>
+      currentMembers.map((member) =>
+        (member._id === id || member.id === id)
+          ? {
+              ...member,
+              ...(updatedMember || {}),
+              status: 'active',
+              isActive: true,
+            }
+          : member
+      )
+    );
+
+    toast.success('Member reactivated successfully');
+  } catch (err) {
+    setMembers(previousMembers);
+    toast.error(err.response?.data?.message || 'Failed to reactivate member');
+  } finally {
+    setActionLoading(null);
+  }
+};
+
 const handleDelete = async (id) => {
   if (!window.confirm('Are you sure you want to delete this member? This action cannot be undone.')) return;
 
@@ -210,19 +326,30 @@ const handleEditMember = async (e) => {
       department: editMember.department,
       designation: editMember.designation,
       domain: editMember.domain,
+      team: editMember.team,
     });
 
     const roleRes = await api.put(`/admin/members/${editMember.id}/role`, {
       role: editMember.role,
     });
 
+    const permissionsRes = await api.put(
+      `/admin/members/${editMember.id}/permissions`,
+      { permissions: parsePermissions(editMember.permissions) },
+    );
+
     const updatedMember = {
       ...(detailsRes.data?.member || {}),
       ...(roleRes.data?.member || {}),
+      ...(permissionsRes.data?.member || {}),
       name: editMember.name,
       email: editMember.email,
       phone: editMember.phone,
       department: editMember.department,
+      designation: editMember.designation,
+      domain: editMember.domain,
+      team: editMember.team,
+      permissions: parsePermissions(editMember.permissions),
       role: editMember.role,
     };
 
@@ -245,14 +372,26 @@ const handleEditMember = async (e) => {
 
 const getRoleBadge = (role) => {
     const styles = {
+      super_admin: 'bg-indigo-50 text-indigo-700',
       admin: 'bg-indigo-50 text-indigo-700',
+      department_head: 'bg-violet-50 text-violet-700',
       member: 'bg-blue-50 text-blue-700',
+      team_member: 'bg-blue-50 text-blue-700',
       intern: 'bg-slate-100 text-slate-600',
       volunteer: 'bg-amber-50 text-amber-700',
     };
-    const label = role?.replace('_', ' ');
+    const labels = {
+      super_admin: 'Super Admin',
+      admin: 'Super Admin',
+      department_head: 'Department Head',
+      member: 'Team Member',
+      team_member: 'Team Member',
+      intern: 'Intern',
+      volunteer: 'Volunteer',
+    };
+    const label = labels[role] || role?.replaceAll('_', ' ');
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${styles[role] || 'bg-slate-100 text-slate-600'}`}>
+      <span className={`inline-flex items-center whitespace-nowrap px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${styles[role] || 'bg-slate-100 text-slate-600'}`}>
         {label}
       </span>
     );
@@ -341,7 +480,13 @@ const getRoleBadge = (role) => {
       email: member.email || "",
       phone: member.phone || "",
       role: member.role || "member",
-      department: member.department || "",
+      department: getDepartmentValue(member.department),
+      designation: member.designation || "",
+      domain: member.domain || "",
+      team: member.team || "",
+      permissions: Array.isArray(member.permissions)
+        ? member.permissions.join(', ')
+        : String(member.permissions || ''),
     });
     setShowEditModal(true);
   }}
@@ -360,13 +505,22 @@ const getRoleBadge = (role) => {
                               Deactivate
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleDelete(memberId)}
-                              disabled={actionLoading === memberId}
-                              className="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
-                            >
-                              Delete
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleActivate(memberId)}
+                                disabled={actionLoading === memberId}
+                                className="text-emerald-600 hover:bg-emerald-50 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                              >
+                                Reactivate
+                              </button>
+                              <button
+                                onClick={() => handleDelete(memberId)}
+                                disabled={actionLoading === memberId}
+                                className="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                              >
+                                Delete
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -381,8 +535,8 @@ const getRoleBadge = (role) => {
 
       {/* Add Member Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-[slideUp_0.25s_ease-out]">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 sm:items-center animate-[fadeIn_0.2s_ease-out]">
+          <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl animate-[slideUp_0.25s_ease-out]">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-semibold text-slate-800">Add New Member</h2>
               <button
@@ -432,9 +586,10 @@ const getRoleBadge = (role) => {
                   onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
                 >
+                  <option value="super_admin">Super Admin</option>
+                  <option value="department_head">Department Head</option>
+                  <option value="member">Team Member</option>
                   <option value="intern">Intern</option>
-                  <option value="member">Member</option>
-                  <option value="admin">Admin</option>
                   <option value="volunteer">Volunteer</option>
                 </select>
               </div>
@@ -447,9 +602,50 @@ const getRoleBadge = (role) => {
                 >
                   <option value="">Select a department</option>
                   {departments.map((dept) => (
-                    <option key={dept} value={dept}>{dept}</option>
+                    <option key={getDepartmentLabel(dept)} value={getDepartmentValue(dept)}>{getDepartmentLabel(dept)}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Designation</label>
+                <input
+                  type="text"
+                  value={newMember.designation}
+                  onChange={(e) => setNewMember({ ...newMember, designation: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+                  placeholder="e.g. Project Coordinator"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Domain</label>
+                <input
+                  type="text"
+                  value={newMember.domain}
+                  onChange={(e) => setNewMember({ ...newMember, domain: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+                  placeholder="e.g. Technology"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Team</label>
+                <input
+                  type="text"
+                  value={newMember.team}
+                  onChange={(e) => setNewMember({ ...newMember, team: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+                  placeholder="e.g. Backend Team"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Permissions</label>
+                <input
+                  type="text"
+                  value={newMember.permissions}
+                  onChange={(e) => setNewMember({ ...newMember, permissions: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+                  placeholder="tasks.read, reports.read"
+                />
+                <p className="mt-1 text-xs text-slate-400">Comma-separated permission keys. Super Admin automatically has all permissions.</p>
               </div>
               <div className="flex gap-3 pt-2">
                 <button
@@ -473,8 +669,8 @@ const getRoleBadge = (role) => {
       )}
       {/* Edit Member Modal */}
 {showEditModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]">
-    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-[slideUp_0.25s_ease-out]">
+  <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 sm:items-center animate-[fadeIn_0.2s_ease-out]">
+    <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl animate-[slideUp_0.25s_ease-out]">
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-slate-800">
@@ -557,10 +753,11 @@ const getRoleBadge = (role) => {
             }
             className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
           >
+            <option value="super_admin">Super Admin</option>
+            <option value="department_head">Department Head</option>
+            <option value="member">Team Member</option>
             <option value="intern">Intern</option>
-            <option value="member">Member</option>
-            <option value="admin">Admin</option>
-                            <option value="volunteer">Volunteer</option>
+            <option value="volunteer">Volunteer</option>
           </select>
         </div>
 
@@ -570,7 +767,7 @@ const getRoleBadge = (role) => {
           </label>
 
           <select
-            value={editMember.department}
+            value={getDepartmentValue(editMember.department)}
             onChange={(e) =>
               setEditMember({
                 ...editMember,
@@ -581,9 +778,60 @@ const getRoleBadge = (role) => {
           >
             <option value="">Select a department</option>
             {departments.map((dept) => (
-              <option key={dept} value={dept}>{dept}</option>
+              <option key={getDepartmentLabel(dept)} value={getDepartmentValue(dept)}>{getDepartmentLabel(dept)}</option>
             ))}
           </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Designation
+          </label>
+          <input
+            type="text"
+            value={editMember.designation}
+            onChange={(e) => setEditMember({ ...editMember, designation: e.target.value })}
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Domain
+          </label>
+          <input
+            type="text"
+            value={editMember.domain}
+            onChange={(e) => setEditMember({ ...editMember, domain: e.target.value })}
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Team
+          </label>
+          <input
+            type="text"
+            value={editMember.team}
+            onChange={(e) => setEditMember({ ...editMember, team: e.target.value })}
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Permissions
+          </label>
+          <input
+            type="text"
+            value={editMember.permissions}
+            onChange={(e) => setEditMember({ ...editMember, permissions: e.target.value })}
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
+            placeholder="tasks.read, reports.read"
+          />
+          <p className="mt-1 text-xs text-slate-400">
+            Enter comma-separated permission keys.
+          </p>
         </div>
 
         <div className="flex gap-3 pt-2">
