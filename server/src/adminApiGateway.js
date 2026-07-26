@@ -3200,6 +3200,226 @@ app.get(
 
 // FINAL REMAINING ROUTES END
 
+// AMAANITVAM_ADMIN_CMS_REGISTRATIONS_GATEWAY_FIX_START
+// These exact Admin Portal routes must be handled by the gateway. Letting them
+// fall through to the port-5001 API invokes a second auth stack which rejects
+// the same Firebase session already accepted by this gateway.
+const gatewayCmsDefaults = Object.freeze({
+  homepage: Object.freeze({
+    heroTitle: "",
+    heroSubtitle: "",
+    aboutSummary: "",
+  }),
+  aboutUs: Object.freeze({
+    mission: "",
+    vision: "",
+    history: "",
+  }),
+});
+
+function gatewayCmsText(value, maximumLength) {
+  if (value === undefined || value === null) return "";
+  return String(value).trim().slice(0, maximumLength);
+}
+
+function normalizeGatewayCmsContent(value = {}) {
+  const homepage = value?.homepage || {};
+  const aboutUs = value?.aboutUs || {};
+
+  return {
+    homepage: {
+      heroTitle: gatewayCmsText(homepage.heroTitle, 300),
+      heroSubtitle: gatewayCmsText(homepage.heroSubtitle, 1000),
+      aboutSummary: gatewayCmsText(homepage.aboutSummary, 5000),
+    },
+    aboutUs: {
+      mission: gatewayCmsText(aboutUs.mission, 5000),
+      vision: gatewayCmsText(aboutUs.vision, 5000),
+      history: gatewayCmsText(aboutUs.history, 10000),
+    },
+  };
+}
+
+async function gatewayCmsDocument() {
+  const collection = mongoose.connection.db.collection("cms");
+  const websiteDocument = await collection.findOne({ key: "website" });
+  if (websiteDocument) return websiteDocument;
+
+  return collection
+    .find({})
+    .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
+    .limit(1)
+    .next();
+}
+
+function gatewayCmsResponse(document) {
+  const content = normalizeGatewayCmsContent(
+    document?.content || gatewayCmsDefaults,
+  );
+  const updatedAt = document?.updatedAt || document?.createdAt || null;
+
+  return {
+    success: true,
+    content,
+    data: content,
+    updatedAt,
+  };
+}
+
+app.get("/api/cms", async (_req, res, next) => {
+  try {
+    const document = await gatewayCmsDocument();
+    res.setHeader("Cache-Control", "no-store");
+    return res.json(gatewayCmsResponse(document));
+  } catch (error) {
+    return next(error);
+  }
+});
+
+async function updateGatewayCms(req, res, next) {
+  try {
+    const current = await gatewayCmsDocument();
+    const incoming =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? req.body
+        : {};
+    const merged = {
+      homepage: {
+        ...(current?.content?.homepage || {}),
+        ...(incoming.homepage || {}),
+      },
+      aboutUs: {
+        ...(current?.content?.aboutUs || {}),
+        ...(incoming.aboutUs || {}),
+      },
+    };
+    const content = normalizeGatewayCmsContent(merged);
+    const now = new Date();
+    const update = { content, updatedAt: now };
+    const updatedBy = objectId(req.adminProfileResult?.document?._id);
+    if (updatedBy) update.updatedBy = updatedBy;
+
+    await mongoose.connection.db.collection("cms").updateOne(
+      { key: "website" },
+      {
+        $set: update,
+        $setOnInsert: { key: "website", createdAt: now },
+      },
+      { upsert: true },
+    );
+
+    const refreshed = await gatewayCmsDocument();
+    console.log("[admin-gateway] cms: website content updated");
+    return res.json({
+      ...gatewayCmsResponse(refreshed),
+      message: "Website content updated successfully",
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+app.put(
+  "/api/cms",
+  requireAdministrator,
+  jsonParser,
+  updateGatewayCms,
+);
+app.patch(
+  "/api/cms",
+  requireAdministrator,
+  jsonParser,
+  updateGatewayCms,
+);
+
+function gatewayRegistrationCollectionScore(name) {
+  const compact = clean(name).toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (compact === "eventregistrations") return 10000;
+  if (/event.*registr|registr.*event/.test(compact)) return 9000;
+  if (
+    /webinar.*registr|registr.*webinar|competition.*registr|registr.*competition/.test(
+      compact,
+    )
+  ) {
+    return 8000;
+  }
+  return 0;
+}
+
+async function gatewayEventRegistrationRows() {
+  const names = await collectionNames();
+  const rankedNames = names
+    .map((name) => ({
+      name,
+      score: gatewayRegistrationCollectionScore(name),
+    }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score)
+    .map((entry) => entry.name);
+
+  // Reading a missing MongoDB collection is safe and returns an empty list.
+  const sourceNames = rankedNames.length
+    ? rankedNames
+    : ["eventregistrations"];
+  const rows = [];
+
+  for (const collectionName of sourceNames) {
+    const records = await mongoose.connection.db
+      .collection(collectionName)
+      .find({})
+      .sort({
+        createdAt: -1,
+        registrationDate: -1,
+        updatedAt: -1,
+        _id: -1,
+      })
+      .allowDiskUse(true)
+      .limit(5000)
+      .toArray();
+
+    for (const record of records) {
+      rows.push(normalizeDocument(record, collectionName));
+    }
+  }
+
+  const seen = new Set();
+  return rows.filter((registration) => {
+    const key =
+      clean(registration._id) ||
+      `${clean(registration.email).toLowerCase()}::${clean(
+        registration.event,
+      ).toLowerCase()}::${clean(
+        registration.createdAt || registration.registrationDate,
+      )}`;
+
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+app.get(
+  "/api/public-forms/event-registrations",
+  requireAdministrator,
+  async (_req, res, next) => {
+    try {
+      const registrations = await gatewayEventRegistrationRows();
+      console.log(
+        `[admin-gateway] event registrations: ${registrations.length} record(s) loaded`,
+      );
+      return res.json({
+        success: true,
+        count: registrations.length,
+        registrations,
+        data: registrations,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+);
+// AMAANITVAM_ADMIN_CMS_REGISTRATIONS_GATEWAY_FIX_END
+
 function proxyToExistingBackend(req, res) {
   const headers = { ...req.headers };
   headers.host = `${UPSTREAM_HOST}:${UPSTREAM_PORT}`;
