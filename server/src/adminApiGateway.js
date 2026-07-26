@@ -217,7 +217,7 @@ app.use((req, res, next) => {
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, Content-Type, Accept, X-Requested-With"
+    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
   );
 
   res.setHeader(
@@ -262,7 +262,7 @@ app.use((req, res, next) => {
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, Content-Type, Accept, X-Requested-With"
+    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
   );
 
   res.setHeader(

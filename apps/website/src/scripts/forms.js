@@ -221,7 +221,7 @@ if (verifyForm) {
         <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
         <h2>Support Amaanitvam Foundation</h2>
         <p>No active campaigns are live right now. You can still make a direct organization donation.</p>
-        <a class="campaign-donate-link" href="contact.html">Donate Now</a>
+        <a class="campaign-donate-link" href="contact.html#donate">Donate Now</a>
       </div>`;
             return;
         }
@@ -240,7 +240,7 @@ if (verifyForm) {
               <p>${escapeHtml(campaign.description || 'Support this active campaign.')}</p>
               <div class="campaign-progress"><span style="width:${pct}%"></span></div>
               <div class="campaign-meta">${rupees(campaign.raisedAmount)} raised / ${rupees(campaign.goalAmount)} goal</div>
-              <a class="campaign-donate-link" href="contact.html?campaign=${encodeURIComponent(id)}">Donate to this campaign</a>
+              <a class="campaign-donate-link" href="contact.html?campaign=${encodeURIComponent(id)}#donate">Donate to this campaign</a>
             </article>`;
         }).join('')}
       </div>
@@ -837,3 +837,179 @@ if (document.readyState === 'loading') {
 } else {
     initFaq();
 }
+
+
+// AMAANITVAM_DONATION_NAV_ONE_SHOT_V5
+(() => {
+    const contactPath = (pathname) => {
+        const clean = String(pathname || "")
+            .toLowerCase()
+            .replace(/\/+$/, "");
+
+        return (
+            clean.endsWith("/contact.html") ||
+            clean.endsWith("/contact")
+        );
+    };
+
+    const donationRequested = () => {
+        const params =
+            new URLSearchParams(window.location.search);
+
+        return (
+            contactPath(window.location.pathname) &&
+            (
+                window.location.hash === "#donate" ||
+                params.has("campaign")
+            )
+        );
+    };
+
+    const donationPanel = () => {
+        const status =
+            document.getElementById("donate-status");
+
+        return (
+            status?.closest("form") ||
+            status?.closest(
+                [
+                    "[data-donation-form]",
+                    ".donation-form",
+                    ".donation-card",
+                    ".donate-card",
+                    ".make-donation",
+                    "[class*='donation']",
+                    ".card",
+                ].join(","),
+            ) ||
+            document.getElementById("donationForm") ||
+            document.getElementById("donation-form") ||
+            document.querySelector(
+                "form[action*='donat' i]",
+            )
+        );
+    };
+
+    const fixedHeaderOffset = () => {
+        const header =
+            document.querySelector(
+                [
+                    "#navbar",
+                    ".site-header",
+                    ".main-header",
+                    "body > header",
+                ].join(","),
+            );
+
+        return Math.max(
+            88,
+            Math.ceil(
+                header?.getBoundingClientRect()
+                    .height || 0,
+            ) + 16,
+        );
+    };
+
+    const scrollToDonationOnce = (
+        behavior = "auto",
+    ) => {
+        const panel = donationPanel();
+
+        if (!panel) return false;
+
+        const top =
+            panel.getBoundingClientRect().top +
+            window.scrollY -
+            fixedHeaderOffset();
+
+        window.scrollTo({
+            top: Math.max(0, top),
+            behavior,
+        });
+
+        return true;
+    };
+
+    const runInitialNavigation = () => {
+        if (!donationRequested()) return;
+
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                scrollToDonationOnce("auto");
+            });
+        });
+    };
+
+    document.addEventListener(
+        "click",
+        (event) => {
+            const link =
+                event.target.closest("a[href]");
+
+            if (!link) return;
+
+            const label = [
+                link.textContent || "",
+                link.getAttribute("aria-label") || "",
+                link.className || "",
+                link.id || "",
+            ]
+                .join(" ")
+                .toLowerCase();
+
+            if (!label.includes("donat")) return;
+
+            let destination;
+
+            try {
+                destination =
+                    new URL(
+                        link.getAttribute("href"),
+                        window.location.href,
+                    );
+            } catch {
+                return;
+            }
+
+            if (!contactPath(destination.pathname)) {
+                return;
+            }
+
+            destination.hash = "donate";
+
+            const samePage =
+                destination.origin ===
+                    window.location.origin &&
+                destination.pathname ===
+                    window.location.pathname &&
+                destination.search ===
+                    window.location.search;
+
+            if (!samePage) {
+                link.href = destination.toString();
+                return;
+            }
+
+            event.preventDefault();
+
+            window.history.pushState(
+                null,
+                "",
+                `${destination.pathname}${destination.search}#donate`,
+            );
+
+            scrollToDonationOnce("smooth");
+        },
+        true,
+    );
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            runInitialNavigation,
+            { once: true },
+        );
+    } else {
+        runInitialNavigation();
+    }
+})();

@@ -118,3 +118,40 @@ After login:
    show the first-login password-change screen.
 4. Submit the new password to `/api/auth/first-login/change-password`.
 5. Sign the user out and require a fresh login.
+
+
+## Day 3 — Recovery, audit history, and security hardening
+
+### Forgot/reset password
+
+The dashboard uses Firebase Authentication's password-reset email flow.
+
+1. Submit the email to `POST /api/auth/verify-email` with
+   `{ "portal": "dashboard" }`.
+2. After eligibility succeeds, call Firebase `sendPasswordResetEmail`.
+3. Display a neutral confirmation message.
+4. After reset, sign in again and call `GET /api/auth/session`.
+
+### Authentication audit history
+
+`GET /api/auth/audit-history`
+
+Required role: `super_admin`
+
+Optional query parameters:
+
+- `page` — default `1`
+- `limit` — default `25`, maximum `100`
+- `action`
+- `email`
+- `uniqueId`
+- `success=true|false`
+
+### Security hardening
+
+- `/api/auth/resolve-identifier` is rate-limited.
+- `/api/auth/first-login/change-password` is rate-limited.
+- First-login password complexity is enforced.
+- Firebase refresh tokens are revoked after password change.
+- Inactive Firebase/MongoDB dashboard accounts are rejected.
+- Authentication actions are retained in the audit collection.

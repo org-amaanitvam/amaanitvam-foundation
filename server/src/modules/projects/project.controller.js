@@ -26,21 +26,51 @@ const projectQuery = async (req) => {
     return {};
   }
 
-  if (req.userAccess?.role === "department_head") {
-    const department =
-      await getOwnDepartment(req);
+  const directAssignment = {
+    assignedMembers: req.dbUser._id,
+  };
 
+  const department =
+    await getOwnDepartment(req);
+
+  if (req.userAccess?.role === "department_head") {
     if (!department) {
-      return { _id: { $exists: false } };
+      return directAssignment;
     }
 
     return {
-      department: department._id,
+      $or: [
+        {
+          department: department._id,
+        },
+        directAssignment,
+      ],
     };
   }
 
+  if (!department) {
+    return directAssignment;
+  }
+
   return {
-    assignedMembers: req.dbUser._id,
+    $or: [
+      directAssignment,
+      {
+        department: department._id,
+        $or: [
+          {
+            assignedMembers: {
+              $exists: false,
+            },
+          },
+          {
+            assignedMembers: {
+              $size: 0,
+            },
+          },
+        ],
+      },
+    ],
   };
 };
 
@@ -112,9 +142,20 @@ export const getAllProjects = async (
       projects,
     });
   } catch (error) {
+    console.error(
+      "[Projects] Failed to load projects:",
+      error,
+    );
+
     return res.status(500).json({
       success: false,
       message: "Failed to load projects.",
+      ...(process.env.NODE_ENV === "development"
+        ? {
+            error: error.message,
+            code: error.name,
+          }
+        : {}),
     });
   }
 };
@@ -172,7 +213,7 @@ export const updateProject = async (
           req.body || {},
         ),
         {
-          new: true,
+          returnDocument: "after",
           runValidators: true,
         },
       );
