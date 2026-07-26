@@ -29,7 +29,7 @@ export const update = async (id, updateData, courseId = null) => {
   return CourseModule.findOneAndUpdate(
     query,
     { $set: updateData },
-    { new: true, runValidators: true }
+    { returnDocument: "after", runValidators: true }
   );
 };
 
@@ -40,6 +40,6 @@ export const softDelete = async (id, courseId = null) => {
   return CourseModule.findOneAndUpdate(
     query,
     { $set: { is_deleted: true } },
-    { new: true }
+    { returnDocument: "after" }
   );
 };

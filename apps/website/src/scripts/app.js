@@ -2,22 +2,65 @@ import { loadSharedComponents } from "./component-loader.js";
 import { initNavbar } from "./navbar.js";
 import { startCmsContentSync } from "./cms-content.js";
 
+function loadIndependentModules() {
+    import("./forms.js").catch((error) => {
+        console.error("Forms module error:", error);
+        const campaignRoot = document.getElementById("homeCampaigns");
+        if (
+            campaignRoot &&
+            campaignRoot.textContent.includes("Loading active campaigns")
+        ) {
+            campaignRoot.innerHTML = `
+                <p class="campaign-error" role="alert">
+                    Active campaigns could not be loaded. Please refresh the page or use the Donate Now link.
+                </p>
+            `;
+        }
+    });
+}
+
+
+function initFAQ() {
+    const faqButtons = document.querySelectorAll(".faq-question");
+
+    faqButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const answer = button.nextElementSibling;
+            const expanded =
+                button.getAttribute("aria-expanded") === "true";
+
+            // Close all
+            faqButtons.forEach((btn) => {
+                btn.setAttribute("aria-expanded", "false");
+                btn.nextElementSibling.style.maxHeight = null;
+                btn.nextElementSibling.classList.remove("active");
+            });
+
+            // Open clicked
+            if (!expanded) {
+                button.setAttribute("aria-expanded", "true");
+                answer.classList.add("active");
+                answer.style.maxHeight =
+                    answer.scrollHeight + "px";
+            }
+        });
+    });
+}
+
+loadIndependentModules();
+
+import("./gallery.js").catch((error) => {
+    console.error("Gallery module error:", error);
+});
+
 async function initApp() {
     try {
         await loadSharedComponents();
 
         initNavbar();
+        initFAQ();
         await startCmsContentSync();
-
-        import("./forms.js").catch((error) => {
-            console.error("Forms module error:", error);
-        });
-
-        import("./gallery.js").catch((error) => {
-            console.error("Gallery module error:", error);
-        });
-
-    } catch (error) {
+} catch (error) {
         console.error("App initialization failed:", error);
     }
 }

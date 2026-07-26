@@ -33,7 +33,7 @@ const donationSchema = new mongoose.Schema(
       default: "INR",
     },
 
-    donationType: {
+    donationType: { enum: ["direct", "organization", "campaign"],
       type: String,
       default: "organization",
     },
@@ -73,7 +73,7 @@ const donationSchema = new mongoose.Schema(
       default: "",
     },
 
-    status: {
+    status: { enum: ["created", "pending", "paid", "failed"],
       type: String,
       default: "created",
       index: true,

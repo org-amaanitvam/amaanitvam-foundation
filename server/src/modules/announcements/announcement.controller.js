@@ -25,7 +25,7 @@ export const createAnnouncement = async (req, res) => {
 export const updateAnnouncement = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedAnnouncement = await Announcement.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedAnnouncement = await Announcement.findByIdAndUpdate(id, req.body, { returnDocument: "after" });
     res.json({ success: true, announcement: updatedAnnouncement });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

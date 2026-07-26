@@ -49,6 +49,16 @@ const memberPayload = (user, access = null) => ({
 
 const normalizeText = (value) => String(value ?? "").trim();
 
+const escapedExact = (value) =>
+  new RegExp(
+    `^${normalizeText(value).replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&",
+    )}$`,
+    "i",
+  );
+
+
 const canReadMember = (req, user) => {
   if (req.userAccess?.role === "super_admin") return true;
 
@@ -78,7 +88,12 @@ const listMembers = async (req, res, next) => {
       if (!department) {
         return res.json({ success: true, members: [], scope: "department" });
       }
-      query = { department };
+      query = {
+        department: escapedExact(department),
+        status: {
+          $ne: "inactive",
+        },
+      };
     } else if (req.userAccess?.role !== "super_admin") {
       query = { _id: req.dbUser._id };
     }
