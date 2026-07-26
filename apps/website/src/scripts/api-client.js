@@ -6,8 +6,20 @@ export const API_BASE_URL =
     : "https://amaanitvam-foundation.onrender.com/api";
 
 export async function apiRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
-  const data = await response.json().catch(() => ({}));
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, options);
+  } catch (error) {
+    throw new Error(
+      error?.message || "Unable to connect to the Amaanitvam API.",
+    );
+  }
+
+  const data =
+    response.status === 204
+      ? {}
+      : await response.json().catch(() => ({}));
 
   if (!response.ok) {
     throw new Error(data.message || `Request failed: ${response.status}`);

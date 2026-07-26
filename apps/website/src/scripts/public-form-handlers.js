@@ -2,11 +2,11 @@ const LOCAL_API_BASE = 'http://localhost:5000/api';
 const PRODUCTION_API_BASE =
   'https://amaanitvam-foundation.onrender.com/api';
 
-const API_BASE_URL = ['localhost', '127.0.0.1'].includes(
-  window.location.hostname,
-)
-  ? LOCAL_API_BASE
-  : PRODUCTION_API_BASE;
+const API_BASE_URL =
+  ['localhost', '127.0.0.1'].includes(window.location.hostname) ||
+    window.location.protocol === 'file:'
+    ? LOCAL_API_BASE
+    : PRODUCTION_API_BASE;
 
 const FORM_CONFIG = {
   volunteerForm: {
@@ -293,7 +293,7 @@ const submitPublicForm = async (form, config) => {
     setStatus(
       statusElement,
       error?.message ||
-        'The form could not be submitted. Please try again.',
+      'The form could not be submitted. Please try again.',
       'error',
     );
   } finally {
