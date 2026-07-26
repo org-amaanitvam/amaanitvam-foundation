@@ -13,6 +13,7 @@
     "date-fns": "^4.4.0",
     "firebase": "^11.0.0",
     "lucide-react": "^0.400.0",
+    "react-countup": "^6.5.3",
     "react": "^19.0.0",
     "react-big-calendar": "^1.20.0",
     "react-countup": "^6.5.3",

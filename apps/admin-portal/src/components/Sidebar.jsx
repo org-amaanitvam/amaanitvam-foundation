@@ -46,10 +46,6 @@ export default function Sidebar() {
   }, [displayName]);
 
   useEffect(() => {
-    setProfileImageFailed(false);
-  }, [profileImage]);
-
-  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const res = await api.get('/admin/settings');
@@ -181,6 +177,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-3">
           {profileImage && !profileImageFailed ? (
             <img
+              key={profileImage}
               src={profileImage}
               alt={displayName}
               onError={() => setProfileImageFailed(true)}

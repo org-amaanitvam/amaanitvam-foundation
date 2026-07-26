@@ -4,14 +4,24 @@ export const authorize = (...roles) => {
   return (req, res, next) => {
     try {
       if (!req.user) {
-        throw new ForbiddenError("Not authenticated");
+        throw new ForbiddenError("Not authenticated", "USER_UNAUTHORIZED");
       }
 
-      // Default role if not set in token/db
-      const userRole = req.user.role || "viewer";
+      const userRole = req.user.role;
 
-      if (!roles.includes(userRole) && userRole !== "super_admin") {
-        throw new ForbiddenError(`Role ${userRole} is not authorized to access this resource`);
+      if (!userRole) {
+        throw new ForbiddenError("Role not assigned", "USER_UNAUTHORIZED");
+      }
+
+      if (userRole === "super_admin") {
+        return next();
+      }
+
+      if (!roles.includes(userRole)) {
+        throw new ForbiddenError(
+          `Role ${userRole} is not authorized to access this resource`,
+          "USER_UNAUTHORIZED"
+        );
       }
 
       next();

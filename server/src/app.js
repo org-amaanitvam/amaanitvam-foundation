@@ -29,7 +29,10 @@ import internshipRoutes from "./modules/internships/internship.routes.js";
 import publicFormRoutes from "./modules/public-forms/publicForm.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
-import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
+import attendanceRoutes from './modules/attendance/attendance.routes.js';
+import facultyRoutes from './modules/faculty/faculty.routes.js';
+import doubtRoutes from './modules/doubts/doubts.routes.js';
+import internalRoutes from './modules/internal/internal.routes.js';
 
 import conversationRoutes from './modules/conversations/conversation.routes.js';
 import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
@@ -146,6 +149,9 @@ app.use("/api/internship", internshipRoutes);
 app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/doubts", doubtRoutes);
+app.use("/internal", internalRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/ai-notifications", aiNotificationRoutes);
 

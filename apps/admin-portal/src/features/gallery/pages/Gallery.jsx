@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   Eye,
@@ -117,6 +117,8 @@ export default function Gallery() {
   const fetchFolderMedia = useCallback(async (folderId) => {
     if (!folderId) return;
 
+    fetchFolders();
+
     try {
       setError('');
       setLoadingMedia(true);
@@ -132,10 +134,6 @@ export default function Gallery() {
     } finally {
       setLoadingMedia(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchFolders();
   }, [fetchFolders]);
 
   const openFolder = (folder) => {

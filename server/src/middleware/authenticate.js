@@ -1,31 +1,44 @@
-import { getAuth } from 'firebase-admin/auth';
-import { firebaseReady } from '../config/firebase.js';
-import { UnauthorizedError } from '../shared/errors/AppError.js';
+import admin, { firebaseReady } from "../config/firebase.js";
+import { UnauthorizedError } from "../shared/errors/AppError.js";
+import User from "../modules/users/user.model.js";
 
 export const authenticate = async (req, _res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('No token provided');
-    }
-
     if (!firebaseReady) {
-      throw new UnauthorizedError('Firebase Admin is not configured');
+      throw new UnauthorizedError("Firebase Admin is not configured");
     }
 
-    const token = authHeader.slice(7).trim();
-    if (!token) {
-      throw new UnauthorizedError('No token provided');
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new UnauthorizedError("No token provided", "AUTH_TOKEN_INVALID");
     }
 
+    const token = authHeader.split(" ")[1];
+    let decodedToken;
     try {
-      req.user = await getAuth().verifyIdToken(token);
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('[auth] Firebase token verification failed:', error?.code || error?.message || error);
-      }
-      throw new UnauthorizedError('Invalid or expired token');
+      decodedToken = await admin.auth().verifyIdToken(token);
+    } catch (err) {
+      throw new UnauthorizedError("Invalid or expired token", "AUTH_TOKEN_INVALID");
     }
+
+    if (!decodedToken.uid) {
+      throw new UnauthorizedError("Invalid token payload", "AUTH_TOKEN_INVALID");
+    }
+
+    const user = await User.findOne({ firebase_uid: decodedToken.uid });
+    if (!user) {
+      throw new UnauthorizedError("User not found", "USER_NOT_FOUND");
+    }
+
+    if (user.status !== "active") {
+      throw new UnauthorizedError("Account is inactive or suspended");
+    }
+
+    req.user = {
+      id: user.id,
+      role: user.role,
+      firebase_uid: decodedToken.uid,
+    };
 
     next();
   } catch (error) {

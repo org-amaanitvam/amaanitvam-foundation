@@ -1,16 +1,20 @@
-export const sendSuccess = (res, statusCode, data, message = "Success") => {
+export const sendSuccess = (res, statusCode, data, meta = {}) => {
   res.status(statusCode).json({
-    status: "success",
-    message,
+    success: true,
     data,
+    meta,
   });
 };
 
-export const sendList = (res, statusCode, data, count, message = "Success") => {
+export const sendList = (res, statusCode, data, count, meta = {}) => {
   res.status(statusCode).json({
-    status: "success",
-    message,
-    results: count,
+    success: true,
     data,
+    meta: {
+      ...meta,
+      page: meta.page || 1,
+      limit: meta.limit || 10,
+      total: count,
+    },
   });
 };
