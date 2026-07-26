@@ -7,8 +7,16 @@ export const authenticate = async (req, _res, next) => {
     if (!firebaseReady) {
       throw new UnauthorizedError("Firebase Admin is not configured");
     }
+    // Log incoming authorization headers for debugging (temporary)
+    // Some proxies/platforms may move or strip Authorization; check common fallbacks.
+    const incomingAuth =
+      req.headers.authorization ||
+      (req.get && req.get("authorization")) ||
+      req.headers["x-forwarded-authorization"] ||
+      (req.get && req.get("x-forwarded-authorization"));
+    console.log("[authenticate] incoming authorization header present:", !!incomingAuth);
 
-    const authHeader = req.headers.authorization;
+    const authHeader = incomingAuth;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedError("No token provided", "AUTH_TOKEN_INVALID");
     }
