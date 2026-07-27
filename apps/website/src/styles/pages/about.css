@@ -112,7 +112,7 @@ body[data-page="about"] .about-hero.page-hero.has-image {
     align-items: center;
     background-color: var(--about-primary-dark) !important;
     background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%),
-        url("../../public/images/Hero/about-hero.png") !important;
+        url("/images/Hero/hero3.jpg") !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -132,11 +132,12 @@ body[data-page="about"] .about-hero__container {
     position: relative;
     z-index: 1;
 }
-
 body[data-page="about"] .about-hero__content {
     max-width: 640px;
     margin: 0 auto;
+    /* centers the block horizontally */
     text-align: center;
+    /* centers the text inside it */
     animation: about-rise 0.7s var(--about-ease) both;
 }
 
@@ -167,8 +168,6 @@ body[data-page="about"] .about-hero__desc {
     line-height: 1.65 !important;
     color: rgba(255, 255, 255, 0.82) !important;
     max-width: 46ch;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /* Short / landscape viewports (phones rotated, small laptops) */
@@ -283,49 +282,35 @@ body[data-page="about"] .about-intro__text {
     }
 }
 
-@media (max-width:620px) {
-    body.dashboard-page .team-pill {
-        display: none;
-    }
-}
+@media (max-width: 900px) {
 
-.page-hero.has-image,
-.about-hero,
-.impact-hero,
-.programs-hero,
-.gallery-hero,
-.resources-hero,
-.faq-hero,
-.verify-hero,
-.volunteer-hero,
-.internship-hero,
-.privacy-hero,
-.terms-hero,
-.refund-hero,
-.collab-hero,
-.contact-hero,
-body[data-page="about"] .page-hero.has-image,
-body[data-page="impact"] .page-hero.has-image,
-body[data-page="programs"] .page-hero.has-image,
-body[data-page="gallery"] .page-hero.has-image,
-body[data-page="resources"] .page-hero.has-image,
-body[data-page="faq"] .page-hero.has-image,
-body[data-page="verify"] .page-hero.has-image,
-body[data-page="volunteer"] .page-hero.has-image,
-body[data-page="internship"] .page-hero.has-image,
-body[data-page="collaborations"] .page-hero.has-image,
-body[data-page="contact"] .page-hero.has-image,
-body[data-page="contact"] .contact-hero,
-.moved-inline-style-final-029 {
-    position: relative !important;
-    overflow: hidden !important;
-    background-color: var(--primary) !important;
-    background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.84), rgba(86, 5, 26, 0.62)),
-        url("../../../public/images/Hero/about-hero.png") !important;
-    background-size: cover !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    color: #ffffff !important;
+    body[data-page="about"] .about-intro__grid,
+    body[data-page="about"] .about-intro__grid--reverse {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-page="about"] .about-intro__grid--reverse .about-intro__body,
+    body[data-page="about"] .about-intro__grid--reverse .about-intro__media {
+        order: initial;
+    }
+
+    body[data-page="about"] .about-intro__title {
+        text-align: center !important;
+    }
+
+    body[data-page="about"] .about-intro__title span::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    body[data-page="about"] .about-intro__body {
+        max-width: none;
+        text-align: center;
+    }
+
+    body[data-page="about"] .about-intro__media {
+        aspect-ratio: 16 / 10;
+    }
 }
 
 @media (max-width: 380px) {
@@ -929,6 +914,12 @@ body[data-page="about"] .floating-donate:focus-visible {
     }
 }
 
+/* --------------------------------------------------------------------------
+   Site header logo — shared header component, so intentionally unscoped
+   to body[data-page="about"]. Uses one fluid clamp() instead of stepped
+   breakpoints so it scales smoothly at every width instead of jumping.
+   -------------------------------------------------------------------------- */
+
 .site-header .brand {
     display: flex;
     align-items: center;
@@ -938,24 +929,10 @@ body[data-page="about"] .floating-donate:focus-visible {
 }
 
 .site-header .brand-logo {
-    height: 44px;
-    width: 44px;
+    height: clamp(32px, 6vw, 44px);
+    width: clamp(32px, 6vw, 44px);
     object-fit: contain;
     border-radius: 6px;
     flex-shrink: 0;
     display: block;
-}
-
-@media (max-width: 768px) {
-    .site-header .brand-logo {
-        height: 38px;
-        width: 38px;
-    }
-}
-
-@media (max-width: 480px) {
-    .site-header .brand-logo {
-        height: 32px;
-        width: 32px;
-    }
 }
