@@ -733,8 +733,12 @@ import { API_BASE_URL } from './api-client.js';
     async function getFolderMedia(folderId) {
         if (folderMediaCache.has(folderId)) return folderMediaCache.get(folderId);
 
-        // Check static albums dataset first
-        const staticAlbum = STATIC_ALBUMS.find((a) => a.id === folderId || a.name.toLowerCase() === folderId.toLowerCase());
+        const targetNorm = normalizeAlbumName(folderId);
+
+        // Check static albums dataset first with canonical alias matching
+        const staticAlbum = STATIC_ALBUMS.find(
+            (a) => a.id === folderId || a.id === targetNorm || normalizeAlbumName(a.name) === targetNorm || a.name.toLowerCase() === String(folderId).toLowerCase()
+        );
         if (staticAlbum && staticAlbum.images && staticAlbum.images.length > 0) {
             // Ensure max 30 images
             const capped = staticAlbum.images.slice(0, 30);
@@ -801,11 +805,33 @@ import { API_BASE_URL } from './api-client.js';
         return `${total} ${total === 1 ? 'media item' : 'media items'}`;
     }
 
+    function normalizeAlbumName(name) {
+        const s = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (s.includes('clothes') || s.includes('cloth')) return 'clothes-donation';
+        if (s.includes('webinar') || s.includes('competition')) return 'webinars';
+        if (s.includes('award')) return 'awards';
+        if (s.includes('shiksha')) return 'project-shiksha';
+        if (s.includes('manthan')) return 'project-manthan';
+        if (s.includes('udaan')) return 'project-udaan';
+        if (s.includes('pravah')) return 'project-pravah';
+        return s;
+    }
+
     function renderAlbums() {
         setIntro('Browse Gallery Albums', 'Open an album to view photos and videos from our initiatives.');
         container.className = 'gallery-grid gallery-albums-grid';
 
-        const albums = [...currentFolders];
+        // Enforce strict deduplication and filter out empty (0-item) albums
+        const seenNorms = new Set();
+        const albums = currentFolders.filter((folder) => {
+            const count = folder.mediaCount || (folder.images ? folder.images.length : 0);
+            if (count <= 0) return false;
+
+            const norm = normalizeAlbumName(folder.name || folder.id);
+            if (seenNorms.has(norm)) return false;
+            seenNorms.add(norm);
+            return true;
+        });
 
         if (!albums.length) {
             container.className = 'gallery-album-shell';
@@ -991,6 +1017,19 @@ import { API_BASE_URL } from './api-client.js';
             apiFolders = [];
         }
 
+        // Normalization helper to match album aliases and prevent duplicate folders
+        function normalizeAlbumName(name) {
+            const s = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (s.includes('clothes') || s.includes('cloth')) return 'clothes-donation';
+            if (s.includes('webinar') || s.includes('competition')) return 'webinars';
+            if (s.includes('award')) return 'awards';
+            if (s.includes('shiksha')) return 'project-shiksha';
+            if (s.includes('manthan')) return 'project-manthan';
+            if (s.includes('udaan')) return 'project-udaan';
+            if (s.includes('pravah')) return 'project-pravah';
+            return s;
+        }
+
         // Merge API folders with STATIC_ALBUMS
         const mergedFolders = STATIC_ALBUMS.map(a => ({
             ...a,
@@ -998,15 +1037,16 @@ import { API_BASE_URL } from './api-client.js';
         }));
 
         for (const apiFolder of apiFolders) {
+            const apiNorm = normalizeAlbumName(apiFolder.name || apiFolder.id);
             const existingIndex = mergedFolders.findIndex(
-                (f) => f.id === apiFolder._id || f.id === apiFolder.id || f.name.toLowerCase() === (apiFolder.name || '').toLowerCase()
+                (f) => f.id === apiFolder._id || f.id === apiFolder.id || normalizeAlbumName(f.id) === apiNorm || normalizeAlbumName(f.name) === apiNorm
             );
 
             if (existingIndex >= 0) {
                 if (apiFolder.mediaCount > 0) {
                     mergedFolders[existingIndex]._id = apiFolder._id;
                 }
-            } else {
+            } else if ((apiFolder.mediaCount || 0) > 0 || (apiFolder.images && apiFolder.images.length > 0)) {
                 mergedFolders.push({
                     id: apiFolder._id || apiFolder.id,
                     _id: apiFolder._id,
@@ -1019,7 +1059,8 @@ import { API_BASE_URL } from './api-client.js';
             }
         }
 
-        currentFolders = mergedFolders;
+        // Filter out any 0-item empty repetitive albums
+        currentFolders = mergedFolders.filter(f => (f.mediaCount || 0) > 0 || (f.images && f.images.length > 0));
         renderAlbums();
     }
 
