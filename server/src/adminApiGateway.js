@@ -1121,6 +1121,27 @@ app.get(
   profileResponse
 );
 
+app.get("/api/auth/session", async (req, res) => {
+  try {
+    const authorization = clean(req.headers.authorization);
+    if (!authorization.toLowerCase().startsWith("bearer ")) {
+      return res.status(401).json({ success: false, message: "No token provided", code: "AUTH_TOKEN_INVALID" });
+    }
+    const decodedToken = await getAuth().verifyIdToken(authorization.slice(7).trim());
+    const profileResult = await adminProfileFor(decodedToken);
+    const user = profileResult?.document || {
+      uid: decodedToken.uid,
+      email: decodedToken.email || "",
+      name: decodedToken.name || decodedToken.email || "User",
+      role: "user",
+    };
+    return res.json({ success: true, user });
+  } catch (error) {
+    const code = error.code === "auth/argument-error" ? "AUTH_TOKEN_INVALID" : "SESSION_ERROR";
+    return res.status(401).json({ success: false, message: "Invalid or expired token", code });
+  }
+});
+
 app.patch(
   ["/api/profile/me", "/api/admin/me", "/api/admin/profile"],
   requireAdministrator,
