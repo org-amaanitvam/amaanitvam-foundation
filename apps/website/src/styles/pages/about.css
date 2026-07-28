@@ -132,6 +132,7 @@ body[data-page="about"] .about-hero__container {
     position: relative;
     z-index: 1;
 }
+
 body[data-page="about"] .about-hero__content {
     max-width: 640px;
     margin: 0 auto;
@@ -415,8 +416,13 @@ body[data-page="about"] .about-values__desc {
    -------------------------------------------------------------------------- */
 
 body[data-page="about"] .about-team__groups {
+    /* Single source of truth for card width — both rows read the same
+       value, so a 5-up row and a 4-up row always produce identical,
+       edge-aligned cards instead of two independently-rounded sizes. */
+    --team-card-w: clamp(150px, 21vw, 236px);
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--space-4);
 }
 
@@ -426,25 +432,18 @@ body[data-page="about"] .team-row {
     align-items: stretch;
     justify-content: center;
     gap: var(--space-3);
-}
-
-body[data-page="about"] .team-row-1 {
-    max-width: 1280px;
+    width: 100%;
+    max-width: calc(5 * var(--team-card-w) + 4 * var(--space-3));
     margin: 0 auto;
 }
 
-body[data-page="about"] .team-row-2 {
-    max-width: 1040px;
-    margin: 0 auto;
-}
-
-/* 5-up / 4-up by default — every card gets an identical explicit basis */
-body[data-page="about"] .team-row-1 .team-card {
-    flex: 0 1 calc((100% - 4 * var(--space-3)) / 5);
-}
-
-body[data-page="about"] .team-row-2 .team-card {
-    flex: 0 1 calc((100% - 3 * var(--space-3)) / 4);
+/* Every card — in either row, at any breakpoint — shares the exact same
+   fixed width. Rows simply wrap naturally as the viewport narrows, so no
+   per-breakpoint basis/max-width overrides are needed (and can't drift
+   out of sync with each other). */
+body[data-page="about"] .team-card {
+    flex: 0 0 var(--team-card-w);
+    width: var(--team-card-w);
 }
 
 /* Every leadership card — same fixed footprint regardless of row or content */
@@ -533,8 +532,11 @@ body[data-page="about"] .team-card__name {
 }
 
 body[data-page="about"] .team-card__role {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    min-height: 1.9em;
     margin: 0 auto 0.5rem;
     padding: 0.3rem 0.75rem;
     border-radius: 999px;
@@ -544,6 +546,7 @@ body[data-page="about"] .team-card__role {
     font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.03em;
+    text-align: center;
 }
 
 /* Cards without an email row (row two) keep the same fixed height; this
@@ -567,52 +570,18 @@ body[data-page="about"] .team-card .team-email a:hover {
 }
 
 @media (max-width: 1180px) {
-    body[data-page="about"] .team-row-1 {
-        max-width: 860px;
-    }
-
-    body[data-page="about"] .team-row-2 {
-        max-width: 680px;
-    }
-
-    body[data-page="about"] .team-row-1 .team-card {
-        flex-basis: calc((100% - 2 * var(--space-3)) / 3);
-    }
-
-    body[data-page="about"] .team-row-2 .team-card {
-        flex-basis: calc((100% - 1 * var(--space-3)) / 2);
-    }
-
     body[data-page="about"] .team-card.card {
         min-height: 290px;
     }
 }
 
-@media (max-width: 720px) {
-
-    body[data-page="about"] .team-row-1,
-    body[data-page="about"] .team-row-2 {
-        max-width: 620px;
-    }
-
-    body[data-page="about"] .team-row-1 .team-card,
-    body[data-page="about"] .team-row-2 .team-card {
-        flex-basis: calc((100% - 1 * var(--space-3)) / 2);
-    }
-}
-
 @media (max-width: 480px) {
 
-    body[data-page="about"] .team-row-1,
-    body[data-page="about"] .team-row-2 {
-        max-width: 340px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    body[data-page="about"] .team-row-1 .team-card,
-    body[data-page="about"] .team-row-2 .team-card {
-        flex-basis: 100%;
+    /* Below this width even a single --team-card-w card plus the section's
+       side padding won't comfortably fit two per row, so cards drop to a
+       true one-per-row stack — still identical size, just full-width. */
+    body[data-page="about"] .about-team__groups {
+        --team-card-w: min(340px, 100%);
     }
 
     body[data-page="about"] .team-card.card {
@@ -621,10 +590,7 @@ body[data-page="about"] .team-card .team-email a:hover {
 }
 
 @media (max-width: 380px) {
-
-    body[data-page="about"] .team-row-1,
-    body[data-page="about"] .team-row-2 {
-        max-width: 100%;
+    body[data-page="about"] .team-row {
         gap: var(--space-2);
     }
 
