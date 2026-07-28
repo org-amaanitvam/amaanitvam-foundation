@@ -81,4 +81,16 @@ router.post('/logout', authenticate, async (req, res, next) => {
   }
 });
 
+router.get('/session', authenticate, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select('-__v');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+    return sendSuccess(res, 200, { user: user.toJSON() });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
