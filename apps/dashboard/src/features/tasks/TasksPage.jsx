@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
+import { ClipboardList, Loader2, Plus, Clock3, LoaderCircle, CheckCircle2, AlertTriangle, Edit2 } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { canAccessPermission } from "../../utils/accessControl";
@@ -124,7 +124,7 @@ export default function TasksPage() {
         ? new Date(task.deadline).toISOString().split('T')[0]
         : '',
       status: task.status || 'open',
-      priority: (task.priority || 'medium').toLowerCase(), 
+      priority: (task.priority || 'medium').toLowerCase(),
       progress: Number(task.progress || 0),
       newComment: '',
     });
@@ -151,6 +151,11 @@ export default function TasksPage() {
 
   const filtered = myTasks.filter((t) => {
     let match = true;
+
+
+
+
+
 
     if (filters.status && filters.status !== 'all' && t.status !== filters.status) {
       match = false;
@@ -188,6 +193,31 @@ export default function TasksPage() {
 
     return match;
   });
+
+
+  // ================= TASK STATS =================
+  // Dashboard Statistics
+  const stats = {
+    total: filtered.length,
+
+    open: filtered.filter((t) => t.status === "open").length,
+
+    inProgress: filtered.filter(
+      (t) => t.status === "inProgress"
+    ).length,
+
+    completed: filtered.filter(
+      (t) => t.status === "completed"
+    ).length,
+
+    overdue: filtered.filter(
+      (t) =>
+        t.deadline &&
+        new Date(t.deadline) < new Date() &&
+        t.status !== "completed"
+    ).length,
+  };
+
 
   const filterConfig = [
     {
@@ -251,7 +281,7 @@ export default function TasksPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center flex-wrap gap-4">
+      {/* <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
             {canManageTasks ? 'All Tasks' : 'My Tasks'}
@@ -274,7 +304,172 @@ export default function TasksPage() {
             Create Task
           </button>
         )}
+      </div> */}
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">
+            {canManageTasks ? "All Tasks" : "My Tasks"}
+          </h1>
+
+          <p className="text-slate-500 mt-2">
+            Organize, assign and monitor tasks across your team.
+          </p>
+        </div>
+
+        {canManageTasks && (
+          <button
+            onClick={() => {
+              setEditingId(null);
+              setFormData(initialFormData);
+              setShowCreate(true);
+            }}
+            className="flex items-center gap-2 bg-[#56051a] text-white px-5 py-3 rounded-xl shadow-md hover:bg-[#6b0d24] hover:shadow-lg transition-all duration-300"
+          >
+            <Plus className="w-5 h-5" />
+            Create Task
+          </button>
+        )}
+
       </div>
+
+
+
+      {/* 
+-------------------------------------------------------------------- */}
+
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition">
+          {/* <p className="text-sm text-slate-500">Total Tasks</p>
+          <h2 className="text-3xl font-bold text-slate-800 mt-2">
+            {stats.total}
+          </h2> */}
+
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-500">
+                Total Tasks
+              </p>
+
+              <h2 className="text-4xl font-bold text-slate-900 mt-2">
+                {stats.total}
+              </h2>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-[#56051a]/10 flex items-center justify-center">
+              <ClipboardList className="w-6 h-6 text-[#56051a]" />
+            </div>
+          </div>
+
+
+
+
+
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          {/* <p className="text-sm text-yellow-700">Open</p>
+          <h2 className="text-3xl font-bold text-yellow-700 mt-2">
+            {stats.open}
+          </h2> */}
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-yellow-700 font-medium">
+                Open
+              </p>
+
+              <h2 className="text-4xl font-bold text-yellow-700 mt-2">
+                {stats.open}
+              </h2>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center">
+              <Clock3 className="w-6 h-6 text-yellow-700" />
+            </div>
+          </div>
+
+
+
+
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+              <p className="text-sm text-blue-700 font-medium">
+                In Progress
+              </p>
+
+              <h2 className="text-4xl font-bold text-blue-700 mt-2">
+                {stats.inProgress}
+              </h2>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+              <LoaderCircle className="w-6 h-6 text-blue-700" />
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+              <p className="text-sm text-green-700 font-medium">
+                Completed
+              </p>
+
+              <h2 className="text-4xl font-bold text-green-700 mt-2">
+                {stats.completed}
+              </h2>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-green-700" />
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+              <p className="text-sm text-red-700 font-medium">
+                Overdue
+              </p>
+
+              <h2 className="text-4xl font-bold text-red-700 mt-2">
+                {stats.overdue}
+              </h2>
+            </div>
+
+            <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-red-700" />
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+
+
+
 
       {showCreate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -507,38 +702,85 @@ export default function TasksPage() {
             return (
               <div
                 key={t._id}
-                className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
+                className={`bg-white rounded-2xl border-l-4 ${t.status === "completed"
+                  ? "border-l-green-500"
+                  : t.status === "inProgress"
+                    ? "border-l-blue-500"
+                    : t.status === "open"
+                      ? "border-l-yellow-500"
+                      : "border-l-slate-300"
+                  } border-t border-r border-b border-slate-200 p-6 flex items-start gap-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}
               >
                 <span
-                  className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'
+                  className={`px-3 py-1.5 text-xs font-semibold uppercase rounded-full border whitespace-nowrap ${statusColors[t.status] || 'bg-slate-100 text-slate-600'
                     }`}
                 >
                   {getStatusLabel(t.status)}
                 </span>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-slate-800 truncate">
+                  {/* <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-slate-800">
                       {t.title}
                     </h3>
 
                     <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">
                       {t.progress || 0}%
                     </span>
+                  </div> */}
+
+
+                  <div className="flex justify-between items-center w-full">
+
+                    <h3 className="text-xl font-bold text-slate-900 leading-tight">
+                      {t.title}
+                    </h3>
+                    <span className="px-3 py-1 rounded-full bg-[#56051a]/10 text-[#56051a] text-xs font-bold">
+                      {t.progress || 0}% Complete
+                    </span>
+
                   </div>
 
-                  <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 mb-1 max-w-[200px]">
+
+                  <div className="w-full bg-slate-200 rounded-full h-3 mt-3 mb-3 overflow-hidden max-w-sm">
                     <div
-                      className="bg-[#56051a] h-1.5 rounded-full"
+                      className="h-3 rounded-full bg-gradient-to-r from-[#56051a] to-[#8c1735] transition-all duration-500"
                       style={{ width: `${t.progress || 0}%` }}
                     />
                   </div>
 
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  {/* <p className="text-xs text-slate-500 mt-0.5">
                     Assigned to: {t.assignedTo?.name || 'Unassigned'}
                     {t.deadline &&
                       ` • Due: ${new Date(t.deadline).toLocaleDateString()}`}
-                  </p>
+                  </p> */}
+
+                  <div className="flex flex-wrap items-center gap-3 mt-3">
+
+                    <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
+                      <div className="w-8 h-8 rounded-full bg-[#56051a] text-white flex items-center justify-center text-xs font-bold">
+                        {(t.assignedTo?.name || "U").charAt(0).toUpperCase()}
+                      </div>
+
+                      <span className="text-sm font-medium text-slate-700">
+                        {t.assignedTo?.name || "Unassigned"}
+                      </span>
+                    </div>
+
+                    {t.deadline && (
+                      <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                        📅 {new Date(t.deadline).toLocaleDateString()}
+                      </span>
+                    )}
+
+                  </div>
+
+
+
+
+
+
+
 
                   {t.comments && t.comments.length > 0 && (
                     <p className="text-xs text-slate-400 mt-1 italic line-clamp-1">
@@ -547,19 +789,40 @@ export default function TasksPage() {
                   )}
 
                   {safePriority && (
-                    <p className="text-xs mt-1">
-                      <span className="text-slate-500">Priority: </span>
+                    // <p className="text-xs mt-1">
+                    //   <span className="text-slate-500">Priority: </span>
+                    //   <span
+                    //     className={`font-medium ${safePriority === 'high'
+                    //       ? 'text-rose-500'
+                    //       : safePriority === 'low'
+                    //         ? 'text-slate-500'
+                    //         : 'text-amber-500'
+                    //       }`}
+                    //   >
+                    //     {safePriority.charAt(0).toUpperCase() + safePriority.slice(1)}
+                    //   </span>
+                    // </p>
+
+
+                    <div className="mt-3">
+
                       <span
-                        className={`font-medium ${safePriority === 'high'
-                            ? 'text-rose-500'
-                            : safePriority === 'low'
-                              ? 'text-slate-500'
-                              : 'text-amber-500'
+                        className={`px-3 py-1 rounded-full text-xs font-semibold
+      ${safePriority === "high"
+                            ? "bg-red-100 text-red-700"
+                            : safePriority === "medium"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-green-100 text-green-700"
                           }`}
                       >
-                        {safePriority.charAt(0).toUpperCase() + safePriority.slice(1)}
+                        {safePriority.toUpperCase()} PRIORITY
                       </span>
-                    </p>
+
+                    </div>
+
+
+
+
                   )}
                 </div>
 
