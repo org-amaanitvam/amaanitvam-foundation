@@ -2,6 +2,31 @@ import mongoose from "mongoose";
 import Gallery from "./gallery.model.js";
 import GalleryFolder from "./galleryFolder.model.js";
 
+const CANONICAL_ALBUMS = {
+    "clothes donation": "Clothes Donation Drive",
+    "clothes donation drive": "Clothes Donation Drive",
+    "webinar & competitions": "Webinars & Workshops",
+    "webinars & workshops": "Webinars & Workshops",
+    "webinars": "Webinars & Workshops",
+    "webinar": "Webinars & Workshops",
+    "awards": "Awards & Recognition",
+    "awards & recognition": "Awards & Recognition",
+    "project shiksha": "Project Shiksha",
+    "shiksha": "Project Shiksha",
+    "project manthan": "Project Manthan",
+    "manthan": "Project Manthan",
+    "project udaan": "Project Udaan",
+    "udaan": "Project Udaan",
+    "project pravah": "Project Pravah",
+    "pravah": "Project Pravah"
+};
+
+export const normalizeCanonicalName = (rawName) => {
+    const clean = String(rawName || "").trim();
+    const lower = clean.toLowerCase();
+    return CANONICAL_ALBUMS[lower] || clean;
+};
+
 export const getAll = async (_req, res, next) => {
     try {
         const media = await Gallery.find()
@@ -51,14 +76,28 @@ export const getFolders = async (_req, res, next) => {
             ])
         );
 
-        const result = folders.map((folder) => ({
-            ...folder,
-            mediaCount: countMap.get(String(folder._id)) || 0,
-        }));
+        const seenNames = new Set();
+        const deduplicated = [];
+
+        for (const folder of folders) {
+            const canonicalName = normalizeCanonicalName(folder.name || folder.title);
+            const count = countMap.get(String(folder._id)) || 0;
+
+            // Skip duplicate canonical entries or empty non-media legacy records
+            if (seenNames.has(canonicalName.toLowerCase())) continue;
+            seenNames.add(canonicalName.toLowerCase());
+
+            deduplicated.push({
+                ...folder,
+                name: canonicalName,
+                title: canonicalName,
+                mediaCount: count,
+            });
+        }
 
         return res.status(200).json({
             success: true,
-            folders: result,
+            folders: deduplicated,
         });
     } catch (error) {
         next(error);
@@ -84,6 +123,10 @@ export const getFolderMedia = async (req, res, next) => {
                 message: "Gallery folder not found.",
             });
         }
+
+        const canonicalName = normalizeCanonicalName(folder.name || folder.title);
+        folder.name = canonicalName;
+        folder.title = canonicalName;
 
         const media = await Gallery.find({
             folderId,

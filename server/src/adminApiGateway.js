@@ -288,6 +288,32 @@ function clean(value) {
   return String(value).trim();
 }
 
+
+const CANONICAL_ALBUM_MAP = {
+  "clothes donation": "Clothes Donation Drive",
+  "clothes donation drive": "Clothes Donation Drive",
+  "webinar & competitions": "Webinars & Workshops",
+  "webinars & workshops": "Webinars & Workshops",
+  "webinars": "Webinars & Workshops",
+  "webinar": "Webinars & Workshops",
+  "awards": "Awards & Recognition",
+  "awards & recognition": "Awards & Recognition",
+  "project shiksha": "Project Shiksha",
+  "shiksha": "Project Shiksha",
+  "project manthan": "Project Manthan",
+  "manthan": "Project Manthan",
+  "project udaan": "Project Udaan",
+  "udaan": "Project Udaan",
+  "project pravah": "Project Pravah",
+  "pravah": "Project Pravah"
+};
+
+function normalizeCanonicalAlbumName(rawName) {
+  const cleanName = clean(rawName);
+  const lower = cleanName.toLowerCase();
+  return CANONICAL_ALBUM_MAP[lower] || cleanName;
+}
+
 function normalizeRole(value) {
   return clean(value).toLowerCase();
 }
@@ -887,17 +913,18 @@ async function galleryFoldersHandler(_req, res, next) {
       const map = new Map();
 
       for (const item of media) {
-        const name =
+        const rawName =
           clean(item.folder) ||
           clean(item.folderName) ||
           clean(item.album) ||
           clean(item.albumName) ||
           clean(item.category);
 
-        if (!name) continue;
+        if (!rawName) continue;
+        const name = normalizeCanonicalAlbumName(rawName);
 
-        if (!map.has(name)) {
-          map.set(name, {
+        if (!map.has(name.toLowerCase())) {
+          map.set(name.toLowerCase(), {
             id: name,
             name,
             title: name,
@@ -907,14 +934,22 @@ async function galleryFoldersHandler(_req, res, next) {
           });
         }
 
-        map.get(name).mediaCount += 1;
+        map.get(name.toLowerCase()).mediaCount += 1;
       }
 
       rows = [...map.values()];
     } else {
-      // Calculate mediaCount for actual folders from DB
-      rows = rows.map((folder) => {
+      const seenNames = new Set();
+      const deduplicated = [];
+
+      for (const folder of rows) {
         const folderId = clean(folder._id || folder.id);
+        const canonicalName = normalizeCanonicalAlbumName(folder.name || folder.title);
+        const normKey = canonicalName.toLowerCase();
+
+        if (seenNames.has(normKey)) continue;
+        seenNames.add(normKey);
+
         const count = media.filter((item) =>
           [
             item.folderId,
@@ -928,12 +963,16 @@ async function galleryFoldersHandler(_req, res, next) {
             item.categoryId,
           ].some((val) => galleryValueMatchesFolder(val, folderId))
         ).length;
-        
-        return {
+
+        deduplicated.push({
           ...folder,
+          name: canonicalName,
+          title: canonicalName,
           mediaCount: count,
-        };
-      });
+        });
+      }
+
+      rows = deduplicated;
     }
 
     res.json(listPayload("galleryFolders", rows));
