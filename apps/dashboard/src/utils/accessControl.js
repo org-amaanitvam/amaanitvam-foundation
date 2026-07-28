@@ -1,5 +1,24 @@
 const normalize = (input) =>
-  String(input || "").trim().toLowerCase();
+  String(input || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, "_");
+
+const normalizeRole = (input) => {
+  const role = normalize(input);
+  const aliases = {
+    superadmin: "super_admin",
+    administrator: "super_admin",
+    admin: "super_admin",
+    departmenthead: "department_head",
+    head: "department_head",
+    member: "team_member",
+    user: "team_member",
+    intern: "team_member",
+    volunteer: "team_member",
+  };
+  return aliases[role] || role;
+};
 
 const DEFAULTS = {
   department_head: [
@@ -31,9 +50,9 @@ const DEFAULTS = {
 };
 
 const effectivePermissions = (profile) => {
-  const role = normalize(
-    profile?.role ||
+  const role = normalizeRole(
     profile?.accessRole ||
+    profile?.role ||
     profile?.userRole,
   );
 

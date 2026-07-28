@@ -104,6 +104,14 @@ export const createDonationOrder = async (req, res) => {
       },
     });
 
+    if (!order?.id) {
+      const malformedOrderError = new Error(
+        "Razorpay returned no order ID.",
+      );
+      malformedOrderError.statusCode = 502;
+      throw malformedOrderError;
+    }
+
     const donation = await Donation.create({
       name,
       email,
@@ -121,12 +129,17 @@ export const createDonationOrder = async (req, res) => {
 
     return res.status(201).json({
       success: true,
+      orderId: order.id,
+      order_id: order.id,
+      razorpayOrderId: order.id,
       order: {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
       },
       key: getRazorpayKeyId(),
+      keyId: getRazorpayKeyId(),
+      razorpayKeyId: getRazorpayKeyId(),
       donor: { name, email, phone },
       donationType: donation.donationType,
       donationId: donation._id,
@@ -141,9 +154,26 @@ export const createDonationOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("Donation order creation failed:", error);
-    return res.status(500).json({
+    const detail = String(error?.message || error || "");
+    const credentialFailure =
+      /razorpay credentials|key_id|key_secret|authentication|unauthorized|401/i.test(
+        detail,
+      );
+    const statusCode =
+      Number(error?.statusCode || error?.status || 0) ||
+      (credentialFailure ? 503 : 500);
+
+    return res.status(statusCode).json({
       success: false,
-      message: "Failed to create donation order. Please try again.",
+      code: credentialFailure
+        ? "RAZORPAY_NOT_CONFIGURED"
+        : "DONATION_ORDER_CREATION_FAILED",
+      message: credentialFailure
+        ? "Donation payments are temporarily unavailable because Razorpay is not configured correctly."
+        : "Failed to create donation order. Please try again.",
+      ...(process.env.NODE_ENV === "development"
+        ? { error: detail }
+        : {}),
     });
   }
 };
@@ -234,7 +264,7 @@ export const verifyDonationPayment = async (req, res) => {
       updatedCampaign = await Campaign.findByIdAndUpdate(
         donation.campaign,
         { $inc: { raisedAmount: Number(donation.amount || 0) } },
-        { new: true },
+        { returnDocument: "after" },
       );
       donation.campaignAmountAdded = true;
     } else if (donation.campaign) {

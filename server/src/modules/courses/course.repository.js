@@ -21,7 +21,7 @@ export const update = async (id, updateData) => {
   return Course.findOneAndUpdate(
     { _id: id, is_deleted: false },
     { $set: updateData },
-    { new: true, runValidators: true }
+    { returnDocument: "after", runValidators: true }
   );
 };
 
@@ -29,6 +29,6 @@ export const softDelete = async (id) => {
   return Course.findOneAndUpdate(
     { _id: id },
     { $set: { is_deleted: true } },
-    { new: true }
+    { returnDocument: "after" }
   );
 };

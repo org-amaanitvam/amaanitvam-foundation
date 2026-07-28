@@ -28,39 +28,57 @@ export default function TasksPage() {
   const [formData, setFormData] = useState(initialFormData);
   const [users, setUsers] = useState([]);
 
-  const canManageTasks =
-    userProfile?.role === 'admin' ||
-    userProfile?.role === 'super_admin' ||
-    userProfile?.role === 'department_head' ||
-    canAccessPermission(userProfile, 'tasks.manage');
+  const canManageTasks = canAccessPermission(
+    userProfile,
+    "tasks.manage",
+  );
 
   const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
 
-      const { data } = await api.get('/tasks');
-      
-      const taskList = Array.isArray(data) ? data
-                     : Array.isArray(data.tasks) ? data.tasks
-                     : Array.isArray(data.data) ? data.data
-                     : [];
-      setTasks(taskList);
+      const { data } = await api.get("/tasks");
+      const taskList = Array.isArray(data)
+        ? data
+        : Array.isArray(data.tasks)
+          ? data.tasks
+          : Array.isArray(data.data)
+            ? data.data
+            : [];
 
-      if (canManageTasks) {
-        const res = await api.get('/admin/members');
-        setUsers(res.data.members || []);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || 'Failed to load tasks');
+      setTasks(taskList);
+    } catch (error) {
+      console.error("Tasks load failed:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to load tasks",
+      );
     } finally {
       setLoading(false);
     }
-  }, [canManageTasks]);
+  }, []);
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
+
+  useEffect(() => {
+    if (!canManageTasks) {
+      setUsers([]);
+      return;
+    }
+
+    api.get("/admin/members")
+      .then((response) => {
+        setUsers(response.data.members || []);
+      })
+      .catch((error) => {
+        console.error(
+          "Task member options failed:",
+          error,
+        );
+      });
+  }, [canManageTasks]);
 
   const resetForm = () => {
     setShowCreate(false);

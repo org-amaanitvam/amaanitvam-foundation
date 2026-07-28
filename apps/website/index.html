@@ -17,19 +17,25 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
-  <link href="./public/images/logos/logo.jpg" rel="icon" type="image/jpg" />
+  <link href="/images/Logo/logo.jpg" rel="icon" type="image/jpg" />
   <link rel="stylesheet" href="./src/styles/styles.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 </head>
 
 <body data-page="home">
+  <!-- 1. STICKY NAVBAR -->
   <div id="navbar-placeholder"></div>
+
   <main id="main-content">
 
-    <!-- HERO -->
+    <!-- 2. HERO SECTION -->
     <section aria-labelledby="hero-title" class="home-hero" data-hero="">
       <div class="container hero-grid">
         <div class="hero-content">
+          <span class="hero-kicker">
+            <span class="hero-kicker-dot" aria-hidden="true"></span>
+            Section 8 Registered · NITI Aayog DARPAN Listed
+          </span>
           <h1 class="hero-title" id="hero-title">
             What Are We, If Not for One Another?
           </h1>
@@ -39,18 +45,25 @@
             change for a stronger society.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="./src/pages/volunteer.html#volunteer">
-              Volunteer Now
+            <a class="btn-hero-pill" href="./src/pages/programs.html">
+              <span class="material-symbols-outlined" aria-hidden="true">school</span>
+              Explore Programs
             </a>
-            <a class="btn btn-primary" href="./src/pages/internship.html#internship">
-              Apply for Internship
+            <a class="btn-hero-pill" href="./src/pages/volunteer.html#volunteer">
+              <span class="material-symbols-outlined" aria-hidden="true">volunteer_activism</span>
+              Become a Volunteer
+            </a>
+            <a class="btn-hero-pill" href="./src/pages/webinars-competitions.html">
+              <span class="material-symbols-outlined" aria-hidden="true">event</span>
+              Upcoming Events
             </a>
           </div>
         </div>
       </div>
+
     </section>
 
-    <!-- WHY US -->
+    <!-- WHO WE ARE / WHY US -->
     <section aria-labelledby="why-us-title" class="section section-white">
       <div class="container">
         <div class="section-header">
@@ -81,7 +94,7 @@
       </div>
     </section>
 
-    <!-- VISION & MISSION -->
+    <!-- Vision & Mission (not on the flowchart — kept next to the "who we are" content it belongs with) -->
     <section aria-labelledby="vision-mission-title" class="section section-alt">
       <div class="container">
         <div class="section-header">
@@ -114,487 +127,77 @@
       </div>
     </section>
 
-    <section class="testimonials-section" id="testimonials">
+    <!-- 5. OUR PROGRAMS -->
+    <section id="programs" class="prg-section" aria-labelledby="programs-title">
       <div class="container">
-        <span class="section-tag">OUR COMMUNITY</span>
-        <h2 class="section-title">
-          Voices Behind Our Mission
-        </h2>
-        <p class="section-description">
-          Hear from the people who have experienced and contributed to
-          Amaanitvam Foundation's initiatives.
-        </p>
-        <div class="testimonial-grid">
-
-          <!-- Card 1 -->
-          <div class="testimonial-card">
-            <div class="testimonial-top">
-              <img src="./public/images/programs/project-shiksha1.jpeg" alt="Student Beneficiary">
-              <div>
-                <h3>Student Beneficiary</h3>
-                <span>Project Shiksha</span>
-              </div>
-            </div>
-            <p class="testimonial-text">
-              Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community
-              support, and dedicated volunteers, the project has now impacted more than 50 children.
-            </p>
-            <div class="testimonial-footer">
-              <span class="verified">
-                ✓ Verified Story
-              </span>
-              <a href="./src/pages/programs.html">Read More →</a>
-            </div>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="testimonial-card">
-            <div class="testimonial-top">
-              <img src="./public/images/programs/project-manthan2.png" alt="Volunteer">
-              <div>
-                <h3>Volunteer</h3>
-                <span>Community Outreach</span>
-              </div>
-            </div>
-            <p class="testimonial-text">
-              Engage communities and help implement grassroots initiatives on the ground.
-              Plan and manage local events, health camps, and awareness drives.Create content and run online campaigns
-              to amplify our impact.
-            </p>
-            <div class="testimonial-footer">
-              <span class="verified">
-                ✓ Verified
-              </span>
-              <a href="./src/pages/volunteer.html">Read More →</a>
-            </div>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="testimonial-card">
-            <div class="testimonial-top">
-              <img src="./public/images/webinars/webinar3.jpeg" alt="Mentor">
-              <div>
-                <h3>Mentor</h3>
-                <span>Skill Development</span>
-              </div>
-            </div>
-            <p class="testimonial-text">
-              Counselling, awareness & mentorship for stronger communities.School admissions & learning support for
-              underserved children. Real-world experience & skill-building for changemakers.
-            </p>
-            <div class="testimonial-footer">
-              <span class="verified">
-                ✓ Verified
-              </span>
-              <a href="./src/pages/webinars-competitions.html">Read More →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="homeCampaigns" class="campaign-preview-section" aria-live="polite">
-      <div class="campaign-preview-inner">
-        <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
-        <h2>Support a live campaign</h2>
-        <p>Loading active campaigns...</p>
-      </div>
-    </section>
-
-    <section id="current-updates" class="section section-alt cu-section" aria-labelledby="current-updates-title">
-      <div class="container">
-        <header class="section-header cu-header">
-          <span class="section-label">What's Happening Now</span>
-          <h2 class="section-title" id="current-updates-title">Current Updates</h2>
+        <header class="section-header">
+          <span class="section-label">What We Do</span>
+          <h2 class="section-title" id="programs-title">Our Programs</h2>
           <p class="section-desc">
-            Stay informed with the latest developments, recognitions, leadership updates,
-            awards, registrations, and community initiatives at Amaanitvam Foundation.
+            Three initiatives, one shared goal — helping people learn, grow, and stand on their own.
           </p>
         </header>
 
-        <div class="cu-grid" role="list">
-          <article class="cu-card cu-card--has-image" role="listitem">
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/programs/project_shiksha1.jpeg" alt="Education Outreach Programme" class="cu-card__img"
-                loading="lazy">
-              <span class="cu-badge cu-badge--live">
-                <span class="cu-badge__dot"></span>Live
-              </span>
+        <div class="prg-grid">
+          <article class="prg-card">
+            <div class="prg-card__icon">
+              <span class="material-symbols-outlined" aria-hidden="true">school</span>
             </div>
-
-            <div class="cu-card__body">
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">school</span>
-                  Ongoing Initiative
-                </span>
-                <time class="cu-date">2026</time>
-              </div>
-              <h3 class="cu-card__title">
-                Education Outreach Programme
-              </h3>
-              <p class="cu-card__desc">
-                Community educators continue conducting literacy workshops,
-                mentoring students, and providing free educational resources
-                across underserved communities.
-              </p>
-              <a href="/src/pages/about.html" class=" cu-read-more btn btn-primary">
-                Read More
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-            </div>
+            <span class="prg-card__tag">Education Access</span>
+            <h3>Project Shiksha</h3>
+            <p>
+              Helping underserved children get into school and stay there — admissions,
+              documentation, and everyday learning support.
+            </p>
+            <a href="./src/pages/programs.html#shiksha" class="prg-link">
+              Learn More
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
           </article>
 
-          <article class="cu-card cu-card--has-image" role="listitem">
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/gallery/section-8.png" alt="Section 8 Registration" class="cu-card__img" loading="lazy">
-              <span class="cu-badge cu-badge--completed">
-                Completed
-              </span>
+          <article class="prg-card">
+            <div class="prg-card__icon">
+              <span class="material-symbols-outlined" aria-hidden="true">psychology</span>
             </div>
-            <div class="cu-card__body">
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">gavel</span>
-                  Legal Milestone
-                </span>
-                <time class="cu-date">2025</time>
-              </div>
-              <h3 class="cu-card__title">
-                Officially Registered as a Section 8 Company
-              </h3>
-              <p class="cu-card__desc">
-                Amaanitvam Foundation is officially incorporated as a
-                Private Section 8 Non-Profit Company with
-                CIN U88900DL2025NPL455183.
-              </p>
-              <a href="./src/pages/about.html" class="cu-read-more btn btn-primary">
-                Learn More
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-            </div>
+            <span class="prg-card__tag">Counselling & Awareness</span>
+            <h3>Project Manthan</h3>
+            <p>
+              Mentorship and honest conversation that help children and adolescents work through
+              pressure, habits, and the choices in front of them.
+            </p>
+            <a href="./src/pages/programs.html#manthan" class="prg-link">
+              Learn More
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
           </article>
 
-          <article class="cu-card cu-card--has-image" role="listitem">
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/gallery/darpan.png" alt="DARPAN Registration" class="cu-card__img" loading="lazy">
-              <span class="cu-badge cu-badge--announcement">
-                Verified
-              </span>
+          <article class="prg-card">
+            <div class="prg-card__icon">
+              <span class="material-symbols-outlined" aria-hidden="true">diversity_3</span>
             </div>
-            <div class="cu-card__body">
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">verified</span>
-                  Government Recognition
-                </span>
-                <time class="cu-date">2025</time>
-              </div>
-              <h3 class="cu-card__title">
-                Registered on NITI Aayog DARPAN Portal
-              </h3>
-              <p class="cu-card__desc">
-                Officially registered on the Government of India NGO DARPAN
-                Portal, strengthening transparency,
-                accountability, and public trust.
-              </p>
-              <a href="./src/pages/about.html" class="cu-read-more btn btn-primary">
-                Learn More
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-            </div>
-          </article>
-
-          <article class="cu-card cu-card--has-image" role="listitem">
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/programs/volunteer-community.jpg" alt="Volunteer Community" class="cu-card__img"
-                loading="lazy">
-              <span class="cu-badge cu-badge--live">
-                <span class="cu-badge__dot"></span>Live
-              </span>
-            </div>
-            <div class="cu-card__body">
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">volunteer_activism</span>
-                  Volunteer Drive
-                </span>
-                <time class="cu-date">2026</time>
-              </div>
-              <h3 class="cu-card__title">
-                Volunteer Community Continues to Grow
-              </h3>
-              <p class="cu-card__desc">
-                Students, professionals, and changemakers from across India are
-                joining Amaanitvam Foundation to support education, awareness,
-                community service, and social development initiatives.
-              </p>
-              <a href="./src/pages/volunteer.html" class="cu-read-more btn btn-primary">
-                Join Us
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-            </div>
-          </article>
-          <article class="cu-card cu-card--featured cu-card--has-image" role="listitem">
-
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/awards/prakruti-seva-samman.jpeg" alt="Prakruti Seva Samman" class="cu-card__img"
-                loading="lazy">
-
-              <span class="cu-badge cu-badge--completed">
-                Award
-              </span>
-            </div>
-
-            <div class="cu-card__body">
-
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">emoji_events</span>
-                  Achievement
-                </span>
-
-                <time class="cu-date">2025</time>
-              </div>
-
-              <h3 class="cu-card__title">
-                Prakruti Seva Samman Received
-              </h3>
-
-              <p class="cu-card__desc">
-                Honoured for outstanding contributions towards
-                education, community welfare, and
-                meaningful social impact.
-              </p>
-
-              <a href="./src/pages/about.html" class="cu-read-more btn btn-primary">
-                Read More
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-
-            </div>
-
-          </article>
-          <article class="cu-card cu-card--featured cu-card--has-image" role="listitem">
-
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/awards/Best-Social-Worker-Award.jpeg" alt="Best Social Worker Award"
-                class="cu-card__img" loading="lazy">
-
-              <span class="cu-badge cu-badge--announcement">
-                Award
-              </span>
-            </div>
-
-            <div class="cu-card__body">
-
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">workspace_premium</span>
-                  Recognition
-                </span>
-
-                <time class="cu-date">2025</time>
-              </div>
-
-              <h3 class="cu-card__title">
-                Best Social Worker Award
-              </h3>
-
-              <p class="cu-card__desc">
-                Founder Kartik Sharma and HR Head Roshan Kapar
-                were honoured for their exceptional dedication
-                to community service.
-              </p>
-
-              <a href="./src/pages/about.html" class="cu-read-more btn btn-primary">
-                Read More
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-
-            </div>
-
-          </article>
-          <article class="cu-card cu-card--has-image" role="listitem">
-
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/team/about_section1.png" alt="Leadership Team" class="cu-card__img" loading="lazy">
-
-              <span class="cu-badge cu-badge--new">
-                New
-              </span>
-            </div>
-
-            <div class="cu-card__body">
-
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">groups</span>
-                  Leadership
-                </span>
-
-                <time class="cu-date">2026</time>
-              </div>
-
-              <h3 class="cu-card__title">
-                Leadership Team Strengthened
-              </h3>
-
-              <p class="cu-card__desc">
-                Our dedicated leadership team continues to guide
-                departments including HR, Design, Content Writing,
-                Social Media, and Web Development.
-              </p>
-
-              <a href="./src/pages/about.html" class="cu-read-more btn btn-primary">
-                Meet Our Team
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-
-            </div>
-
-          </article>
-          <article class="cu-card cu-card--has-image" role="listitem">
-
-            <div class="cu-card__image-wrap">
-              <img src="./public/images/programs/transparent-accountability.png" alt="Transparency & Accountability"
-                class="cu-card__img" loading="lazy">
-
-              <span class="cu-badge cu-badge--announcement">
-                Verified
-              </span>
-            </div>
-
-            <div class="cu-card__body">
-
-              <div class="cu-card__meta">
-                <span class="cu-category">
-                  <span class="material-symbols-outlined">verified_user</span>
-                  Transparency
-                </span>
-
-                <time class="cu-date">2026</time>
-              </div>
-
-              <h3 class="cu-card__title">
-                Committed to Transparency & Accountability
-              </h3>
-
-              <p class="cu-card__desc">
-                As a registered Section 8 non-profit organization, we uphold
-                transparency, ethical governance, and accountability to ensure
-                trust among donors, volunteers, partners, and communities.
-              </p>
-
-              <a href="./src/pages/about.html" class="cu-read-more btn btn-primary">
-                View Details
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </a>
-
-            </div>
-
+            <span class="prg-card__tag">New Pilot</span>
+            <h3>Project Pravah</h3>
+            <p>
+              Our newest initiative, carrying community outreach and skill-building beyond
+              Delhi-NCR into Hisar, Haryana.
+            </p>
+            <a href="./src/pages/programs.html#pravah" class="prg-link">
+              Learn More
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
           </article>
         </div>
 
+        <div class="prg-footer">
+          <a href="./src/pages/programs.html" class="btn btn-primary">
+            Explore All Programs
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
       </div>
     </section>
 
-    <!-- =========================================================
-     1) VERIFIED IMPACT
-========================================================= -->
-    <section id="impact-counter" class="impx-section" aria-labelledby="impact-title">
-      <div class="container impx-inner">
-
-        <header class="impx-lede">
-          <span class="impx-label">Verified Impact</span>
-          <h2 class="impx-quote" id="impact-title">
-            Two students to fifty-plus children.<br>
-            Three home-grown projects. One promise that has not changed.
-          </h2>
-          <p class="impx-sub">
-            Every number below traces back to Project Shiksha, Project Manthan and Project Pravah —
-            nothing rounded up, nothing estimated.
-          </p>
-        </header>
-
-        <nav class="impx-actions" aria-label="Explore Amaanitvam Foundation">
-          <a class="impx-action" href="./src/pages/programs.html">
-            <span class="material-symbols-outlined" aria-hidden="true">school</span>
-            <span>Explore Programs</span>
-          </a>
-
-          <a class="impx-action" href="./src/pages/volunteer.html#volunteer">
-            <span class="material-symbols-outlined" aria-hidden="true">volunteer_activism</span>
-            <span>Become a Volunteer</span>
-          </a>
-
-          <a class="impx-action" href="./src/pages/webinars-competitions.html">
-            <span class="material-symbols-outlined" aria-hidden="true">event</span>
-            <span>Upcoming Events</span>
-          </a>
-
-          <a class="impx-action impx-action--primary" href="./src/pages/contact.html#donate">
-            <span class="material-symbols-outlined" aria-hidden="true">favorite</span>
-            <span>Donate Now</span>
-          </a>
-        </nav>
-
-        <div class="impx-stats" role="list" aria-label="Verified impact statistics">
-          <article class="impx-stat" role="listitem">
-            <span class="material-symbols-outlined impx-icon" aria-hidden="true">trending_up</span>
-            <div class="impx-value">
-              <span class="impx-count" data-count-to="2">0</span>
-              <span class="impx-arrow" aria-hidden="true">→</span>
-              <span class="impx-count" data-count-to="50" data-suffix="+">0</span>
-            </div>
-            <p class="impx-caption">Project Shiksha grew from 2 students to 50+ children reached.</p>
-          </article>
-
-          <article class="impx-stat" role="listitem">
-            <span class="material-symbols-outlined impx-icon" aria-hidden="true">school</span>
-            <div class="impx-value">
-              <span class="impx-count" data-count-to="50" data-suffix="+">0</span>
-            </div>
-            <p class="impx-caption">Children guided through school admissions and documentation.</p>
-          </article>
-
-          <article class="impx-stat" role="listitem">
-            <span class="material-symbols-outlined impx-icon" aria-hidden="true">diversity_3</span>
-            <div class="impx-value">
-              <span class="impx-count" data-count-to="3">0</span>
-            </div>
-            <p class="impx-caption">Active initiatives: Shiksha, Manthan and the Pravah pilot.</p>
-          </article>
-
-          <article class="impx-stat" role="listitem">
-            <span class="material-symbols-outlined impx-icon" aria-hidden="true">location_on</span>
-            <div class="impx-value">
-              <span class="impx-count" data-count-to="3">0</span>
-              <span class="impx-arrow impx-arrow--plus" aria-hidden="true">+</span>
-            </div>
-            <p class="impx-caption">States reached, from Delhi-NCR to the Pravah pilot in Hisar, Haryana.</p>
-          </article>
-        </div>
-
-        <div class="impx-credentials" aria-label="Foundation credentials">
-          <span>
-            <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-            Registered Section 8 Company
-          </span>
-          <span class="impx-dot" aria-hidden="true">•</span>
-          <span>
-            <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-            Listed on NITI Aayog DARPAN
-          </span>
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- =========================================================
-     2) SUCCESS STORIES — unchanged from v2
-========================================================= -->
+    <!-- 6. FEATURED SUCCESS STORY -->
     <section id="success-story" class="story-section" aria-labelledby="story-title">
       <div class="container">
 
@@ -609,9 +212,8 @@
         <!-- Story 1 — Project Shiksha -->
         <article class="story-row">
           <div class="story-media">
-            <img src="./public/images/programs/project-shiksha.png" alt="Volunteers and children from Project Shiksha"
+            <img src="/images/Projects/ProjectShiksha/2.jpg" alt="Volunteers and children from Project Shiksha"
               class="story-img" loading="lazy">
-            <span class="story-tag">Project Shiksha</span>
           </div>
           <div class="story-copy">
             <span class="story-eyebrow">
@@ -639,9 +241,8 @@
         <!-- Story 2 — Project Manthan -->
         <article class="story-row story-row--reverse">
           <div class="story-media">
-            <img src="./public/images/programs/project-manthan2.png" alt="Counselling session under Project Manthan"
+            <img src="/images/Projects/ProjectManthan/1.jpg" alt="Counselling session under Project Manthan"
               class="story-img" loading="lazy">
-            <span class="story-tag">Project Manthan</span>
           </div>
           <div class="story-copy">
             <span class="story-eyebrow">
@@ -669,10 +270,16 @@
       </div>
     </section>
 
+    <!-- 7. ACTIVE FUNDRAISING CAMPAIGN -->
+    <section id="homeCampaigns" class="campaign-preview-section" aria-live="polite">
+      <div class="campaign-preview-inner">
+        <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
+        <h2>Support a live campaign</h2>
+        <p>Loading active campaigns...</p>
+      </div>
+    </section>
 
-    <!-- =========================================================
-     3) UPCOMING WEBINAR — single minimal card
-========================================================= -->
+    <!-- 8. UPCOMING EVENT / WEBINAR -->
     <section id="homeEvents" class="evt-section" aria-labelledby="evt-title">
       <div class="container">
 
@@ -686,8 +293,7 @@
 
         <article class="evtc-card">
           <div class="evtc-media">
-
-            <img src="./public/images/programs/webinar.jpeg" alt="Upcoming webinar: What Does It Truly Mean to Serve?"
+            <img src="/images/Webinar/webinar4.jpeg" alt="Upcoming webinar: What Does It Truly Mean to Serve?"
               loading="lazy">
             <span class="evtc-badge"><span class="evtc-dot" aria-hidden="true"></span>Registration Open</span>
           </div>
@@ -699,7 +305,6 @@
               to explore the true meaning of service, purpose, empathy, and careers in
               public health and social development.
             </p>
-
 
             <div class="evtc-highlights">
               <h4>In this webinar, you'll discover:</h4>
@@ -731,9 +336,208 @@
       </div>
     </section>
 
+    <!-- 10. VOICES BEHIND OUR MISSION -->
+    <section class="testimonials-section" id="testimonials">
+      <div class="container">
+        <span class="section-tag">OUR COMMUNITY</span>
+        <h2 class="section-title">
+          Voices Behind Our Mission
+        </h2>
+        <p class="section-description">
+          Hear from the people who have experienced and contributed to
+          Amaanitvam Foundation's initiatives.
+        </p>
+        <div class="testimonial-grid">
 
+          <!-- Card 1 -->
+          <div class="testimonial-card">
+            <div class="testimonial-top">
+              <img src="/images/Projects/ProjectShiksha/1.jpg" alt="Student Beneficiary">
+              <div>
+                <h3>Student Beneficiary</h3>
+                <span>Project Shiksha</span>
+              </div>
+            </div>
+            <p class="testimonial-text">
+              Amaanitvam Foundation started Project Shiksha with just 2 students. Through continuous efforts, community
+              support, and dedicated volunteers, the project has now impacted more than 50 children.
+            </p>
+            <div class="testimonial-footer">
+              <span class="verified">
+                ✓ Verified Story
+              </span>
+              <a href="./src/pages/programs.html">Read More →</a>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="testimonial-card">
+            <div class="testimonial-top">
+              <img src="/images/Projects/ProjectManthan/2.jpg" alt="Volunteer">
+              <div>
+                <h3>Volunteer</h3>
+                <span>Community Outreach</span>
+              </div>
+            </div>
+            <p class="testimonial-text">
+              Engage communities and help implement grassroots initiatives on the ground.
+              Plan and manage local events, health camps, and awareness drives.Create content and run online campaigns
+              to amplify our impact.
+            </p>
+            <div class="testimonial-footer">
+              <span class="verified">
+                ✓ Verified
+              </span>
+              <a href="./src/pages/volunteer.html">Read More →</a>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="testimonial-card">
+            <div class="testimonial-top">
+              <img src="/images/Webinar/webinar3.jpeg" alt="Mentor">
+              <div>
+                <h3>Mentor</h3>
+                <span>Skill Development</span>
+              </div>
+            </div>
+            <p class="testimonial-text">
+              Counselling, awareness & mentorship for stronger communities.School admissions & learning support for
+              underserved children. Real-world experience & skill-building for changemakers.
+            </p>
+            <div class="testimonial-footer">
+              <span class="verified">
+                ✓ Verified
+              </span>
+              <a href="./src/pages/webinars-competitions.html">Read More →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. GALLERY PREVIEW -->
+    <section id="gallery-preview" class="gal-section" aria-labelledby="gallery-title">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-label">Moments From The Field</span>
+          <h2 class="section-title" id="gallery-title">Gallery Preview</h2>
+          <p class="section-desc">
+            A glimpse into the classrooms, camps, and conversations that make up our work.
+          </p>
+        </header>
+      </div>
+
+      <div class="gal-track-wrap">
+        <div class="gal-track">
+          <img src="/images/Projects/ProjectManthan/2.jpg" alt="Project Manthan counselling session"
+            loading="lazy">
+          <img src="/images/Projects/ProjectManthan/3.jpg" alt="Volunteers at a community drive"
+            loading="lazy">
+          <img src="/images/Projects/ProjectManthan/4.jpg" alt="Community impact event" loading="lazy">
+          <img src="/images/Webinar/webinar3.jpeg" alt="Mentorship webinar session" loading="lazy">
+          <img src="/images/awards/1.jpeg" alt="Prakruti Seva Samman award ceremony"
+            loading="lazy">
+          <img src="/images/awards/2.jpeg" alt="Best Social Worker Award ceremony"
+            loading="lazy">
+          <img src="/images/Hero/hero2.jpg" alt="Leadership team" loading="lazy">
+          <!-- duplicated for a seamless loop -->
+          <img src="/images/Projects/ProjectManthan/2.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img src="/images/Projects/ProjectManthan/3.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img src="/images/Projects/ProjectManthan/4.jpg" alt="" aria-hidden="true" loading="lazy">
+          <img src="/images/Webinar/webinar3.jpeg" alt="" aria-hidden="true" loading="lazy">
+          <img src="/images/awards/1.jpeg" alt="" aria-hidden="true" loading="lazy">
+          <img src="/images/awards/2.jpeg" alt="" aria-hidden="true" loading="lazy">
+          <img src="/images/Hero/hero2.jpg" alt="" aria-hidden="true" loading="lazy">
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="gal-footer">
+          <a href="./src/pages/gallery.html" class="btn btn-primary">
+            View Full Gallery
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. TRUST & TRANSPARENCY -->
+    <section id="trust" class="trust-section" aria-labelledby="trust-title">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-label">Accountability</span>
+          <h2 class="section-title" id="trust-title">Trust &amp; Transparency</h2>
+          <p class="section-desc">
+            Every claim we make is traceable — here's where you can verify it for yourself.
+          </p>
+        </header>
+
+        <div class="trust-grid">
+
+          <!-- Registration -->
+          <article class="trust-card">
+            <span class="material-symbols-outlined trust-icon" aria-hidden="true">gavel</span>
+            <h3>Registration Details</h3>
+            <p>
+              Registered Section 8 Non-Profit Company with
+              <strong>CIN: U88900DL2025NPL455183</strong> and listed on the
+              NITI Aayog DARPAN Portal.
+            </p>
+            <a href="/src/pages/about.html" class="trust-link">
+              View Registration Details
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+          </article>
+
+          <!-- Annual Report -->
+          <article class="trust-card">
+            <span class="material-symbols-outlined trust-icon" aria-hidden="true">summarize</span>
+            <h3>Annual Report</h3>
+            <p>
+              Review our annual report covering programs, finances, and organizational
+              impact in a transparent and accessible format.
+            </p>
+            <a href="/documents/annual-reports/Annual-report.pdf" download="Annual-Report.pdf" class="trust-link">
+              Annual Report
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+          </article>
+
+          <!-- Legal Documents -->
+          <article class="trust-card">
+            <span class="material-symbols-outlined trust-icon" aria-hidden="true">policy</span>
+            <h3>Policies &amp; Legal Documents</h3>
+            <p>
+              Read our Privacy Policy, Terms &amp; Conditions, and Refund Policy to
+              understand how we operate and protect your information.
+            </p>
+            <a href="/src/pages/legal/privacy-policy.html" class="trust-link">
+              Privacy Policy
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+
+            <a href="/src/pages/legal/terms-conditions.html" class="trust-link">
+              Terms &amp; Conditions
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+
+            <a href="/src/pages/legal/refund-policy.html" class="trust-link">
+              Refund Policy
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+  
   </main>
+
+  <!-- 14. FOOTER -->
   <div id="footer"></div>
+
   <a class="floating-donate" href="./src/pages/contact.html#donate">
     ❤ Donate Now
   </a>

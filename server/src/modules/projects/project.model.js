@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
 
 const projectSchema = new mongoose.Schema({
-  title: { 
-    type: String, 
-    required: true 
+  title: {
+    type: String,
+    required: true
   },
-  description: { 
-    type: String 
+  description: {
+    type: String
   },
-  progress: { 
-    type: Number, 
-    default: 0 
+  progress: {
+    type: Number,
+    default: 0
   },
   status: {
     type: String,
@@ -18,22 +18,22 @@ const projectSchema = new mongoose.Schema({
     //enum: ['ongoing', 'completed', 'pending_approval', 'On Hold', 'on hold', 'Active', 'Pending'],
     default: 'ongoing'
   },
-  startDate: { 
-    type: Date 
+  startDate: {
+    type: Date
   },
-  endDate: { 
-    type: Date 
+  endDate: {
+    type: Date
   },
   // Matches your assignedMembers array in React
-  assignedMembers: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User' 
+  assignedMembers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }],
-  department: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Department' 
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'department'
   }
-}, { 
+}, {
   timestamps: true,
   collection: 'projects'
 });

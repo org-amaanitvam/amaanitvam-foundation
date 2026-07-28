@@ -17,11 +17,11 @@ export default function ProjectsPage() {
   const [departments, setDepartments] = useState([]);
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState("");
-  const canManageProjects =
-    userProfile?.role === 'admin' ||
-    userProfile?.role === 'super_admin' ||
-    userProfile?.role === 'department_head' ||
-    canAccessPermission(userProfile, 'projects.manage');
+  const canManageProjects = canAccessPermission(
+    userProfile,
+    "projects.manage",
+  );
+
   const filterConfig = [
   {
     name: "status",
@@ -52,23 +52,23 @@ export default function ProjectsPage() {
 ];
 
   const fetchProjects = async () => {
+    setLoading(true);
+
     try {
-      const { data } = await api.get('/projects');
-      setProjects(data.projects || []);
-      if (canManageProjects) {
-        const res = await api.get('/admin/members');
-        setUsers(res.data.members || []);
-        const deptRes = await api.get('/departments');
-        setDepartments(deptRes.data.departments || []);
-      }
+      const { data } = await api.get("/projects");
+      setProjects(
+        data.projects ||
+        data.data ||
+        [],
+      );
     } catch (error) {
-      console.error('Projects load failed:', error);
+      console.error("Projects load failed:", error);
       toast.error(
         error.response?.data?.message ||
           `Failed to load projects${
             error.response?.status
               ? ` (HTTP ${error.response.status})`
-              : ''
+              : ""
           }`,
       );
     } finally {
@@ -76,7 +76,59 @@ export default function ProjectsPage() {
     }
   };
 
-  useEffect(() => { fetchProjects(); }, []);
+  const fetchProjectOptions = async () => {
+    if (!canManageProjects) {
+      setUsers([]);
+      setDepartments([]);
+      return;
+    }
+
+    const [membersResult, departmentsResult] =
+      await Promise.allSettled([
+        api.get("/admin/members"),
+        api.get("/departments"),
+      ]);
+
+    if (membersResult.status === "fulfilled") {
+      setUsers(
+        membersResult.value.data.members ||
+        membersResult.value.data.data ||
+        [],
+      );
+    } else {
+      setUsers([]);
+      console.error(
+        "Project member options failed:",
+        membersResult.reason,
+      );
+      toast.error(
+        membersResult.reason?.response?.data?.message ||
+          "Project members could not be loaded.",
+      );
+    }
+
+    if (departmentsResult.status === "fulfilled") {
+      setDepartments(
+        departmentsResult.value.data.departments ||
+        departmentsResult.value.data.data ||
+        [],
+      );
+    } else {
+      setDepartments([]);
+      console.error(
+        "Project department options failed:",
+        departmentsResult.reason,
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    fetchProjectOptions();
+  }, [canManageProjects]);
 
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
@@ -85,7 +137,7 @@ export default function ProjectsPage() {
         await api.put(`/projects/${editingId}`, formData);
         toast.success('Project updated');
       } else {
-        await api.post('/projects/create', formData);
+        await api.post("/projects", formData);
         toast.success('Project created');
       }
       setShowCreate(false);

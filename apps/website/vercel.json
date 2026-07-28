@@ -3,6 +3,14 @@
     "trailingSlash": false,
     "rewrites": [
         {
+            "source": "/images/:path*",
+            "destination": "/public/images/:path*"
+        },
+        {
+            "source": "/documents/:path*",
+            "destination": "/public/documents/:path*"
+        },
+        {
             "source": "/",
             "destination": "/index.html"
         },
@@ -11,12 +19,56 @@
             "destination": "/src/pages/about.html"
         },
         {
-            "source": "/programs",
-            "destination": "/src/pages/programs.html"
+            "source": "/collaborations",
+            "destination": "/src/pages/collaborations.html"
         },
         {
             "source": "/contact",
             "destination": "/src/pages/contact.html"
+        },
+        {
+            "source": "/faq",
+            "destination": "/src/pages/faq.html"
+        },
+        {
+            "source": "/gallery",
+            "destination": "/src/pages/gallery.html"
+        },
+        {
+            "source": "/impact",
+            "destination": "/src/pages/impact.html"
+        },
+        {
+            "source": "/internship",
+            "destination": "/src/pages/internship.html"
+        },
+        {
+            "source": "/programs",
+            "destination": "/src/pages/programs.html"
+        },
+        {
+            "source": "/verify",
+            "destination": "/src/pages/verify.html"
+        },
+        {
+            "source": "/volunteer",
+            "destination": "/src/pages/volunteer.html"
+        },
+        {
+            "source": "/webinars-competitions",
+            "destination": "/src/pages/webinars-competitions.html"
+        },
+        {
+            "source": "/legal/privacy-policy",
+            "destination": "/src/pages/legal/privacy-policy.html"
+        },
+        {
+            "source": "/legal/refund-policy",
+            "destination": "/src/pages/legal/refund-policy.html"
+        },
+        {
+            "source": "/legal/terms-conditions",
+            "destination": "/src/pages/legal/terms-conditions.html"
         }
     ]
 }
