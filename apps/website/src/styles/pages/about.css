@@ -202,6 +202,7 @@ body[data-page="about"] .about-intro__grid--reverse .about-intro__media {
     order: 2;
 }
 
+/* Update the section media container background */
 body[data-page="about"] .about-intro__media {
     position: relative;
     width: 100%;
@@ -209,7 +210,15 @@ body[data-page="about"] .about-intro__media {
     border-radius: var(--about-radius-lg);
     overflow: hidden;
     box-shadow: var(--about-shadow-lg);
-    background: var(--about-surface-tint);
+    background: var(--surface-pink) !important;
+    /* Updated from --about-surface-tint */
+}
+
+/* If you are applying the background color to the body wrapper or card container */
+body[data-page="about"] .about-intro__body {
+    background-color: var(--surface-pink) !important;
+    border-radius: var(--about-radius-md);
+    padding: var(--space-3);
 }
 
 body[data-page="about"] .about-intro__media::after {
@@ -236,6 +245,17 @@ body[data-page="about"] .about-intro__media:hover .about-intro__image {
 
 body[data-page="about"] .about-intro__body {
     max-width: 620px;
+    text-align: left;
+}
+
+body[data-page="about"] .about-intro__lead,
+body[data-page="about"] .about-intro__text {
+    font-size: 1.05rem !important;
+    line-height: 1.85 !important;
+    color: var(--about-text-muted) !important;
+    margin: 0 0 var(--space-3) !important;
+    text-align: left !important;
+    /* Guarantees paragraph text remains left-aligned */
 }
 
 body[data-page="about"] .about-intro__title {
@@ -282,7 +302,6 @@ body[data-page="about"] .about-intro__text {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 }
-
 @media (max-width: 900px) {
 
     body[data-page="about"] .about-intro__grid,
@@ -295,18 +314,20 @@ body[data-page="about"] .about-intro__text {
         order: initial;
     }
 
+    /* Left-align titles and text body */
     body[data-page="about"] .about-intro__title {
-        text-align: center !important;
+        text-align: left !important;
     }
 
     body[data-page="about"] .about-intro__title span::after {
-        left: 50%;
-        transform: translateX(-50%);
+        left: 0;
+        transform: none;
     }
 
     body[data-page="about"] .about-intro__body {
         max-width: none;
-        text-align: center;
+        text-align: left !important;
+        /* Forces left alignment */
     }
 
     body[data-page="about"] .about-intro__media {

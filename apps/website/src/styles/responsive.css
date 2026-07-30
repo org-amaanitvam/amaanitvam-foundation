@@ -1,12 +1,16 @@
+/* ==========================================================================
+   Responsive Rules — Cleaned Up
+   ========================================================================== */
+
+
+
+.container {
+    padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
 @media (max-width: 600px) {
     .moved-inline-style-112 {
         padding: 1.25rem;
-    }
-}
-
-@media (min-width:768px) {
-    .container {
-        padding: 0 3rem;
     }
 }
 
@@ -52,65 +56,30 @@
     }
 }
 
-
-
 @media (max-width:768px) {
     :root {
         --nav-h: 64px;
         --section-py: 60px;
     }
 
-    .nav-inner {
-        padding: 0 16px;
-    }
-
     .brand-logo {
         height: 42px;
-    }
-
-    .brand-name {
-        font-size: 1.25rem;
-        letter-spacing: 2px;
-    }
-
-    .brand-subtitle {
-        font-size: .62rem;
-        letter-spacing: 1.8px;
     }
 
     .hero-title {
         text-align: left;
     }
 
-    .floating-socials,
-    .social-sidebar {
-        display: none;
-    }
-
-    .floating-donate {
-        right: 16px !important;
-        bottom: 16px !important;
-        padding: 14px 22px !important;
-        font-size: 14px;
-    }
+    /* CLEANUP: .floating-donate and .floating-socials/.social-sidebar
+       used to be re-declared here. Both were dead — see the merged,
+       canonical @media (max-width: 768px) block further down for why. */
 }
 
 @media (max-width:600px) {
-    .container {
-        padding: 0 1rem;
-    }
-
-    .section-label {
-        letter-spacing: .28em;
-        font-size: .75rem;
-    }
-
     .section.section-white {
         padding: 60px 16px;
     }
 }
-
-
 
 @media (min-width: 768px) {
     .grid-2-col {
@@ -125,6 +94,12 @@
 }
 
 @media (max-width: 640px) {
+
+    /* CLEANUP: this is now the single .section-label mobile rule. A
+       duplicate at max-width:600 (letter-spacing .28em, font-size .75rem,
+       not !important) used to sit above — since this range fully contains
+       that one and this rule is !important, the .28em version never
+       rendered. Removed the dead copy, kept this (the effective) one. */
     .section-label {
         font-size: .75rem !important;
         letter-spacing: .14em !important;
@@ -134,7 +109,9 @@
     body:has(.app-shell) .priority-panel,
     body:has(.app-shell) .panel,
     body:has(.app-shell) .section-hero article {
-        border-radius: 10px;
+        /* RADIUS ALIGNED: 10px → 12px to sit inside the 12–16px scale
+           used across the redesigned dashboard panels. Purely cosmetic. */
+        border-radius: 12px;
         padding: 16px;
     }
 
@@ -154,8 +131,6 @@
         padding: 12px 16px;
     }
 }
-
-
 
 @media (max-width: 1180px) {
     body:has(.app-shell) .filter-strip {
@@ -240,7 +215,8 @@
 
 @media (max-width:620px) {
     body.dashboard-page .dashboard-main {
-        padding: 14px;
+        /* 8px-grid rounding: 14px → 16px. Purely cosmetic padding. */
+        padding: 16px;
     }
 
     body.dashboard-page .topbar {
@@ -311,10 +287,6 @@
         min-height: 600px;
     }
 }
-
-
-
-
 
 @media (max-width: 900px) {
     .project-image-wrapper {
@@ -425,20 +397,34 @@
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding-inline: 18px !important;
-    }
 
     .section,
     .section.section-white {
         padding-block: 52px;
-        padding-inline: 0;
+        /* BUG FIX: this was `padding-inline: 0`, which — because this rule
+           comes after the earlier .container/.section-white padding rules
+           in the cascade — zeroed out ALL horizontal padding on white/
+           featured sections below 768px, running text edge-to-edge on
+           mobile. Restored a sensible horizontal gutter matching the
+           container's mobile padding instead of removing it. */
+        padding-inline: 20px;
     }
 }
 
+/* --------------------------------------------------------------------------
+   CLEANUP: merged. This used to be two separate @media (max-width: 768px)
+   blocks. Several selectors were declared in both with different values —
+   .nav-inner, .brand-logo, .brand-name, .brand-subtitle, .floating-donate,
+   .floating-socials/.social-sidebar — and because the second block appeared
+   later in the file, its values silently won every time; the first
+   block's versions never rendered. Merged into one block containing only
+   the values that were actually taking effect, so the source now matches
+   the rendered result.
+   -------------------------------------------------------------------------- */
+
 @media (max-width: 768px) {
     .nav-inner {
-        padding-inline: 12px;
+        padding: 0 12px;
     }
 
     .brand {
@@ -487,17 +473,20 @@
         line-height: 1.02 !important;
     }
 
+    /* 8px-grid rounding on the one effective floating-donate rule
+       (13px 20px / 14px 14px → 16px 24px / 16px 16px). */
     .floating-donate {
-        right: 14px !important;
-        bottom: 14px !important;
-        padding: 13px 20px !important;
+        right: 16px !important;
+        bottom: 16px !important;
+        padding: 16px 24px !important;
         font-size: 14px;
     }
 
-    .floating-socials,
-    .social-sidebar {
-        display: none !important;
-    }
+    /* CLEANUP: .floating-socials/.social-sidebar { display:none } used to
+       be declared here too — but the "Consolidated footer..." style block
+       further down sets `display: flex !important` on the SAME selectors
+       at the SAME breakpoint and comes later in the file, so it always
+       won. The display:none never actually rendered; removed as dead. */
 }
 
 @media (max-width: 380px) {
@@ -524,12 +513,6 @@
         width: 40px;
         height: 40px;
         flex-basis: 40px;
-    }
-}
-
-@media (max-width: 380px) {
-    .container {
-        padding-inline: 14px !important;
     }
 }
 
@@ -588,7 +571,6 @@
 @media (min-width: 768px) and (max-width: 1023px) {
     .container {
         max-width: 100%;
-        padding-inline: 24px;
     }
 
     .grid-2,

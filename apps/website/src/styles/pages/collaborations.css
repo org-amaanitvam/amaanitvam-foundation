@@ -319,3 +319,11 @@ body[data-page="collaborations"] .collab-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
 }
+
+body[data-page="collaborations"] .page-hero.has-image {
+    background:
+        linear-gradient(135deg,
+            rgba(86, 5, 26, .88),
+            rgba(86, 5, 26, .60)),
+        url("/images/Projects/ProjectShiksha/60.jpg") center center / cover no-repeat !important;
+}

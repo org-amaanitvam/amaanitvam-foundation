@@ -482,9 +482,9 @@
 }
 
 .btn-rect-dark {
-    background: #0d1a14;
+    background: var(--primary);
     color: #fff !important;
-    border: 1px solid #0d1a14;
+    border: 1px solid var(--gold);
 }
 
 .btn-rect-dark:hover {
@@ -1329,8 +1329,7 @@
 
 .moved-inline-style-002 {
     position: relative;
-    background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("/images/Hero/hero2.jpg");
+    background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url(/images/Hero/hero2.jpg) !important;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1751,8 +1750,7 @@
 
 .moved-inline-style-079 {
     position: relative;
-    background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("/images/Hero/hero2.jpg");
+    background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url(/images/Hero/hero2.jpg) !important;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -3448,8 +3446,7 @@ body.dashboard-page .toast.show {
 
 .moved-inline-style-075 {
     position: relative;
-    background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("/images/Hero/hero2.jpg");
+    background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url(/images/Hero/hero2.jpg) !important;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -3648,8 +3645,7 @@ body.dashboard-page .toast.show {
 
 .moved-inline-style-final-001 {
     position: relative;
-    background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)),
-        url("/images/Hero/hero2.jpg");
+        background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url(/images/Hero/hero2.jpg) !important;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -3803,8 +3799,7 @@ body.dashboard-page .toast.show {
 
 .moved-inline-style-final-029 {
     position: relative;
-    background-image: linear-gradient(135deg, rgba(93, 15, 45, 0.9), rgba(74, 11, 35, 0.75)),
-        url("/images/Hero/hero2.jpg");
+    background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url(/images/Hero/hero2.jpg) !important;
     background-size: cover;
     background-position: center;
     padding: 5rem 0;
