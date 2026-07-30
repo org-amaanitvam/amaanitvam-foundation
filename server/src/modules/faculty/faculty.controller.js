@@ -1,4 +1,6 @@
 import Faculty from './faculty.model.js';
+import Doubt from '../doubts/doubt.model.js';
+import Course from '../courses/course.model.js';
 import { sendSuccess, sendList } from '../../shared/response/index.js';
 import { NotFoundError } from '../../shared/errors/AppError.js';
 
@@ -11,6 +13,13 @@ export const list = async (req, res, next) => {
     const filter = { is_active: true };
     if (req.query.department) filter.department = req.query.department;
     if (req.query.subject) filter.subjects = req.query.subject;
+    if (req.query.search) {
+      filter.$or = [
+        { employee_id: { $regex: req.query.search, $options: 'i' } },
+        { department: { $regex: req.query.search, $options: 'i' } },
+        { qualification: { $regex: req.query.search, $options: 'i' } },
+      ];
+    }
 
     const total = await Faculty.countDocuments(filter);
     const faculty = await Faculty.find(filter)
@@ -73,11 +82,38 @@ export const updateStatus = async (req, res, next) => {
 
 export const getStats = async (req, res, next) => {
   try {
-    const facultyId = req.params.facultyId;
-    const faculty = await Faculty.findById(facultyId);
+    const faculty = await Faculty.findById(req.params.facultyId);
     if (!faculty) throw new NotFoundError('Faculty not found');
 
-    sendSuccess(res, 200, { faculty, stats: { courses_count: 0, doubts_resolved: 0 } }, 'Faculty stats');
+    const coursesCount = await Course.countDocuments({
+      _id: { $in: faculty.assigned_courses || [] },
+      is_deleted: false,
+    });
+
+    const doubtsResolved = await Doubt.countDocuments({
+      assigned_faculty_id: faculty._id,
+      status: 'resolved',
+    });
+
+    const doubtsAssigned = await Doubt.countDocuments({
+      assigned_faculty_id: faculty._id,
+      status: { $ne: 'resolved' },
+    });
+
+    const totalDoubts = await Doubt.countDocuments({
+      assigned_faculty_id: faculty._id,
+    });
+
+    sendSuccess(res, 200, {
+      faculty,
+      stats: {
+        courses_count: coursesCount,
+        doubts_resolved: doubtsResolved,
+        doubts_assigned: doubtsAssigned,
+        total_doubts: totalDoubts,
+        experience_years: faculty.experience_years,
+      },
+    }, 'Faculty stats');
   } catch (error) {
     next(error);
   }
@@ -87,9 +123,16 @@ export const bulkImport = async (req, res, next) => {
   try {
     const { facultyData } = req.body;
     if (!Array.isArray(facultyData)) {
-      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'facultyData must be an array', details: [] } });
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'facultyData must be an array',
+          details: [],
+        },
+      });
     }
-    const result = await Faculty.insertMany(facultyData);
+    const result = await Faculty.insertMany(facultyData, { ordered: false });
     sendSuccess(res, 201, { count: result.length, faculty: result }, 'Bulk import completed');
   } catch (error) {
     next(error);
