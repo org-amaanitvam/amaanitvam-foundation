@@ -50,10 +50,10 @@ export default function MeetingsPage() {
   });
 
   const { userProfile } = useAuth();
-  const isAdmin =
-    userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  const isAdmin =true;
+    //userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
-  const fetchMeetings = useCallback(async () => {
+const fetchMeetings = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -65,7 +65,20 @@ export default function MeetingsPage() {
 
       const [meetingsRes, membersRes] = await Promise.all(requests);
 
-      setMeetings(meetingsRes.data.meetings || []);
+      // FIX 1: Robust array extraction (just like we did for Tasks)
+      const fetchedData = meetingsRes.data;
+      const rawMeetings = Array.isArray(fetchedData) ? fetchedData
+                        : Array.isArray(fetchedData.meetings) ? fetchedData.meetings
+                        : Array.isArray(fetchedData.data) ? fetchedData.data
+                        : [];
+
+      // FIX 2: Normalize the date key from the database format to the frontend format
+      const normalizedMeetings = rawMeetings.map(m => ({
+        ...m,
+        meetingDate: m.meetingDate || m.meeting_date // Catch the backend format!
+      }));
+
+      setMeetings(normalizedMeetings);
 
       if (isAdmin && membersRes) {
         setUsers(membersRes.data.members || []);
@@ -82,11 +95,25 @@ export default function MeetingsPage() {
     fetchMeetings();
   }, [fetchMeetings]);
 
-  const handleCreate = async (e) => {
+const handleCreate = async (e) => {
     e.preventDefault();
 
     try {
-      await api.post('/meetings/create', formData);
+      // Map the frontend camelCase to the backend snake_case expected by Mongoose
+      const submissionData = {
+        title: formData.title,
+        description: formData.description,
+        meeting_date: formData.meetingDate, // THE FIX: Translating key for the DB
+        attendees: formData.attendees
+      };
+      
+      // Clean up empty fields
+      if (!submissionData.meeting_date) delete submissionData.meeting_date;
+      if (submissionData.attendees && submissionData.attendees.length === 0) {
+        delete submissionData.attendees;
+      }
+
+      await api.post('/meetings', submissionData);
 
       toast.success('Meeting created');
       setShowCreate(false);

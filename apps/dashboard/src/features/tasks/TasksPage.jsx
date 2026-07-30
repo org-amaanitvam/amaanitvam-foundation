@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Loader2, Plus, Edit2 } from 'lucide-react';
+import { ClipboardList, Loader2, Plus, Edit2, Paperclip } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
@@ -9,10 +9,12 @@ const initialFormData = {
   title: '',
   description: '',
   assignedTo: '',
+  category: 'General', 
   deadline: '',
   status: 'open',
   priority: 'medium',
   progress: 0,
+  attachmentUrl: '', 
   newComment: '',
 };
 
@@ -26,21 +28,27 @@ export default function TasksPage() {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
   const [users, setUsers] = useState([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
-  const isAdmin =
-    userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  // Keeping your hardcoded bypass for testing
+  const isAdmin = true; 
+  // const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
-  const fetchTasks = useCallback(async () => {
+const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
-
       const { data } = await api.get('/tasks');
       
       const taskList = Array.isArray(data) ? data
                      : Array.isArray(data.tasks) ? data.tasks
                      : Array.isArray(data.data) ? data.data
                      : [];
-      setTasks(taskList);
+const normalizedTasks = taskList.map(t => ({
+        ...t,
+        assignedTo: t.assignedTo || t.assigned_to_id
+      }));
+
+      setTasks(normalizedTasks);
 
       if (isAdmin) {
         const res = await api.get('/admin/members');
@@ -64,26 +72,69 @@ export default function TasksPage() {
     setFormData(initialFormData);
   };
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setUploadingFile(true);
+    try {
+      // 1. Create a dynamic folder for this specific task's attachments
+      const folderRes = await api.post('/gallery/folders', {
+        name: `Task Attachment: ${formData.title || 'Untitled Task'}`,
+        description: "Auto-generated folder for task attachments"
+      });
+      const newFolderId = folderRes.data.folder._id;
+
+      // 2. Upload the image and attach it to the new folder
+      const uploadData = new FormData();
+      uploadData.append("image", file);
+      uploadData.append("folderId", newFolderId); 
+      uploadData.append("title", file.name);
+      
+      const res = await api.post('/gallery/upload', uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      setFormData({ ...formData, attachmentUrl: res.data.media.secure_url });
+      toast.success("File attached successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("File upload failed. Check backend connection.");
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
 
     try {
       const submissionData = {
-        ...formData,
-        priority: formData.priority.toLowerCase()
+        title: formData.title,
+        description: formData.description,
+        assigned_to_id: formData.assignedTo, // Always send the ID
+        category: formData.category,
+        deadline: formData.deadline,
+        status: formData.status,
+        priority: formData.priority.toLowerCase(),
+        progress: formData.progress,
+        attachmentUrl: formData.attachmentUrl,
+        comment: formData.newComment 
       };
+
+      // ONLY delete deadline if it's empty. Do NOT delete assigned_to_id.
+      if (!submissionData.deadline) delete submissionData.deadline;
 
       if (editingId) {
         await api.put(`/tasks/${editingId}`, submissionData);
         toast.success('Task updated');
       } else {
-        // THE FIX: Changed from '/tasks/create' to '/tasks' to match the backend router exactly!
         await api.post('/tasks', submissionData);
         toast.success('Task assigned successfully!');
       }
 
       resetForm();
-      fetchTasks(); // Refreshes the list instantly so the new task appears
+      fetchTasks(); 
     } catch (err) {
       console.error(err);
       toast.error(
@@ -98,12 +149,14 @@ export default function TasksPage() {
       title: task.title || '',
       description: task.description || '',
       assignedTo: task.assignedTo?._id || task.assignedTo || '',
+      category: task.category || 'General',
       deadline: task.deadline
         ? new Date(task.deadline).toISOString().split('T')[0]
         : '',
       status: task.status || 'open',
       priority: (task.priority || 'medium').toLowerCase(), 
       progress: Number(task.progress || 0),
+      attachmentUrl: task.attachmentUrl || '',
       newComment: '',
     });
 
@@ -129,39 +182,25 @@ export default function TasksPage() {
 
   const filtered = myTasks.filter((t) => {
     let match = true;
-
-    if (filters.status && filters.status !== 'all' && t.status !== filters.status) {
-      match = false;
-    }
-
+    if (filters.status && filters.status !== 'all' && t.status !== filters.status) match = false;
+    if (filters.category && filters.category !== 'all' && t.category !== filters.category) match = false;
+    
     const taskPriority = (t.priority || 'medium').toLowerCase();
-    if (
-      filters.priority &&
-      filters.priority !== 'all' &&
-      taskPriority !== filters.priority
-    ) {
-      match = false;
-    }
+    if (filters.priority && filters.priority !== 'all' && taskPriority !== filters.priority) match = false;
 
     if (filters.assignedTo && filters.assignedTo !== 'all') {
       const assignedId = t.assignedTo?._id || t.assignedTo;
-      if (assignedId !== filters.assignedTo) {
-        match = false;
-      }
+      if (assignedId !== filters.assignedTo) match = false;
     }
 
     if (filters.deadline?.start && t.deadline) {
-      if (new Date(t.deadline) < new Date(filters.deadline.start)) {
-        match = false;
-      }
+      if (new Date(t.deadline) < new Date(filters.deadline.start)) match = false;
     }
 
     if (filters.deadline?.end && t.deadline) {
       const end = new Date(filters.deadline.end);
       end.setHours(23, 59, 59, 999);
-      if (new Date(t.deadline) > end) {
-        match = false;
-      }
+      if (new Date(t.deadline) > end) match = false;
     }
 
     return match;
@@ -189,6 +228,18 @@ export default function TasksPage() {
         { label: 'Low', value: 'low' },
         { label: 'Medium', value: 'medium' },
         { label: 'High', value: 'high' },
+      ],
+    },
+    {
+      name: 'category',
+      label: 'Category',
+      type: 'select',
+      options: [
+        { label: 'All Categories', value: 'all' },
+        { label: 'General', value: 'General' },
+        { label: 'Development', value: 'Development' },
+        { label: 'Design', value: 'Design' },
+        { label: 'Marketing', value: 'Marketing' },
       ],
     },
     ...(isAdmin
@@ -269,97 +320,94 @@ export default function TasksPage() {
               {isAdmin && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Title
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Title</label>
                     <input
                       required
                       value={formData.title}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          title: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value }) }
                       className="w-full px-3 py-2 border rounded-xl text-sm"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Assign To
-                    </label>
-                    <select
-                      required
-                      value={formData.assignedTo}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          assignedTo: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border rounded-xl text-sm"
-                    >
-                      <option value="">Select Member</option>
-                      {users.map((u) => (
-                        <option key={u._id} value={u._id}>
-                          {u.name} ({u.role})
-                        </option>
-                      ))}
-                    </select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Assign To</label>
+                      <select
+                        required
+                        value={formData.assignedTo}
+                        onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value }) }
+                        className="w-full px-3 py-2 border rounded-xl text-sm"
+                      >
+                        <option value="" disabled>Select a Member</option>
+                        {users.map((u) => (
+                          <option key={u._id} value={u._id}>
+                            {u.name} ({u.role})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Category</label>
+                      <select
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value }) }
+                        className="w-full px-3 py-2 border rounded-xl text-sm"
+                      >
+                        <option value="General">General</option>
+                        <option value="Development">Development</option>
+                        <option value="Design">Design</option>
+                        <option value="Marketing">Marketing</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Priority</label>
+                      <select
+                        required
+                        value={formData.priority}
+                        onChange={(e) => setFormData({ ...formData, priority: e.target.value }) }
+                        className="w-full px-3 py-2 border rounded-xl text-sm"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Status</label>
+                      <select
+                        required
+                        value={formData.status}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value }) }
+                        className="w-full px-3 py-2 border rounded-xl text-sm"
+                      >
+                        <option value="open">Open</option>
+                        <option value="inProgress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending_approval">Pending Approval</option>
+                      </select>
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Priority
-                    </label>
-                    <select
-                      required
-                      value={formData.priority}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          priority: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border rounded-xl text-sm"
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Deadline
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Deadline</label>
                     <input
                       type="date"
-                      required
                       value={formData.deadline}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          deadline: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setFormData({ ...formData, deadline: e.target.value }) }
                       className="w-full px-3 py-2 border rounded-xl text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Description
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Description</label>
                     <textarea
                       value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value }) }
                       className="w-full px-3 py-2 border rounded-xl text-sm"
                       rows="3"
                     />
@@ -367,83 +415,86 @@ export default function TasksPage() {
                 </>
               )}
 
+              {/* NEW: Attachment Upload Section */}
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                  <Paperclip className="w-4 h-4"/> Task Attachment
+                </label>
+                
+                {formData.attachmentUrl ? (
+                  <div className="flex items-center justify-between">
+                    <a href={formData.attachmentUrl} target="_blank" rel="noreferrer" className="text-blue-600 text-sm font-medium hover:underline truncate">
+                      View Uploaded File
+                    </a>
+                    <button type="button" onClick={() => setFormData({...formData, attachmentUrl: ''})} className="text-xs text-red-500 hover:text-red-700">Remove</button>
+                  </div>
+                ) : (
+                  <div>
+                    <input 
+                      type="file" 
+                      onChange={handleFileUpload} 
+                      disabled={uploadingFile}
+                      className="text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#56051a]/10 file:text-[#56051a] hover:file:bg-[#56051a]/20 cursor-pointer w-full"
+                    />
+                    {uploadingFile && <p className="text-xs text-slate-500 mt-2 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin"/> Uploading to cloud...</p>}
+                  </div>
+                )}
+              </div>
+
               {!isAdmin && (
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
-                  <h3 className="font-semibold text-slate-800">
-                    {formData.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {formData.description}
-                  </p>
+                  <h3 className="font-semibold text-slate-800">{formData.title}</h3>
+                  <p className="text-xs text-slate-500 mt-1">{formData.description}</p>
                 </div>
               )}
 
               {editingId && (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Status
-                    </label>
-                    <select
-                      required
-                      value={formData.status}
-                      onChange={(e) => {
-                        const newStatus = e.target.value;
-
-                        setFormData({
-                          ...formData,
-                          status: newStatus,
-                          progress:
-                            newStatus === 'completed'
-                              ? 100
-                              : Number(formData.progress || 0),
-                        });
-                      }}
-                      className="w-full px-3 py-2 border rounded-xl text-sm"
-                    >
-                      <option value="open">Open</option>
-                      <option value="inProgress">In Progress</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </div>
+                  {!isAdmin && (
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Status</label>
+                      <select
+                        required
+                        value={formData.status}
+                        onChange={(e) => {
+                          const newStatus = e.target.value;
+                          setFormData({
+                            ...formData,
+                            status: newStatus,
+                            progress: newStatus === 'completed' ? 100 : Number(formData.progress || 0),
+                          });
+                        }}
+                        className="w-full px-3 py-2 border rounded-xl text-sm"
+                      >
+                        <option value="open">Open</option>
+                        <option value="inProgress">In Progress</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium mb-1 flex justify-between">
                       <span>Progress</span>
-                      <span className="text-[#56051a] font-bold">
-                        {formData.progress || 0}%
-                      </span>
+                      <span className="text-[#56051a] font-bold">{formData.progress || 0}%</span>
                     </label>
-
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={formData.progress || 0}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          progress: Number(e.target.value),
-                        })
-                      }
+                      onChange={(e) => setFormData({ ...formData, progress: Number(e.target.value) }) }
                       className="w-full accent-[#56051a]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Add Update Comment
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Add Update Comment</label>
                     <input
                       type="text"
                       placeholder="e.g. Task has been started"
                       value={formData.newComment || ''}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          newComment: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setFormData({ ...formData, newComment: e.target.value }) }
                       className="w-full px-3 py-2 border rounded-xl text-sm"
                     />
                   </div>
@@ -458,10 +509,10 @@ export default function TasksPage() {
                 >
                   Cancel
                 </button>
-
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-[#56051a] rounded-xl hover:bg-[#7a1e3a]"
+                  disabled={uploadingFile}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#56051a] rounded-xl hover:bg-[#7a1e3a] disabled:opacity-50"
                 >
                   {editingId ? 'Save Changes' : 'Create'}
                 </button>
@@ -488,52 +539,58 @@ export default function TasksPage() {
                 className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
               >
                 <span
-                  className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'
-                    }`}
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'}`}
                 >
                   {getStatusLabel(t.status)}
                 </span>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-slate-800 truncate">
-                      {t.title}
-                    </h3>
-
+                    <h3 className="font-semibold text-slate-800 truncate">{t.title}</h3>
                     <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">
                       {t.progress || 0}%
                     </span>
+                    
+                    {/* NEW: Category Badge */}
+                    {t.category && t.category !== 'General' && (
+                      <span className="text-[10px] font-semibold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full border border-indigo-100">
+                        {t.category}
+                      </span>
+                    )}
                   </div>
 
                   <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 mb-1 max-w-[200px]">
                     <div
-                      className="bg-[#56051a] h-1.5 rounded-full"
+                      className="bg-[#56051a] h-1.5 rounded-full transition-all duration-500"
                       style={{ width: `${t.progress || 0}%` }}
                     />
                   </div>
 
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Assigned to: {t.assignedTo?.name || 'Unassigned'}
-                    {t.deadline &&
-                      ` • Due: ${new Date(t.deadline).toLocaleDateString()}`}
+                  <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
+                    <span>Assigned to: <span className="font-medium text-slate-700">{t.assignedTo?.name || 'Unassigned'}</span></span>
+                    {t.deadline && <span>• Due: {new Date(t.deadline).toLocaleDateString()}</span>}
                   </p>
 
+                  {/* NEW: Attachment Link rendering */}
+                  {t.attachmentUrl && (
+                    <a href={t.attachmentUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-1.5 text-[11px] font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-0.5 rounded transition-colors">
+                      <Paperclip className="w-3 h-3"/> View Attachment
+                    </a>
+                  )}
+
                   {t.comments && t.comments.length > 0 && (
-                    <p className="text-xs text-slate-400 mt-1 italic line-clamp-1">
+                    <p className="text-xs text-slate-500 mt-1.5 italic border-l-2 border-slate-200 pl-2">
                       Latest: {t.comments[t.comments.length - 1].text}
                     </p>
                   )}
 
                   {safePriority && (
-                    <p className="text-xs mt-1">
-                      <span className="text-slate-500">Priority: </span>
+                    <p className="text-xs mt-1.5">
+                      <span className="text-slate-400">Priority: </span>
                       <span
-                        className={`font-medium ${safePriority === 'high'
-                            ? 'text-rose-500'
-                            : safePriority === 'low'
-                              ? 'text-slate-500'
-                              : 'text-amber-500'
-                          }`}
+                        className={`font-medium ${
+                          safePriority === 'high' ? 'text-rose-500' : safePriority === 'low' ? 'text-slate-500' : 'text-amber-500'
+                        }`}
                       >
                         {safePriority.charAt(0).toUpperCase() + safePriority.slice(1)}
                       </span>
@@ -555,4 +612,4 @@ export default function TasksPage() {
       )}
     </div>
   );
-}
+} 

@@ -73,3 +73,33 @@ END:VCALENDAR`;
     res.status(500).json({ success: false, error: { message: error.message } });
   }
 };
+
+// UPLOAD MEETING MINUTES
+export const uploadMinutes = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file provided' });
+    }
+
+    const minutesUrl = req.file.path || req.file.secure_url || req.file.url;
+
+    const meeting = await Meeting.findByIdAndUpdate(
+      id,
+      { minutesUrl },
+      { new: true }
+    )
+    .populate('organizer_id', 'name email')
+    .populate('attendee_ids', 'name email');
+
+    if (!meeting) {
+      return res.status(404).json({ success: false, message: 'Meeting not found' });
+    }
+
+    res.json({ success: true, message: 'Minutes uploaded successfully', meeting });
+  } catch (error) {
+    console.error("Error uploading minutes:", error);
+    res.status(500).json({ success: false, error: { message: error.message } });
+  }
+};

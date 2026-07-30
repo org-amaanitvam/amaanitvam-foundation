@@ -77,6 +77,35 @@ const updateFirebaseDisabledState = async (user, access, disabled) => {
   }
 };
 
+// --- NEW FUNCTION: Fetch all members for the dashboard ---
+const getAllMembers = async (req, res, next) => {
+  try {
+    // Fetch all users and their access records
+    const users = await User.find().sort({ createdAt: -1 });
+    const accessRecords = await UserAccess.find();
+
+    // Map access records by user ID for fast lookup
+    const accessMap = new Map(
+      accessRecords.map((access) => [String(access.user), access])
+    );
+
+    // Combine them using your existing payload helper
+    const membersList = users.map((user) => {
+      const access = accessMap.get(String(user._id));
+      return memberPayload(user, access);
+    });
+
+    return res.json({
+      success: true,
+      count: membersList.length,
+      data: membersList,
+      members: membersList, // Including both 'data' and 'members' to ensure frontend compatibility
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deactivateMember = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -329,6 +358,9 @@ const permanentlyDeleteMember = async (req, res, next) => {
     next(error);
   }
 };
+
+// --- NEW GET ROUTE FOR FETCHING MEMBERS ---
+router.get("/", getAllMembers);
 
 for (const method of ["patch", "put", "post"]) {
   router[method]("/:id/deactivate", deactivateMember);

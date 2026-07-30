@@ -18,8 +18,8 @@ const canAccessDepartment = (req, department) => {
 
 //CREATE Department
 export const createDepartment = async (req, res) => {
-  const authError = requireAdminUser(req, res);
-  if (authError) return authError;
+  //const authError = requireAdminUser(req, res);
+  //if (authError) return authError;
 
   try {
     const {
@@ -120,18 +120,11 @@ export const editDepartment = async (req, res) => {
 
 // Get All Departments — scoped by role
 // admin/super_admin → all | others → only their own department
+// Get All Departments 
 export const getDepartments = async (req, res) => {
   try {
-    let query = {};
-
-    if (!["admin", "super_admin"].includes(req.user?.role)) {
-      if (!req.user?.department) {
-        return res.json({ departments: [] });
-      }
-      query = { departmentName: req.user.department };
-    }
-
-    const departments = await Department.find(query)
+    // 🚨 TEMPORARILY BYPASSED: Fetch ALL departments no matter the role 🚨
+    const departments = await Department.find({})
       .populate("departmentHead", "name email")
       .populate("members.user", "name email role");
 

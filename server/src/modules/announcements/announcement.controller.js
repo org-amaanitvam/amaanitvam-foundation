@@ -37,3 +37,26 @@ export const createAnnouncement = async (req, res) => {
     });
   }
 };
+
+// 3. UPDATE ANNOUNCEMENT
+export const updateAnnouncement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedAnnouncement = await Announcement.findByIdAndUpdate(id, req.body, { new: true });
+    
+    if (!updatedAnnouncement) {
+      return res.status(404).json({ success: false, message: 'Announcement not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      data: updatedAnnouncement 
+    });
+  } catch (error) {
+    console.error("Error updating announcement:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: { code: 'SERVER_ERROR', message: error.message, details: [] }
+    });
+  }
+};

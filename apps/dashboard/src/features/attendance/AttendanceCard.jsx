@@ -10,8 +10,10 @@ export default function AttendanceCard() {
   const handleCheckIn = async () => {
     setLoading(true);
     try {
-      // Fires the attendance data to your backend
-      await api.post('/users/attendance', { status: 'Present', date: new Date() });
+      // Grab user ID just like AttendancePage does
+      const userId = userProfile?._id || userProfile?.uid || user?.uid || user?._id;
+      
+      await api.post('/attendance/punch-in', { userId });
       toast.success('Attendance registered for today! ✅');
       setCheckedIn(true);
     } catch (error) {

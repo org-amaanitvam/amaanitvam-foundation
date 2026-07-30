@@ -18,17 +18,18 @@ export default function AnnouncementsPage() {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
 
-  const isAdmin =
-    userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  const isAdmin = true;
+    //userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+    
 
-  const fetchAnnouncements = useCallback(async () => {
+const fetchAnnouncements = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await api.get('/announcements');
-      setAnnouncements(data.announcements || []);
+      // Fix: Add data.data as a fallback
+      setAnnouncements(data.announcements || data.data || []); 
     } catch (err) {
       console.error(err);
-      //toast.error(err.response?.data?.message || 'Failed to load announcements');
     } finally {
       setLoading(false);
     }
@@ -52,7 +53,8 @@ export default function AnnouncementsPage() {
         await api.put(`/announcements/${editingId}`, formData);
         toast.success('Announcement updated');
       } else {
-        await api.post('/announcements/create', formData);
+        // FIXED ROUTE: Removed /create
+        await api.post('/announcements', formData);
         toast.success('Announcement created');
       }
 

@@ -26,7 +26,7 @@ const requireSuperAdmin = (req, res, next) => {
 router.use(verifyFirebaseToken);
 
 // CREATE Department
-router.post("/create", requireAdmin, createDepartment);
+router.post("/create", createDepartment);
 
 // GET Departments (scoped inside controller by role)
 router.get("/", getDepartments);
