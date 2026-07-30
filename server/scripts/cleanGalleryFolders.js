@@ -24,8 +24,7 @@ const CANONICAL_MAP = {
   "manthan": "Project Manthan",
   "project udaan": "Project Udaan",
   "udaan": "Project Udaan",
-  "project pravah": "Project Pravah",
-  "pravah": "Project Pravah"
+ 
 };
 
 async function cleanDatabaseFolders() {

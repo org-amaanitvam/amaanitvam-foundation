@@ -17,8 +17,7 @@ const CANONICAL_ALBUMS = {
     "manthan": "Project Manthan",
     "project udaan": "Project Udaan",
     "udaan": "Project Udaan",
-    "project pravah": "Project Pravah",
-    "pravah": "Project Pravah"
+   
 };
 
 export const normalizeCanonicalName = (rawName) => {

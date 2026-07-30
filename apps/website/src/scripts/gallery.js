@@ -446,23 +446,7 @@ import { API_BASE_URL } from './api-client.js';
       }
     ]
   },
-  {
-    "id": "project-pravah",
-    "name": "Project Pravah",
-    "description": "Cleanliness and environmental sustainability initiatives.",
-    "folder": "Projects/ProjectPravah",
-    "mediaCount": 1,
-    "coverUrl": "/images/Projects/ProjectPravah/1.jpg",
-    "images": [
-      {
-        "id": "project-pravah-1.jpg",
-        "title": "Project Pravah - Photo 1",
-        "imageUrl": "/images/Projects/ProjectPravah/1.jpg",
-        "url": "/images/Projects/ProjectPravah/1.jpg",
-        "mediaType": "image"
-      }
-    ]
-  },
+ 
   {
     "id": "clothes-donation",
     "name": "Clothes Donation Drive",
