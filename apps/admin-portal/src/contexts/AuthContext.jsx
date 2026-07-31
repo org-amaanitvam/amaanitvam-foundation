@@ -96,6 +96,7 @@ export function AuthProvider({ children }) {
     });
 
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = useCallback(async (email, password) => {
@@ -137,6 +138,7 @@ export function AuthProvider({ children }) {
       refreshProfile: fetchUserProfile,
       isAuthenticated: Boolean(user),
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, userProfile, profileError, loading, login, resetPassword]
   );
 

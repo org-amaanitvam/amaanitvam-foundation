@@ -93,4 +93,50 @@ router.get('/session', authenticate, async (req, res, next) => {
   }
 });
 
+/**
+ * POST /api/auth/sso-token
+ * Accepts a Firebase ID token (from any authorized portal), verifies it,
+ * and returns a Firebase Custom Token. This enables cross-origin SSO —
+ * the receiving app uses signInWithCustomToken to establish a real Firebase
+ * session on its own origin without the user re-entering credentials.
+ */
+router.post('/sso-token', async (req, res) => {
+  try {
+    if (!firebaseReady) {
+      return res.status(503).json({ success: false, message: 'Auth service unavailable.' });
+    }
+
+    const idToken = String(req.body?.idToken || '').trim();
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: 'idToken is required.' });
+    }
+
+    // Verify the incoming ID token
+    let decodedToken;
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken);
+    } catch {
+      return res.status(401).json({ success: false, message: 'Invalid or expired Firebase token.' });
+    }
+
+    // Ensure this UID maps to an active admin/member in our DB
+    const user = await User.findOne({ firebase_uid: decodedToken.uid, status: 'active' }).select('_id role');
+    if (!user) {
+      return res.status(403).json({ success: false, message: 'No authorized account found for this credential.' });
+    }
+
+    // Create a custom token for the same UID — the client can use this
+    // to signInWithCustomToken on any portal origin
+    const customToken = await admin.auth().createCustomToken(decodedToken.uid, {
+      role: user.role,
+      dbId: String(user._id),
+    });
+
+    return res.status(200).json({ success: true, customToken });
+  } catch (error) {
+    console.error('[sso-token] Error:', error);
+    return res.status(500).json({ success: false, message: 'SSO token exchange failed.' });
+  }
+});
+
 export default router;
