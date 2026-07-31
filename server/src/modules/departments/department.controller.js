@@ -94,4 +94,139 @@ export const getDepartments = async (req, res) => {
   }
 };
 
-// (Keeping all other existing upstream controller functions for getDepartmentById, edit, delete, assignMember, updatePerformance, and getDepartmentReport unchanged. They had no conflicts and are perfectly secure).
+// GET DEPARTMENT BY ID
+export const getDepartmentById = async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id)
+      .populate("departmentHead", "name email")
+      .populate("members.user", "name email role");
+
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    if (!canAccessDepartment(req, department)) {
+      return res.status(403).json({ message: "Access denied to this department" });
+    }
+
+    res.json({ department });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// EDIT DEPARTMENT
+export const editDepartment = async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id);
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    const { departmentName, description, departmentHead } = req.body;
+
+    if (departmentName) department.departmentName = departmentName;
+    if (description !== undefined) department.description = description;
+    if (departmentHead !== undefined) department.departmentHead = departmentHead;
+
+    await department.save();
+    res.json({ message: "Department updated successfully", department });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// DELETE DEPARTMENT
+export const deleteDepartment = async (req, res) => {
+  try {
+    const department = await Department.findByIdAndDelete(req.params.id);
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+    res.json({ message: "Department deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ASSIGN MEMBER
+export const assignMember = async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id);
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    const { userId, role } = req.body;
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const existingMember = department.members.find(
+      (m) => m.user.toString() === userId.toString()
+    );
+
+    if (existingMember) {
+      existingMember.role = role || existingMember.role;
+    } else {
+      department.members.push({ user: userId, role: role || "member", joinedAt: new Date() });
+      department.totalMembers = department.members.length;
+    }
+
+    await department.save();
+    res.json({ message: "Member assigned successfully", department });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// UPDATE PERFORMANCE
+export const updatePerformance = async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id);
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    if (!canAccessDepartment(req, department)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { metrics } = req.body;
+    if (metrics) department.metrics = { ...department.metrics, ...metrics };
+
+    await department.save();
+    res.json({ message: "Performance updated successfully", department });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET DEPARTMENT REPORT
+export const getDepartmentReport = async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id)
+      .populate("departmentHead", "name email")
+      .populate("members.user", "name email role");
+
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    if (!canAccessDepartment(req, department)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    res.json({
+      report: {
+        departmentName: department.departmentName,
+        totalMembers: department.totalMembers,
+        metrics: department.metrics,
+        generatedAt: new Date(),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
