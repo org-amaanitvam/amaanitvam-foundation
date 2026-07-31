@@ -149,7 +149,11 @@ app.use("/api/conversations", conversationRoutes);
 app.use("/api/ai-notifications", aiNotificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
+app.use("/api/admin/gallery", galleryRoutes);
+
 // 6. Error Handling Middleware (MUST be at the very end)
+// app.use("/api/admin/gallery", galleryRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 

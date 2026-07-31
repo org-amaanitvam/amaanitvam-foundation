@@ -1,15 +1,18 @@
 import express from "express";
 import { authenticate } from "../../middleware/authenticate.js";
-import { requireDashboardAccess, requireRole } from "../../middleware/dashboardAccess.js";
-import { upload } from "../../middleware/upload.middleware.js"; // Or upload.js depending on which file handles multer
+import {
+  requireDashboardAccess,
+  requireRole,
+} from "../../middleware/dashboardAccess.js";
+import { upload } from "../../middleware/upload.middleware.js";
 
 import {
-    getAll,
-    getFolders,
-    getFolderMedia,
-    getMedia,
-    createFolder,
-    uploadMedia,
+  getAll,
+  getFolders,
+  getFolderMedia,
+  getMedia,
+  createFolder,
+  uploadMedia,
 } from "./gallery.controller.js";
 
 const router = express.Router();
@@ -37,5 +40,7 @@ router.post(
     upload.single("image"), // 'image' is the form field name for the file
     uploadMedia
 );
+
+
 
 export default router;

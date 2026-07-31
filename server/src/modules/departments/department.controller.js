@@ -94,7 +94,7 @@ export const getDepartments = async (req, res) => {
   }
 };
 
-//  Get single department — scoped by role
+// GET DEPARTMENT BY ID (SCOPED)
 export const getDepartmentById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -119,7 +119,7 @@ export const getDepartmentById = async (req, res) => {
   }
 };
 
-// edit department
+// EDIT DEPARTMENT
 export const editDepartment = async (req, res) => {
   const authError = requireAdminUser(req, res);
   if (authError) return authError;
@@ -166,7 +166,7 @@ export const editDepartment = async (req, res) => {
   }
 };
 
-// delete — super_admin only
+// DELETE DEPARTMENT — super_admin only
 export const deleteDepartment = async (req, res) => {
   if (req.userAccess?.role !== "super_admin") {
     return res.status(403).json({
@@ -192,7 +192,7 @@ export const deleteDepartment = async (req, res) => {
   }
 };
 
-//  assign member — admin only, syncs department field on User
+// ASSIGN MEMBER — admin only, upserts member role, syncs department on User
 export const assignMember = async (req, res) => {
   const authError = requireAdminUser(req, res);
   if (authError) return authError;
@@ -211,19 +211,21 @@ export const assignMember = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const alreadyMember = department.members.find(
-      (m) => m.user.toString() === userId
+    const existingMember = department.members.find(
+      (m) => m.user.toString() === userId.toString()
     );
-    if (alreadyMember) {
-      return res.status(400).json({ message: "User already in department" });
+
+    if (existingMember) {
+      existingMember.role = role || existingMember.role;
+    } else {
+      department.members.push({
+        user: userId,
+        role: role || "member",
+        joinedAt: new Date(),
+      });
+      department.totalMembers = department.members.length;
     }
 
-    department.members.push({
-      user: userId,
-      role: role || "member",
-      joinedAt: new Date(),
-    });
-    department.totalMembers = department.members.length;
     await department.save();
 
     await User.findByIdAndUpdate(userId, { department: department.departmentName });
@@ -234,7 +236,7 @@ export const assignMember = async (req, res) => {
   }
 };
 
-// department performance
+// UPDATE PERFORMANCE — super admin or the department's own head
 const canUpdatePerformance = (req, department) => {
   if (req.userAccess?.role === "super_admin") return true;
 
@@ -281,7 +283,7 @@ export const updatePerformance = async (req, res) => {
   }
 };
 
-//  department report — scoped by role
+// GET DEPARTMENT REPORT (SCOPED)
 export const getDepartmentReport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -307,6 +309,7 @@ export const getDepartmentReport = async (req, res) => {
       totalMembers: department.totalMembers,
       performance: department.performance,
       members: department.members,
+      generatedAt: new Date(),
     };
 
     res.json(report);
