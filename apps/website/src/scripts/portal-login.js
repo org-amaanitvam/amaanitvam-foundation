@@ -1,8 +1,19 @@
-/**
- * Amaanitvam Foundation Learning Portal — Dynamic 4-Portal Controller
- * Handles synchronized transitions between Dashboard, Faculty, LMS, and Admin portals.
- * Both Left Hero and Right Form views derive state from `portalData`.
- */
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+// Firebase Client Config (Synced with apps/admin-portal)
+const firebaseConfig = {
+  apiKey: 'AIzaSyCpjgB4YQB95OTqARnvoVUt2Xq27eoBATc',
+  authDomain: 'amaanitvam-admin-portal.firebaseapp.com',
+  projectId: 'amaanitvam-admin-portal',
+  storageBucket: 'amaanitvam-admin-portal.firebasestorage.app',
+  messagingSenderId: '365203992524',
+  appId: '1:365203992524:web:63f5f8e5b226d52d31f769',
+  measurementId: 'G-Q449TR3H4R',
+};
+
+const firebaseApp = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const firebaseAuth = getAuth(firebaseApp);
 
 document.addEventListener('DOMContentLoaded', () => {
   // Elements — Right Form
@@ -64,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'director@amaanitvam.org',
       submitBtn: 'Sign In to Dashboard Portal',
       footerNote: `Don't have portal credentials? <a href="../pages/contact.html" class="portal-link">Contact System Administrator</a>`,
-      redirectUrl: 'http://localhost:5173/'
+      redirectUrl: 'http://localhost:5174/'
     },
     faculty: {
       index: 1,
@@ -82,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'faculty@amaanitvam.org',
       submitBtn: 'Sign In to Faculty Portal',
       footerNote: `Need faculty access provisioned? <a href="../pages/contact.html" class="portal-link">Contact Administration</a>`,
-      redirectUrl: '/api/faculty'
+      redirectUrl: 'http://localhost:5174/faculty'
     },
     lms: {
       index: 2,
@@ -100,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'learner@amaanitvam.org',
       submitBtn: 'Launch LMS Workspace',
       footerNote: `Looking for digital resources? <a href="../pages/programs.html" class="portal-link">View Digital Library</a>`,
-      redirectUrl: 'http://localhost:5173/lms'
+      redirectUrl: 'http://localhost:5174/lms'
     },
     admin: {
       index: 3,
@@ -118,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'admin@amaanitvam.org',
       submitBtn: 'Sign In to Admin Portal',
       footerNote: `Admin accounts are restricted. Require access? <a href="../pages/contact.html" class="portal-link">Contact Super Admin</a>`,
-      redirectUrl: 'http://localhost:5174/'
+      redirectUrl: 'http://localhost:5173/'
     }
   };
 
@@ -154,12 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function animatePortalTransition(config) {
-    // 1. Add fade-out transition class
     if (heroDynamicPane) heroDynamicPane.classList.add('portal-transitioning');
     if (roleDescText) roleDescText.classList.add('portal-transitioning');
 
     setTimeout(() => {
-      // 2. Update Left Hero Section
       if (heroTitle) heroTitle.innerHTML = config.heroTitle;
       if (heroSubtitle) heroSubtitle.textContent = config.heroSubtitle;
       if (illustrationIcon) illustrationIcon.textContent = config.illustrationIcon;
@@ -178,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cardDesc3) cardDesc3.textContent = config.featureCards[2].desc;
       }
 
-      // 3. Update Right Login Form
       if (roleBadgeIcon) roleBadgeIcon.textContent = config.badgeIcon;
       if (roleBadgeText) roleBadgeText.textContent = config.badgeText;
       if (roleDescText) roleDescText.textContent = config.heroSubtitle;
@@ -187,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (loginIdentifier) loginIdentifier.placeholder = config.placeholder;
       if (portalFooterNote) portalFooterNote.innerHTML = config.footerNote;
 
-      // 4. Remove transition class for crisp entrance
       if (heroDynamicPane) heroDynamicPane.classList.remove('portal-transitioning');
       if (roleDescText) roleDescText.classList.remove('portal-transitioning');
     }, 150);
@@ -231,6 +238,44 @@ document.addEventListener('DOMContentLoaded', () => {
       setLoading(true);
       hideAlert();
 
+      // IF ADMIN EMAIL OR ADMIN PORTAL: Validate credentials & SSO into Super Admin Portal (http://localhost:5173/)
+      if (portal === 'admin' || identifier.toLowerCase() === 'tech.amaanitvam@gmail.com') {
+        try {
+          showAlert('Verifying Super Admin credentials...', 'info');
+
+          // Step 1: Validate credentials with Firebase client SDK on this origin
+          const userCredential = await signInWithEmailAndPassword(firebaseAuth, identifier, password);
+          // Sign out on this origin — we only needed to verify credentials are correct
+          await firebaseAuth.signOut();
+
+          showAlert('Credentials verified! Launching Super Admin Portal...', 'info');
+
+          // Step 2: Redirect to admin portal login page with credentials in URL hash.
+          // The hash fragment is never sent to the server (safe for transport).
+          // Login.jsx on the admin portal will read these, auto-login via Firebase
+          // client SDK on its own origin (port 5173), and immediately clean the URL.
+          const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5173'
+            : 'https://admin.amaanitvam.org';
+
+          const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}`;
+
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 400);
+          return;
+        } catch (fbErr) {
+          console.warn('Firebase Sign-In Error:', fbErr);
+          const msg = fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-email'
+            ? 'Invalid Super Admin email or password.'
+            : (fbErr.message || 'Unable to authenticate with Firebase.');
+          showAlert(msg, 'error');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Standard API Fallback for other portals
       try {
         const response = await fetch('/api/auth/verify-email', {
           method: 'POST',
@@ -244,20 +289,20 @@ document.addEventListener('DOMContentLoaded', () => {
           showAlert(`Welcome! Redirecting to ${portalData[portal].badgeText}...`, 'info');
           setTimeout(() => {
             window.location.href = portalData[portal].redirectUrl;
-          }, 1200);
+          }, 1000);
         } else {
           const errorMsg = data?.message || `Redirecting to ${portalData[portal].badgeText}...`;
           showAlert(errorMsg, 'info');
           setTimeout(() => {
             window.location.href = portalData[portal].redirectUrl;
-          }, 1400);
+          }, 1200);
         }
       } catch (err) {
         console.warn('API Connection note:', err);
-        showAlert(`Demo mode: Opening ${portalData[portal].badgeText}...`, 'info');
+        showAlert(`Launching ${portalData[portal].badgeText}...`, 'info');
         setTimeout(() => {
           window.location.href = portalData[portal].redirectUrl;
-        }, 1200);
+        }, 1000);
       } finally {
         setLoading(false);
       }
