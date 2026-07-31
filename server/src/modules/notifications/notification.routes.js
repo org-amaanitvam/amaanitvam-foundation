@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.use(authenticate);
 
+// Requirement: Authorized roles can fetch, read, and check unread counts for notifications
 router.get('/', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.getNotifications);
 router.patch('/:notificationId/read', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.markAsRead);
 router.patch('/read-all', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.markAllAsRead);

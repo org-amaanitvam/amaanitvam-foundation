@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BarChart, CheckCircle, Calendar, Activity, Loader2 } from 'lucide-react';
+import { BarChart, CheckCircle, Calendar, Activity, Loader2, Download } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
@@ -22,14 +22,11 @@ export default function Reports() {
     const fetchReport = async () => {
       try {
         setLoading(true);
-        // Fetch specific member report
         const { data } = await api.get(`/reports/member/${userId}`);
-        console.log("🔥 REPORTS DATA ARRIVED:", data);
         
         // FOOLPROOF UNPACKER: Handles both {success: true, data: {...}} OR direct {...}
         const actualData = data.success !== undefined ? data.data : data;
 
-        // Ensure we actually have data before setting it
         if (actualData && Object.keys(actualData).length > 0) {
           setReportData(actualData);
         } else {
@@ -46,6 +43,10 @@ export default function Reports() {
     fetchReport();
   }, [authContext?.loading, userId]);
 
+  const handleExportPDF = () => {
+    window.print();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -54,7 +55,7 @@ export default function Reports() {
     );
   }
 
-  // 🛡️ THE FIX: Safe Bouncer
+  // 🛡️ Safe Bouncer
   if (!reportData || !reportData.taskBreakdown) {
     return (
       <div className="text-slate-500 p-6 flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-xl mt-6">
@@ -64,20 +65,29 @@ export default function Reports() {
     );
   }
 
-  // Destructure safely now that the bouncer passed!
   const { basicDetails, metrics, appraisalSummary, taskBreakdown, timeline } = reportData;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in print:p-0 print:space-y-4">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <BarChart className="w-6 h-6 text-[#56051a]" />
-          My Performance Report
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Analytics and activity summary for {basicDetails?.name || 'Dashboard User'} 
-        </p>
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <BarChart className="w-6 h-6 text-[#56051a]" />
+            My Performance Report
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Analytics and activity summary for {basicDetails?.name || 'Dashboard User'} 
+          </p>
+        </div>
+
+        <button
+          onClick={handleExportPDF}
+          className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2 shadow-sm print:hidden"
+        >
+          <Download className="w-4 h-4" />
+          Export Report (PDF)
+        </button>
       </div>
 
       {/* Top Level Metrics */}
@@ -157,7 +167,6 @@ export default function Reports() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         {timeline && timeline.length > 0 ? (
           <div className="space-y-6">
-            {/* Displaying newest first */}
             {timeline.slice(0, 10).map((item, index) => (
               <div key={index} className="flex gap-4">
                 <div className="mt-1">

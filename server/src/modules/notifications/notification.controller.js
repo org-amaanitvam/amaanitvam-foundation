@@ -1,6 +1,7 @@
 import { sendSuccess } from '../../shared/response/index.js';
 import * as notificationService from './notification.service.js';
 
+// 1. Get paginated notifications for current user
 export const getNotifications = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -12,11 +13,12 @@ export const getNotifications = async (req, res, next) => {
   }
 };
 
+// 2. Mark specific notification as read
 export const markAsRead = async (req, res, next) => {
   try {
     const notification = await notificationService.markAsRead(req.params.notificationId, req.user.id);
     if (!notification) {
-      return res.status(404).json({ success: false, error: { code: 'NOTIFICATION_NOT_FOUND', message: 'Notification not found', details: [] } });
+      return res.status(404).json({ success: false, error: { code: 'NOTIFICATION_NOT_FOUND', message: 'Notification not found' } });
     }
     sendSuccess(res, 200, null, 'Notification marked as read');
   } catch (error) {
@@ -24,6 +26,7 @@ export const markAsRead = async (req, res, next) => {
   }
 };
 
+// 3. Mark all notifications as read
 export const markAllAsRead = async (req, res, next) => {
   try {
     await notificationService.markAllAsRead(req.user.id);
@@ -33,6 +36,7 @@ export const markAllAsRead = async (req, res, next) => {
   }
 };
 
+// 4. Get unread count for badge indicators
 export const getUnreadCount = async (req, res, next) => {
   try {
     const result = await notificationService.getUnreadCount(req.user.id);
