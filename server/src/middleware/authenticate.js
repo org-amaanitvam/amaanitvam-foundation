@@ -45,7 +45,12 @@ export const authenticate = async (req, _res, next) => {
     req.user = {
       id: user.id,
       role: user.role,
+      uid: decodedToken.uid,
       firebase_uid: decodedToken.uid,
+      firebaseUid: decodedToken.uid,
+      email: user.email,
+      email_verified: user.email_verified === true,
+      name: user.name,
     };
 
     next();

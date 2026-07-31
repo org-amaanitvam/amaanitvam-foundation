@@ -94,10 +94,12 @@ export const getDepartments = async (req, res) => {
   }
 };
 
-// GET DEPARTMENT BY ID
+// GET DEPARTMENT BY ID (SCOPED)
 export const getDepartmentById = async (req, res) => {
   try {
-    const department = await Department.findById(req.params.id)
+    const { id } = req.params;
+
+    const department = await Department.findById(id)
       .populate("departmentHead", "name email")
       .populate("members.user", "name email role");
 
@@ -106,7 +108,9 @@ export const getDepartmentById = async (req, res) => {
     }
 
     if (!canAccessDepartment(req, department)) {
-      return res.status(403).json({ message: "Access denied to this department" });
+      return res.status(403).json({
+        message: "Access denied. You can only view your own department.",
+      });
     }
 
     res.json({ department });
@@ -117,49 +121,93 @@ export const getDepartmentById = async (req, res) => {
 
 // EDIT DEPARTMENT
 export const editDepartment = async (req, res) => {
+  const authError = requireAdminUser(req, res);
+  if (authError) return authError;
+
   try {
-    const department = await Department.findById(req.params.id);
+    const { id } = req.params;
+    const department = await Department.findById(id);
+
     if (!department) {
       return res.status(404).json({ message: "Department not found" });
     }
 
     const { departmentName, description, departmentHead } = req.body;
 
-    if (departmentName) department.departmentName = departmentName;
-    if (description !== undefined) department.description = description;
-    if (departmentHead !== undefined) department.departmentHead = departmentHead;
+    if (departmentName && departmentName !== department.departmentName) {
+      const duplicate = await Department.findOne({ departmentName });
+      if (duplicate && duplicate._id.toString() !== id) {
+        return res.status(400).json({ message: "Department name already exists" });
+      }
+      department.departmentName = departmentName;
+    }
+
+    if (typeof description === "string") {
+      department.description = description;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(req.body, "departmentHead")) {
+      if (departmentHead) {
+        const userExists = await User.findById(departmentHead);
+        if (!userExists) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        department.departmentHead = departmentHead;
+      } else {
+        department.departmentHead = null;
+      }
+    }
 
     await department.save();
+
     res.json({ message: "Department updated successfully", department });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// DELETE DEPARTMENT
+// DELETE DEPARTMENT — super_admin only
 export const deleteDepartment = async (req, res) => {
+  if (req.userAccess?.role !== "super_admin") {
+    return res.status(403).json({
+      success: false,
+      code: "INSUFFICIENT_ROLE",
+      message: "Only Super Admin can delete departments.",
+    });
+  }
+
   try {
-    const department = await Department.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    const department = await Department.findById(id);
+
     if (!department) {
       return res.status(404).json({ message: "Department not found" });
     }
+
+    await department.deleteOne();
+
     res.json({ message: "Department deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// ASSIGN MEMBER
+// ASSIGN MEMBER — admin only, upserts member role, syncs department on User
 export const assignMember = async (req, res) => {
+  const authError = requireAdminUser(req, res);
+  if (authError) return authError;
+
   try {
-    const department = await Department.findById(req.params.id);
+    const departmentId = req.params.id || req.body.departmentId;
+    const { userId, role } = req.body;
+
+    const department = await Department.findById(departmentId);
     if (!department) {
       return res.status(404).json({ message: "Department not found" });
     }
 
-    const { userId, role } = req.body;
-    const userExists = await User.findById(userId);
-    if (!userExists) {
+    const user = await User.findById(userId);
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -170,43 +218,77 @@ export const assignMember = async (req, res) => {
     if (existingMember) {
       existingMember.role = role || existingMember.role;
     } else {
-      department.members.push({ user: userId, role: role || "member", joinedAt: new Date() });
+      department.members.push({
+        user: userId,
+        role: role || "member",
+        joinedAt: new Date(),
+      });
       department.totalMembers = department.members.length;
     }
 
     await department.save();
+
+    await User.findByIdAndUpdate(userId, { department: department.departmentName });
+
     res.json({ message: "Member assigned successfully", department });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// UPDATE PERFORMANCE
+// UPDATE PERFORMANCE — super admin or the department's own head
+const canUpdatePerformance = (req, department) => {
+  if (req.userAccess?.role === "super_admin") return true;
+
+  if (
+    req.userAccess?.role === "department_head" &&
+    department.departmentHead &&
+    String(req.dbUser?._id || "") === String(department.departmentHead)
+  ) return true;
+
+  if (
+    req.userAccess?.role === "department_head" &&
+    canAccessDepartment(req, department)
+  ) return true;
+
+  return false;
+};
+
 export const updatePerformance = async (req, res) => {
   try {
-    const department = await Department.findById(req.params.id);
+    const { id } = req.params;
+    const { performance } = req.body;
+
+    if (performance < 0 || performance > 100) {
+      return res.status(400).json({ message: "Performance must be between 0 and 100" });
+    }
+
+    const department = await Department.findById(id);
     if (!department) {
       return res.status(404).json({ message: "Department not found" });
     }
 
-    if (!canAccessDepartment(req, department)) {
-      return res.status(403).json({ message: "Access denied" });
+    if (!canUpdatePerformance(req, department)) {
+      return res.status(403).json({
+        message: "Only the department head or an admin can update department performance.",
+      });
     }
 
-    const { metrics } = req.body;
-    if (metrics) department.metrics = { ...department.metrics, ...metrics };
-
+    department.performance = performance;
     await department.save();
+
     res.json({ message: "Performance updated successfully", department });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// GET DEPARTMENT REPORT
+// GET DEPARTMENT REPORT (SCOPED)
 export const getDepartmentReport = async (req, res) => {
   try {
-    const department = await Department.findById(req.params.id)
+    const { id } = req.params;
+
+    const department = await Department.findById(id)
       .populate("departmentHead", "name email")
       .populate("members.user", "name email role");
 
@@ -215,17 +297,22 @@ export const getDepartmentReport = async (req, res) => {
     }
 
     if (!canAccessDepartment(req, department)) {
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({
+        message: "Access denied. You can only view your own department report.",
+      });
     }
 
-    res.json({
-      report: {
-        departmentName: department.departmentName,
-        totalMembers: department.totalMembers,
-        metrics: department.metrics,
-        generatedAt: new Date(),
-      },
-    });
+    const report = {
+      departmentName: department.departmentName,
+      description: department.description,
+      head: department.departmentHead,
+      totalMembers: department.totalMembers,
+      performance: department.performance,
+      members: department.members,
+      generatedAt: new Date(),
+    };
+
+    res.json(report);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
