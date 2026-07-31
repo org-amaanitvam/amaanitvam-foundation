@@ -33,10 +33,8 @@ export default function AnnouncementsPage() {
   const fetchAnnouncements = useCallback(async () => {
     try {
       setLoading(true);
-
-      const { data } = await api.get("/announcements");
-
-      setAnnouncements(data.announcements || []);
+      const { data } = await api.get('/announcements');
+      setAnnouncements(data.announcements || data.data || []); 
     } catch (err) {
       console.error(err);
     } finally {
@@ -64,19 +62,16 @@ export default function AnnouncementsPage() {
     try {
       if (editingId) {
         await api.put(`/announcements/${editingId}`, formData);
-
         toast.success("Announcement updated successfully");
       } else {
-        await api.post("/announcements/create", formData);
-
-        toast.success("Announcement created successfully");
+        await api.post('/announcements', formData);
+        toast.success('Announcement created successfully');
       }
 
       resetForm();
       fetchAnnouncements();
     } catch (err) {
       console.error(err);
-
       toast.error(
         err.response?.data?.message ||
           (editingId
@@ -98,7 +93,6 @@ export default function AnnouncementsPage() {
     });
 
     setEditingId(announcement._id);
-
     setShowCreate(true);
   };
 
@@ -112,41 +106,26 @@ export default function AnnouncementsPage() {
 
   return (
     <div className="min-h-screen rounded-3xl bg-gradient-to-br from-rose-50 via-white to-amber-50 p-6 space-y-8">
-
       {/* HEADER */}
-
       <div className="rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-[#56051a] via-[#6f0d26] to-[#8b1e3f]">
-
         <div className="flex flex-wrap justify-between items-center gap-6 p-8">
-
           <div>
-
             <div className="flex items-center gap-3">
-
               <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
-
                 <Megaphone className="w-8 h-8 text-yellow-300" />
-
               </div>
-
               <div>
-
                 <h1 className="text-3xl font-bold text-white">
                   Announcements
                 </h1>
-
                 <p className="text-white/80 mt-1">
                   Share important updates with your NGO team
                 </p>
-
               </div>
-
             </div>
-
           </div>
 
           {isAdmin && (
-
             <button
               onClick={() => {
                 setEditingId(null);
@@ -158,31 +137,22 @@ export default function AnnouncementsPage() {
               <Plus className="w-5 h-5" />
               Create Announcement
             </button>
-
           )}
-
         </div>
-
       </div>
 
-            {/* CREATE / EDIT MODAL */}
-
+      {/* CREATE / EDIT MODAL */}
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-
           <div className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl animate-fade-in">
-
             <div className="bg-gradient-to-r from-[#56051a] to-[#8b1e3f] px-8 py-6">
-
               <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
                 <Megaphone className="w-7 h-7 text-yellow-300" />
                 {editingId ? "Edit Announcement" : "Create Announcement"}
               </h2>
-
               <p className="mt-1 text-sm text-white/80">
                 Keep your members updated with important news.
               </p>
-
             </div>
 
             <form
@@ -193,7 +163,6 @@ export default function AnnouncementsPage() {
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Announcement Title
                 </label>
-
                 <input
                   required
                   value={formData.title}
@@ -212,7 +181,6 @@ export default function AnnouncementsPage() {
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Announcement Message
                 </label>
-
                 <textarea
                   required
                   rows={6}
@@ -229,7 +197,6 @@ export default function AnnouncementsPage() {
               </div>
 
               <div className="flex justify-end gap-3">
-
                 <button
                   type="button"
                   onClick={resetForm}
@@ -237,7 +204,6 @@ export default function AnnouncementsPage() {
                 >
                   Cancel
                 </button>
-
                 <button
                   type="submit"
                   disabled={posting}
@@ -249,23 +215,18 @@ export default function AnnouncementsPage() {
                     ? "Save Changes"
                     : "Publish Announcement"}
                 </button>
-
               </div>
             </form>
-
           </div>
         </div>
       )}
 
       {announcements.length === 0 ? (
         <div className="rounded-3xl border border-[#ead6b8] bg-white p-16 text-center shadow-lg">
-
           <Megaphone className="mx-auto mb-6 h-16 w-16 text-[#56051a]" />
-
           <h2 className="text-3xl font-bold text-[#56051a]">
             No Announcements Yet
           </h2>
-
           <p className="mx-auto mt-4 max-w-lg text-slate-500">
             There are currently no announcements available.
             Create one to notify all members of important updates.
