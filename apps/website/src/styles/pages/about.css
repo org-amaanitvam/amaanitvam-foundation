@@ -923,3 +923,185 @@ body[data-page="about"] .floating-donate:focus-visible {
     flex-shrink: 0;
     display: block;
 }
+.about-intro-bg{
+    position:relative;
+    overflow:hidden;
+    background:
+    radial-gradient(circle at left top,#fff3eb 0%,transparent 35%),
+    radial-gradient(circle at right bottom,#fde7df 0%,transparent 40%),
+    linear-gradient(
+    180deg,
+    #fffdfb,
+    #fff8f5
+    );
+
+}
+.about-intro__media{
+    position:relative;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:
+    0 30px 70px rgba(0,0,0,.12);
+    transition:.45s;
+}
+.about-intro__media:hover{
+transform:translateY(-10px);
+}
+
+.about-intro__media::before{
+content:"";
+position:absolute;
+width:90%;
+height:90%;
+background:#f6d8d2;
+top:22px;
+left:22px;
+border-radius:28px;
+z-index:-1;
+}
+
+.about-intro__body{
+background:white;
+padding:55px;
+border-radius:25px;
+box-shadow:
+0 15px 40px rgba(0,0,0,.06);
+border:1px solid rgba(86,5,26,.08);
+transition:.4s;
+}
+
+.about-intro__body:hover{
+transform:translateY(-8px);
+box-shadow:
+0 30px 60px rgba(0,0,0,.12);
+}
+
+.about-intro__title{
+position:relative;
+}
+
+.about-intro__title::before{
+content:attr(data-number);
+position:absolute;
+left:-5px;
+top:-65px;
+font-size:95px;
+font-weight:700;
+color:#56051a10;
+z-index:-1;
+}
+
+.about-intro strong{
+color:#8f2142;
+font-weight:700;
+}
+
+.about-intro__text,
+.about-intro__lead{
+font-size:18px;
+line-height:2;
+color:#666;
+}
+
+.about-divider{
+width:130px;
+height:3px;
+margin:70px auto;
+
+background:
+linear-gradient(
+90deg,
+transparent,
+#c28a54,
+transparent);
+border-radius:50px;
+}
+
+.about-hero__eyebrow{
+background:
+rgba(255,255,255,.12);
+backdrop-filter:blur(15px);
+padding:12px 28px;
+border-radius:50px;
+}
+
+.about-intro{
+animation:fadeUp .8s ease;
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(40px);
+}
+
+to{
+opacity:1;
+transform:none;
+}
+}
+
+.about-intro__title span{
+background:
+linear-gradient(
+90deg,
+#56051a,
+#9c3150);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+}
+
+.about-intro{
+padding:120px 0;
+
+}
+
+.about-quote{
+margin-top:35px;
+padding:25px;
+border-left:5px solid #8c2f45;
+background:#fff5f2;
+font-style:italic;
+font-size:18px;
+border-radius:12px;
+}
+
+.about-intro__title{
+    position: relative;
+    z-index: 2;
+}
+
+.about-quote-card{
+    margin-top:32px;
+    padding:24px 28px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:linear-gradient(
+        135deg,
+        #fffdfc,
+        #fff5f2
+    );
+    border:1px solid rgba(123,23,55,.12);
+    border-left:5px solid #7b1737;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+    transition:.35s ease;
+}
+
+
+.quote-icon{
+    font-size:42px;
+    color:#7b1737;
+    flex-shrink:0;
+}
+
+.about-quote-card p{
+    margin:0;
+    font-size:1.05rem;
+    line-height:1.8;
+    color:#5f4a4a;
+    font-style:italic;
+}
