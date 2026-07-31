@@ -1,20 +1,47 @@
-import Notification from './notification.model.js';
+import { sendSuccess } from '../../shared/response/index.js';
+import * as notificationService from './notification.service.js';
 
-export const getUserNotifications = async (req, res) => {
+// 1. Get paginated notifications for current user
+export const getNotifications = async (req, res, next) => {
   try {
-    const { user_id } = req.params;
-    const notifications = await Notification.find({ user_id }).sort({ created_at: -1 });
-    res.json({ success: true, data: notifications, meta: { unread_count: notifications.filter(n => !n.is_read).length }});
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const { notifications, meta } = await notificationService.getNotifications(req.user.id, page, limit);
+    sendSuccess(res, 200, { notifications, ...meta }, 'Notifications retrieved');
   } catch (error) {
-    res.status(500).json({ success: false, error: { message: error.message } });
+    next(error);
   }
 };
 
-export const markAsRead = async (req, res) => {
+// 2. Mark specific notification as read
+export const markAsRead = async (req, res, next) => {
   try {
-    const updated = await Notification.findByIdAndUpdate(req.params.id, { is_read: true }, { returnDocument: 'after' });
-    res.json({ success: true, data: updated });
+    const notification = await notificationService.markAsRead(req.params.notificationId, req.user.id);
+    if (!notification) {
+      return res.status(404).json({ success: false, error: { code: 'NOTIFICATION_NOT_FOUND', message: 'Notification not found' } });
+    }
+    sendSuccess(res, 200, null, 'Notification marked as read');
   } catch (error) {
-    res.status(500).json({ success: false, error: { message: error.message } });
+    next(error);
+  }
+};
+
+// 3. Mark all notifications as read
+export const markAllAsRead = async (req, res, next) => {
+  try {
+    await notificationService.markAllAsRead(req.user.id);
+    sendSuccess(res, 200, null, 'All notifications marked as read');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 4. Get unread count for badge indicators
+export const getUnreadCount = async (req, res, next) => {
+  try {
+    const result = await notificationService.getUnreadCount(req.user.id);
+    sendSuccess(res, 200, result, 'Unread count retrieved');
+  } catch (error) {
+    next(error);
   }
 };

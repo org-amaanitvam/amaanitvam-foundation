@@ -25,31 +25,64 @@ let initializationError = null;
 
 // Local/dev compatibility: initialize from a service-account JSON file when present.
 if (!firebaseReady) {
-  for (const filename of [...new Set(serviceAccountCandidates)]) {
+  // Allow passing the entire service account JSON as an environment variable.
+  // Useful for environments where a file is inconvenient (FIREBASE_SERVICE_ACCOUNT or FIREBASE_SERVICE_ACCOUNT_JSON).
+  const envServiceAccount =
+    process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+
+  if (envServiceAccount) {
     try {
-      if (!fs.existsSync(filename)) continue;
+      const parsed =
+        typeof envServiceAccount === "string" ? JSON.parse(envServiceAccount) : envServiceAccount;
 
-      const raw = fs.readFileSync(filename, "utf8").replace(/^\uFEFF/, "");
-      const serviceAccount = JSON.parse(raw);
-
-      if (typeof serviceAccount.private_key === "string") {
-        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
+      if (typeof parsed.private_key === "string") {
+        parsed.private_key = parsed.private_key.replace(/\\n/g, "\n");
       }
 
       initializeApp({
-        credential: cert(serviceAccount),
-        projectId: authProjectId || serviceAccount.project_id,
+        credential: cert(parsed),
+        projectId: authProjectId || parsed.project_id,
       });
 
       firebaseReady = true;
       console.log(
-        `Firebase Admin initialized using ${filename} (auth project: ${
-          authProjectId || serviceAccount.project_id
+        `Firebase Admin initialized using FIREBASE_SERVICE_ACCOUNT env var (auth project: ${
+          authProjectId || parsed.project_id
         })`,
       );
-      break;
     } catch (error) {
       initializationError = error;
+    }
+  }
+
+  // Fallback: try known file locations.
+  if (!firebaseReady) {
+    for (const filename of [...new Set(serviceAccountCandidates)]) {
+      try {
+        if (!fs.existsSync(filename)) continue;
+
+        const raw = fs.readFileSync(filename, "utf8").replace(/^\uFEFF/, "");
+        const serviceAccount = JSON.parse(raw);
+
+        if (typeof serviceAccount.private_key === "string") {
+          serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
+        }
+
+        initializeApp({
+          credential: cert(serviceAccount),
+          projectId: authProjectId || serviceAccount.project_id,
+        });
+
+        firebaseReady = true;
+        console.log(
+          `Firebase Admin initialized using ${filename} (auth project: ${
+            authProjectId || serviceAccount.project_id
+          })`,
+        );
+        break;
+      } catch (error) {
+        initializationError = error;
+      }
     }
   }
 }

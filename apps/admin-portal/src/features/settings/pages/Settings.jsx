@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Loader2, Server, Shield, Mail, CreditCard, Building2, Eye, EyeOff } from 'lucide-react';
+import { Save, Loader2, Shield, Mail, CreditCard, Building2, Eye, EyeOff } from 'lucide-react';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
 
@@ -21,22 +21,23 @@ export default function Settings() {
     maintenanceMode: false
   });
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
   const fetchSettings = async () => {
     try {
       const res = await api.get('/admin/settings');
       if (res.data.settings) {
         setSettings(res.data.settings);
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to load settings');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchSettings();
+  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -44,7 +45,7 @@ export default function Settings() {
     try {
       await api.put('/admin/settings', settings);
       toast.success('Settings saved successfully');
-    } catch (err) {
+    } catch {
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);

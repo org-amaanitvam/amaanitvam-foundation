@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { User, Camera, Save, Loader2, Mail, Phone, Building, Shield } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext.jsx';
 import api from '../../../config/api.js';
@@ -8,22 +8,9 @@ export default function Profile() {
   const { userProfile, setUserProfile, profileError, refreshProfile } = useAuth();
   const [formData, setFormData] = useState({ name: '', phone: '', designation: '', department: '', domain: '' });
   const [profileImage, setProfileImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const previewUrl = profileImage ? URL.createObjectURL(profileImage) : (userProfile?.profileImage || '');
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    if (userProfile) {
-      setFormData({
-        name: userProfile.name || '',
-        phone: userProfile.phone || '',
-        designation: userProfile?.designation || '',
-        department: userProfile.department || '',
-        domain: userProfile?.domain || '',
-      });
-      setPreviewUrl(userProfile.profileImage || '');
-    }
-  }, [userProfile]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -33,7 +20,6 @@ export default function Profile() {
         return;
       }
       setProfileImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -61,7 +47,7 @@ export default function Profile() {
         payload.profileImage = base64Image;
       }
 
-      const res = await api.put('/admin/me', payload);
+      const res = await api.patch('/admin/me', payload);
       setUserProfile(res.data?.user || res.data?.admin || res.data?.profile || res.data?.data || res.data);
       toast.success('Profile updated successfully!');
       setProfileImage(null);

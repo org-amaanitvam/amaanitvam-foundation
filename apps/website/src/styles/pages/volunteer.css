@@ -1,7 +1,12 @@
+/* ==========================================================================
+   Volunteer Page — Card Grid — Premium Redesign
+  
+   ========================================================================== */
+
 body[data-page="volunteer"] .moved-inline-style-139 {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 1.4rem !important;
+    gap: 24px !important;
     width: min(100%, 1050px) !important;
     margin: 0 auto !important;
     align-items: stretch !important;
@@ -10,7 +15,7 @@ body[data-page="volunteer"] .moved-inline-style-139 {
 body[data-page="volunteer"] .moved-inline-style-139 .card {
     min-height: 255px !important;
     height: 100% !important;
-    padding: 1.8rem 1.35rem !important;
+    padding: 32px 24px !important;
     margin: 0 !important;
 
     display: flex !important;
@@ -21,14 +26,19 @@ body[data-page="volunteer"] .moved-inline-style-139 .card {
     text-align: center !important;
     background: #fffaf5 !important;
     border: 1px solid rgba(216, 161, 95, 0.45) !important;
-    border-radius: 18px !important;
-    box-shadow: 0 10px 24px rgba(93, 15, 45, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 8px rgba(93, 15, 45, 0.03), 0 10px 24px rgba(93, 15, 45, 0.06) !important;
     box-sizing: border-box !important;
+
+    /* Was missing entirely — the hover transform/shadow below had nothing
+       to animate against, so it used to snap instead of transitioning. */
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 body[data-page="volunteer"] .moved-inline-style-139 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 16px 32px rgba(93, 15, 45, 0.12) !important;
+    border-color: rgba(216, 161, 95, 0.75) !important;
 }
 
 /* Icon centered */
@@ -42,8 +52,13 @@ body[data-page="volunteer"] .moved-inline-style-139 .card-icon {
     align-items: center !important;
     justify-content: center !important;
 
-    margin: 0 0 0.9rem !important;
+    margin: 0 0 16px !important;
     border-radius: 14px !important;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+body[data-page="volunteer"] .moved-inline-style-139 .card:hover .card-icon {
+    transform: scale(1.06) rotate(-3deg);
 }
 
 body[data-page="volunteer"] .moved-inline-style-139 .card-icon .material-symbols-outlined {
@@ -60,8 +75,8 @@ body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-06
     min-height: auto !important;
     width: auto !important;
 
-    margin: 0 0 0.9rem !important;
-    padding: 0.25rem 0.85rem !important;
+    margin: 0 0 16px !important;
+    padding: 6px 16px !important;
 
     color: #5d0f2d !important;
     background: rgba(93, 15, 45, 0.08) !important;
@@ -93,11 +108,23 @@ body[data-page="volunteer"] .moved-inline-style-139 .card p a {
     color: #5d0f2d !important;
     font-weight: 600 !important;
     text-decoration: none !important;
+    transition: color 0.2s ease !important;
+}
+
+body[data-page="volunteer"] .moved-inline-style-139 .card p a:hover {
+    color: #b58241 !important;
+    text-decoration: underline !important;
+}
+
+body[data-page="volunteer"] .moved-inline-style-139 .card p a:focus-visible {
+    outline: 2px solid #d8a15f;
+    outline-offset: 2px;
+    border-radius: 3px;
 }
 
 /* Section heading spacing */
 body[data-page="volunteer"] .section-header {
-    margin-bottom: 2.5rem !important;
+    margin-bottom: 40px !important;
     text-align: center !important;
 }
 
@@ -114,16 +141,25 @@ body[data-page="volunteer"] .section-header {
     body[data-page="volunteer"] .moved-inline-style-139 {
         grid-template-columns: 1fr !important;
         width: 100% !important;
-        gap: 1rem !important;
+        gap: 16px !important;
     }
 
     body[data-page="volunteer"] .moved-inline-style-139 .card {
         min-height: auto !important;
-        padding: 1.5rem 1.2rem !important;
+        padding: 24px 20px !important;
     }
 
     body[data-page="volunteer"] .moved-inline-style-139 .card h3,
     body[data-page="volunteer"] .moved-inline-style-139 .card .moved-inline-style-068 {
         font-size: 1.15rem !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    body[data-page="volunteer"] .moved-inline-style-139 .card,
+    body[data-page="volunteer"] .moved-inline-style-139 .card-icon,
+    body[data-page="volunteer"] .moved-inline-style-139 .card p a {
+        transition: none !important;
     }
 }

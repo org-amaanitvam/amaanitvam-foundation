@@ -31,6 +31,7 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+.vs/
 # Temporary files
 tmp/
 temp/

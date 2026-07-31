@@ -23,7 +23,8 @@
   },
   "devDependencies": {
     "concurrently": "9.2.1",
-    "cross-env": "7.0.3"
+    "cross-env": "7.0.3",
+    "vite": "^8.1.5"
   },
   "dependencies": {
     "react-countup": "^6.5.3"

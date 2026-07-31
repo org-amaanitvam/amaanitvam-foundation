@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Loader2, Plus, Edit2, Paperclip } from 'lucide-react';
+import { ClipboardList, Loader2, Plus, Edit2, Paperclip, Clock3, LoaderCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { canAccessPermission } from "../../utils/accessControl";
 import toast from 'react-hot-toast';
 import FilterBar from "../../components/Filters/FilterBar";
 
@@ -30,41 +31,61 @@ export default function TasksPage() {
   const [users, setUsers] = useState([]);
   const [uploadingFile, setUploadingFile] = useState(false);
 
-  // Keeping your hardcoded bypass for testing
-  const isAdmin = true; 
-  // const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
+  const canManageTasks = canAccessPermission(
+    userProfile,
+    "tasks.manage",
+  );
 
-const fetchTasks = useCallback(async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/tasks');
+      const { data } = await api.get("/tasks");
+      const taskList = Array.isArray(data)
+        ? data
+        : Array.isArray(data.tasks)
+          ? data.tasks
+          : Array.isArray(data.data)
+            ? data.data
+            : [];
       
-      const taskList = Array.isArray(data) ? data
-                     : Array.isArray(data.tasks) ? data.tasks
-                     : Array.isArray(data.data) ? data.data
-                     : [];
-const normalizedTasks = taskList.map(t => ({
+      const normalizedTasks = taskList.map(t => ({
         ...t,
         assignedTo: t.assignedTo || t.assigned_to_id
       }));
 
       setTasks(normalizedTasks);
-
-      if (isAdmin) {
-        const res = await api.get('/admin/members');
-        setUsers(res.data.members || []);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || 'Failed to load tasks');
+    } catch (error) {
+      console.error("Tasks load failed:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to load tasks",
+      );
     } finally {
       setLoading(false);
     }
-  }, [isAdmin]);
+  }, []);
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
+
+  useEffect(() => {
+    if (!canManageTasks) {
+      setUsers([]);
+      return;
+    }
+
+    api.get("/admin/members")
+      .then((response) => {
+        setUsers(response.data.members || []);
+      })
+      .catch((error) => {
+        console.error(
+          "Task member options failed:",
+          error,
+        );
+      });
+  }, [canManageTasks]);
 
   const resetForm = () => {
     setShowCreate(false);
@@ -78,14 +99,12 @@ const normalizedTasks = taskList.map(t => ({
     
     setUploadingFile(true);
     try {
-      // 1. Create a dynamic folder for this specific task's attachments
       const folderRes = await api.post('/gallery/folders', {
         name: `Task Attachment: ${formData.title || 'Untitled Task'}`,
         description: "Auto-generated folder for task attachments"
       });
       const newFolderId = folderRes.data.folder._id;
 
-      // 2. Upload the image and attach it to the new folder
       const uploadData = new FormData();
       uploadData.append("image", file);
       uploadData.append("folderId", newFolderId); 
@@ -112,7 +131,7 @@ const normalizedTasks = taskList.map(t => ({
       const submissionData = {
         title: formData.title,
         description: formData.description,
-        assigned_to_id: formData.assignedTo, // Always send the ID
+        assigned_to_id: formData.assignedTo,
         category: formData.category,
         deadline: formData.deadline,
         status: formData.status,
@@ -122,7 +141,6 @@ const normalizedTasks = taskList.map(t => ({
         comment: formData.newComment 
       };
 
-      // ONLY delete deadline if it's empty. Do NOT delete assigned_to_id.
       if (!submissionData.deadline) delete submissionData.deadline;
 
       if (editingId) {
@@ -154,7 +172,7 @@ const normalizedTasks = taskList.map(t => ({
         ? new Date(task.deadline).toISOString().split('T')[0]
         : '',
       status: task.status || 'open',
-      priority: (task.priority || 'medium').toLowerCase(), 
+      priority: (task.priority || 'medium').toLowerCase(),
       progress: Number(task.progress || 0),
       attachmentUrl: task.attachmentUrl || '',
       newComment: '',
@@ -172,7 +190,7 @@ const normalizedTasks = taskList.map(t => ({
     );
   }
 
-  const myTasks = isAdmin
+  const myTasks = canManageTasks
     ? tasks
     : tasks.filter(
       (t) =>
@@ -182,7 +200,9 @@ const normalizedTasks = taskList.map(t => ({
 
   const filtered = myTasks.filter((t) => {
     let match = true;
-    if (filters.status && filters.status !== 'all' && t.status !== filters.status) match = false;
+    if (filters.status && filters.status !== 'last' && filters.status !== 'all' && t.status !== filters.status) {
+      match = false;
+    }
     if (filters.category && filters.category !== 'all' && t.category !== filters.category) match = false;
     
     const taskPriority = (t.priority || 'medium').toLowerCase();
@@ -205,6 +225,19 @@ const normalizedTasks = taskList.map(t => ({
 
     return match;
   });
+
+  const stats = {
+    total: filtered.length,
+    open: filtered.filter((t) => t.status === "open").length,
+    inProgress: filtered.filter((t) => t.status === "inProgress").length,
+    completed: filtered.filter((t) => t.status === "completed").length,
+    overdue: filtered.filter(
+      (t) =>
+        t.deadline &&
+        new Date(t.deadline) < new Date() &&
+        t.status !== "completed"
+    ).length,
+  };
 
   const filterConfig = [
     {
@@ -242,7 +275,7 @@ const normalizedTasks = taskList.map(t => ({
         { label: 'Marketing', value: 'Marketing' },
       ],
     },
-    ...(isAdmin
+    ...(canManageTasks
       ? [
         {
           name: 'assignedTo',
@@ -280,29 +313,91 @@ const normalizedTasks = taskList.map(t => ({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center flex-wrap gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            {isAdmin ? 'All Tasks' : 'My Tasks'}
+          <h1 className="text-3xl font-bold text-slate-900">
+            {canManageTasks ? "All Tasks" : "My Tasks"}
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Track tasks and deadlines
+          <p className="text-slate-500 mt-2">
+            Organize, assign and monitor tasks across your team.
           </p>
         </div>
 
-        {isAdmin && (
+        {canManageTasks && (
           <button
             onClick={() => {
               setEditingId(null);
               setFormData(initialFormData);
               setShowCreate(true);
             }}
-            className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2"
+            className="flex items-center gap-2 bg-[#56051a] text-white px-5 py-3 rounded-xl shadow-md hover:bg-[#6b0d24] hover:shadow-lg transition-all duration-300"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-5 h-5" />
             Create Task
           </button>
         )}
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-500">Total Tasks</p>
+              <h2 className="text-4xl font-bold text-slate-900 mt-2">{stats.total}</h2>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-[#56051a]/10 flex items-center justify-center">
+              <ClipboardList className="w-6 h-6 text-[#56051a]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-yellow-700 font-medium">Open</p>
+              <h2 className="text-4xl font-bold text-yellow-700 mt-2">{stats.open}</h2>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center">
+              <Clock3 className="w-6 h-6 text-yellow-700" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-blue-700 font-medium">In Progress</p>
+              <h2 className="text-4xl font-bold text-blue-700 mt-2">{stats.inProgress}</h2>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+              <LoaderCircle className="w-6 h-6 text-blue-700" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-green-700 font-medium">Completed</p>
+              <h2 className="text-4xl font-bold text-green-700 mt-2">{stats.completed}</h2>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-green-700" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-red-700 font-medium">Overdue</p>
+              <h2 className="text-4xl font-bold text-red-700 mt-2">{stats.overdue}</h2>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-red-700" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {showCreate && (
@@ -310,14 +405,14 @@ const normalizedTasks = taskList.map(t => ({
           <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in">
             <h2 className="text-lg font-bold text-slate-900 mb-4">
               {editingId
-                ? isAdmin
+                ? canManageTasks
                   ? 'Edit Task'
                   : 'Update Task Progress'
                 : 'Create New Task'}
             </h2>
 
             <form onSubmit={handleCreateOrUpdate} className="space-y-4">
-              {isAdmin && (
+              {canManageTasks && (
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">Title</label>
@@ -415,7 +510,6 @@ const normalizedTasks = taskList.map(t => ({
                 </>
               )}
 
-              {/* NEW: Attachment Upload Section */}
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                   <Paperclip className="w-4 h-4"/> Task Attachment
@@ -441,7 +535,7 @@ const normalizedTasks = taskList.map(t => ({
                 )}
               </div>
 
-              {!isAdmin && (
+              {!canManageTasks && (
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
                   <h3 className="font-semibold text-slate-800">{formData.title}</h3>
                   <p className="text-xs text-slate-500 mt-1">{formData.description}</p>
@@ -450,7 +544,7 @@ const normalizedTasks = taskList.map(t => ({
 
               {editingId && (
                 <>
-                  {!isAdmin && (
+                  {!canManageTasks && (
                     <div>
                       <label className="block text-sm font-medium mb-1">Status</label>
                       <select
@@ -536,65 +630,88 @@ const normalizedTasks = taskList.map(t => ({
             return (
               <div
                 key={t._id}
-                className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 hover:shadow-sm transition-shadow"
+                className={`bg-white rounded-2xl border-l-4 ${t.status === "completed"
+                  ? "border-l-green-500"
+                  : t.status === "inProgress"
+                    ? "border-l-blue-500"
+                    : t.status === "open"
+                      ? "border-l-yellow-500"
+                      : "border-l-slate-300"
+                  } border-t border-r border-b border-slate-200 p-6 flex items-start gap-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}
               >
                 <span
-                  className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg border ${statusColors[t.status] || 'bg-slate-100 text-slate-600'}`}
+                  className={`px-3 py-1.5 text-xs font-semibold uppercase rounded-full border whitespace-nowrap ${statusColors[t.status] || 'bg-slate-100 text-slate-600'}`}
                 >
                   {getStatusLabel(t.status)}
                 </span>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-slate-800 truncate">{t.title}</h3>
-                    <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">
-                      {t.progress || 0}%
+                  <div className="flex justify-between items-center w-full">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-xl font-bold text-slate-900 leading-tight">
+                        {t.title}
+                      </h3>
+                      {t.category && t.category !== 'General' && (
+                        <span className="text-[10px] font-semibold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full border border-indigo-100">
+                          {t.category}
+                        </span>
+                      )}
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-[#56051a]/10 text-[#56051a] text-xs font-bold">
+                      {t.progress || 0}% Complete
                     </span>
-                    
-                    {/* NEW: Category Badge */}
-                    {t.category && t.category !== 'General' && (
-                      <span className="text-[10px] font-semibold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full border border-indigo-100">
-                        {t.category}
-                      </span>
-                    )}
                   </div>
 
-                  <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 mb-1 max-w-[200px]">
+                  <div className="w-full bg-slate-200 rounded-full h-3 mt-3 mb-3 overflow-hidden max-w-sm">
                     <div
-                      className="bg-[#56051a] h-1.5 rounded-full transition-all duration-500"
+                      className="h-3 rounded-full bg-gradient-to-r from-[#56051a] to-[#8c1735] transition-all duration-500"
                       style={{ width: `${t.progress || 0}%` }}
                     />
                   </div>
 
-                  <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
-                    <span>Assigned to: <span className="font-medium text-slate-700">{t.assignedTo?.name || 'Unassigned'}</span></span>
-                    {t.deadline && <span>• Due: {new Date(t.deadline).toLocaleDateString()}</span>}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-3 mt-3">
+                    <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
+                      <div className="w-8 h-8 rounded-full bg-[#56051a] text-white flex items-center justify-center text-xs font-bold">
+                        {(t.assignedTo?.name || "U").charAt(0).toUpperCase()}
+                      </div>
+                      <span className="text-sm font-medium text-slate-700">
+                        {t.assignedTo?.name || "Unassigned"}
+                      </span>
+                    </div>
 
-                  {/* NEW: Attachment Link rendering */}
+                    {t.deadline && (
+                      <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                        📅 {new Date(t.deadline).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+
                   {t.attachmentUrl && (
-                    <a href={t.attachmentUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-1.5 text-[11px] font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-0.5 rounded transition-colors">
-                      <Paperclip className="w-3 h-3"/> View Attachment
+                    <a href={t.attachmentUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-2 text-[11px] font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2.5 py-1 rounded transition-colors">
+                      <Paperclip className="w-3.5 h-3.5"/> View Attachment
                     </a>
                   )}
 
                   {t.comments && t.comments.length > 0 && (
-                    <p className="text-xs text-slate-500 mt-1.5 italic border-l-2 border-slate-200 pl-2">
+                    <p className="text-xs text-slate-500 mt-2 italic border-l-2 border-slate-200 pl-2">
                       Latest: {t.comments[t.comments.length - 1].text}
                     </p>
                   )}
 
                   {safePriority && (
-                    <p className="text-xs mt-1.5">
-                      <span className="text-slate-400">Priority: </span>
+                    <div className="mt-3">
                       <span
-                        className={`font-medium ${
-                          safePriority === 'high' ? 'text-rose-500' : safePriority === 'low' ? 'text-slate-500' : 'text-amber-500'
-                        }`}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold
+                          ${safePriority === "high"
+                            ? "bg-red-100 text-red-700"
+                            : safePriority === "medium"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-green-100 text-green-700"
+                          }`}
                       >
-                        {safePriority.charAt(0).toUpperCase() + safePriority.slice(1)}
+                        {safePriority.toUpperCase()} PRIORITY
                       </span>
-                    </p>
+                    </div>
                   )}
                 </div>
 
@@ -603,7 +720,7 @@ const normalizedTasks = taskList.map(t => ({
                   className="p-2 text-slate-400 hover:text-[#56051a] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium"
                 >
                   <Edit2 className="w-4 h-4" />
-                  {!isAdmin && <span>Update</span>}
+                  {!canManageTasks && <span>Update</span>}
                 </button>
               </div>
             );
@@ -612,4 +729,4 @@ const normalizedTasks = taskList.map(t => ({
       )}
     </div>
   );
-} 
+}

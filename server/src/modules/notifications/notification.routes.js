@@ -1,12 +1,16 @@
-import { Router } from 'express';
-import { getUserNotifications, markAsRead } from './notification.controller.js';
+import express from 'express';
+import * as notificationController from './notification.controller.js';
+import { authenticate } from '../../middleware/authenticate.js';
+import { authorize } from '../../middleware/authorize.js';
 
-const router = Router();
+const router = express.Router();
 
-// GET all notifications for a specific user
-router.get('/user/:user_id', getUserNotifications);
+router.use(authenticate);
 
-// PATCH mark a specific notification as read
-router.patch('/:id/read', markAsRead);
+// Requirement: Authorized roles can fetch, read, and check unread counts for notifications
+router.get('/', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.getNotifications);
+router.patch('/:notificationId/read', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.markAsRead);
+router.patch('/read-all', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.markAllAsRead);
+router.get('/unread-count', authorize('super_admin', 'admin', 'faculty', 'student'), notificationController.getUnreadCount);
 
 export default router;

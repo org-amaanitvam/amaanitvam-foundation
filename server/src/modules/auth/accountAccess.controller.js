@@ -1,6 +1,7 @@
 import { getAuth } from "firebase-admin/auth";
 import User from "../users/user.model.js";
 import UserAccess from "./userAccess.model.js";
+import AuthAudit from "./authAudit.model.js";
 import {
   SUPPORTED_PROVISION_ROLES,
   findMongoUserFromFirebase,
@@ -22,8 +23,11 @@ const publicUser = (user, access) => ({
   department: user?.department || "",
   team: access?.team || user?.team || "",
   uniqueId: access?.uniqueId || user?.memberId || "",
-  role: access?.role || normalizeRole(user?.role),
-  userRole: user?.role || "",
+  role: user?.role || "member",
+  userRole: user?.role || "member",
+  accessRole:
+    access?.role ||
+    normalizeRole(user?.role),
   permissions: access?.permissions || [],
   isActive: access?.isActive !== false && user?.status !== "inactive",
   mustChangePassword: access?.mustChangePassword === true,
@@ -95,6 +99,75 @@ export const getSession = async (req, res, next) => {
     await writeAuthAudit({ req, user, access, action: "SESSION_VALIDATED", success: true });
     return res.json({ success: true, authProvider: "firebase", session: { firebaseUid: req.user.uid, emailVerified: req.user.email_verified === true }, user: publicUser(user, access) });
   } catch (error) { next(error); }
+};
+
+export const getAuthAuditHistory = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    const page = Math.max(
+      1,
+      Number.parseInt(req.query?.page, 10) || 1,
+    );
+    const limit = Math.min(
+      100,
+      Math.max(
+        1,
+        Number.parseInt(req.query?.limit, 10) || 25,
+      ),
+    );
+    const filter = {};
+
+    const action = String(
+      req.query?.action || "",
+    ).trim();
+    const email = normalizeEmail(req.query?.email);
+    const uniqueId = String(
+      req.query?.uniqueId || "",
+    )
+      .trim()
+      .toUpperCase();
+    const success = String(
+      req.query?.success ?? "",
+    )
+      .trim()
+      .toLowerCase();
+
+    if (action) filter.action = action;
+    if (email) filter.email = email;
+    if (uniqueId) filter.uniqueId = uniqueId;
+
+    if (success === "true" || success === "false") {
+      filter.success = success === "true";
+    }
+
+    const [records, total] = await Promise.all([
+      AuthAudit.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      AuthAudit.countDocuments(filter),
+    ]);
+
+    return res.json({
+      success: true,
+      records,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.max(
+          1,
+          Math.ceil(total / limit),
+        ),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const provisionUser = async (req, res, next) => {

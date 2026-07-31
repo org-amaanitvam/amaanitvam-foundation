@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Filter, X, ChevronDown } from 'lucide-react';
+import {
+  Filter,
+  X,
+  ChevronDown,
+  Flag,
+  AlertCircle,
+  Users,
+  CalendarDays
+} from "lucide-react";
 
 export default function FilterBar({ config, filters, setFilters }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +48,7 @@ export default function FilterBar({ config, filters, setFilters }) {
   const activeCount = getActiveFilterCount();
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-fade-in shadow-sm mb-6">
+    <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 mb-8">
       <div className="flex items-center justify-between lg:hidden mb-2 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-slate-600" />
@@ -50,15 +58,67 @@ export default function FilterBar({ config, filters, setFilters }) {
         <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </div>
 
-      <div className={`lg:flex items-end gap-8 flex-wrap ${isOpen ? 'flex flex-col lg:flex-row items-stretch' : 'hidden'}`}>
+
+
+      <div className="flex items-center gap-3">
+
+        <div className="w-12 h-12 rounded-xl bg-[#56051a]/10 flex items-center justify-center">
+          <Filter className="w-6 h-6 text-[#56051a]" />
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">
+            Filter Tasks
+          </h2>
+
+          <p className="text-slate-500 text-sm mt-1">
+            Quickly find tasks using the filters below.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div className="border-t border-slate-200 my-6"></div>
+
+
+      <div
+        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ${isOpen ? "grid" : "hidden lg:grid"
+          }`}
+      >
         {config.map((field) => (
-          <div key={field.name} className="flex flex-col">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 hidden lg:block">{field.label}</label>
+          <div
+            key={field.name}
+            className="flex flex-col bg-white rounded-2xl p-5 border border-slate-200 hover:border-[#56051a]/20 hover:shadow-lg transition-all duration-300 w-full"
+          >
+            <div className="flex items-center gap-2 mb-3">
+
+  {field.name === "status" && (
+    <Flag className="w-4 h-4 text-blue-600" />
+  )}
+
+  {field.name === "priority" && (
+    <AlertCircle className="w-4 h-4 text-amber-500" />
+  )}
+
+  {field.name === "assignedTo" && (
+    <Users className="w-4 h-4 text-emerald-600" />
+  )}
+
+  {field.name === "deadline" && (
+    <CalendarDays className="w-4 h-4 text-rose-600" />
+  )}
+
+  <label className="text-xs font-bold uppercase tracking-widest text-slate-600">
+    {field.label}
+  </label>
+
+</div>
             {field.type === 'select' && (
               <select
                 value={filters[field.name] || 'all'}
                 onChange={(e) => updateFilter(field.name, e.target.value)}
-                className="w-full lg:w-48 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                className="w-full h-12 bg-white border border-slate-200 rounded-xl px-4 text-sm font-medium text-slate-700 shadow-sm hover:border-[#56051a] focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a] outline-none transition-all duration-300"
               >
                 {field.options.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -75,19 +135,29 @@ export default function FilterBar({ config, filters, setFilters }) {
               />
             )}
             {field.type === 'dateRange' && (
-              <div className="flex items-center gap-2">
+              <div className="space-y-3">
                 <input
                   type="date"
                   value={filters[field.name]?.start || ''}
-                  onChange={(e) => updateFilter(field.name, { ...filters[field.name], start: e.target.value })}
-                  className="w-full lg:w-32.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                  onChange={(e) =>
+                    updateFilter(field.name, {
+                      ...filters[field.name],
+                      start: e.target.value,
+                    })
+                  }
+                  className="w-full h-11 px-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a] outline-none"
                 />
-                <span className="text-slate-400 text-xs">to</span>
+
                 <input
                   type="date"
                   value={filters[field.name]?.end || ''}
-                  onChange={(e) => updateFilter(field.name, { ...filters[field.name], end: e.target.value })}
-                  className="w-full lg:w-32.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-1 focus:ring-[#56051a] focus:border-[#56051a] outline-none"
+                  onChange={(e) =>
+                    updateFilter(field.name, {
+                      ...filters[field.name],
+                      end: e.target.value,
+                    })
+                  }
+                  className="w-full h-11 px-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a] outline-none"
                 />
               </div>
             )}
@@ -115,9 +185,20 @@ export default function FilterBar({ config, filters, setFilters }) {
 
         {activeCount > 0 && (
           <div className="flex flex-col justify-end mt-2 lg:mt-5">
-            <button onClick={handleClear} className="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-rose-500 bg-slate-100 hover:bg-rose-50 rounded-xl transition-colors flex items-center justify-center gap-2">
+            {/* <button onClick={handleClear} className="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-rose-500 bg-slate-100 hover:bg-rose-50 rounded-xl transition-colors flex items-center justify-center gap-2">
               <X className="w-4 h-4" /> Clear Filters
+            </button> */}
+
+
+            <button
+              onClick={handleClear}
+              className="px-5 h-12 rounded-2xl bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition flex items-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              Reset
             </button>
+
+
           </div>
         )}
       </div>

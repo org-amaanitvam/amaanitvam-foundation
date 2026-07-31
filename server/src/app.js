@@ -12,6 +12,7 @@ import { notFound } from "./middleware/notFound.js";
 import adminRecoveryRoutes from "./routes/adminRecoveryRoutes.js";
 import productionProfileRoutes from "./routes/productionProfile.routes.js";
 import memberAdministrationRoutes from "./modules/auth/memberAdministration.routes.js";
+import adminStatsRoutes from "./modules/admin-stats/adminStats.routes.js";
 import activityRoutes from "./modules/activities/activity.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from './modules/users/user.routes.js';
@@ -30,10 +31,14 @@ import libraryRoutes from "./modules/digital-library/library.routes.js";
 import courseRoutes from "./modules/courses/course.routes.js";
 import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
+import publicFormRoutes from "./modules/public-forms/publicForm.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
 import dashboardRoutes from './modules/dashboard/dashboard.routes.js'; 
 import attendanceRoutes from './modules/attendance/attendance.routes.js';
+import facultyRoutes from './modules/faculty/faculty.routes.js';
+import doubtRoutes from './modules/doubts/doubts.routes.js';
+import internalRoutes from './modules/internal/internal.routes.js';
 import conversationRoutes from './modules/conversations/conversation.routes.js';
 import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
 
@@ -70,14 +75,23 @@ const corsOptions = {
     return callback(new Error(`Origin ${origin} is not allowed by CORS`));
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Accept", "Cache-Control", "Pragma", "X-Requested-With"],
   credentials: true,
 };
 
 // 3. Global Middleware (MUST come before API routes)
 app.use(cors(corsOptions));
 app.use(helmet());
-app.use(express.json()); // Crucial: Enables reading req.body in POST/PUT requests
+
+// Super Admin member mutation routes with body limits
+app.use(
+  "/api/admin/members",
+  express.json({ limit: "10mb" }),
+  express.urlencoded({ extended: true }),
+  memberAdministrationRoutes,
+);
+
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "development") {
@@ -99,11 +113,13 @@ app.get('/api/public/settings', (_req, res) => {
 app.use("/api", productionProfileRoutes);
 app.use("/api", adminRecoveryRoutes);
 
-// 5. Core API Routes (Grouped cleanly)
+// 5. Core API Routes (Grouped cleanly combining your features and upstream additions)
 app.use("/api/admin/members", memberAdministrationRoutes);
+app.use("/api/admin/stats", adminStatsRoutes);
 app.use("/api/auth", authRoutes);
 app.use('/api/users', userRoutes);
 app.use("/api/candidates", candidateRoutes);
+app.use("/api/admin/candidates", candidateRoutes);
 app.use("/api/members", memberRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/tasks", taskRoutes);
@@ -121,13 +137,17 @@ app.use("/api/digital-library", libraryRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
+app.use("/api/volunteer", volunteerRoutes);
+app.use("/api/internship", internshipRoutes);
+app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
-
-// Optional: Mount these if your frontend dashboard/conversations require them
-// app.use("/api/dashboard", dashboardRoutes);
-// app.use("/api/conversations", conversationRoutes);
-// app.use("/api/conversations/ai-notifications", aiNotificationRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/doubts", doubtRoutes);
+app.use("/internal", internalRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/ai-notifications", aiNotificationRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // 6. Error Handling Middleware (MUST be at the very end)
 app.use(notFound);

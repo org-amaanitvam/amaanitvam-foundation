@@ -1,3 +1,7 @@
+/* ==========================================================================
+   Internship page
+   ========================================================================== */
+
 body[data-page="internship"] .grid-3,
 body[data-page="verify"] .grid-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -19,16 +23,14 @@ body[data-page="verify"] .grid-3 {
     }
 }
 
-/* =========================================================
-   INTERNSHIP TRACKS — FINAL CLEAN FIX
-   Desktop: 4 cards in one row
-   Tablet: 2 cards per row
-   Mobile: 1 card per row
-   ========================================================= */
+/* ---------- Section shell ---------- */
 
 body[data-page="internship"] section[aria-labelledby="tracks-heading"] {
-    padding: 5rem 0 !important;
-    background: #fffaf3 !important;
+    padding: 6rem 0 !important;
+    /* soft, restrained gradient wash instead of a flat tint */
+    background:
+        radial-gradient(120% 100% at 50% -10%, rgba(93, 15, 45, 0.035), transparent 60%),
+        #fbfaf8 !important;
 }
 
 body[data-page="internship"] section[aria-labelledby="tracks-heading"] .container {
@@ -38,27 +40,34 @@ body[data-page="internship"] section[aria-labelledby="tracks-heading"] .containe
 }
 
 body[data-page="internship"] section[aria-labelledby="tracks-heading"] .section-header {
-    max-width: 760px !important;
-    margin: 0 auto 3rem !important;
+    max-width: 720px !important;
+    margin: 0 auto 4rem !important;
     text-align: center !important;
 }
 
 body[data-page="internship"] #tracks-heading {
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 1rem !important;
     color: var(--primary) !important;
-    font-size: clamp(2.7rem, 4vw, 4rem) !important;
+    font-size: clamp(2.5rem, 3.6vw, 3.75rem) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.08 !important;
 }
 
 body[data-page="internship"] section[aria-labelledby="tracks-heading"] .section-desc {
-    max-width: 680px !important;
+    max-width: 620px !important;
     margin: 0 auto !important;
+    color: var(--muted) !important;
+    font-size: 1.05rem !important;
     line-height: 1.7 !important;
 }
+
+/* ---------- Card grid ---------- */
 
 body[data-page="internship"] .moved-inline-style-102 {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 1.35rem !important;
+    gap: 1.5rem !important;
     width: 100% !important;
     max-width: 1280px !important;
     margin: 0 auto !important;
@@ -73,45 +82,67 @@ body[data-page="internship"] .moved-inline-style-102>.card {
     width: 100% !important;
     min-width: 0 !important;
     min-height: 390px !important;
-    padding: 2rem 1.4rem !important;
+    padding: 2.5rem 1.75rem !important;
     text-align: center !important;
     background: #ffffff !important;
-    border: 1px solid rgba(93, 15, 45, 0.16) !important;
-    border-radius: 22px !important;
-    box-shadow: 0 12px 30px rgba(93, 15, 45, 0.07) !important;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 8px 24px rgba(15, 23, 42, 0.05) !important;
+    transition:
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: transform !important;
 }
 
 body[data-page="internship"] .moved-inline-style-102>.card:hover {
-    transform: translateY(-5px) !important;
-    border-color: rgba(216, 161, 95, 0.7) !important;
-    box-shadow: 0 18px 42px rgba(93, 15, 45, 0.12) !important;
+    transform: translateY(-4px) !important;
+    border-color: rgba(216, 161, 95, 0.55) !important;
+    box-shadow:
+        0 2px 4px rgba(15, 23, 42, 0.05),
+        0 20px 40px rgba(93, 15, 45, 0.1) !important;
+}
+
+body[data-page="internship"] .moved-inline-style-102>.card:active {
+    transform: translateY(-1px) scale(0.997) !important;
+    transition-duration: 0.12s !important;
 }
 
 body[data-page="internship"] .moved-inline-style-102 .card-icon {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 54px !important;
-    height: 54px !important;
-    min-width: 54px !important;
-    margin: 0 auto 1.2rem !important;
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    margin: 0 auto 1.5rem !important;
     border-radius: 14px !important;
+    background:
+        linear-gradient(150deg, rgba(216, 161, 95, 0.16), rgba(93, 15, 45, 0.06)) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body[data-page="internship"] .moved-inline-style-102>.card:hover .card-icon {
+    transform: scale(1.06) !important;
 }
 
 body[data-page="internship"] .moved-inline-style-102 .card-icon .material-symbols-outlined {
-    font-size: 1.65rem !important;
+    font-size: 1.6rem !important;
+    color: var(--gold-dark) !important;
 }
 
 body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-103 {
     width: 100% !important;
     min-height: 3.9rem !important;
-    margin: 0 0 0.9rem !important;
+    margin: 0 0 1rem !important;
     color: var(--primary) !important;
     font-family: "Cormorant Garamond", serif !important;
-    font-size: clamp(1.45rem, 1.7vw, 1.75rem) !important;
+    font-size: clamp(1.4rem, 1.6vw, 1.7rem) !important;
     font-weight: 600 !important;
-    line-height: 1.12 !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.15 !important;
     text-align: center !important;
     word-break: normal !important;
     overflow-wrap: normal !important;
@@ -120,10 +151,10 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-103 {
 
 body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-104 {
     width: 100% !important;
-    margin: 0 0 1.15rem !important;
+    margin: 0 0 1.25rem !important;
     color: var(--muted) !important;
     font-size: 0.9rem !important;
-    line-height: 1.65 !important;
+    line-height: 1.7 !important;
     text-align: center !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
@@ -136,7 +167,7 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 {
     padding-left: 1.25rem !important;
     color: var(--muted) !important;
     font-size: 0.82rem !important;
-    line-height: 1.65 !important;
+    line-height: 1.7 !important;
     text-align: left !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
@@ -144,12 +175,18 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 {
 }
 
 body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li {
-    padding-left: 0.15rem !important;
+    padding-left: 0.25rem !important;
+}
+
+body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li+li {
+    margin-top: 0.4rem !important;
 }
 
 body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li::marker {
     color: var(--gold-dark) !important;
 }
+
+/* ---------- Responsive tuning ---------- */
 
 @media (max-width: 1180px) and (min-width: 993px) {
     body[data-page="internship"] section[aria-labelledby="tracks-heading"] .container {
@@ -157,11 +194,11 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
     }
 
     body[data-page="internship"] .moved-inline-style-102 {
-        gap: 1rem !important;
+        gap: 1.25rem !important;
     }
 
     body[data-page="internship"] .moved-inline-style-102>.card {
-        padding: 1.7rem 1.05rem !important;
+        padding: 2rem 1.35rem !important;
     }
 
     body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-103 {
@@ -169,11 +206,11 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
     }
 
     body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-104 {
-        font-size: 0.84rem !important;
+        font-size: 0.85rem !important;
     }
 
     body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 {
-        font-size: 0.77rem !important;
+        font-size: 0.78rem !important;
     }
 }
 
@@ -190,11 +227,11 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
 
 @media (max-width: 600px) {
     body[data-page="internship"] section[aria-labelledby="tracks-heading"] {
-        padding: 3.5rem 0 !important;
+        padding: 4rem 0 !important;
     }
 
     body[data-page="internship"] section[aria-labelledby="tracks-heading"] .section-header {
-        margin-bottom: 2rem !important;
+        margin-bottom: 2.5rem !important;
     }
 
     body[data-page="internship"] .moved-inline-style-102 {
@@ -205,25 +242,21 @@ body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-105 li:
 
     body[data-page="internship"] .moved-inline-style-102>.card {
         min-height: auto !important;
-        padding: 1.6rem 1.35rem !important;
-        border-radius: 18px !important;
+        padding: 1.75rem 1.5rem !important;
+        border-radius: 14px !important;
     }
 
     body[data-page="internship"] .moved-inline-style-102 .moved-inline-style-103 {
         min-height: auto !important;
-        font-size: 1.65rem !important;
+        font-size: 1.6rem !important;
     }
 }
 
-/* =========================================================
-   OUTCOMES GRID — 4 cards (overrides default 3-col .grid-3)
-   Desktop: 4 per row
-   Tablet: 2 per row
-   Mobile: 1 per row
-   ========================================================= */
+/* ---------- Outcomes grid ---------- */
 
 body[data-page="internship"] .grid-outcomes-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 1.5rem !important;
 }
 
 @media (max-width: 992px) {

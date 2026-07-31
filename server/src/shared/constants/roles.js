@@ -1,12 +1,14 @@
 export const ROLES = {
-  SUPER_ADMIN: "super_admin",
-  ADMIN: "admin",
-  COORDINATOR: "coordinator",
-  FACULTY: "faculty",
-  TEAM_MEMBER: "team_member",
-  INTERN: "intern",
-  CONTENT_EDITOR: "content_editor",
-  VIEWER: "viewer",
+  SUPER_ADMIN: 'super_admin',
+  ADMIN: 'admin',
+  COORDINATOR: 'coordinator',
+  FACULTY: 'faculty',
+  STUDENT: 'student',
+  CONTENT_MANAGER: 'content_manager',
+  TEAM_MEMBER: 'team_member',
+  INTERN: 'intern',
+  CONTENT_EDITOR: 'content_editor',
+  VIEWER: 'viewer',
 };
 
 export const ROLE_HIERARCHY = [
@@ -14,8 +16,18 @@ export const ROLE_HIERARCHY = [
   ROLES.ADMIN,
   ROLES.COORDINATOR,
   ROLES.FACULTY,
+  ROLES.CONTENT_MANAGER,
+  ROLES.STUDENT,
   ROLES.TEAM_MEMBER,
   ROLES.INTERN,
   ROLES.CONTENT_EDITOR,
   ROLES.VIEWER,
+];
+
+export const LEARNING_PORTAL_ROLES = [
+  ROLES.SUPER_ADMIN,
+  ROLES.ADMIN,
+  ROLES.FACULTY,
+  ROLES.STUDENT,
+  ROLES.CONTENT_MANAGER,
 ];

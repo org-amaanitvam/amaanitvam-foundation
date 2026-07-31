@@ -102,10 +102,10 @@ export default function ContactMessages() {
                     <td className="px-6 py-4 text-sm text-slate-500">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5" /> 
-                        {new Date(msg.createdAt || msg.date || Date.now()).toLocaleDateString('en-IN', {
+                        {msg.createdAt || msg.date ? new Date(msg.createdAt || msg.date).toLocaleDateString('en-IN', {
                           day: 'numeric', month: 'short', year: 'numeric',
                           hour: '2-digit', minute: '2-digit'
-                        })}
+                        }) : ''}
                       </span>
                     </td>
 

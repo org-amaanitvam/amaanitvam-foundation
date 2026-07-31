@@ -378,6 +378,7 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     sessionUser,
+    userProfile: sessionUser,
     mustChangePassword,
     sessionError,
     loading,
@@ -390,6 +391,14 @@ export function AuthProvider({ children }) {
         return null;
       }
 
+      return loadSession(auth.currentUser);
+    },
+
+    checkAuth: async () => {
+      if (!auth.currentUser) {
+        clearSessionState();
+        return null;
+      }
       return loadSession(auth.currentUser);
     },
   };

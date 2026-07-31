@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { FolderKanban, Loader2, Plus, Edit2, Trash2, CheckSquare, Square, Target } from 'lucide-react';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { canAccessPermission } from "../../utils/accessControl";
 import toast from 'react-hot-toast';
 import FilterBar from "../../components/Filters/FilterBar";
 
@@ -13,7 +14,7 @@ const initialFormData = {
   endDate: '', 
   assignedMembers: [], 
   department: '',
-  milestones: [] // NEW: Added milestones array
+  milestones: [] 
 };
 
 export default function ProjectsPage() {
@@ -24,16 +25,17 @@ export default function ProjectsPage() {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
   
-  // NEW: Temporary state for typing a new milestone before adding it
   const [newMilestone, setNewMilestone] = useState({ title: '', dueDate: '' }); 
 
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState("");
-  
-  // const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
-  const isAdmin = true;
+
+  const canManageProjects = canAccessPermission(
+    userProfile,
+    "projects.manage",
+  );
 
   const filterConfig = [
     {
@@ -53,33 +55,64 @@ export default function ProjectsPage() {
   ];
 
   const fetchProjects = async () => {
+    setLoading(true);
     try {
-      const { data } = await api.get('/projects');
-      setProjects(data.projects || []);
-      if (isAdmin) {
-        const res = await api.get('/admin/members');
-        setUsers(res.data.members || []);
-        const deptRes = await api.get('/departments');
-        setDepartments(deptRes.data.departments || []);
-      }
-    } catch {
-      toast.error('Failed to load data');
+      const { data } = await api.get("/projects");
+      setProjects(data.projects || data.data || []);
+    } catch (error) {
+      console.error("Projects load failed:", error);
+      toast.error(
+        error.response?.data?.message ||
+          `Failed to load projects${error.response?.status ? ` (HTTP ${error.response.status})` : ""}`
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchProjects(); }, []);
+  const fetchProjectOptions = async () => {
+    if (!canManageProjects) {
+      setUsers([]);
+      setDepartments([]);
+      return;
+    }
 
-const handleCreateOrUpdate = async (e) => {
+    const [membersResult, departmentsResult] = await Promise.allSettled([
+      api.get("/admin/members"),
+      api.get("/departments"),
+    ]);
+
+    if (membersResult.status === "fulfilled") {
+      setUsers(membersResult.value.data.members || membersResult.value.data.data || []);
+    } else {
+      setUsers([]);
+      console.error("Project member options failed:", membersResult.reason);
+    }
+
+    if (departmentsResult.status === "fulfilled") {
+      setDepartments(departmentsResult.value.data.departments || departmentsResult.value.data.data || []);
+    } else {
+      setDepartments([]);
+      console.error("Project department options failed:", departmentsResult.reason);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    fetchProjectOptions();
+  }, [canManageProjects]);
+
+  const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
     try {
-      // THE FIX: Map 'dueDate' to 'due_date' to match the backend schema
       const submissionData = {
         ...formData,
         milestones: (formData.milestones || []).map(m => ({
           title: m.title,
-          due_date: m.dueDate || m.due_date, // Converts frontend key to backend key
+          due_date: m.dueDate || m.due_date, 
           completed: m.completed || false
         }))
       };
@@ -88,7 +121,7 @@ const handleCreateOrUpdate = async (e) => {
         await api.put(`/projects/${editingId}`, submissionData);
         toast.success('Project updated');
       } else {
-        await api.post('/projects', submissionData);
+        await api.post("/projects", submissionData);
         toast.success('Project created');
       }
       setShowCreate(false);
@@ -96,9 +129,12 @@ const handleCreateOrUpdate = async (e) => {
       setFormData(initialFormData);
       setNewMilestone({ title: '', dueDate: '' });
       fetchProjects();
-    } catch (err) { 
-      console.error(err);
-      toast.error(editingId ? 'Failed to update project' : 'Failed to create project'); 
+    } catch (error) {
+      console.error('Project save failed:', error);
+      toast.error(
+        error.response?.data?.message ||
+          (editingId ? 'Failed to update project' : 'Failed to create project')
+      );
     }
   };
 
@@ -111,7 +147,7 @@ const handleCreateOrUpdate = async (e) => {
       endDate: p.endDate ? new Date(p.endDate).toISOString().split('T')[0] : '',
       assignedMembers: p.assignedMembers?.map(m => m._id) || [],
       department: p.department?._id || p.department || '',
-      milestones: p.milestones || [] // NEW: Load existing milestones
+      milestones: p.milestones || []
     });
     setEditingId(p._id);
     setShowCreate(true);
@@ -126,14 +162,13 @@ const handleCreateOrUpdate = async (e) => {
     }));
   };
 
-  // --- NEW: Milestone Handlers ---
   const handleAddMilestone = () => {
     if (!newMilestone.title.trim()) return;
     setFormData(prev => ({
       ...prev,
       milestones: [...(prev.milestones || []), { ...newMilestone, completed: false }]
     }));
-    setNewMilestone({ title: '', dueDate: '' }); // Reset input
+    setNewMilestone({ title: '', dueDate: '' });
   };
 
   const handleRemoveMilestone = (index) => {
@@ -151,7 +186,6 @@ const handleCreateOrUpdate = async (e) => {
       return { ...prev, milestones: updated };
     });
   };
-  // -------------------------------
 
   const filtered = useMemo(() => projects.filter((p) => {
     let match = true;
@@ -203,7 +237,7 @@ const handleCreateOrUpdate = async (e) => {
           <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
           <p className="text-sm text-slate-500 mt-1">Track project progress</p>
         </div>
-        {isAdmin && (
+        {canManageProjects && (
           <button onClick={() => { setEditingId(null); setFormData(initialFormData); setShowCreate(true); }} className="px-4 py-2 bg-[#56051a] text-white rounded-xl font-medium text-sm hover:bg-[#7a1e3a] transition-colors flex items-center gap-2">
             <Plus className="w-4 h-4" /> New Project
           </button>
@@ -224,7 +258,7 @@ const handleCreateOrUpdate = async (e) => {
           <div className="bg-white rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto animate-fade-in">
             <h2 className="text-xl font-bold text-slate-900 mb-6">{editingId ? 'Edit Project' : 'Create Project'}</h2>
             <form onSubmit={handleCreateOrUpdate} className="space-y-5">
-              {isAdmin ? (
+              {canManageProjects ? (
                 <div><label className="block text-sm font-medium mb-1">Title</label><input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
               ) : (
                 <div className="mb-2"><h3 className="font-semibold text-slate-800">{formData.title}</h3></div>
@@ -233,7 +267,7 @@ const handleCreateOrUpdate = async (e) => {
               <div><label className="block text-sm font-medium mb-1">Description</label><textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" rows="3"></textarea></div>
               <div><label className="block text-sm font-medium mb-1">Progress (%)</label><input type="number" min="0" max="100" required value={formData.progress} onChange={e => setFormData({...formData, progress: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
 
-              {isAdmin && (
+              {canManageProjects && (
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">Department (Domain)</label>
@@ -248,7 +282,6 @@ const handleCreateOrUpdate = async (e) => {
                     <div><label className="block text-sm font-medium mb-1">End Date</label><input type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="w-full px-3 py-2 border rounded-xl text-sm" /></div>
                   </div>
 
-                  {/* --- NEW: Milestones Section UI --- */}
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <label className="block text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><Target className="w-4 h-4"/> Project Milestones</label>
                     
@@ -287,7 +320,6 @@ const handleCreateOrUpdate = async (e) => {
                       <button type="button" onClick={handleAddMilestone} className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-900 transition-colors">Add</button>
                     </div>
                   </div>
-                  {/* --------------------------------- */}
 
                   <div>
                     <label className="block text-sm font-medium mb-2">Assign Members (Private Project)</label>
@@ -353,7 +385,6 @@ const handleCreateOrUpdate = async (e) => {
 
               <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">{p.description || 'No description provided.'}</p>
               
-              {/* --- NEW: Dashboard Milestone Tracker --- */}
               {p.milestones && p.milestones.length > 0 && (
                 <div className="mb-5 bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3 h-3"/> Key Milestones</p>
@@ -368,7 +399,6 @@ const handleCreateOrUpdate = async (e) => {
                   </div>
                 </div>
               )}
-              {/* -------------------------------------- */}
 
               <div className="space-y-3 mt-auto pt-4 border-t border-slate-100">
                 <div className="flex justify-between items-center text-sm font-bold text-slate-800">
@@ -376,14 +406,14 @@ const handleCreateOrUpdate = async (e) => {
                   <span className="text-[#56051a]">{p.progress || 0}%</span>
                 </div>
                 <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden shadow-inner">
-                  <div className="h-full rounded-full bg-linear-to-r from-[#56051a] via-[#8b1238] to-[#d8a15f] transition-all duration-700 relative" style={{width:`${p.progress || 0}%`}}>
+                  <div className="h-full rounded-full bg-gradient-to-r from-[#56051a] via-[#8b1238] to-[#d8a15f] transition-all duration-700 relative" style={{width:`${p.progress || 0}%`}}>
                     <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 animate-pulse"></div>
                   </div>
                 </div>
               </div>
 
-              {p.status === 'pending_approval' && isAdmin && (
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100">
+              {p.status === 'pending_approval' && canManageProjects && (
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
                   <button onClick={async () => {
                     try {
                       await api.put(`/projects/${p._id}`, { status: 'completed', progress: 100 });

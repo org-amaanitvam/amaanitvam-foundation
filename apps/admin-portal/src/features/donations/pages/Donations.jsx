@@ -33,11 +33,6 @@ export default function Donations() {
   const [editingCampaign, setEditingCampaign] = useState(null);
   const [campaignForm, setCampaignForm] = useState(emptyCampaignForm);
 
-  useEffect(() => {
-    fetchDonations();
-    fetchCampaigns();
-  }, []);
-
   const fetchDonations = async () => {
     setLoading(true);
     try {
@@ -63,6 +58,12 @@ export default function Donations() {
       setCampaignLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchDonations();
+    fetchCampaigns();
+  }, []);
 
   const openCreateCampaign = () => {
     setEditingCampaign(null);

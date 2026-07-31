@@ -1,6 +1,9 @@
 import express from "express";
-import { authenticate as verifyFirebaseToken } from '../../middleware/authenticate.js';
-import { authorize as requireAdmin } from '../../middleware/authorize.js';
+import { authenticate } from "../../middleware/authenticate.js";
+import {
+  requireDashboardAccess,
+  requireRole,
+} from "../../middleware/dashboardAccess.js";
 
 import {
   createDepartment,
@@ -15,36 +18,32 @@ import {
 
 const router = express.Router();
 
-// ✅ Add this helper — super_admin only guard
-const requireSuperAdmin = (req, res, next) => {
-  if (req.user?.role !== "super_admin") {
-    return res.status(403).json({ message: "Only super_admin can perform this action." });
-  }
-  next();
-};
+// SECURITY: All department routes require authentication and dashboard access verification
+router.use(authenticate, requireDashboardAccess);
 
-router.use(verifyFirebaseToken);
+// Helper to strictly require Super Admin permissions for destructive/creation actions
+const requireSuperAdmin = requireRole("super_admin");
 
-// CREATE Department
-router.post("/create", createDepartment);
+// ------------------------------------------------------------------
+// ROUTE DEFINITIONS
+// ------------------------------------------------------------------
 
-// GET Departments (scoped inside controller by role)
+// CREATE: Strictly super admins only
+router.post("/create", requireSuperAdmin, createDepartment);
+
+// READ: Handled internally by controller logic (Admins see all, users see their own)
 router.get("/", getDepartments);
 router.get("/:id", getDepartmentById);
 
-// EDIT Department
-router.put("/:id", requireAdmin, editDepartment);
-
-// DELETE — upgraded to super_admin only
+// UPDATE & DELETE: Strictly super admins only
+router.put("/:id", requireSuperAdmin, editDepartment);
+router.patch("/:id", requireSuperAdmin, editDepartment);
 router.delete("/:id", requireSuperAdmin, deleteDepartment);
+router.post("/:id/members", requireSuperAdmin, assignMember);
 
-// UPDATE PERFORMANCE
+// PERFORMANCE & REPORTS: Accessible by super admins OR the assigned department head
 router.put("/:id/performance", updatePerformance);
-
-// DEPARTMENT REPORT
+router.patch("/:id/performance", updatePerformance);
 router.get("/:id/report", getDepartmentReport);
-
-// ASSIGN MEMBER
-router.post("/:id/members", requireAdmin, assignMember);
 
 export default router;

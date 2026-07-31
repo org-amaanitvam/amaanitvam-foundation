@@ -15,7 +15,7 @@
     rel="stylesheet" />
   <meta content="Join Amaanitvam Foundation as a volunteer and create real impact in education, 
   community development, and outreach." name="description" />
-  <link href="/public/images/logos/logo.jpg" rel="icon" type="image/jpeg" />
+  <link href="/images/Logo/logo.jpg" rel="icon" type="image/jpeg" />
   <link href="../styles/styles.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
 </head>
@@ -131,7 +131,7 @@
           <span class="section-label">Join Us</span>
           <h2 class="section-title">Volunteer Application</h2>
         </div>
-        <form class="moved-inline-style-112" id="volunteerForm">
+        <form class="moved-inline-style-112" id="volunteerForm" method="post" enctype="multipart/form-data">
           <div class="moved-inline-style-064">
             <label class="form-label" for="vol-name">Full Name
               <span aria-hidden="true" class="moved-inline-style-113">*</span>
@@ -159,7 +159,13 @@
             </label>
             <select class="form-input" id="vol-role" name="role" required="">
               <option disabled="" selected="" value="">Select a role</option>
+              <option value="Community Outreach">Community Outreach</option>
               <option value="Event Coordinator">Event Coordinator</option>
+              <option value="Content and Social Media">Content and Social Media</option>
+              <option value="Fundraising">Fundraising</option>
+              <option value="Education Programme Support">Education Programme Support</option>
+              <option value="Technical Support">Technical Support</option>
+              <option value="Other">Other</option>
             </select>
           </div>
           <div class="moved-inline-style-064">
@@ -183,7 +189,7 @@
               <span aria-hidden="true" class="moved-inline-style-113">*</span>
             </label>
             <textarea class="form-textarea" id="vol-motivation" name="motivation"
-              placeholder="Tell us your motivation..." required="" rows="4"></textarea>
+              placeholder="Tell us your motivation..." required="" rows="4" minlength="10"></textarea>
           </div>
           <button class="btn btn-primary moved-inline-style-140" type="submit">Submit Application</button>
           <div class="moved-inline-style-122" id="vol-status"></div>
@@ -196,6 +202,7 @@
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 
   <script src="../scripts/app.js" type="module"></script>
+  <script type="module" src="/src/scripts/public-form-handlers.js" data-amaanitvam-public-forms></script>
 </body>
 
 </html>

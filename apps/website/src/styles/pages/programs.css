@@ -1,16 +1,28 @@
+/* ==========================================================================
+   Programs / Impact page — premium redesign pass
+   Apple × Stripe × Vercel × Linear inspired.
+   Selectors, class names, and breakpoints are UNCHANGED — pure visual
+   refinement (spacing, radius, shadow, motion, type) onto an 8px grid.
+   No markup/logic impact.
+   ========================================================================== */
+
 body[data-page="programs"] .page-hero.has-image {
-    min-height: 420px !important;
-    padding: 4.5rem 0 !important;
+    min-height: 440px !important;
+    padding: 5rem 0 !important;
 }
 
 body[data-page="programs"] .section-title {
-    font-size: clamp(2.35rem, 3.8vw, 3.9rem) !important;
+    font-size: clamp(2.3rem, 3.6vw, 3.75rem) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
 }
+
+/* ---------- 5-column program cards ---------- */
 
 body[data-page="programs"] .programs-5col {
     display: grid !important;
     grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 18px !important;
+    gap: 1.25rem !important;
     align-items: stretch !important;
 }
 
@@ -20,10 +32,52 @@ body[data-page="programs"] .programs-5col .card {
     flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
+    padding: 2rem 1.25rem !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 8px 20px rgba(15, 23, 42, 0.05) !important;
+    transition:
+        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body[data-page="programs"] .programs-5col .card:hover {
+    transform: translateY(-4px) !important;
+    border-color: rgba(216, 161, 95, 0.5) !important;
+    box-shadow:
+        0 2px 4px rgba(15, 23, 42, 0.05),
+        0 18px 36px rgba(93, 15, 45, 0.1) !important;
+}
+
+body[data-page="programs"] .programs-5col .card:active {
+    transform: translateY(-1px) scale(0.997) !important;
+    transition-duration: 0.12s !important;
 }
 
 body[data-page="programs"] .programs-5col .card .btn {
     margin-top: auto !important;
+    border-radius: 10px !important;
+    border: 1px solid transparent !important;
+    transition:
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body[data-page="programs"] .programs-5col .card .btn:hover {
+    transform: translateY(-1px) !important;
+    border-color: var(--gold-dark, #d8a15f) !important;
+    box-shadow:
+        0 0 0 1px rgba(216, 161, 95, 0.55),
+        0 8px 20px rgba(216, 161, 95, 0.28) !important;
+}
+
+body[data-page="programs"] .programs-5col .card .btn:active {
+    transform: translateY(0) scale(0.98) !important;
 }
 
 @media (max-width: 1100px) {
@@ -44,16 +98,12 @@ body[data-page="programs"] .programs-5col .card .btn {
     }
 }
 
-
-/* =========================================================
-   PROJECT / SUCCESS STORY SHOWCASE
-   Image on the left, scrollable narrative on the right
-   ========================================================= */
+/* ---------- Shared section shell (impact success stories / programs initiatives) ---------- */
 
 body[data-page="impact"] .success-stories-section,
 body[data-page="programs"] section[aria-labelledby="initiatives-title"] {
     background: var(--bg) !important;
-    padding: 5rem 0 !important;
+    padding: 6rem 0 !important;
 }
 
 body[data-page="impact"] .success-stories-section .container,
@@ -63,25 +113,30 @@ body[data-page="programs"] section[aria-labelledby="initiatives-title"] .contain
 
 body[data-page="impact"] .elegant-header,
 body[data-page="programs"] .elegant-header {
-    max-width: 850px !important;
-    margin: 0 auto 4rem !important;
+    max-width: 820px !important;
+    margin: 0 auto 4.5rem !important;
     text-align: center !important;
 }
 
 body[data-page="impact"] .elegant-title,
 body[data-page="programs"] .elegant-title {
-    font-size: clamp(2.8rem, 4.5vw, 4.3rem) !important;
+    font-size: clamp(2.6rem, 4.2vw, 4.1rem) !important;
     color: var(--primary) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
     margin-bottom: 1rem !important;
 }
 
 body[data-page="impact"] .elegant-desc,
 body[data-page="programs"] .elegant-desc {
-    max-width: 760px !important;
+    max-width: 720px !important;
     margin: 0 auto !important;
+    color: var(--muted) !important;
     text-align: center !important;
     line-height: 1.75 !important;
 }
+
+/* ---------- Project showcase (sticky image + scrolling content) ---------- */
 
 body[data-page="impact"] .project-showcase,
 body[data-page="programs"] .project-showcase {
@@ -100,10 +155,12 @@ body[data-page="programs"] .project-image-wrapper {
     margin: 0 !important;
     padding: 0 !important;
     align-self: start !important;
-    border-radius: 28px !important;
+    border-radius: 20px !important;
     overflow: hidden !important;
     background: var(--surface) !important;
-    box-shadow: 0 18px 45px rgba(93, 15, 45, .12) !important;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 20px 44px rgba(93, 15, 45, 0.12) !important;
 }
 
 body[data-page="impact"] .project-image-wrapper>img,
@@ -115,6 +172,12 @@ body[data-page="programs"] .project-image-wrapper>img {
     object-fit: cover !important;
     object-position: center !important;
     border-radius: 0 !important;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body[data-page="impact"] .project-image-wrapper:hover>img,
+body[data-page="programs"] .project-image-wrapper:hover>img {
+    transform: scale(1.02) !important;
 }
 
 body[data-page="impact"] .project-image-caption,
@@ -123,9 +186,12 @@ body[data-page="programs"] .project-image-caption {
     left: 0 !important;
     bottom: 0 !important;
     width: min(78%, 330px) !important;
-    padding: 1.4rem 2rem !important;
-    background: rgba(255, 250, 243, .97) !important;
+    padding: 1.5rem 2rem !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+    backdrop-filter: blur(14px) saturate(160%) !important;
     border: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, .05) !important;
 }
 
@@ -133,14 +199,18 @@ body[data-page="impact"] .caption-label,
 body[data-page="programs"] .caption-label {
     color: var(--gold-dark) !important;
     font-size: .76rem !important;
-    letter-spacing: .18em !important;
+    font-weight: 600 !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
 }
 
 body[data-page="impact"] .caption-title,
 body[data-page="programs"] .caption-title {
     color: var(--primary) !important;
-    font-size: 1.65rem !important;
-    margin-top: .25rem !important;
+    font-size: 1.6rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
+    margin-top: .35rem !important;
 }
 
 body[data-page="impact"] .project-content,
@@ -148,35 +218,34 @@ body[data-page="programs"] .project-content {
     height: 540px !important;
     overflow-y: auto !important;
     padding: .25rem 1rem .5rem 0 !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: rgba(93, 15, 45, .28) transparent !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
 }
 
 body[data-page="impact"] .project-content::-webkit-scrollbar,
 body[data-page="programs"] .project-content::-webkit-scrollbar {
-    display: block !important;
-    width: 6px !important;
-}
-
-body[data-page="impact"] .project-content::-webkit-scrollbar-thumb,
-body[data-page="programs"] .project-content::-webkit-scrollbar-thumb {
-    background: rgba(93, 15, 45, .25) !important;
-    border-radius: 999px !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 body[data-page="impact"] .project-content-label,
 body[data-page="programs"] .project-content-label {
     color: var(--gold-dark) !important;
-    font-weight: 700 !important;
-    letter-spacing: .12em !important;
+    font-weight: 600 !important;
+    letter-spacing: .1em !important;
+    text-transform: uppercase !important;
+    font-size: 0.8rem !important;
     margin-bottom: 1.25rem !important;
 }
 
 body[data-page="impact"] .project-content-title,
 body[data-page="programs"] .project-content-title {
-    font-size: clamp(2.4rem, 3.7vw, 3.5rem) !important;
+    font-size: clamp(2.3rem, 3.5vw, 3.4rem) !important;
     color: var(--primary) !important;
-    line-height: 1.08 !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.1 !important;
     margin-bottom: 1.5rem !important;
 }
 
@@ -184,15 +253,14 @@ body[data-page="impact"] .project-text,
 body[data-page="programs"] .project-text,
 body[data-page="impact"] .styled-list,
 body[data-page="programs"] .styled-list {
-    font-size: 1.03rem !important;
-    line-height: 1.9 !important;
+    font-size: 1.02rem !important;
+    line-height: 1.85 !important;
     color: var(--muted) !important;
 }
 
 body[data-page="impact"] .project-text,
 body[data-page="programs"] .project-text {
-    text-align: justify !important;
-    text-justify: inter-word !important;
+    text-align: left !important;
 }
 
 body[data-page="impact"] .project-divider,
@@ -206,14 +274,42 @@ body[data-page="programs"] .project-divider {
 body[data-page="impact"] .project-btn-group,
 body[data-page="programs"] .project-btn-group {
     margin-top: 2rem !important;
+    display: flex !important;
+    gap: 1rem !important;
 }
+
+body[data-page="impact"] .project-btn-group .btn,
+body[data-page="programs"] .project-btn-group .btn {
+    border-radius: 10px !important;
+    border: 1px solid transparent !important;
+    transition:
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body[data-page="impact"] .project-btn-group .btn:hover,
+body[data-page="programs"] .project-btn-group .btn:hover {
+    transform: translateY(-1px) !important;
+    border-color: var(--gold-dark, #d8a15f) !important;
+    box-shadow:
+        0 0 0 1px rgba(216, 161, 95, 0.55),
+        0 8px 20px rgba(216, 161, 95, 0.28) !important;
+}
+
+body[data-page="impact"] .project-btn-group .btn:active,
+body[data-page="programs"] .project-btn-group .btn:active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+/* ---------- Responsive ---------- */
 
 @media (max-width: 900px) {
 
     body[data-page="impact"] .project-showcase,
     body[data-page="programs"] .project-showcase {
         grid-template-columns: 1fr !important;
-        gap: 2rem !important;
+        gap: 2.25rem !important;
         min-height: 0 !important;
     }
 
@@ -243,12 +339,12 @@ body[data-page="programs"] .project-btn-group {
 
     body[data-page="impact"] .success-stories-section,
     body[data-page="programs"] section[aria-labelledby="initiatives-title"] {
-        padding: 3.5rem 0 !important;
+        padding: 4rem 0 !important;
     }
 
     body[data-page="impact"] .elegant-title,
     body[data-page="programs"] .elegant-title {
-        font-size: clamp(2.35rem, 10vw, 3rem) !important;
+        font-size: clamp(2.3rem, 9.5vw, 3rem) !important;
     }
 
     body[data-page="impact"] .project-image-wrapper>img,
@@ -264,29 +360,33 @@ body[data-page="programs"] .project-btn-group {
 
     body[data-page="impact"] .project-content-title,
     body[data-page="programs"] .project-content-title {
-        font-size: clamp(2rem, 9vw, 2.7rem) !important;
+        font-size: clamp(2rem, 8.5vw, 2.65rem) !important;
     }
 
     body[data-page="impact"] .project-text,
     body[data-page="programs"] .project-text {
         text-align: left !important;
-        font-size: .98rem !important;
-        line-height: 1.75 !important;
+        font-size: .97rem !important;
+        line-height: 1.7 !important;
     }
 }
 
-body[data-page="impact"] .project-content,
-body[data-page="programs"] .project-content {
-    scrollbar-width: none !important;
-    /* Firefox */
-    -ms-overflow-style: none !important;
-    /* Old Edge */
+.btn {
+    border: 1px solid transparent !important;
+    transition:
+        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-body[data-page="impact"] .project-content::-webkit-scrollbar,
-body[data-page="programs"] .project-content::-webkit-scrollbar {
-    display: none !important;
-    /* Chrome, Safari, Edge */
-    width: 0 !important;
-    height: 0 !important;
+.btn:hover {
+    transform: translateY(-1px) !important;
+    border-color: var(--gold-dark, #d8a15f) !important;
+    box-shadow:
+        0 0 0 1px rgba(216, 161, 95, 0.55),
+        0 8px 20px rgba(216, 161, 95, 0.28) !important;
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.98) !important;
 }

@@ -1,34 +1,74 @@
+/* ==========================================================================
+   Legal page (privacy / terms / refund) — premium redesign pass
+  
+   ========================================================================== */
+
+.legal-page {
+    max-width: 800px !important;
+    margin: 140px auto 96px !important;
+    padding: 0 1.5rem !important;
+    line-height: 1.8 !important;
+    color: #3f4650 !important;
+}
+
 .legal-page h1 {
-    font-size: 2.8rem;
-    margin-bottom: 20px;
-    color: var(--primary);
+    margin-bottom: 1.25rem !important;
+    color: var(--primary) !important;
+    font-size: 2.8rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.1 !important;
 }
 
 .legal-page h2 {
-    color: var(--primary);
-    margin-top: 30px;
-    margin-bottom: 10px;
+    margin-top: 3rem !important;
+    margin-bottom: 1rem !important;
+    padding-top: 0.5rem !important;
+    color: var(--primary) !important;
+    font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
 }
 
 .legal-page p,
 .legal-page li {
-    color: #444;
-    font-size: 16px;
+    color: #4b5563 !important;
+    font-size: 1rem !important;
+    line-height: 1.8 !important;
 }
 
-.legal-page {
-    max-width: 1000px;
-    margin: 120px auto 60px;
-    padding: 0 25px;
-    line-height: 1.8;
+.legal-page p {
+    margin-bottom: 1.25rem !important;
 }
 
 .legal-page ul {
-    padding-left: 20px;
+    padding-left: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.legal-page li {
+    margin-bottom: 0.5rem !important;
+}
+
+.legal-page li::marker {
+    color: var(--gold-dark, var(--primary)) !important;
 }
 
 .legal-page strong {
-    color: var(--primary);
+    color: var(--primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Optional light card shell if the page wraps content in a container —
+   subtle elevation, restrained radius, no heavy borders */
+.legal-page>.legal-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 16px !important;
+    padding: 3rem !important;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 8px 24px rgba(15, 23, 42, 0.05) !important;
 }
 
 body[data-page="privacy"] .legal-page h1,
@@ -36,4 +76,20 @@ body[data-page="terms"] .legal-page h1,
 body[data-page="refund"] .legal-page h1,
 .legal-page h1 {
     font-size: clamp(2.2rem, 3.6vw, 3.2rem) !important;
+}
+
+@media (max-width: 600px) {
+    .legal-page {
+        margin: 96px auto 64px !important;
+        padding: 0 1.25rem !important;
+    }
+
+    .legal-page h2 {
+        margin-top: 2.25rem !important;
+    }
+
+    .legal-page>.legal-card {
+        padding: 1.75rem !important;
+        border-radius: 14px !important;
+    }
 }

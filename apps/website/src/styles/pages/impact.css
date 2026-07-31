@@ -1,3 +1,21 @@
+/* =========================================================
+   IMPACT.CSS — FULL CONSOLIDATED STYLESHEET
+   Impact page + Donate section + shared Programs sections
+   ---------------------------------------------------------
+   This file merges, in cascade order:
+     1. Original base styles (layout, grids, responsive)
+     2. Premium enhancement layer (glass, shadows, motion)
+     3. Contrast fix (title/stat text visibility)
+     4. Cream/ivory stat card color pass  ← final look wins
+   Load this single file in place of the four separate files.
+   No selectors were renamed; existing markup/JS is untouched.
+   ========================================================= */
+
+
+/* =========================================================
+   SECTION 1 — BASE LAYOUT & STRUCTURE
+   ========================================================= */
+
 body[data-page="impact"] .page-hero.has-image {
     padding: 4.5rem 0 !important;
     min-height: 380px !important;
@@ -32,12 +50,6 @@ body[data-page="impact"] .section-header {
     box-shadow: 0 14px 35px rgba(93, 15, 45, .10) !important;
 }
 
-#donate .impact-card {
-    background: #fff !important;
-    border: 1px solid rgba(216, 161, 95, .25) !important;
-    padding: 22px !important;
-}
-
 #donate .impact-card h3,
 #donate .secure-card h3,
 #donate .tax-card h3 {
@@ -53,7 +65,6 @@ body[data-page="impact"] .section-header {
     gap: 12px !important;
     padding: 12px !important;
     margin-top: 10px !important;
-    background: #f8f6f4 !important;
     border-radius: 16px !important;
 }
 
@@ -64,7 +75,6 @@ body[data-page="impact"] .section-header {
     align-items: center !important;
     justify-content: center !important;
     border-radius: 14px !important;
-    background: #f3eee7 !important;
     font-size: 27px !important;
 }
 
@@ -77,7 +87,6 @@ body[data-page="impact"] .section-header {
 
 #donate .impact-content p {
     margin: 4px 0 0 !important;
-    color: #3d2b2b !important;
     font-size: .9rem !important;
     line-height: 1.45 !important;
 }
@@ -108,17 +117,9 @@ body[data-page="impact"] .donate-section {
 .story-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    transition: transform 0.25s, box-shadow 0.25s;
-}
-
-.story-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 }
 
 .story-card img {
@@ -177,10 +178,8 @@ body[data-page="impact"] .donate-section {
 }
 
 body[data-page="impact"] #program-impact-title {
-    color: #fff !important;
     opacity: 1 !important;
     visibility: visible !important;
-    -webkit-text-fill-color: #fff !important;
     text-shadow: 0 2px 10px rgba(0, 0, 0, .25) !important;
 }
 
@@ -311,7 +310,6 @@ body.dashboard-page .module-grid {
 
 /* =========================================================
    PROJECT / SUCCESS STORY SHOWCASE
-   Image on the left, scrollable narrative on the right
    ========================================================= */
 
 body[data-page="impact"] .success-stories-section,
@@ -412,20 +410,15 @@ body[data-page="programs"] .project-content {
     height: 540px !important;
     overflow-y: auto !important;
     padding: .25rem 1rem .5rem 0 !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: rgba(93, 15, 45, .28) transparent !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
 }
 
 body[data-page="impact"] .project-content::-webkit-scrollbar,
 body[data-page="programs"] .project-content::-webkit-scrollbar {
-    display: block !important;
-    width: 6px !important;
-}
-
-body[data-page="impact"] .project-content::-webkit-scrollbar-thumb,
-body[data-page="programs"] .project-content::-webkit-scrollbar-thumb {
-    background: rgba(93, 15, 45, .25) !important;
-    border-radius: 999px !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 body[data-page="impact"] .project-content-label,
@@ -539,24 +532,8 @@ body[data-page="programs"] .project-btn-group {
     }
 }
 
-body[data-page="impact"] .project-content,
-body[data-page="programs"] .project-content {
-    scrollbar-width: none !important;
-    /* Firefox */
-    -ms-overflow-style: none !important;
-    /* Old Edge */
-}
-
-body[data-page="impact"] .project-content::-webkit-scrollbar,
-body[data-page="programs"] .project-content::-webkit-scrollbar {
-    display: none !important;
-    /* Chrome, Safari, Edge */
-    width: 0 !important;
-    height: 0 !important;
-}
-
 /* =========================================================
-   PROGRAM IMPACT SECTION FIX
+   PROGRAM IMPACT SECTION — base
    ========================================================= */
 
 body[data-page="impact"] .section-navy {
@@ -569,19 +546,6 @@ body[data-page="impact"] .section-navy .section-header {
     margin-bottom: 3rem !important;
 }
 
-body[data-page="impact"] .section-navy .section-label {
-    color: #d8a15f !important;
-}
-
-body[data-page="impact"] .section-navy .section-title {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-}
-
-body[data-page="impact"] .section-navy .section-desc {
-    color: rgba(255, 255, 255, 0.88) !important;
-}
-
 /* Metrics grid */
 body[data-page="impact"] .moved-inline-style-final-025 {
     display: grid !important;
@@ -590,7 +554,6 @@ body[data-page="impact"] .moved-inline-style-final-025 {
     align-items: stretch !important;
 }
 
-/* Individual metric */
 body[data-page="impact"] .moved-inline-style-final-025>div {
     display: flex !important;
     flex-direction: column !important;
@@ -600,55 +563,14 @@ body[data-page="impact"] .moved-inline-style-final-025>div {
     min-height: 190px !important;
     padding: 1.75rem 1rem !important;
     border-radius: 20px !important;
-    background: rgba(255, 255, 255, 0.07) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    transition: transform 0.25s ease, background 0.25s ease !important;
 }
 
-body[data-page="impact"] .moved-inline-style-final-025>div:hover {
-    transform: translateY(-5px) !important;
-    background: rgba(255, 255, 255, 0.11) !important;
-}
-
-/* Icons */
-body[data-page="impact"] .moved-inline-style-final-026 {
-    color: #d8a15f !important;
-    font-size: 2.6rem !important;
-    margin-bottom: 0.8rem !important;
-}
-
-/* Numbers */
-body[data-page="impact"] .section-navy .stat-value {
-    display: block !important;
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    font-family: "Cormorant Garamond", serif !important;
-    font-size: clamp(2.5rem, 4vw, 3.6rem) !important;
-    font-weight: 700 !important;
-    line-height: 1 !important;
-    margin: 0 0 0.65rem !important;
-    text-shadow: none !important;
-}
-
-/* Labels */
-body[data-page="impact"] .section-navy .stat-label {
-    color: rgba(255, 255, 255, 0.95) !important;
-    font-family: "Montserrat", sans-serif !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    line-height: 1.5 !important;
-}
-
-/* Tablet */
 @media (max-width: 900px) {
     body[data-page="impact"] .moved-inline-style-final-025 {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 }
 
-/* Mobile */
 @media (max-width: 560px) {
     body[data-page="impact"] .section-navy {
         padding: 3.5rem 0 !important;
@@ -663,4 +585,288 @@ body[data-page="impact"] .section-navy .stat-label {
         min-height: 160px !important;
         padding: 1.5rem 1rem !important;
     }
+}
+
+
+/* =========================================================
+   SECTION 2 — PREMIUM ENHANCEMENT LAYER
+   Glassmorphism, elevation, micro-interactions, 8px rhythm
+   ========================================================= */
+
+:root {
+    --pe-radius-sm: 12px;
+    --pe-radius-md: 14px;
+    --pe-radius-lg: 16px;
+
+    --pe-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --pe-ease-fast: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --pe-shadow-1: 0 1px 2px rgba(43, 21, 21, 0.04), 0 2px 8px rgba(43, 21, 21, 0.04);
+    --pe-shadow-2: 0 4px 16px rgba(93, 15, 45, 0.08), 0 1px 3px rgba(93, 15, 45, 0.06);
+    --pe-shadow-3: 0 20px 48px rgba(93, 15, 45, 0.14), 0 4px 12px rgba(93, 15, 45, 0.08);
+
+    --pe-glass-bg: rgba(255, 255, 255, 0.72);
+    --pe-glass-border: rgba(255, 255, 255, 0.5);
+
+    --pe-focus-ring: 0 0 0 3px rgba(216, 161, 95, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+#donate .impact-card {
+    background: var(--pe-glass-bg) !important;
+    backdrop-filter: saturate(180%) blur(14px) !important;
+    -webkit-backdrop-filter: saturate(180%) blur(14px) !important;
+    border: 1px solid var(--pe-glass-border) !important;
+    border-radius: var(--pe-radius-lg) !important;
+    box-shadow: var(--pe-shadow-2) !important;
+    padding: 24px !important;
+    transition: transform 0.35s var(--pe-ease), box-shadow 0.35s var(--pe-ease) !important;
+}
+
+#donate .impact-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: var(--pe-shadow-3) !important;
+}
+
+#donate .impact-card h3 {
+    font-size: 1.3rem !important;
+    letter-spacing: -0.01em !important;
+    font-weight: 650 !important;
+}
+
+#donate .impact-item {
+    border-radius: var(--pe-radius-md) !important;
+    background: rgba(248, 246, 244, 0.9) !important;
+    border: 1px solid rgba(93, 15, 45, 0.06) !important;
+    transition: transform 0.25s var(--pe-ease-fast),
+        background 0.25s var(--pe-ease-fast),
+        border-color 0.25s var(--pe-ease-fast) !important;
+}
+
+#donate .impact-item:hover {
+    transform: translateX(3px) !important;
+    background: #ffffff !important;
+    border-color: rgba(216, 161, 95, 0.3) !important;
+}
+
+#donate .impact-icon {
+    border-radius: var(--pe-radius-sm) !important;
+    background: linear-gradient(135deg, rgba(216, 161, 95, 0.18), rgba(216, 161, 95, 0.08)) !important;
+    transition: transform 0.3s var(--pe-ease) !important;
+}
+
+#donate .impact-item:hover .impact-icon {
+    transform: scale(1.06) rotate(-2deg) !important;
+}
+
+#donate .impact-content strong {
+    letter-spacing: -0.01em !important;
+    font-weight: 700 !important;
+}
+
+#donate .impact-content p {
+    color: var(--muted, #3d2b2b) !important;
+}
+
+#donate .secure-card,
+#donate .tax-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(216, 161, 95, 0.22) !important;
+    border-radius: var(--pe-radius-lg) !important;
+    box-shadow: var(--pe-shadow-1) !important;
+    transition: box-shadow 0.3s var(--pe-ease) !important;
+}
+
+#donate .secure-card:hover,
+#donate .tax-card:hover {
+    box-shadow: var(--pe-shadow-2) !important;
+}
+
+body[data-page="impact"] .moved-inline-style-final-025>div {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    transition: transform 0.35s var(--pe-ease),
+        background 0.35s var(--pe-ease),
+        box-shadow 0.35s var(--pe-ease) !important;
+}
+
+body[data-page="impact"] .moved-inline-style-final-025>div:hover {
+    transform: translateY(-6px) !important;
+}
+
+body[data-page="impact"] .moved-inline-style-final-026 {
+    transition: transform 0.3s var(--pe-ease) !important;
+}
+
+body[data-page="impact"] .moved-inline-style-final-025>div:hover .moved-inline-style-final-026 {
+    transform: translateY(-2px) scale(1.05) !important;
+}
+
+.story-card {
+    border-radius: var(--pe-radius-lg) !important;
+    box-shadow: var(--pe-shadow-1) !important;
+    transition: transform 0.3s var(--pe-ease), box-shadow 0.3s var(--pe-ease) !important;
+}
+
+.story-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: var(--pe-shadow-3) !important;
+}
+
+.story-tag {
+    border-radius: var(--pe-radius-sm) !important;
+}
+
+.btn,
+button,
+[class*="btn-"] {
+    transition: transform 0.18s var(--pe-ease-fast),
+        box-shadow 0.18s var(--pe-ease-fast),
+        background 0.18s var(--pe-ease-fast),
+        filter 0.18s var(--pe-ease-fast) !important;
+}
+
+.btn:hover,
+button:hover,
+[class*="btn-"]:hover {
+    transform: translateY(-1px) !important;
+    filter: brightness(1.03) !important;
+}
+
+.btn:active,
+button:active,
+[class*="btn-"]:active {
+    transform: translateY(0) !important;
+    filter: brightness(0.98) !important;
+}
+
+.btn:focus-visible,
+button:focus-visible,
+[class*="btn-"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none !important;
+    box-shadow: var(--pe-focus-ring) !important;
+}
+
+
+/* =========================================================
+   SECTION 3 — CONTRAST FIX
+   Corrects near-invisible title/stat text on the maroon
+   "section-navy" background (was a transparent gradient
+   text-clip effect tuned for a light background).
+   ========================================================= */
+
+body[data-page="impact"] .section-navy #program-impact-title,
+body[data-page="impact"] .section-navy .section-title,
+body[data-page="impact"] #program-impact-title {
+    background: none !important;
+    background-image: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+body[data-page="impact"] .section-navy .section-label,
+body[data-page="impact"] .section-navy #program-impact-title+.section-desc,
+body[data-page="impact"] .section-navy .section-desc {
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    opacity: 1 !important;
+}
+
+body[data-page="impact"] .section-navy .section-label {
+    color: #d8a15f !important;
+    -webkit-text-fill-color: #d8a15f !important;
+}
+
+body[data-page="impact"] .section-navy .section-desc,
+body[data-page="impact"] .section-navy #program-impact-title+.section-desc {
+    color: rgba(255, 255, 255, 0.92) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+
+/* =========================================================
+   SECTION 4 — CREAM/IVORY STAT CARDS (final color pass)
+   Warm ivory tiles for strong contrast against the maroon
+   section background. This section wins the cascade.
+   ========================================================= */
+
+body[data-page="impact"] .moved-inline-style-final-025>div {
+    background: linear-gradient(160deg, #fffaf3 0%, #f6ecdd 100%) !important;
+    border: 1px solid rgba(216, 161, 95, 0.4) !important;
+    box-shadow: 0 10px 28px rgba(43, 15, 15, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body[data-page="impact"] .moved-inline-style-final-025>div:hover {
+    background: linear-gradient(160deg, #ffffff 0%, #f9f0e2 100%) !important;
+    border-color: rgba(216, 161, 95, 0.65) !important;
+    box-shadow: 0 16px 36px rgba(43, 15, 15, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Icon: soft gold circle, burgundy glyph */
+body[data-page="impact"] .moved-inline-style-final-026 {
+    color: var(--primary, #5d0f2d) !important;
+    -webkit-text-fill-color: var(--primary, #5d0f2d) !important;
+    background: rgba(216, 161, 95, 0.18) !important;
+    width: 58px !important;
+    height: 58px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 16px !important;
+    margin: 0 auto 0.9rem !important;
+    font-size: 1.9rem !important;
+    opacity: 1 !important;
+}
+
+body[data-page="impact"] .moved-inline-style-final-025>div:hover .moved-inline-style-final-026 {
+    background: rgba(216, 161, 95, 0.28) !important;
+}
+
+/* Stat number: deep burgundy, strong contrast on cream */
+body[data-page="impact"] .section-navy .stat-value {
+    display: block !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    color: var(--primary, #5d0f2d) !important;
+    -webkit-text-fill-color: var(--primary, #5d0f2d) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-family: "Cormorant Garamond", serif !important;
+    font-size: clamp(2.5rem, 4vw, 3.6rem) !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    margin: 0 0 0.65rem !important;
+    text-shadow: none !important;
+}
+
+/* Stat label: warm dark brown, not pure black */
+body[data-page="impact"] .section-navy .stat-label {
+    color: #5c4033 !important;
+    -webkit-text-fill-color: #5c4033 !important;
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 650 !important;
+    line-height: 1.5 !important;
 }

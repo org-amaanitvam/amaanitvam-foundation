@@ -221,7 +221,7 @@ if (verifyForm) {
         <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
         <h2>Support Amaanitvam Foundation</h2>
         <p>No active campaigns are live right now. You can still make a direct organization donation.</p>
-        <a class="campaign-donate-link" href="contact.html">Donate Now</a>
+        <a class="campaign-donate-link" href="contact.html#donate">Donate Now</a>
       </div>`;
             return;
         }
@@ -240,7 +240,7 @@ if (verifyForm) {
               <p>${escapeHtml(campaign.description || 'Support this active campaign.')}</p>
               <div class="campaign-progress"><span style="width:${pct}%"></span></div>
               <div class="campaign-meta">${rupees(campaign.raisedAmount)} raised / ${rupees(campaign.goalAmount)} goal</div>
-              <a class="campaign-donate-link" href="contact.html?campaign=${encodeURIComponent(id)}">Donate to this campaign</a>
+              <a class="campaign-donate-link" href="contact.html?campaign=${encodeURIComponent(id)}#donate">Donate to this campaign</a>
             </article>`;
         }).join('')}
       </div>
@@ -468,55 +468,11 @@ if (verifyForm) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    // ==========================================
-    // 1. FETCH & POPULATE DEPARTMENTS (NEW)
-    // ==========================================
-    async function fetchDepartments() {
-        // Select the dropdown by name or ID (Update this selector if your HTML is different)
-        const roleDropdown = document.querySelector('select[name="role"]') || document.getElementById('role');
-        if (!roleDropdown) return;
-
-        try {
-            // Dynamic URL for fetching departments (Port 5500 will ask Port 5000)
-            const DEPT_API_URL = `${API_BASE_URL}/public/departments`;
-
-            const response = await fetch(DEPT_API_URL);
-            const result = await response.json();
-
-            if (response.ok) {
-                // Clear existing hardcoded HTML options and set the default placeholder
-                roleDropdown.innerHTML = '<option value="" disabled selected>Select a role</option>';
-
-                // Extract the array depending on how your backend sends it
-                // (Adjust this if your backend wraps it in result.data or result.departments)
-                const departments = result.departments || result.data || result;
-
-                if (Array.isArray(departments)) {
-                    departments.forEach(dept => {
-                        const option = document.createElement('option');
-                        // Assuming your department object has a 'departmentName' property
-                        const deptName = dept.departmentName || dept;
-                        option.value = deptName;
-                        option.textContent = deptName;
-                        roleDropdown.appendChild(option);
-                    });
-                }
-            }
-        } catch (error) {
-            console.error("Failed to load departments:", error);
-        }
-    }
-
-    // Trigger the fetch immediately when the page loads
-    fetchDepartments();
-
-
-    // ==========================================
-    // 2. FORM SUBMISSION LOGIC (YOUR EXACT CODE)
-    // ==========================================
+    // Volunteer roles are intentionally defined in volunteer.html.
+    // Departments must never overwrite the Preferred Role dropdown.
     const form = document.getElementById('volunteerForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -542,14 +498,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(this);
 
         try {
-            const API_URL = `${API_BASE_URL}/volunteer/apply`;
+            const API_URL = `${API_BASE_URL}/volunteers/apply`;
 
             const response = await fetch(API_URL, {
                 method: 'POST',
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Success State
@@ -586,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registrationForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -644,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // 5. Success State
@@ -688,7 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const DEPT_API_URL = `${API_BASE_URL}/public/departments`;
 
             const response = await fetch(DEPT_API_URL);
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Clear existing hardcoded HTML options and set the default placeholder
@@ -720,6 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const form = document.getElementById('internshipForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -754,14 +712,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(this);
 
         try {
-            const API_URL = `${API_BASE_URL}/internship/apply`;
+            const API_URL = `${API_BASE_URL}/internships/apply`;
 
             const response = await fetch(API_URL, {
                 method: 'POST',
                 body: formData
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // Success State
@@ -810,6 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make sure your form tag in contact.html has id="contactForm"
     const form = document.getElementById('contactForm');
     if (!form) return;
+    if (document.querySelector('[data-amaanitvam-public-forms]')) return;
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -832,9 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // 3. Dynamic API URL (Matches your server.js setup)
-            const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:5000/api/contact' // Adjust if your route adds '/submit'
-                : 'https://amaanitvam-foundation.onrender.com/api/contact';
+            const API_URL = `${API_BASE_URL}/contact`;
 
             // 4. Send the Request
             const response = await fetch(API_URL, {
@@ -845,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 // 5. Success State
@@ -880,3 +837,179 @@ if (document.readyState === 'loading') {
 } else {
     initFaq();
 }
+
+
+// AMAANITVAM_DONATION_NAV_ONE_SHOT_V5
+(() => {
+    const contactPath = (pathname) => {
+        const clean = String(pathname || "")
+            .toLowerCase()
+            .replace(/\/+$/, "");
+
+        return (
+            clean.endsWith("/contact.html") ||
+            clean.endsWith("/contact")
+        );
+    };
+
+    const donationRequested = () => {
+        const params =
+            new URLSearchParams(window.location.search);
+
+        return (
+            contactPath(window.location.pathname) &&
+            (
+                window.location.hash === "#donate" ||
+                params.has("campaign")
+            )
+        );
+    };
+
+    const donationPanel = () => {
+        const status =
+            document.getElementById("donate-status");
+
+        return (
+            status?.closest("form") ||
+            status?.closest(
+                [
+                    "[data-donation-form]",
+                    ".donation-form",
+                    ".donation-card",
+                    ".donate-card",
+                    ".make-donation",
+                    "[class*='donation']",
+                    ".card",
+                ].join(","),
+            ) ||
+            document.getElementById("donationForm") ||
+            document.getElementById("donation-form") ||
+            document.querySelector(
+                "form[action*='donat' i]",
+            )
+        );
+    };
+
+    const fixedHeaderOffset = () => {
+        const header =
+            document.querySelector(
+                [
+                    "#navbar",
+                    ".site-header",
+                    ".main-header",
+                    "body > header",
+                ].join(","),
+            );
+
+        return Math.max(
+            88,
+            Math.ceil(
+                header?.getBoundingClientRect()
+                    .height || 0,
+            ) + 16,
+        );
+    };
+
+    const scrollToDonationOnce = (
+        behavior = "auto",
+    ) => {
+        const panel = donationPanel();
+
+        if (!panel) return false;
+
+        const top =
+            panel.getBoundingClientRect().top +
+            window.scrollY -
+            fixedHeaderOffset();
+
+        window.scrollTo({
+            top: Math.max(0, top),
+            behavior,
+        });
+
+        return true;
+    };
+
+    const runInitialNavigation = () => {
+        if (!donationRequested()) return;
+
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                scrollToDonationOnce("auto");
+            });
+        });
+    };
+
+    document.addEventListener(
+        "click",
+        (event) => {
+            const link =
+                event.target.closest("a[href]");
+
+            if (!link) return;
+
+            const label = [
+                link.textContent || "",
+                link.getAttribute("aria-label") || "",
+                link.className || "",
+                link.id || "",
+            ]
+                .join(" ")
+                .toLowerCase();
+
+            if (!label.includes("donat")) return;
+
+            let destination;
+
+            try {
+                destination =
+                    new URL(
+                        link.getAttribute("href"),
+                        window.location.href,
+                    );
+            } catch {
+                return;
+            }
+
+            if (!contactPath(destination.pathname)) {
+                return;
+            }
+
+            destination.hash = "donate";
+
+            const samePage =
+                destination.origin ===
+                    window.location.origin &&
+                destination.pathname ===
+                    window.location.pathname &&
+                destination.search ===
+                    window.location.search;
+
+            if (!samePage) {
+                link.href = destination.toString();
+                return;
+            }
+
+            event.preventDefault();
+
+            window.history.pushState(
+                null,
+                "",
+                `${destination.pathname}${destination.search}#donate`,
+            );
+
+            scrollToDonationOnce("smooth");
+        },
+        true,
+    );
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            runInitialNavigation,
+            { once: true },
+        );
+    } else {
+        runInitialNavigation();
+    }
+})();

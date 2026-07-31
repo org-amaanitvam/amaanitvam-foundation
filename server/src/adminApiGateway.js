@@ -8,6 +8,8 @@ import express from "express";
 import mongoose from "mongoose";
 import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { provisionUser } from "./modules/auth/accountAccess.controller.js";
+import { requireDashboardAccess, requireRole } from "./middleware/dashboardAccess.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -217,7 +219,7 @@ app.use((req, res, next) => {
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, Content-Type, Accept, X-Requested-With"
+    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
   );
 
   res.setHeader(
@@ -262,7 +264,7 @@ app.use((req, res, next) => {
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, Content-Type, Accept, X-Requested-With"
+    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
   );
 
   res.setHeader(
@@ -284,6 +286,32 @@ app.use((req, res, next) => {
 function clean(value) {
   if (value === undefined || value === null) return "";
   return String(value).trim();
+}
+
+
+const CANONICAL_ALBUM_MAP = {
+  "clothes donation": "Clothes Donation Drive",
+  "clothes donation drive": "Clothes Donation Drive",
+  "webinar & competitions": "Webinars & Workshops",
+  "webinars & workshops": "Webinars & Workshops",
+  "webinars": "Webinars & Workshops",
+  "webinar": "Webinars & Workshops",
+  "awards": "Awards & Recognition",
+  "awards & recognition": "Awards & Recognition",
+  "project shiksha": "Project Shiksha",
+  "shiksha": "Project Shiksha",
+  "project manthan": "Project Manthan",
+  "manthan": "Project Manthan",
+  "project udaan": "Project Udaan",
+  "udaan": "Project Udaan",
+  "project pravah": "Project Pravah",
+  "pravah": "Project Pravah"
+};
+
+function normalizeCanonicalAlbumName(rawName) {
+  const cleanName = clean(rawName);
+  const lower = cleanName.toLowerCase();
+  return CANONICAL_ALBUM_MAP[lower] || cleanName;
 }
 
 function normalizeRole(value) {
@@ -885,17 +913,18 @@ async function galleryFoldersHandler(_req, res, next) {
       const map = new Map();
 
       for (const item of media) {
-        const name =
+        const rawName =
           clean(item.folder) ||
           clean(item.folderName) ||
           clean(item.album) ||
           clean(item.albumName) ||
           clean(item.category);
 
-        if (!name) continue;
+        if (!rawName) continue;
+        const name = normalizeCanonicalAlbumName(rawName);
 
-        if (!map.has(name)) {
-          map.set(name, {
+        if (!map.has(name.toLowerCase())) {
+          map.set(name.toLowerCase(), {
             id: name,
             name,
             title: name,
@@ -905,14 +934,22 @@ async function galleryFoldersHandler(_req, res, next) {
           });
         }
 
-        map.get(name).mediaCount += 1;
+        map.get(name.toLowerCase()).mediaCount += 1;
       }
 
       rows = [...map.values()];
     } else {
-      // Calculate mediaCount for actual folders from DB
-      rows = rows.map((folder) => {
+      const seenNames = new Set();
+      const deduplicated = [];
+
+      for (const folder of rows) {
         const folderId = clean(folder._id || folder.id);
+        const canonicalName = normalizeCanonicalAlbumName(folder.name || folder.title);
+        const normKey = canonicalName.toLowerCase();
+
+        if (seenNames.has(normKey)) continue;
+        seenNames.add(normKey);
+
         const count = media.filter((item) =>
           [
             item.folderId,
@@ -926,12 +963,16 @@ async function galleryFoldersHandler(_req, res, next) {
             item.categoryId,
           ].some((val) => galleryValueMatchesFolder(val, folderId))
         ).length;
-        
-        return {
+
+        deduplicated.push({
           ...folder,
+          name: canonicalName,
+          title: canonicalName,
           mediaCount: count,
-        };
-      });
+        });
+      }
+
+      rows = deduplicated;
     }
 
     res.json(listPayload("galleryFolders", rows));
@@ -1118,6 +1159,27 @@ app.get(
   requireAdministrator,
   profileResponse
 );
+
+app.get("/api/auth/session", async (req, res) => {
+  try {
+    const authorization = clean(req.headers.authorization);
+    if (!authorization.toLowerCase().startsWith("bearer ")) {
+      return res.status(401).json({ success: false, message: "No token provided", code: "AUTH_TOKEN_INVALID" });
+    }
+    const decodedToken = await getAuth().verifyIdToken(authorization.slice(7).trim());
+    const profileResult = await adminProfileFor(decodedToken);
+    const user = profileResult?.document || {
+      uid: decodedToken.uid,
+      email: decodedToken.email || "",
+      name: decodedToken.name || decodedToken.email || "User",
+      role: "user",
+    };
+    return res.json({ success: true, user });
+  } catch (error) {
+    const code = error.code === "auth/argument-error" ? "AUTH_TOKEN_INVALID" : "SESSION_ERROR";
+    return res.status(401).json({ success: false, message: "Invalid or expired token", code });
+  }
+});
 
 app.patch(
   ["/api/profile/me", "/api/admin/me", "/api/admin/profile"],
@@ -3199,6 +3261,247 @@ app.get(
 );
 
 // FINAL REMAINING ROUTES END
+
+// AMAANITVAM_ADMIN_CMS_REGISTRATIONS_GATEWAY_FIX_START
+// These exact Admin Portal routes must be handled by the gateway. Letting them
+// fall through to the port-5001 API invokes a second auth stack which rejects
+// the same Firebase session already accepted by this gateway.
+const gatewayCmsDefaults = Object.freeze({
+  homepage: Object.freeze({
+    heroTitle: "",
+    heroSubtitle: "",
+    aboutSummary: "",
+  }),
+  aboutUs: Object.freeze({
+    mission: "",
+    vision: "",
+    history: "",
+  }),
+});
+
+function gatewayCmsText(value, maximumLength) {
+  if (value === undefined || value === null) return "";
+  return String(value).trim().slice(0, maximumLength);
+}
+
+function normalizeGatewayCmsContent(value = {}) {
+  const homepage = value?.homepage || {};
+  const aboutUs = value?.aboutUs || {};
+
+  return {
+    homepage: {
+      heroTitle: gatewayCmsText(homepage.heroTitle, 300),
+      heroSubtitle: gatewayCmsText(homepage.heroSubtitle, 1000),
+      aboutSummary: gatewayCmsText(homepage.aboutSummary, 5000),
+    },
+    aboutUs: {
+      mission: gatewayCmsText(aboutUs.mission, 5000),
+      vision: gatewayCmsText(aboutUs.vision, 5000),
+      history: gatewayCmsText(aboutUs.history, 10000),
+    },
+  };
+}
+
+async function gatewayCmsDocument() {
+  const collection = mongoose.connection.db.collection("cms");
+  const websiteDocument = await collection.findOne({ key: "website" });
+  if (websiteDocument) return websiteDocument;
+
+  return collection
+    .find({})
+    .sort({ updatedAt: -1, createdAt: -1, _id: -1 })
+    .limit(1)
+    .next();
+}
+
+function gatewayCmsResponse(document) {
+  const content = normalizeGatewayCmsContent(
+    document?.content || gatewayCmsDefaults,
+  );
+  const updatedAt = document?.updatedAt || document?.createdAt || null;
+
+  return {
+    success: true,
+    content,
+    data: content,
+    updatedAt,
+  };
+}
+
+app.get("/api/cms", async (_req, res, next) => {
+  try {
+    const document = await gatewayCmsDocument();
+    res.setHeader("Cache-Control", "no-store");
+    return res.json(gatewayCmsResponse(document));
+  } catch (error) {
+    return next(error);
+  }
+});
+
+async function updateGatewayCms(req, res, next) {
+  try {
+    const current = await gatewayCmsDocument();
+    const incoming =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? req.body
+        : {};
+    const merged = {
+      homepage: {
+        ...(current?.content?.homepage || {}),
+        ...(incoming.homepage || {}),
+      },
+      aboutUs: {
+        ...(current?.content?.aboutUs || {}),
+        ...(incoming.aboutUs || {}),
+      },
+    };
+    const content = normalizeGatewayCmsContent(merged);
+    const now = new Date();
+    const update = { content, updatedAt: now };
+    const updatedBy = objectId(req.adminProfileResult?.document?._id);
+    if (updatedBy) update.updatedBy = updatedBy;
+
+    await mongoose.connection.db.collection("cms").updateOne(
+      { key: "website" },
+      {
+        $set: update,
+        $setOnInsert: { key: "website", createdAt: now },
+      },
+      { upsert: true },
+    );
+
+    const refreshed = await gatewayCmsDocument();
+    console.log("[admin-gateway] cms: website content updated");
+    return res.json({
+      ...gatewayCmsResponse(refreshed),
+      message: "Website content updated successfully",
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+app.put(
+  "/api/cms",
+  requireAdministrator,
+  jsonParser,
+  updateGatewayCms,
+);
+app.patch(
+  "/api/cms",
+  requireAdministrator,
+  jsonParser,
+  updateGatewayCms,
+);
+
+function gatewayRegistrationCollectionScore(name) {
+  const compact = clean(name).toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (compact === "eventregistrations") return 10000;
+  if (/event.*registr|registr.*event/.test(compact)) return 9000;
+  if (
+    /webinar.*registr|registr.*webinar|competition.*registr|registr.*competition/.test(
+      compact,
+    )
+  ) {
+    return 8000;
+  }
+  return 0;
+}
+
+async function gatewayEventRegistrationRows() {
+  const names = await collectionNames();
+  const rankedNames = names
+    .map((name) => ({
+      name,
+      score: gatewayRegistrationCollectionScore(name),
+    }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score)
+    .map((entry) => entry.name);
+
+  // Reading a missing MongoDB collection is safe and returns an empty list.
+  const sourceNames = rankedNames.length
+    ? rankedNames
+    : ["eventregistrations"];
+  const rows = [];
+
+  for (const collectionName of sourceNames) {
+    const records = await mongoose.connection.db
+      .collection(collectionName)
+      .find({})
+      .sort({
+        createdAt: -1,
+        registrationDate: -1,
+        updatedAt: -1,
+        _id: -1,
+      })
+      .allowDiskUse(true)
+      .limit(5000)
+      .toArray();
+
+    for (const record of records) {
+      rows.push(normalizeDocument(record, collectionName));
+    }
+  }
+
+  const seen = new Set();
+  return rows.filter((registration) => {
+    const key =
+      clean(registration._id) ||
+      `${clean(registration.email).toLowerCase()}::${clean(
+        registration.event,
+      ).toLowerCase()}::${clean(
+        registration.createdAt || registration.registrationDate,
+      )}`;
+
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+app.get(
+  "/api/public-forms/event-registrations",
+  requireAdministrator,
+  async (_req, res, next) => {
+    try {
+      const registrations = await gatewayEventRegistrationRows();
+      console.log(
+        `[admin-gateway] event registrations: ${registrations.length} record(s) loaded`,
+      );
+      return res.json({
+        success: true,
+        count: registrations.length,
+        registrations,
+        data: registrations,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+);
+// AMAANITVAM_ADMIN_CMS_REGISTRATIONS_GATEWAY_FIX_END
+
+
+// ADMIN_MEMBER_PROVISION_GATEWAY_START
+// Keep Admin Portal user provisioning inside the gateway authentication stack.
+// Unmatched requests otherwise fall through to the upstream API and are rejected
+// by its separate Firebase authentication middleware.
+const bridgeGatewayFirebaseUser = (req, _res, next) => {
+  req.user = req.firebaseUser;
+  next();
+};
+
+app.post(
+  "/api/auth/users/provision",
+  requireAdministrator,
+  jsonParser,
+  bridgeGatewayFirebaseUser,
+  requireDashboardAccess,
+  requireRole("super_admin"),
+  provisionUser
+);
+// ADMIN_MEMBER_PROVISION_GATEWAY_END
 
 function proxyToExistingBackend(req, res) {
   const headers = { ...req.headers };
