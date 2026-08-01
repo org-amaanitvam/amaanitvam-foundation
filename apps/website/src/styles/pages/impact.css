@@ -2,13 +2,7 @@
    IMPACT.CSS — FULL CONSOLIDATED STYLESHEET
    Impact page + Donate section + shared Programs sections
    ---------------------------------------------------------
-   This file merges, in cascade order:
-     1. Original base styles (layout, grids, responsive)
-     2. Premium enhancement layer (glass, shadows, motion)
-     3. Contrast fix (title/stat text visibility)
-     4. Cream/ivory stat card color pass  ← final look wins
-   Load this single file in place of the four separate files.
-   No selectors were renamed; existing markup/JS is untouched.
+  
    ========================================================= */
 
 
