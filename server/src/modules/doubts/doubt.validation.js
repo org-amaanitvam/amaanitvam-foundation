@@ -11,9 +11,14 @@ export const createSchema = Joi.object({
   tags: Joi.array().items(Joi.string()),
 });
 
+export const assignSchema = Joi.object({
+  faculty_id: Joi.string().required(),
+});
+
 export const respondSchema = Joi.object({
   message: Joi.string().required(),
   attachments: Joi.array().items(Joi.string()),
+  mark_as_solution: Joi.boolean(),
 });
 
 export const resolveSchema = Joi.object({

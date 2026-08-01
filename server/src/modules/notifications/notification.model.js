@@ -42,6 +42,7 @@ const notificationSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+// Indexes for fast dashboard query performance
 notificationSchema.index({ user_id: 1, created_at: -1 });
 notificationSchema.index({ user_id: 1, is_read: 1 });
 

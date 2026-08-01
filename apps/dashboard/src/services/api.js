@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { auth } from '../config/firebase';
-import { signOut } from 'firebase/auth'; // 1. THE FIX: Import the Firebase sign-out function
+import { signOut } from 'firebase/auth';
 
 const isDevelopment = import.meta.env.MODE === 'development';
-const defaultBaseURL = isDevelopment 
-  ? 'http://localhost:5000/api' 
+
+const defaultBaseURL = isDevelopment
+  ? 'http://localhost:5000/api'
   : 'https://amaanitvam-foundation.onrender.com/api';
 
 const api = axios.create({
@@ -18,8 +19,8 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     if (!auth.currentUser) {
-      await new Promise(resolve => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+      await new Promise((resolve) => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
           unsubscribe();
           resolve(user);
         });
@@ -31,19 +32,21 @@ api.interceptors.request.use(
     if (currentUser) {
       try {
         const token = await currentUser.getIdToken();
-        
-        if (config.headers && typeof config.headers.set === 'function') {
+
+        config.headers = config.headers || {};
+
+        if (typeof config.headers.set === 'function') {
           config.headers.set('Authorization', `Bearer ${token}`);
         } else {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        
-        console.log(`✅ [API Token Attached] -> ${config.url}`);
-      } catch (err) {
-        console.error('❌ [API Token Error] Failed to get Firebase token:', err);
+
+        console.log(`[API Auth] Token attached: ${config.url}`);
+      } catch (error) {
+        console.error('[API Auth] Could not get Firebase token:', error);
       }
     } else {
-      console.error(`🚨 [API Warning] Request fired to ${config.url} with NO Firebase user!`);
+      console.warn(`[API Auth] No Firebase user for: ${config.url}`);
     }
 
     return config;
@@ -53,18 +56,65 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.warn("🚨 401 Unauthorized caught! Forcing a full Firebase logout to break the loop...");
-      localStorage.clear();
+  async (error) => {
+    const request = error.config;
+    const status = error.response?.status;
+
+    /*
+     * Retry one time with a newly issued Firebase ID token.
+     * This prevents an old cached token from immediately logging the user out.
+     */
+    if (
+      status === 401 &&
+      request &&
+      !request._firebaseTokenRetried &&
+      auth.currentUser
+    ) {
+      request._firebaseTokenRetried = true;
+
+      try {
+        const freshToken = await auth.currentUser.getIdToken(true);
+
+        request.headers = request.headers || {};
+
+        if (typeof request.headers.set === 'function') {
+          request.headers.set('Authorization', `Bearer ${freshToken}`);
+        } else {
+          request.headers.Authorization = `Bearer ${freshToken}`;
+        }
+
+        console.warn('[API Auth] Retrying request with refreshed token');
+
+        return api(request);
+      } catch (refreshError) {
+        console.error(
+          '[API Auth] Firebase token refresh failed:',
+          refreshError
+        );
+      }
+    }
+
+    /*
+     * Log out only when the API also rejects the newly refreshed token.
+     */
+    if (status === 401 && request?._firebaseTokenRetried) {
+      console.error(
+        '[API Auth] Backend rejected the refreshed Firebase token'
+      );
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       sessionStorage.clear();
 
-      // 2. THE FIX: Actually sign out of Firebase!
-      signOut(auth).then(() => {
-        if (window.location.pathname !== '/login') {
-          window.location.replace('/login');
-        }
-      });
+      try {
+        await signOut(auth);
+      } catch (signOutError) {
+        console.error('[API Auth] Sign-out failed:', signOutError);
+      }
+
+      if (window.location.pathname !== '/login') {
+        window.location.replace('/login');
+      }
     }
 
     return Promise.reject(error);

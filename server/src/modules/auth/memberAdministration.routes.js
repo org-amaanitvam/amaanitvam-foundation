@@ -18,10 +18,15 @@ import {
 
 const router = express.Router();
 
+// ─── Security Middleware ───────────────────────────────────────────────────
+// Requirement: Every route in this module requires valid authentication and active dashboard permissions.
 router.use(authenticate, requireDashboardAccess);
 
+// Helper for restricting actions strictly to super administrators
 const requireSuperAdmin = requireRole("super_admin");
 
+// ─── Payload Serializer ────────────────────────────────────────────────────
+// Requirement: Unifies user database documents and UserAccess credentials into a single clean frontend payload.
 const memberPayload = (user, access = null) => ({
   _id: user._id,
   id: user._id,
@@ -39,26 +44,22 @@ const memberPayload = (user, access = null) => ({
   permissions: Array.isArray(access?.permissions) ? access.permissions : [],
   team: access?.team || "",
   mustChangePassword: access?.mustChangePassword === true,
-  isActive:
-    user.status !== "inactive" &&
-    access?.isActive !== false,
+  isActive: user.status !== "inactive" && access?.isActive !== false,
   createdAt: user.createdAt || null,
   updatedAt: user.updatedAt || null,
 });
-
 
 const normalizeText = (value) => String(value ?? "").trim();
 
 const escapedExact = (value) =>
   new RegExp(
-    `^${normalizeText(value).replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&",
-    )}$`,
+    `^${normalizeText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
     "i",
   );
 
-
+// ─── Permission Scope Helper ────────────────────────────────────────────────
+// Requirement: Ensures Department Heads can only manage/view members within their own department,
+// while Super Admins have global access.
 const canReadMember = (req, user) => {
   if (req.userAccess?.role === "super_admin") return true;
 
@@ -79,6 +80,9 @@ const canReadMember = (req, user) => {
   return false;
 };
 
+// ─── Controller Functions ───────────────────────────────────────────────────
+
+// 1. List Members (Scoped by role)
 const listMembers = async (req, res, next) => {
   try {
     let query = {};
@@ -90,9 +94,7 @@ const listMembers = async (req, res, next) => {
       }
       query = {
         department: escapedExact(department),
-        status: {
-          $ne: "inactive",
-        },
+        status: { $ne: "inactive" },
       };
     } else if (req.userAccess?.role !== "super_admin") {
       query = { _id: req.dbUser._id };
@@ -124,6 +126,7 @@ const listMembers = async (req, res, next) => {
   }
 };
 
+// 2. Get Single Member
 const getMember = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -144,6 +147,7 @@ const getMember = async (req, res, next) => {
   }
 };
 
+// 3. Sync Department Membership Helper
 const syncDepartmentMembership = async (user, requestedDepartment) => {
   const cleanDepartment = normalizeText(requestedDepartment);
   let target = null;
@@ -192,6 +196,7 @@ const syncDepartmentMembership = async (user, requestedDepartment) => {
   }
 };
 
+// 4. Update Member Details
 const updateMemberDetails = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -272,6 +277,7 @@ const updateMemberDetails = async (req, res, next) => {
   }
 };
 
+// 5. Update Organization (Department & Team)
 const updateOrganization = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -322,6 +328,7 @@ const updateOrganization = async (req, res, next) => {
   }
 };
 
+// 6. Update Permissions
 const updatePermissions = async (req, res, next) => {
   try {
     if (!Array.isArray(req.body?.permissions)) {
@@ -416,15 +423,12 @@ const updateFirebaseDisabledState = async (user, access, disabled) => {
   }
 };
 
+// 7. Deactivate Member
 const deactivateMember = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
-
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found.",
-      });
+      return res.status(404).json({ success: false, message: "Member not found." });
     }
 
     if (
@@ -439,7 +443,6 @@ const deactivateMember = async (req, res, next) => {
     }
 
     const access = await UserAccess.findOne({ user: user._id });
-
     user.status = "inactive";
     await user.save();
 
@@ -473,19 +476,15 @@ const deactivateMember = async (req, res, next) => {
   }
 };
 
+// 8. Activate Member
 const activateMember = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
-
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found.",
-      });
+      return res.status(404).json({ success: false, message: "Member not found." });
     }
 
     const access = await UserAccess.findOne({ user: user._id });
-
     user.status = "active";
     await user.save();
 
@@ -519,31 +518,23 @@ const activateMember = async (req, res, next) => {
   }
 };
 
+// 9. Update Member Role
 const updateMemberRole = async (req, res, next) => {
   try {
     const requestedRole =
-      req.body?.role ??
-      req.body?.newRole ??
-      req.body?.userRole ??
-      "";
+      req.body?.role ?? req.body?.newRole ?? req.body?.userRole ?? "";
 
     const mapping = resolveRoleMapping(requestedRole);
-
     if (!mapping) {
       return res.status(400).json({
         success: false,
-        message:
-          `Unsupported role. Allowed roles: ${SUPPORTED_PROVISION_ROLES.join(", ")}`,
+        message: `Unsupported role. Allowed roles: ${SUPPORTED_PROVISION_ROLES.join(", ")}`,
       });
     }
 
     const user = await User.findById(req.params.id);
-
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found.",
-      });
+      return res.status(404).json({ success: false, message: "Member not found." });
     }
 
     user.role = mapping.userRole;
@@ -551,11 +542,7 @@ const updateMemberRole = async (req, res, next) => {
 
     const access = await getOrCreateAccessForExistingUser(
       user,
-      {
-        uid: user.firebaseUid || "",
-        email: user.email,
-        name: user.name,
-      },
+      { uid: user.firebaseUid || "", email: user.email, name: user.name },
       { mustChangePassword: false },
     );
 
@@ -568,11 +555,7 @@ const updateMemberRole = async (req, res, next) => {
       access,
       action: "MEMBER_ROLE_UPDATED",
       success: true,
-      metadata: {
-        requestedRole,
-        userRole: mapping.userRole,
-        accessRole: mapping.accessRole,
-      },
+      metadata: { requestedRole, userRole: mapping.userRole, accessRole: mapping.accessRole },
     });
 
     return res.json({
@@ -585,15 +568,12 @@ const updateMemberRole = async (req, res, next) => {
   }
 };
 
+// 10. Permanently Delete Member
 const permanentlyDeleteMember = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
-
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Member not found.",
-      });
+      return res.status(404).json({ success: false, message: "Member not found." });
     }
 
     if (
@@ -619,9 +599,7 @@ const permanentlyDeleteMember = async (req, res, next) => {
       targetRole: user.role || "",
       targetAccessRole: access?.role || "",
       targetDepartment: user.department || "",
-      wasActive:
-        user.status !== "inactive" &&
-        access?.isActive !== false,
+      wasActive: user.status !== "inactive" && access?.isActive !== false,
     };
 
     if (firebaseUid) {
@@ -630,7 +608,6 @@ const permanentlyDeleteMember = async (req, res, next) => {
       } catch (error) {
         if (error?.code !== "auth/user-not-found") throw error;
       }
-
       try {
         await getAuth().deleteUser(firebaseUid);
       } catch (error) {
@@ -652,23 +629,15 @@ const permanentlyDeleteMember = async (req, res, next) => {
 
     return res.json({
       success: true,
-      message:
-        "Member permanently deleted from Firebase Authentication and MongoDB. Audit history was preserved.",
-      deleted: {
-        id: snapshot.targetUserId,
-        email: snapshot.targetEmail,
-        uniqueId: snapshot.targetUniqueId,
-        firebaseDeleted: Boolean(firebaseUid),
-        mongoUserDeleted: true,
-        mongoAccessDeleted: true,
-        auditHistoryPreserved: true,
-      },
+      message: "Member permanently deleted from Firebase Auth and MongoDB.",
+      deleted: { id: snapshot.targetUserId, email: snapshot.targetEmail, mongoUserDeleted: true },
     });
   } catch (error) {
     next(error);
   }
 };
 
+// ─── Route Mappings ────────────────────────────────────────────────────────
 router.get("/", listMembers);
 router.get("/:id", getMember);
 

@@ -1,6 +1,7 @@
 import Department from "./department.model.js";
 import User from "../users/user.model.js";
 
+// ─── Helper: Enforce Super Admin ──────────────────────────────────────────────
 const requireAdminUser = (req, res) => {
   if (req.userAccess?.role !== "super_admin") {
     return res.status(403).json({
@@ -12,34 +13,22 @@ const requireAdminUser = (req, res) => {
   return null;
 };
 
-// ─── Helper: check if user can access this department ────────────────────────
-// Admins/super_admins → all departments
-// Everyone else → only their own department
+// ─── Helper: Check if user can access this department ────────────────────────
+// LOGIC: Admins/super_admins → access to all departments
+// Everyone else → access to only their own assigned department
 const canAccessDepartment = (req, department) => {
   if (req.userAccess?.role === "super_admin") return true;
 
   const ownDepartment = String(req.dbUser?.department || "").trim().toLowerCase();
   const targetDepartment = String(department?.departmentName || "").trim().toLowerCase();
 
-  return Boolean(
-    ownDepartment &&
-    targetDepartment &&
-    ownDepartment === targetDepartment
-  );
+  return Boolean(ownDepartment && targetDepartment && ownDepartment === targetDepartment);
 };
 
-//CREATE Department
+// CREATE Department
 export const createDepartment = async (req, res) => {
-  const authError = requireAdminUser(req, res);
-  if (authError) return authError;
-
   try {
-    const {
-      departmentName,
-      description,
-      departmentHead,
-      members,
-    } = req.body;
+    const { departmentName, description, departmentHead, members } = req.body;
 
     const existing = await Department.findOne({ departmentName });
     if (existing) {
@@ -49,18 +38,15 @@ export const createDepartment = async (req, res) => {
     let headUser = null;
     if (departmentHead) {
       headUser = await User.findById(departmentHead);
-      if (!headUser) {
-        return res.status(404).json({ message: "Department head not found" });
-      }
+      if (!headUser) return res.status(404).json({ message: "Department head not found" });
     }
 
     let formattedMembers = [];
     if (members && members.length > 0) {
       for (let m of members) {
         const userExists = await User.findById(m.user);
-        if (!userExists) {
-          return res.status(404).json({ message: `User not found: ${m.user}` });
-        }
+        if (!userExists) return res.status(404).json({ message: `User not found: ${m.user}` });
+        
         formattedMembers.push({
           user: m.user,
           role: m.role || "member",
@@ -83,7 +69,57 @@ export const createDepartment = async (req, res) => {
   }
 };
 
-//edit
+// GET ALL DEPARTMENTS (SCOPED)
+export const getDepartments = async (req, res) => {
+  try {
+    let query = {};
+
+    // SECURITY LOGIC: If the user is NOT a super admin, restrict the database query 
+    // to only return the department that matches their user profile.
+    if (req.userAccess?.role !== "super_admin") {
+      if (!req.dbUser?.department) {
+        // User is not assigned to a department, return empty array safely
+        return res.json({ departments: [] }); 
+      }
+      query = { departmentName: req.dbUser.department };
+    }
+
+    const departments = await Department.find(query)
+      .populate("departmentHead", "name email")
+      .populate("members.user", "name email role");
+
+    res.json({ departments });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET DEPARTMENT BY ID (SCOPED)
+export const getDepartmentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const department = await Department.findById(id)
+      .populate("departmentHead", "name email")
+      .populate("members.user", "name email role");
+
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    if (!canAccessDepartment(req, department)) {
+      return res.status(403).json({
+        message: "Access denied. You can only view your own department.",
+      });
+    }
+
+    res.json({ department });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// EDIT DEPARTMENT
 export const editDepartment = async (req, res) => {
   const authError = requireAdminUser(req, res);
   if (authError) return authError;
@@ -130,58 +166,8 @@ export const editDepartment = async (req, res) => {
   }
 };
 
-// Get All Departments — scoped by role
-// admin/super_admin → all | others → only their own department
-export const getDepartments = async (req, res) => {
-  try {
-    let query = {};
-
-    if (req.userAccess?.role !== "super_admin") {
-      if (!req.dbUser?.department) {
-        return res.json({ departments: [] });
-      }
-      query = { departmentName: req.dbUser.department };
-    }
-
-    const departments = await Department.find(query)
-      .populate("departmentHead", "name email")
-      .populate("members.user", "name email role");
-
-    res.json({ departments });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-//  Get single department — scoped by role
-export const getDepartmentById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const department = await Department.findById(id)
-      .populate("departmentHead", "name email")
-      .populate("members.user", "name email role");
-
-    if (!department) {
-      return res.status(404).json({ message: "Department not found" });
-    }
-
-    // 🔒 Non-admins can only view their own department
-    if (!canAccessDepartment(req, department)) {
-      return res.status(403).json({
-        message: "Access denied. You can only view your own department.",
-      });
-    }
-
-    res.json({ department });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// delete — super_admin only
+// DELETE DEPARTMENT — super_admin only
 export const deleteDepartment = async (req, res) => {
-  //  Only super_admin can delete departments
   if (req.userAccess?.role !== "super_admin") {
     return res.status(403).json({
       success: false,
@@ -206,7 +192,7 @@ export const deleteDepartment = async (req, res) => {
   }
 };
 
-//  assign member — admin only, syncs department field on User
+// ASSIGN MEMBER — admin only, upserts member role, syncs department on User
 export const assignMember = async (req, res) => {
   const authError = requireAdminUser(req, res);
   if (authError) return authError;
@@ -225,22 +211,23 @@ export const assignMember = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const alreadyMember = department.members.find(
-      (m) => m.user.toString() === userId
+    const existingMember = department.members.find(
+      (m) => m.user.toString() === userId.toString()
     );
-    if (alreadyMember) {
-      return res.status(400).json({ message: "User already in department" });
+
+    if (existingMember) {
+      existingMember.role = role || existingMember.role;
+    } else {
+      department.members.push({
+        user: userId,
+        role: role || "member",
+        joinedAt: new Date(),
+      });
+      department.totalMembers = department.members.length;
     }
 
-    department.members.push({
-      user: userId,
-      role: role || "member",
-      joinedAt: new Date(),
-    });
-    department.totalMembers = department.members.length;
     await department.save();
 
-    //  Sync department name onto the User document
     await User.findByIdAndUpdate(userId, { department: department.departmentName });
 
     res.json({ message: "Member assigned successfully", department });
@@ -249,7 +236,7 @@ export const assignMember = async (req, res) => {
   }
 };
 
-// department performance
+// UPDATE PERFORMANCE — super admin or the department's own head
 const canUpdatePerformance = (req, department) => {
   if (req.userAccess?.role === "super_admin") return true;
 
@@ -281,13 +268,6 @@ export const updatePerformance = async (req, res) => {
       return res.status(404).json({ message: "Department not found" });
     }
 
-    //  Non-admins can only update performance for their own department
-    if (!canAccessDepartment(req, department) && !canUpdatePerformance(req, department)) {
-      return res.status(403).json({
-        message: "Only the department head or an admin can update department performance.",
-      });
-    }
-
     if (!canUpdatePerformance(req, department)) {
       return res.status(403).json({
         message: "Only the department head or an admin can update department performance.",
@@ -303,7 +283,7 @@ export const updatePerformance = async (req, res) => {
   }
 };
 
-//  department report — scoped by role
+// GET DEPARTMENT REPORT (SCOPED)
 export const getDepartmentReport = async (req, res) => {
   try {
     const { id } = req.params;
@@ -316,7 +296,6 @@ export const getDepartmentReport = async (req, res) => {
       return res.status(404).json({ message: "Department not found" });
     }
 
-    //  Non-admins can only see their own department report
     if (!canAccessDepartment(req, department)) {
       return res.status(403).json({
         message: "Access denied. You can only view your own department report.",
@@ -330,6 +309,7 @@ export const getDepartmentReport = async (req, res) => {
       totalMembers: department.totalMembers,
       performance: department.performance,
       members: department.members,
+      generatedAt: new Date(),
     };
 
     res.json(report);

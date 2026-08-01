@@ -1,6 +1,5 @@
 import "./index.css";
-import "./final-recovery-overrides.css";
-import React from 'react';
+import "./styles/global-overrides.css";
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext.jsx';

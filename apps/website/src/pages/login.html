@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="Amaanitvam Foundation Learning Portal — Access Dashboard, Faculty, LMS, and Admin portals." name="description" />
+  <title>Login — Amaanitvam Foundation Learning Portal</title>
+  
+  <!-- Google Fonts & Material Symbols -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <link href="/images/Logo/logo.jpg" rel="icon" type="image/jpg" />
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/pages/login.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+</head>
+
+<body class="portal-login-body">
+
+  <main class="login-split-container">
+    
+    <!-- LEFT SIDE: DYNAMIC HERO SECTION -->
+    <div class="login-brand-side">
+      <!-- Drifting ambient glow orbs -->
+      <div class="brand-ambient-glow glow--1" aria-hidden="true"></div>
+      <div class="brand-ambient-glow glow--2" aria-hidden="true"></div>
+
+      <div class="brand-content-wrap">
+        
+        <!-- Header Logo & Kicker -->
+        <a href="../../index.html" class="brand-logo-link">
+          <img src="/images/Logo/logo.jpg" alt="Amaanitvam Foundation Logo" class="brand-logo-img" />
+          <div class="brand-logo-text">
+            <span class="logo-title">Amaanitvam</span>
+            <span class="logo-sub">Foundation</span>
+          </div>
+        </a>
+
+        <div class="brand-kicker">
+          <span class="kicker-pulse-dot" aria-hidden="true"></span>
+          Section 8 Registered · NITI Aayog DARPAN Listed
+        </div>
+
+        <!-- DYNAMIC HERO CONTENT PANE -->
+        <div class="hero-dynamic-pane" id="heroDynamicPane">
+          
+          <h1 class="brand-portal-title" id="heroTitle">
+            Dashboard <span class="title-gradient">Portal</span>
+          </h1>
+          
+          <p class="brand-portal-subtitle" id="heroSubtitle">
+            Access reports, analytics, learning insights, and monitor activities across the organization.
+          </p>
+
+          <!-- DYNAMIC PORTAL ACCENT ILLUSTRATION GRAPHIC -->
+          <div class="portal-illustration-wrapper" id="heroIllustration">
+            <div class="illustration-glass-badge">
+              <span class="material-symbols-outlined illustration-icon" id="illustrationIcon">analytics</span>
+              <div class="illustration-halo" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- DYNAMIC FEATURE CARDS (3 Cards Per Portal) -->
+          <div class="portal-feature-grid" id="portalFeatureGrid">
+            
+            <div class="portal-feature-card" id="featureCard1">
+              <div class="feature-icon-box" id="cardIconBox1">
+                <span class="material-symbols-outlined" id="cardIcon1">monitoring</span>
+              </div>
+              <div class="feature-text-box">
+                <span class="feature-title" id="cardTitle1">Real-time Analytics</span>
+                <span class="feature-desc" id="cardDesc1">Live organization metrics &amp; KPIs</span>
+              </div>
+            </div>
+
+            <div class="portal-feature-card" id="featureCard2">
+              <div class="feature-icon-box" id="cardIconBox2">
+                <span class="material-symbols-outlined" id="cardIcon2">insights</span>
+              </div>
+              <div class="feature-text-box">
+                <span class="feature-title" id="cardTitle2">Activity Monitoring</span>
+                <span class="feature-desc" id="cardDesc2">Track user sessions &amp; engagement</span>
+              </div>
+            </div>
+
+            <div class="portal-feature-card" id="featureCard3">
+              <div class="feature-icon-box" id="cardIconBox3">
+                <span class="material-symbols-outlined" id="cardIcon3">assessment</span>
+              </div>
+              <div class="feature-text-box">
+                <span class="feature-title" id="cardTitle3">Reports &amp; Insights</span>
+                <span class="feature-desc" id="cardDesc3">Export institutional performance data</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="brand-footer-note">
+          <a href="../../index.html" class="back-home-link">
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            Return to Main Website
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: GLASSMORPHISM LOGIN CARD -->
+    <div class="login-form-side">
+      
+      <div class="login-card-glass">
+        
+        <!-- Header -->
+        <div class="login-card-header">
+          <span class="role-badge" id="roleBadge">
+            <span class="material-symbols-outlined" id="roleBadgeIcon">dashboard</span>
+            <span id="roleBadgeText">Dashboard Portal</span>
+          </span>
+          <h2 class="login-card-title">Welcome Back</h2>
+          <p class="login-card-desc" id="roleDescText">
+            Access reports, analytics, learning insights, and monitor activities across the organization.
+          </p>
+        </div>
+
+        <!-- 4-MODE PORTAL SWITCHER TABS -->
+        <div class="role-switcher-wrap" data-active-tab="0" role="tablist" aria-label="Learning Portal Modes">
+          
+          <button type="button" class="role-tab active" data-portal="dashboard" role="tab" aria-selected="true">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+          </button>
+
+          <button type="button" class="role-tab" data-portal="faculty" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">psychology</span>
+            <span>Faculty</span>
+          </button>
+
+          <button type="button" class="role-tab" data-portal="lms" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">devices</span>
+            <span>LMS</span>
+          </button>
+
+          <button type="button" class="role-tab" data-portal="admin" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">admin_panel_settings</span>
+            <span>Admin</span>
+          </button>
+          
+          <!-- Animated Tab Indicator Slider -->
+          <div class="tab-indicator-slider" aria-hidden="true"></div>
+        </div>
+
+        <!-- Feedback Alert Banner -->
+        <div class="login-alert" id="loginAlert" role="alert" style="display: none;">
+          <span class="material-symbols-outlined" aria-hidden="true">info</span>
+          <span id="loginAlertMsg"></span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="portalLoginForm" class="login-form" novalidate>
+          <input type="hidden" id="selectedPortalInput" name="portal" value="dashboard" />
+
+          <!-- Input Group: Email / Identifier -->
+          <div class="form-group">
+            <label for="loginIdentifier" class="form-label">
+              <span id="identifierLabelText">Administrator or Director Email</span>
+            </label>
+            <div class="input-input-wrap">
+              <span class="material-symbols-outlined input-icon" aria-hidden="true">mail</span>
+              <input 
+                type="email" 
+                id="loginIdentifier" 
+                name="identifier" 
+                class="form-input" 
+                placeholder="director@amaanitvam.org" 
+                required 
+                autocomplete="username"
+              />
+            </div>
+          </div>
+
+          <!-- Input Group: Password -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="loginPassword" class="form-label">Password</label>
+              <a href="#forgot" class="forgot-link" id="forgotPasswordBtn">Forgot password?</a>
+            </div>
+            <div class="input-input-wrap">
+              <span class="material-symbols-outlined input-icon" aria-hidden="true">lock</span>
+              <input 
+                type="password" 
+                id="loginPassword" 
+                name="password" 
+                class="form-input" 
+                placeholder="••••••••••••" 
+                required 
+                autocomplete="current-password"
+              />
+              <button type="button" class="pwd-toggle-btn" id="pwdToggleBtn" aria-label="Toggle password visibility">
+                <span class="material-symbols-outlined" id="pwdToggleIcon">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Options Row: Remember Me -->
+          <div class="form-options-row">
+            <label class="custom-checkbox-label">
+              <input type="checkbox" id="rememberMe" name="remember" class="custom-checkbox" />
+              <span class="checkbox-custom-box">
+                <span class="material-symbols-outlined">check</span>
+              </span>
+              <span class="checkbox-text">Keep me logged in</span>
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+            <span class="btn-text" id="submitBtnText">Sign In to Dashboard Portal</span>
+            <span class="material-symbols-outlined btn-icon" aria-hidden="true">arrow_forward</span>
+            <span class="spinner-loader" id="submitSpinner" aria-hidden="true" style="display: none;"></span>
+          </button>
+        </form>
+
+        <!-- Footer Assistance -->
+        <div class="login-card-footer">
+          <p id="portalFooterNote">
+            Don't have portal credentials? <a href="../pages/contact.html" class="portal-link">Contact System Administrator</a>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- JS Controller -->
+  <script type="module" src="../scripts/portal-login.js"></script>
+
+</body>
+
+</html>

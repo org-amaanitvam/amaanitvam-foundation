@@ -329,3 +329,32 @@ main .card-premium svg {
     border-radius: 0.875rem;
   }
 }
+
+@media print {
+  aside, 
+  nav, 
+  header, 
+  button, 
+  .sidebar, 
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main, 
+  .main-content, 
+  .animate-fade-in {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

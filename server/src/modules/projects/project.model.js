@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 
+const milestoneSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  due_date: { type: Date, required: true },
+  completed: { type: Boolean, default: false }
+});
+
 const projectSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -14,8 +20,6 @@ const projectSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    // THE FIX: Added the lowercase 'on hold' to match exactly what your form is sending!
-    //enum: ['ongoing', 'completed', 'pending_approval', 'On Hold', 'on hold', 'Active', 'Pending'],
     default: 'ongoing'
   },
   startDate: {
@@ -24,18 +28,36 @@ const projectSchema = new mongoose.Schema({
   endDate: {
     type: Date
   },
-  // Matches your assignedMembers array in React
+  // Assigned members reference for team collaboration
   assignedMembers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  // Department association reference
   department: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'department'
-  }
+    ref: 'Department'
+  },
+  // Local feature: Milestone task breakdown list
+  milestones: [milestoneSchema],
+  
+  // Soft Delete Support flags
+  is_deleted: { type: Boolean, default: false },
+  deleted_at: { type: Date, default: null }
 }, {
   timestamps: true,
   collection: 'projects'
 });
 
-export default mongoose.model('Project', projectSchema);
+// CRITICAL FIX: Transform MongoDB _id to standard API id string for frontend compatibility
+projectSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
+});
+
+export default mongoose.models.Project || mongoose.model('Project', projectSchema);

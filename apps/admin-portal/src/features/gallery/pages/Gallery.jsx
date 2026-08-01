@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Eye,
@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import api from '../../../config/api.js';
-
+// import { useEffect, useState } from "react";
 const MAX_GALLERY_MEDIA_SIZE = 100 * 1024 * 1024;
 const GALLERY_UPLOAD_BATCH_SIZE = 5;
 
@@ -42,9 +42,22 @@ const isVideoMedia = (item) => item?.mediaType === 'video' || item?.contentType?
 const getApiBaseUrl = () => (api.defaults.baseURL || '').replace(/\/api\/?$/, '');
 
 const getMediaSrc = (item) => {
-  if (!item?.imageUrl) return '';
-  if (item.imageUrl.startsWith('http')) return item.imageUrl;
-  return `${getApiBaseUrl()}${item.imageUrl}`;
+  const mediaUrl =
+    item?.secure_url ||
+    item?.url ||
+    item?.imageUrl ||
+    item?.secureUrl ||
+    item?.fileUrl ||
+    item?.path ||
+    "";
+
+  if (!mediaUrl) return "";
+
+  if (mediaUrl.startsWith("http")) {
+    return mediaUrl;
+  }
+
+  return `${getApiBaseUrl()}${mediaUrl}`;
 };
 
 const validateGalleryFiles = (files) => {
@@ -113,6 +126,11 @@ export default function Gallery() {
       setLoadingFolders(false);
     }
   }, []);
+
+
+  useEffect(() => {
+  fetchFolders();
+}, [fetchFolders]);
 
   const fetchFolderMedia = useCallback(async (folderId) => {
     if (!folderId) return;
