@@ -78,7 +78,7 @@ body[data-page="about"] .section-label {
     align-items: center;
     gap: 0.5em;
     font-family: var(--font-ui, "Montserrat", sans-serif) !important;
-    font-size: 0.78rem !important;
+    font-size: 0.88rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.18em !important;
     text-transform: uppercase;
@@ -95,7 +95,7 @@ body[data-page="about"] .section-title {
 body[data-page="about"] .section-desc {
     font-family: var(--font-body, "Inter", sans-serif);
     color: var(--about-text-muted);
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     line-height: 1.7;
 }
 
@@ -112,7 +112,7 @@ body[data-page="about"] .about-hero.page-hero.has-image {
     align-items: center;
     background-color: var(--about-primary-dark) !important;
     background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%),
-        url("/images/Hero/hero3.jpg") !important;
+        url("/images/Hero/hero2.jpg") !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -157,18 +157,24 @@ body[data-page="about"] .about-hero__eyebrow {
 }
 
 body[data-page="about"] .about-hero__title {
-    font-size: clamp(2.1rem, 7vw, 4.4rem) !important;
+    font-size: clamp(3rem, 6vw, 4.8rem) !important;
     line-height: 1.1 !important;
-    margin: 0 0 clamp(0.75rem, 2vw, var(--space-3)) !important;
+    margin: 0 0 1.2rem !important;
     color: #fff !important;
     overflow-wrap: break-word;
 }
-
 body[data-page="about"] .about-hero__desc {
-    font-size: clamp(0.95rem, 2.4vw, 1.15rem) !important;
-    line-height: 1.65 !important;
-    color: rgba(255, 255, 255, 0.82) !important;
-    max-width: 46ch;
+    color: var(--muted) !important;
+    font-size: 1.05rem !important;
+    line-height: 1.7 !important;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+body[data-page="about"] .about-hero__eyebrow {
+    font-size: 0.9rem !important;
+    letter-spacing: 0.2em !important;
 }
 
 /* Short / landscape viewports (phones rotated, small laptops) */
@@ -178,6 +184,7 @@ body[data-page="about"] .about-hero__desc {
         padding: var(--space-5) 0 !important;
     }
 }
+
 
 /* --------------------------------------------------------------------------
    Origins / Heart of Our Work (intro sections)
