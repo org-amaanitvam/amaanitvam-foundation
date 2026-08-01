@@ -41,6 +41,7 @@ import doubtRoutes from './modules/doubts/doubts.routes.js';
 import internalRoutes from './modules/internal/internal.routes.js';
 import conversationRoutes from './modules/conversations/conversation.routes.js';
 import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
+import progressRoutes from "./modules/progress/progress.routes.js";
 
 const app = express();
 
@@ -135,6 +136,7 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/cms", cmsRoutes);
 app.use("/api/digital-library", libraryRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/progress", progressRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/volunteer", volunteerRoutes);
