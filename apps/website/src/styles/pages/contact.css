@@ -1,12 +1,6 @@
 /* ==========================================================================
    Contact Page — Premium Redesign
-   Every selector, grid-template-columns value, and breakpoint below is
-   unchanged from the original — layout/functionality is identical. What
-   changed: spacing pulled onto an 8px rhythm, corner radius standardized
-   to 12–16px, soft elevation + hover/focus micro-interactions added to
-   cards and interactive elements, and a touch of glass on the donation
-   panel (it was already semi-transparent, just needed the blur to read
-   as glass instead of a flat tint).
+
    ========================================================================== */
 
 body[data-page="contact"] {
