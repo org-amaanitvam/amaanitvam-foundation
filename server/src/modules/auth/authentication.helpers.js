@@ -10,18 +10,23 @@ const ROLE_MAPPINGS = new Map([
   ["superadmin", { userRole: "super_admin", accessRole: "super_admin" }],
   ["admin", { userRole: "admin", accessRole: "super_admin" }],
   ["administrator", { userRole: "admin", accessRole: "super_admin" }],
+  ["coordinator", { userRole: "coordinator", accessRole: "department_head" }],
+  ["hod", { userRole: "hod", accessRole: "department_head" }],
   ["department_head", { userRole: "department_head", accessRole: "department_head" }],
   ["departmenthead", { userRole: "department_head", accessRole: "department_head" }],
   ["head", { userRole: "department_head", accessRole: "department_head" }],
+  ["faculty", { userRole: "faculty", accessRole: "department_head" }],
   ["team_member", { userRole: "member", accessRole: "team_member" }],
   ["teammember", { userRole: "member", accessRole: "team_member" }],
   ["member", { userRole: "member", accessRole: "team_member" }],
   ["user", { userRole: "member", accessRole: "team_member" }],
+  ["staff", { userRole: "staff", accessRole: "team_member" }],
+  ["student", { userRole: "student", accessRole: "team_member" }],
   ["intern", { userRole: "intern", accessRole: "team_member" }],
   ["volunteer", { userRole: "volunteer", accessRole: "team_member" }],
 ]);
 
-export const SUPPORTED_PROVISION_ROLES = ["super_admin", "admin", "department_head", "team_member", "member", "intern", "volunteer"];
+export const SUPPORTED_PROVISION_ROLES = ["super_admin", "admin", "coordinator", "hod", "department_head", "faculty", "team_member", "member", "staff", "student", "intern", "volunteer"];
 export const resolveRoleMapping = (value = "team_member") => ROLE_MAPPINGS.get(canonicalRoleKey(value)) || null;
 export const normalizeRole = (value = "team_member") => resolveRoleMapping(value)?.accessRole || "team_member";
 export const normalizeUserRole = (value = "team_member") => resolveRoleMapping(value)?.userRole || "member";

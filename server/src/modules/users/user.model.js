@@ -24,10 +24,26 @@ const userSchema = new mongoose.Schema({
         trim: true
     },
     role: {
-        type: String,
-        enum: ['super_admin', 'admin', 'faculty', 'student', 'content_manager'],
-        default: 'student'
-    },
+    type: String,
+    enum: [
+        'super_admin',
+        'admin',
+
+        // Admin Portal
+        'department_head',
+        'member',
+        'intern',
+        'volunteer',
+
+        // LMS
+        'faculty',
+        'student',
+
+        // CMS
+        'content_manager'
+    ],
+    default: 'member'
+},
     auth_provider: {
         type: String,
         enum: ['firebase', 'local', 'google', 'github'],
