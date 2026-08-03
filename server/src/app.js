@@ -27,20 +27,14 @@ import donationRoutes from "./modules/donations/donation.routes.js";
 import certificateRoutes from "./modules/certificates/certificate.routes.js";
 import galleryRoutes from "./modules/gallery/gallery.routes.js";
 import cmsRoutes from "./modules/cms/cms.routes.js";
-import libraryRoutes from "./modules/digital-library/library.routes.js";
 import courseRoutes from "./modules/courses/course.routes.js";
 import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
 import publicFormRoutes from "./modules/public-forms/publicForm.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
-import dashboardRoutes from './modules/dashboard/dashboard.routes.js'; 
-import attendanceRoutes from './modules/attendance/attendance.routes.js';
-import facultyRoutes from './modules/faculty/faculty.routes.js';
-import doubtRoutes from './modules/doubts/doubts.routes.js';
-import internalRoutes from './modules/internal/internal.routes.js';
-import conversationRoutes from './modules/conversations/conversation.routes.js';
-import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
+import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
+import libraryRoutes from "./modules/library-resources/library.routes.js";
 
 const app = express();
 
@@ -133,7 +127,6 @@ app.use("/api/donations", donationRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/cms", cmsRoutes);
-app.use("/api/digital-library", libraryRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
@@ -142,18 +135,10 @@ app.use("/api/internship", internshipRoutes);
 app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/faculty", facultyRoutes);
-app.use("/api/doubts", doubtRoutes);
-app.use("/internal", internalRoutes);
-app.use("/api/conversations", conversationRoutes);
-app.use("/api/ai-notifications", aiNotificationRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/digital-library", libraryRoutes);
 
-app.use("/api/admin/gallery", galleryRoutes);
 
-// 6. Error Handling Middleware (MUST be at the very end)
-// app.use("/api/admin/gallery", galleryRoutes);
-
+// Unhandled routes & errors
 app.use(notFound);
 app.use(errorHandler);
 
