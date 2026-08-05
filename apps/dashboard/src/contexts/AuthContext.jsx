@@ -8,6 +8,7 @@ import { auth } from '../config/firebase';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithCustomToken,
   signOut,
   sendPasswordResetEmail,
 } from 'firebase/auth';
@@ -338,6 +339,21 @@ export function AuthProvider({ children }) {
     );
 
     return unsubscribe;
+  }, []);
+
+  // CROSS_PORTAL_AUTH: Accept custom tokens from the common login page
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const crossToken = params.get('authToken');
+    if (crossToken) {
+      // Remove token from URL immediately for security
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, '', cleanUrl);
+      // Sign in with the custom token - onAuthStateChanged will handle the rest
+      signInWithCustomToken(auth, crossToken).catch((err) => {
+        console.error('[dashboard] Cross-portal auth failed:', err.message);
+      });
+    }
   }, []);
 
   const login = async (identifier, password) => {

@@ -3641,6 +3641,37 @@ app.post(
 );
 // ADMIN_MEMBER_PROVISION_GATEWAY_END
 
+// CROSS_PORTAL_AUTH_TOKEN_START
+// Creates a Firebase custom token so the common login page can pass authentication
+// to other portals (admin, dashboard) running on different origins/ports.
+app.post(
+  "/api/auth/cross-portal-token",
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const firebaseUser = req.firebaseUser;
+      if (!firebaseUser?.uid) {
+        return res.status(401).json({
+          success: false,
+          message: "Valid Firebase authentication required",
+        });
+      }
+      const customToken = await getAuth().createCustomToken(firebaseUser.uid);
+      console.log(`[admin-gateway] Cross-portal token created for uid=${firebaseUser.uid}`);
+      return res.json({
+        success: true,
+        customToken,
+        uid: firebaseUser.uid,
+      });
+    } catch (error) {
+      console.error("[admin-gateway] Cross-portal token error:", error.message);
+      return next(error);
+    }
+  }
+);
+// CROSS_PORTAL_AUTH_TOKEN_END
+
 function proxyToExistingBackend(req, res) {
   const headers = { ...req.headers };
   headers.host = `${UPSTREAM_HOST}:${UPSTREAM_PORT}`;
