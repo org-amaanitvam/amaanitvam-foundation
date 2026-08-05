@@ -213,7 +213,7 @@ export const provisionUser = async (req, res, next) => {
     const uniqueId = await generateUniqueUserId(cleanName);
     const firebaseUser = await getAuth().createUser({ email: cleanEmail, password: temporaryPassword, displayName: cleanName, disabled: false });
     createdFirebaseUid = firebaseUser.uid;
-    const user = await User.create({ name: cleanName, email: cleanEmail, firebaseUid: firebaseUser.uid, role: userRole, status: "active", department: String(department || "").trim(), memberId: uniqueId });
+    const user = await User.create({ name: cleanName, email: cleanEmail, firebase_uid: firebaseUser.uid, role: userRole, status: "active", department: String(department || "").trim(), memberId: uniqueId });
     const access = await UserAccess.create({
       user: user._id,
       firebaseUid: firebaseUser.uid,
