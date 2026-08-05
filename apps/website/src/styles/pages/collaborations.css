@@ -5,103 +5,6 @@
     display: none !important;
 }
 
-.collab-hero {
-    position: relative;
-    background-image:
-        linear-gradient(135deg, rgba(86, 5, 26, .88), rgba(86, 5, 26, .6)),
-        url("/images/Hero/hero3.jpg"); 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: #fff;
-    padding: 140px 20px 130px;
-    text-align: center;
-    overflow: hidden;
-}
-
-.collab-hero::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 70px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 100%);
-    pointer-events: none;
-}
-
-.collab-hero .container {
-    position: relative;
-    z-index: 1;
-    max-width: 820px;
-    margin: 0 auto;
-}
-
-.collab-hero .hero-label {
-    display: inline-block;
-    color: var(--gold);
-    font-family: var(--font-ui);
-    font-weight: 700;
-    letter-spacing: .28em;
-    text-transform: uppercase;
-    font-size: .85rem;
-    margin-bottom: 18px;
-    animation: collabFadeUp .6s ease both;
-}
-
-.collab-hero h1 {
-    color: #fff !important;
-    font-family: var(--font-heading), Georgia, serif;
-    font-size: clamp(2.6rem, 5vw, 4rem) !important;
-    font-weight: 600;
-    line-height: 1.12;
-    text-align: center;
-    margin: 0 0 20px;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, .3);
-    animation: collabFadeUp .6s .1s ease both;
-}
-
-.collab-hero p {
-    color: rgba(255, 255, 255, .92) !important;
-    font-size: 1.15rem;
-    line-height: 1.8;
-    max-width: 700px;
-    margin: 0 auto;
-    text-align: center;
-    opacity: .95;
-    animation: collabFadeUp .6s .2s ease both;
-}
-
-@keyframes collabFadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@media (max-width: 768px) {
-    .collab-hero {
-        padding: 100px 20px 100px;
-    }
-
-    .collab-hero h1 {
-        font-size: clamp(2.3rem, 9vw, 3rem);
-    }
-
-    .collab-hero p {
-        font-size: 1.02rem;
-    }
-}
-
-body[data-page="collaborations"] .collab-hero h1 {
-    font-size: clamp(2.8rem, 5vw, 4rem) !important;
-}
-
 .contact-grid {
     max-width: 1160px;
     margin: -64px auto 0;
@@ -318,12 +221,4 @@ body[data-page="collaborations"] .collab-btn {
 body[data-page="collaborations"] .collab-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
-}
-
-body[data-page="collaborations"] .page-hero.has-image {
-    background:
-        linear-gradient(135deg,
-            rgba(86, 5, 26, .88),
-            rgba(86, 5, 26, .60)),
-        url("/images/Hero/hero2.jpg") center center / cover no-repeat !important;
 }
