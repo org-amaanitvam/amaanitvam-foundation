@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithCustomToken,
+  signInWithCustomToken,
   signOut,
   sendPasswordResetEmail,
 } from 'firebase/auth';
