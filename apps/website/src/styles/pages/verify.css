@@ -11,7 +11,7 @@ body[data-page="verify"] .grid-3 .card {
     align-items: center;
     text-align: center;
     padding: 2rem 1.75rem;
-    background: var(--surface-pink) !important;
+    background: #FBF9F5 !important;
 }
 
 body[data-page="verify"] .grid-3 .card .card-icon,
@@ -49,7 +49,7 @@ body[data-page="verify"] .grid-3 .card {
     text-align: center;
     padding: 2rem 1.75rem;
     box-sizing: border-box;
-    background: var(--surface-pink) !important;
+    background: #FBF9F5 !important;
 }
 
 @media (max-width: 900px) {
@@ -69,6 +69,7 @@ body[data-page="verify"] .grid-3 .card {
    5b) VERIFY PAGE — verify-form card (the "Enter Certificate ID" card)
 ========================================================= */
 body[data-page="verify"] .section-white .card {
+
     background: #fff !important;
 }
 
