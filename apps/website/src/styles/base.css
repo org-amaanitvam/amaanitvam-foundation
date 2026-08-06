@@ -350,6 +350,5 @@ section[data-hero]:not(.home-hero) .btn:hover .material-symbols-outlined {
 .collab-hero:not(.home-hero) .hero-label,
 section[data-hero]:not(.home-hero) .section-label {
     margin-top: 1.5rem !important;
-    /* Is value ko badha/ghata sakte hain */
     margin-bottom: 1rem !important;
 }
