@@ -69,7 +69,8 @@ body[data-page="verify"] .grid-3 .card {
    5b) VERIFY PAGE — verify-form card (the "Enter Certificate ID" card)
 ========================================================= */
 body[data-page="verify"] .section-white .card {
-    background: #FBF9F5 !important;
+
+    background: #fff !important;
 }
 
 /* =========================================================
