@@ -61,6 +61,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    background: #5b0f2d;
 }
 
 .brand {
@@ -4123,7 +4124,7 @@ body[data-page="verify"] .card {
     max-width: 95%;
     margin: 40px auto;
     padding: 50px 40px;
-    background: #fff;
+    background: #fff !important;
     border-radius: 24px;
     display: flex;
     flex-direction: column;
