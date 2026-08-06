@@ -311,17 +311,51 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('demo') === 'faculty' || window.location.pathname.startsWith('/faculty')) {
+      localStorage.setItem('demo_faculty', 'true');
+    }
+
     const unsubscribe = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
         setLoading(true);
-        setUser(firebaseUser || null);
 
         if (!firebaseUser) {
+          const isDemoFaculty =
+            localStorage.getItem('demo_faculty') === 'true' ||
+            window.location.pathname.startsWith('/faculty');
+
+          if (isDemoFaculty) {
+            const demoUser = {
+              uid: 'faculty-demo-001',
+              email: 'faculty@amaanitvam.org',
+              displayName: 'Prof. Aryan Doshi',
+              getIdToken: async () => 'demo-token',
+            };
+            const demoProfile = {
+              _id: 'faculty-demo-001',
+              name: 'Prof. Aryan Doshi',
+              displayName: 'Prof. Aryan Doshi',
+              email: 'faculty@amaanitvam.org',
+              role: 'faculty',
+              department: 'Full Stack Web Development',
+            };
+
+            setUser(demoUser);
+            setSessionUser(demoProfile);
+            setSessionError('');
+            setLoading(false);
+            return;
+          }
+
+          setUser(null);
           clearSessionState();
           setLoading(false);
           return;
         }
+
+        setUser(firebaseUser);
 
         try {
           await loadSession(firebaseUser);

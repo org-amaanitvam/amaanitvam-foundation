@@ -16,7 +16,7 @@ export default function FacultyHeader({ userProfile, isPunchedIn, onPunchToggle 
 
       {/* Action Controls & Profile */}
       <div className="flex items-center gap-5">
-        {/* Punch In / Out Quick Button */}
+        {/* Clock In / Out Quick Button */}
         <button
           onClick={onPunchToggle}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all ${
@@ -28,12 +28,12 @@ export default function FacultyHeader({ userProfile, isPunchedIn, onPunchToggle 
           {isPunchedIn ? (
             <>
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Punched In</span>
+              <span>On Duty (Clocked In)</span>
             </>
           ) : (
             <>
               <Clock className="w-4 h-4" />
-              <span>Punch In Now</span>
+              <span>Clock In Now</span>
             </>
           )}
         </button>
