@@ -67,3 +67,288 @@ textarea,
 button {
     max-width: 100%;
 }
+
+/* ==========================================
+   UNIVERSAL HERO SECTION STYLES
+   Applies to .page-hero, .collab-hero, [data-hero]
+   EXCLUDES .home-hero completely
+   ========================================== */
+
+/* 1. Hero Container & Background Image Base */
+.page-hero:not(.home-hero),
+.collab-hero:not(.home-hero),
+section[data-hero]:not(.home-hero),
+header[data-hero]:not(.home-hero) {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(380px, 50vh, 520px) !important;
+
+    /* Flexbox Alignment for Perfect Vertical & Horizontal Centering */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    /* Symmetric Top and Bottom Padding */
+    padding: clamp(3.5rem, 6vh, 5rem) 20px !important;
+
+    background-color: #56051a !important;
+    background-image: url("/images/Hero/hero3.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: scroll;
+    color: #ffffff !important;
+    text-align: center;
+}
+
+/* 2. Burgundy Gradient Overlay */
+.page-hero:not(.home-hero)::before,
+.collab-hero:not(.home-hero)::before,
+section[data-hero]:not(.home-hero)::before,
+header[data-hero]:not(.home-hero)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.60)) !important;
+    z-index: 0;
+}
+
+/* 3. Bottom Edge Transition Fade */
+.page-hero:not(.home-hero)::after,
+.collab-hero:not(.home-hero)::after,
+section[data-hero]:not(.home-hero)::after,
+header[data-hero]:not(.home-hero)::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 60px;
+    background: linear-gradient(to top, rgba(86, 5, 26, 0.95), transparent) !important;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 4. Layout & Content Wrapper (Centered Vertically and Horizontally) */
+.page-hero:not(.home-hero) .container,
+.collab-hero:not(.home-hero) .container,
+section[data-hero]:not(.home-hero) .container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 920px;
+    margin: auto 0 !important;
+    /* Dynamically centers content vertically */
+    padding: 0 1.5rem;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.page-hero:not(.home-hero) .container>div,
+.collab-hero:not(.home-hero) .container>div,
+section[data-hero]:not(.home-hero) .container>div {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 5. Section Label / Eyebrow (Kicker) */
+.page-hero:not(.home-hero) .section-label,
+.page-hero:not(.home-hero) .hero-label,
+.collab-hero:not(.home-hero) .hero-label,
+section[data-hero]:not(.home-hero) .section-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    color: #DFB582 !important;
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.8rem !important;
+    font-weight: 700;
+    letter-spacing: 0.22em !important;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.page-hero:not(.home-hero) .section-label::before,
+.page-hero:not(.home-hero) .hero-label::before,
+.collab-hero:not(.home-hero) .hero-label::before,
+section[data-hero]:not(.home-hero) .section-label::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #DFB582;
+    box-shadow: 0 0 8px #DFB582;
+    display: inline-block;
+}
+
+/* 6. Universal Title */
+.page-hero:not(.home-hero) h1,
+.collab-hero:not(.home-hero) h1,
+section[data-hero]:not(.home-hero) h1,
+.page-hero:not(.home-hero) .section-title,
+.collab-hero:not(.home-hero) .section-title {
+    font-family: var(--font-heading, serif);
+    font-size: clamp(1.8rem, 3.5vw, 3.2rem) !important;
+    font-weight: 600;
+    line-height: 1.25 !important;
+    letter-spacing: -0.01em;
+    margin: 0 auto 0.85rem !important;
+    text-align: center !important;
+
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 850px;
+
+    background: linear-gradient(120deg, #FFFFFF 0%, #FBE8C5 40%, #DFB582 75%, #D8A15F 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6));
+}
+
+.page-hero:not(.home-hero) h1 span,
+section[data-hero]:not(.home-hero) h1 span {
+    background: linear-gradient(120deg, #FFFFFF 0%, #FBE8C5 40%, #DFB582 75%, #D8A15F 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 7. Subtitle / Description */
+.page-hero:not(.home-hero) p,
+.collab-hero:not(.home-hero) p,
+section[data-hero]:not(.home-hero) p,
+.page-hero:not(.home-hero) .section-desc,
+.collab-hero:not(.home-hero) .hero-desc {
+    color: rgba(255, 243, 214, 0.95) !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    max-width: 720px;
+    font-family: var(--font-heading, serif) !important;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem) !important;
+    font-weight: 300;
+    line-height: 1.6 !important;
+    margin: 0 auto 1.75rem !important;
+    text-align: center !important;
+}
+
+/* 8. Action Buttons Layout (Centered) */
+.page-hero:not(.home-hero) .hero-actions,
+.collab-hero:not(.home-hero) .hero-actions,
+section[data-hero]:not(.home-hero) .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+}
+
+/* 9. Hero Buttons Base & Hover */
+.page-hero:not(.home-hero) .btn,
+.collab-hero:not(.home-hero) .btn,
+section[data-hero]:not(.home-hero) .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.65rem !important;
+    padding: 0.85rem 1.85rem !important;
+    border-radius: var(--radius-pill, 50px) !important;
+    font-family: var(--font-ui, sans-serif) !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.03em !important;
+    text-decoration: none !important;
+
+    background: rgba(230, 220, 209, 0.92) !important;
+    color: #3B1F16 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        background 0.35s ease,
+        color 0.35s ease,
+        border-color 0.35s ease !important;
+}
+
+.page-hero:not(.home-hero) .btn .material-symbols-outlined,
+.collab-hero:not(.home-hero) .btn .material-symbols-outlined,
+section[data-hero]:not(.home-hero) .btn .material-symbols-outlined {
+    font-size: 1.2rem !important;
+    color: #7A4E3A !important;
+    transition: transform 0.35s ease, color 0.35s ease !important;
+}
+
+.page-hero:not(.home-hero) .btn:hover,
+.collab-hero:not(.home-hero) .btn:hover,
+section[data-hero]:not(.home-hero) .btn:hover {
+    transform: translateY(-3px) !important;
+    background: linear-gradient(135deg, #3A0A19 0%, #631530 50%, #8E2545 100%) !important;
+    color: #FCE8D5 !important;
+    border-color: #FBE8C5 !important;
+    box-shadow: 0 0 24px rgba(223, 181, 130, 0.55), 0 14px 32px rgba(45, 8, 20, 0.8) !important;
+}
+
+.page-hero:not(.home-hero) .btn:hover .material-symbols-outlined,
+.collab-hero:not(.home-hero) .btn:hover .material-symbols-outlined,
+section[data-hero]:not(.home-hero) .btn:hover .material-symbols-outlined {
+    color: #E2B47E !important;
+    transform: scale(1.15) rotate(-6deg) !important;
+}
+
+/* 10. Mobile Responsiveness */
+@media (max-width: 768px) {
+
+    .page-hero:not(.home-hero),
+    .collab-hero:not(.home-hero),
+    section[data-hero]:not(.home-hero) {
+        padding: clamp(3rem, 5vh, 4rem) 20px !important;
+    }
+
+    .page-hero:not(.home-hero) h1,
+    .collab-hero:not(.home-hero) h1,
+    section[data-hero]:not(.home-hero) h1,
+    .page-hero:not(.home-hero) .section-title,
+    .collab-hero:not(.home-hero) .section-title {
+        font-size: clamp(1.75rem, 6.5vw, 2.5rem) !important;
+    }
+
+    .page-hero:not(.home-hero) p,
+    .collab-hero:not(.home-hero) p,
+    section[data-hero]:not(.home-hero) p {
+        font-size: 0.95rem !important;
+    }
+}
+
+/* 11. Fade-Up Animation */
+@keyframes heroFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* CONTACT US text ko niche shift karne ke liye */
+.page-hero:not(.home-hero) .section-label,
+.collab-hero:not(.home-hero) .hero-label,
+section[data-hero]:not(.home-hero) .section-label {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1rem !important;
+}
