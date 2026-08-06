@@ -1,77 +1,86 @@
 /* ==========================================================================
-   Webinars & Competitions — Premium Redesign
-   Every selector, grid-template-columns value, and breakpoint below is
-   unchanged from the original. What changed: corner radius standardized
-   to 12–16px (was mostly 15–22px), spacing nudged onto an 8px rhythm,
-   soft elevation + hover micro-interactions added to the gallery images
-   and cards, and a shared easing curve for consistency with the rest of
-   the site's redesign.
+   Webinars & Competitions — Premium Redesign (Cleaned & Consolidated)
    ========================================================================== */
 
 :root {
+    /* Transitions & Easing */
     --webinar-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Brand Colors */
+    --primary: #5A0F1B;
+    --primary-dark: #3A0812;
+    --primary-light: #7D2232;
+
+    /* Accent Gold */
+    --gold: #B8863B;
+    --gold-dark: #B58241;
+    --gold-light: #D4AF37;
+    --gold-soft: #E6C88C;
+
+    /* Backgrounds & Surfaces */
+    --background: #FFF9F4;
+    --section-bg: #F3E8DC;
+    --surface: #ffffff;
+    --card-bg: #FAF3EB;
+
+    /* Typography */
+    --heading: #32131A;
+    --text: #6B5A55;
+    --muted: #9E8D84;
+    --font-heading: 'Cormorant Garamond', Georgia, serif;
+    --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    /* Decorative Accents */
+    --rose: #D49AA5;
+    --pink: #EFD9DD;
+    --olive: #59614B;
+    --olive-dark: #3E4335;
+
+    /* Borders & Elevations */
+    --border: #E8D8C8;
+    --shadow: rgba(58, 8, 18, 0.15);
+    --shadow-soft: 0 10px 30px -5px rgba(58, 8, 18, 0.1);
+    --shadow-hover: 0 20px 40px -10px rgba(58, 8, 18, 0.2);
+
+    /* Border Radii */
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-pill: 999px;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #5A0F1B 0%, #7D2232 50%, #B8863B 100%);
+    --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #B8863B 50%, #E6C88C 100%);
 }
 
 /* --------------------------------------------------------------------------
-   Base/reusable component styles (unscoped — used as the fallback shape
-   before the page-scoped "COMPLETE SECTION FIX" below overrides it)
+   Page Base & Shared Layout
    -------------------------------------------------------------------------- */
 
-.webinar-details-pane {
-    background: var(--surface, #ffffff);
-    border: 1px solid var(--border, #e5e5e5);
-    border-top: 4px solid var(--primary, #5d0f2d);
-    border-radius: var(--radius-lg, 16px);
-    padding: 2.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), 0 10px 30px rgba(0, 0, 0, 0.04);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    box-sizing: border-box;
+body[data-page="webinars-competitions"] {
+    background-color: var(--background);
+    color: var(--text);
 }
 
-.webinar-status-badge {
-    display: inline-block;
-    align-self: flex-start;
-    background: rgba(93, 15, 45, 0.08);
-    color: var(--primary, #5d0f2d);
-    font-family: var(--font-ui, sans-serif);
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.4rem 1rem;
-    border-radius: 999px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 1.5rem;
+.events-container {
+    padding-top: 3rem;
+    padding-bottom: 5rem;
 }
 
-.webinar-main-title {
-    font-family: var(--font-heading, serif);
-    font-size: clamp(2rem, 3.5vw, 2.6rem);
-    color: var(--primary, #5d0f2d);
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
+body[data-page="webinars-competitions"] .events-container {
+    width: min(92%, 1180px) !important;
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    padding: 4.5rem 0 !important;
 }
 
-.webinar-subtitle-hindi {
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 2.2rem;
-    color: var(--gold-dark, #b58241);
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-}
-
-.webinar-description-text {
-    color: var(--muted, #666);
-    font-size: 1.05rem;
-    line-height: 1.7;
-    margin-bottom: 2.5rem;
-}
+/* --------------------------------------------------------------------------
+   Hero Section
+   -------------------------------------------------------------------------- */
 
 .webinar-hero {
     position: relative;
-background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url(/images/Hero/hero2.jpg) !important;
+    background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%), url('/images/Hero/hero2.jpg') !important;
     background-size: cover;
     background-position: center;
     padding: 5rem 0;
@@ -92,10 +101,11 @@ background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 
 }
 
 .webinar-hero .hero-label {
-    color: var(--gold, #d8a15f) !important;
+    color: var(--gold-soft) !important;
 }
 
 .webinar-hero .section-title {
+    font-family: var(--font-heading);
     font-size: clamp(2.5rem, 6vw, 4rem) !important;
     margin-bottom: 1rem;
     color: #ffffff !important;
@@ -109,70 +119,58 @@ background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 
     font-size: 1.2rem;
 }
 
-.webinar-inquire-btn {
-    width: 100%;
-    text-align: center;
-    transition: transform 0.2s var(--webinar-ease), box-shadow 0.2s var(--webinar-ease);
+.hero-action-buttons {
+    margin-top: 1.75rem;
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 
-.webinar-inquire-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(93, 15, 45, 0.18);
-}
+/* --------------------------------------------------------------------------
+   Featured Webinar Layout & Gallery
+   -------------------------------------------------------------------------- */
 
-.webinar-inquire-btn:active {
-    transform: translateY(0);
-}
-
-.webinar-registration-container {
-    max-width: 900px;
-}
-
-.webinar-registration-form {
+.featured-webinar-layout {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 2.25rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 3.5rem;
+    align-items: stretch;
 }
 
-.webinar-form-group {
-    display: flex;
-    flex-direction: column;
+/* Accent Gold Side Border */
+.featured-webinar-layout::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--gradient-gold);
+    opacity: 0.85;
+    transition: var(--transition);
 }
 
-.webinar-form-group-full {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
+.featured-webinar-layout:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--gold);
 }
 
-.webinar-submit-btn {
-    grid-column: 1 / -1;
-    justify-self: center;
+.featured-webinar-layout:hover::before {
+    opacity: 1;
+    width: 7px;
 }
-
-@media (max-width: 768px) {
-    .webinar-registration-form {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-/* =========================================================
-   WEBINARS PAGE — COMPLETE SECTION FIX
-   ========================================================= */
-
-/* ---------- Shared page spacing ---------- */
-
-body[data-page="webinars-competitions"] .events-container {
-    width: min(92%, 1180px) !important;
-    max-width: 1180px !important;
-    margin: 0 auto !important;
-    padding: 4.5rem 0 !important;
-}
-
-/* =========================================================
-   FEATURED WEBINAR SECTION
-   ========================================================= */
 
 body[data-page="webinars-competitions"] .featured-webinar-layout {
     display: grid !important;
@@ -182,6 +180,7 @@ body[data-page="webinars-competitions"] .featured-webinar-layout {
     width: 100% !important;
 }
 
+/* Left Gallery Card Rules */
 body[data-page="webinars-competitions"] .left-gallery-card-wrapper,
 body[data-page="webinars-competitions"] .left-gallery-card {
     width: 100% !important;
@@ -194,10 +193,9 @@ body[data-page="webinars-competitions"] .left-gallery-card {
     grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr) !important;
     gap: 1rem !important;
     padding: 1rem !important;
-
     background: #fffaf3 !important;
     border: 1px solid rgba(93, 15, 45, 0.16) !important;
-    border-radius: 16px !important;
+    border-radius: var(--radius-lg) !important;
     box-shadow: 0 2px 8px rgba(93, 15, 45, 0.04), 0 16px 38px rgba(93, 15, 45, 0.08) !important;
     overflow: hidden !important;
 }
@@ -215,11 +213,12 @@ body[data-page="webinars-competitions"] .top-poster-row {
     height: 100% !important;
 }
 
-body[data-page="webinars-competitions"] .main-poster {
+body[data-page="webinars-competitions"] .main-poster,
+body[data-page="webinars-competitions"] .snapshot-card {
     width: 100% !important;
     height: 100% !important;
     overflow: hidden !important;
-    border-radius: 12px !important;
+    border-radius: var(--radius-md) !important;
 }
 
 body[data-page="webinars-competitions"] .bottom-snapshots-row {
@@ -227,13 +226,6 @@ body[data-page="webinars-competitions"] .bottom-snapshots-row {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 1rem !important;
     height: 100% !important;
-}
-
-body[data-page="webinars-competitions"] .snapshot-card {
-    width: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    border-radius: 12px !important;
 }
 
 body[data-page="webinars-competitions"] .main-poster img,
@@ -251,285 +243,400 @@ body[data-page="webinars-competitions"] .snapshot-card:hover img {
     transform: scale(1.03);
 }
 
-/* Details card */
-
-body[data-page="webinars-competitions"] .webinar-details-pane {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    height: 100% !important;
-    padding: 2rem !important;
-
-    background: #fffaf3 !important;
-    border: 1px solid rgba(93, 15, 45, 0.16) !important;
-    border-top: 4px solid var(--primary, #5d0f2d) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 2px 8px rgba(93, 15, 45, 0.04), 0 16px 38px rgba(93, 15, 45, 0.08) !important;
+/* Dynamic Image Cycler Container */
+.left-gallery-card-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
 }
 
-body[data-page="webinars-competitions"] .webinar-status-badge {
-    display: inline-flex !important;
-    align-items: center !important;
-    width: fit-content !important;
-    margin-bottom: 1.25rem !important;
-    padding: 0.45rem 0.9rem !important;
-
-    background: rgba(93, 15, 45, 0.08) !important;
-    color: var(--primary, #5d0f2d) !important;
-    border-radius: 999px !important;
-
-    font-family: "Montserrat", sans-serif !important;
-    font-size: 0.7rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.12em !important;
+.image-cycler-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 380px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 20px var(--shadow);
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--primary-dark);
 }
 
-body[data-page="webinars-competitions"] .webinar-subtitle-hindi {
-    margin: 0 0 1.1rem !important;
-    color: var(--gold-dark, #b58241) !important;
-    font-size: clamp(2rem, 3vw, 2.65rem) !important;
-    line-height: 1.15 !important;
+.cycler-image-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
-body[data-page="webinars-competitions"] .webinar-main-title {
-    margin: 0 0 1.4rem !important;
-    color: var(--primary, #5d0f2d) !important;
-    font-family: "Cormorant Garamond", serif !important;
-    font-size: clamp(2rem, 3.2vw, 3rem) !important;
-    font-weight: 600 !important;
-    line-height: 1.12 !important;
+.cycler-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body[data-page="webinars-competitions"] .speaker-profile {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.9rem !important;
-    margin: 0 0 1.3rem !important;
-    padding: 1rem 0 !important;
-    border-top: 1px solid #dcc8b6 !important;
-    border-bottom: 1px solid #dcc8b6 !important;
+.cycler-img.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
 }
 
-body[data-page="webinars-competitions"] .speaker-avatar-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex: 0 0 46px !important;
-    width: 46px !important;
-    height: 46px !important;
-
-    color: var(--gold-dark, #b58241) !important;
-    background: rgba(216, 161, 95, 0.14) !important;
-    border-radius: 50% !important;
+.image-cycler-card:hover .cycler-img.active {
+    transform: scale(1.04);
 }
 
-body[data-page="webinars-competitions"] .speaker-info h4 {
-    margin: 0 0 0.2rem !important;
-    color: #3d2b2b !important;
-    font-size: 1rem !important;
+.cycler-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    pointer-events: none;
+    z-index: 2;
 }
 
-body[data-page="webinars-competitions"] .speaker-info p {
-    margin: 0 !important;
-    color: var(--muted, #6b5b55) !important;
-    font-size: 0.84rem !important;
-    line-height: 1.45 !important;
+.cycler-counter {
+    background: rgba(58, 8, 18, 0.8);
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    font-weight: 600;
+    backdrop-filter: blur(4px);
 }
 
-body[data-page="webinars-competitions"] .pill-tags-container {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    margin: 0 0 1.35rem !important;
+.cycler-hint {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
-body[data-page="webinars-competitions"] .topic-pill {
-    display: inline-flex !important;
-    align-items: center !important;
-    padding: 0.48rem 0.85rem !important;
-
-    color: #3d2b2b !important;
-    background: #fff7ed !important;
-    border: 1px solid #dcc8b6 !important;
-    border-radius: 999px !important;
-
-    font-size: 0.76rem !important;
-    line-height: 1.2 !important;
+.image-cycler-card:hover .cycler-hint i {
+    transform: rotate(180deg);
+    transition: transform 0.4s ease;
 }
 
-body[data-page="webinars-competitions"] .webinar-description-text {
-    margin: 0 0 1.7rem !important;
-    color: var(--muted, #6b5b55) !important;
-    font-size: 0.96rem !important;
-    line-height: 1.75 !important;
-    text-align: left !important;
+/* --------------------------------------------------------------------------
+   Details Pane & Typography
+   -------------------------------------------------------------------------- */
+
+.webinar-details-pane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 2.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), 0 10px 30px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
 }
 
-body[data-page="webinars-competitions"] .webinar-inquire-btn {
-    width: 100% !important;
-    margin-top: auto !important;
-    padding: 0.95rem 1.4rem !important;
-    border-radius: 12px !important;
-    text-align: center !important;
+.webinar-status-badge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    padding: 0.35rem 0.9rem;
+    background: var(--pink);
+    color: var(--primary-dark);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--rose);
+    margin-bottom: 1.25rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-inquire-btn:focus-visible {
-    outline: 2px solid var(--gold, #d8a15f);
-    outline-offset: 2px;
+.featured-webinar-layout:nth-child(2) .webinar-status-badge {
+    background: var(--section-bg);
+    color: var(--olive-dark);
+    border-color: var(--border);
 }
 
-/* =========================================================
-   REGISTRATION FORM SECTION
-   ========================================================= */
-
-body[data-page="webinars-competitions"] #registration-form-section {
-    padding: 5rem 0 !important;
-    background: #f8f1ed !important;
+.webinar-main-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    color: var(--heading);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-container {
-    width: min(92%, 920px) !important;
-    max-width: 920px !important;
-    margin: 0 auto !important;
-    padding: 2.5rem !important;
-
-    background: #fffaf3 !important;
-    border: 1px solid rgba(93, 15, 45, 0.16) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 2px 8px rgba(93, 15, 45, 0.04), 0 18px 45px rgba(93, 15, 45, 0.09) !important;
+.webinar-subtitle-hindi {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--gold-dark);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 1.25rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-container .section-header {
-    max-width: 700px !important;
-    margin: 0 auto 2.5rem !important;
-    text-align: center !important;
+.webinar-description-text {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-container .section-label {
-    display: inline-block !important;
-    margin-bottom: 0.75rem !important;
+/* Speaker Profile */
+.speaker-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.15rem;
+    background: var(--section-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-container .section-title {
-    margin: 0 !important;
-    color: var(--primary, #5d0f2d) !important;
-    font-size: clamp(2.4rem, 4.5vw, 3.6rem) !important;
-    line-height: 1.08 !important;
+.speaker-avatar-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: var(--gold-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 1.5rem !important;
-    width: 100% !important;
+.speaker-info h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--heading);
 }
 
-body[data-page="webinars-competitions"] .webinar-form-group,
-body[data-page="webinars-competitions"] .webinar-form-group-full {
-    display: flex !important;
-    flex-direction: column !important;
-    min-width: 0 !important;
+.speaker-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text);
 }
 
-body[data-page="webinars-competitions"] .webinar-form-group-full {
-    grid-column: 1 / -1 !important;
+/* Topic Tags */
+.pill-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form .form-label {
-    margin: 0 0 0.5rem !important;
-    color: var(--primary, #5d0f2d) !important;
-    font-family: "Montserrat", sans-serif !important;
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
-    text-align: left !important;
+.topic-pill {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.85rem;
+    background: #FFFFFF;
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    transition: var(--transition);
 }
 
-body[data-page="webinars-competitions"] .required-star {
-    color: #b42318 !important;
+.topic-pill:hover {
+    background: var(--primary);
+    color: #FFFFFF;
+    border-color: var(--primary);
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form .form-input,
-body[data-page="webinars-competitions"] .webinar-registration-form .form-textarea {
-    width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    padding: 0.95rem 1rem !important;
-
-    color: #3d2b2b !important;
-    background: #ffffff !important;
-    border: 1px solid #dcc8b6 !important;
-    border-radius: 10px !important;
-
-    font-family: "Inter", sans-serif !important;
-    font-size: 0.94rem !important;
-    line-height: 1.4 !important;
-
-    outline: none !important;
-    transition:
-        border-color 0.2s var(--webinar-ease),
-        box-shadow 0.2s var(--webinar-ease) !important;
+/* Meta info */
+.event-meta-info {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form .form-input {
-    min-height: 50px !important;
+.event-meta-info p {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+    font-size: 0.93rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form .form-textarea {
-    min-height: 130px !important;
-    resize: vertical !important;
+.event-meta-info i {
+    color: var(--gold);
+    width: 18px;
+    text-align: center;
+    font-size: 1rem;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form .form-input:hover,
-body[data-page="webinars-competitions"] .webinar-registration-form .form-textarea:hover {
-    border-color: rgba(93, 15, 45, 0.35) !important;
+/* --------------------------------------------------------------------------
+   Buttons & Interactive Elements
+   -------------------------------------------------------------------------- */
+
+.webinar-action-row {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-body[data-page="webinars-competitions"] .webinar-registration-form .form-input:focus,
-body[data-page="webinars-competitions"] .webinar-registration-form .form-textarea:focus {
-    border-color: var(--primary, #5d0f2d) !important;
-    box-shadow: 0 0 0 3px rgba(93, 15, 45, 0.1) !important;
+.btn.hero-btn,
+.btn.webinar-inquire-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    height: 50px;
+    padding: 0 1.75rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    text-align: center;
+    border-radius: var(--radius-md);
+    box-sizing: border-box;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
 }
 
-body[data-page="webinars-competitions"] .webinar-submit-btn {
-    grid-column: 1 / -1 !important;
-    justify-self: center !important;
-    min-width: 230px !important;
-    margin-top: 8px !important;
-    padding: 0.95rem 1.8rem !important;
-    border-radius: 12px !important;
-    transition: transform 0.2s var(--webinar-ease), box-shadow 0.2s var(--webinar-ease) !important;
+.btn-primary.webinar-inquire-btn,
+.btn-primary.hero-btn {
+    background: var(--gradient-primary);
+    color: #FFFFFF;
+    box-shadow: 0 4px 15px var(--shadow);
 }
 
-body[data-page="webinars-competitions"] .webinar-submit-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(93, 15, 45, 0.18);
+.btn-primary.webinar-inquire-btn:hover,
+.btn-primary.hero-btn:hover {
+    background: var(--gradient-gold);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184, 134, 59, 0.35);
 }
 
-body[data-page="webinars-competitions"] .webinar-submit-btn:active {
-    transform: translateY(0);
+.btn-secondary.hero-btn {
+    background: var(--card-bg);
+    color: var(--heading);
+    border: 1px solid var(--border);
 }
 
-body[data-page="webinars-competitions"] .webinar-submit-btn:focus-visible {
-    outline: 2px solid var(--gold, #d8a15f);
-    outline-offset: 2px;
+.btn-secondary.hero-btn:hover {
+    background: #FFFFFF;
+    border-color: var(--gold);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
-body[data-page="webinars-competitions"] .registration-status {
-    grid-column: 1 / -1 !important;
-    text-align: center !important;
+/* --------------------------------------------------------------------------
+   Registration Form Section
+   -------------------------------------------------------------------------- */
+
+.webinar-registration-container {
+    max-width: 900px;
+    margin: 4rem auto 0 auto;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 2.75rem 2.25rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+.webinar-registration-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+}
 
-@media (max-width: 980px) {
+.webinar-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.webinar-form-group-full {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 0.4rem;
+}
+
+.required-star {
+    color: var(--primary-light);
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--section-bg);
+    font-size: 0.95rem;
+    color: var(--heading);
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--muted);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    background: #FFFFFF;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(184, 134, 59, 0.15);
+}
+
+.webinar-submit-btn {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    height: 52px;
+    margin-top: 0.75rem;
+    font-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 991px) {
+    .image-cycler-card {
+        aspect-ratio: 4 / 3;
+        min-height: unset;
+    }
+
     body[data-page="webinars-competitions"] .featured-webinar-layout {
         grid-template-columns: 1fr !important;
         max-width: 760px !important;
-        margin: 0 auto !important;
+        margin: 0 auto 3rem auto !important;
     }
 
     body[data-page="webinars-competitions"] .left-gallery-card {
@@ -546,19 +653,35 @@ body[data-page="webinars-competitions"] .registration-status {
         min-height: 560px !important;
     }
 
+    .webinar-registration-form,
+    body[data-page="webinars-competitions"] .webinar-registration-form {
+        grid-template-columns: 1fr !important;
+    }
+
     body[data-page="webinars-competitions"] .webinar-registration-container {
         width: min(92%, 680px) !important;
         padding: 2rem !important;
-    }
-
-    body[data-page="webinars-competitions"] .webinar-registration-form {
-        grid-template-columns: 1fr !important;
     }
 
     body[data-page="webinars-competitions"] .webinar-form-group-full,
     body[data-page="webinars-competitions"] .webinar-submit-btn,
     body[data-page="webinars-competitions"] .registration-status {
         grid-column: 1 !important;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .hero-action-buttons,
+    .webinar-action-row {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn.hero-btn,
+    .btn.webinar-inquire-btn {
+        width: 100%;
+        min-width: unset;
     }
 }
 
@@ -603,10 +726,6 @@ body[data-page="webinars-competitions"] .registration-status {
         border-radius: 14px !important;
     }
 
-    body[data-page="webinars-competitions"] .webinar-registration-container .section-header {
-        margin-bottom: 2rem !important;
-    }
-
     body[data-page="webinars-competitions"] .webinar-registration-container .section-title {
         font-size: clamp(2rem, 10vw, 2.7rem) !important;
     }
@@ -617,9 +736,14 @@ body[data-page="webinars-competitions"] .registration-status {
     }
 }
 
+/* --------------------------------------------------------------------------
+   Accessibility / Motion Reduction
+   -------------------------------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
 
     .webinar-inquire-btn,
+    .cycler-img,
     body[data-page="webinars-competitions"] .main-poster img,
     body[data-page="webinars-competitions"] .snapshot-card img,
     body[data-page="webinars-competitions"] .webinar-inquire-btn,
@@ -627,5 +751,6 @@ body[data-page="webinars-competitions"] .registration-status {
     body[data-page="webinars-competitions"] .webinar-registration-form .form-textarea,
     body[data-page="webinars-competitions"] .webinar-submit-btn {
         transition: none !important;
+        transform: none !important;
     }
 }

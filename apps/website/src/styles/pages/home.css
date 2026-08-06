@@ -1043,187 +1043,297 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 /* =========================================================
    7) UPCOMING WEBINAR
 ========================================================= */
+/* ==========================================================================
+   Homepage Premium & Elegant Event Feature Card (.evtc-*)
+   ========================================================================== */
+
+/* Outer Section Container */
 .evt-section {
-    padding: var(--sp-10) 0;
-    background: var(--surface);
+    padding: 6rem 0;
+    background: radial-gradient(circle at 50% 0%, rgba(184, 134, 59, 0.05) 0%, rgba(255, 249, 244, 0) 70%), var(--background);
+    position: relative;
 }
 
+/* Luxury Feature Event Card Layout */
 .evtc-card {
     display: grid;
-    grid-template-columns: minmax(0, .44fr) minmax(0, .56fr);
-    align-items: stretch;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
+    grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+    gap: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: calc(var(--radius-lg) + 4px);
+    border: 1px solid rgba(184, 134, 59, 0.25);
+    box-shadow: 0 15px 35px -10px rgba(58, 8, 18, 0.07), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
     overflow: hidden;
-    max-width: 880px;
-    margin: 0 auto;
-}
-
-.evtc-media {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    min-height: 260px;
 }
 
-.evtc-media img {
+/* Dynamic Glowing Golden Border on Hover */
+.evtc-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--gold);
+    box-shadow: 0 25px 50px -12px rgba(58, 8, 18, 0.15), 0 0 20px rgba(184, 134, 59, 0.2);
+}
+
+/* Left Media Column - Framed Exhibition Display */
+.evtc-card .evtc-media {
+    position: relative;
+    min-height: 420px;
+    background: linear-gradient(135deg, #FAF3EB 0%, #FFFFFF 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    overflow: hidden;
+}
+
+/* Subtle Overlay Glow behind the Image */
+.evtc-card .evtc-media::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: transform 0.6s ease;
+}
+
+.evtc-card:hover .evtc-media::before {
+    transform: translate(-50%, -50%) scale(1.3);
+}
+
+.evtc-card .evtc-media img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: block;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 12px 24px rgba(58, 8, 18, 0.12));
+    z-index: 1;
 }
 
+.evtc-card:hover .evtc-media img {
+    transform: scale(1.03) translateY(-2px);
+}
+
+/* Elegant Floating Badge */
 .evtc-badge {
     position: absolute;
-    top: var(--sp-2);
-    left: var(--sp-2);
+    top: 1.5rem;
+    left: 1.5rem;
+    background: linear-gradient(135deg, rgba(58, 8, 18, 0.92) 0%, rgba(90, 15, 27, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    color: var(--gold-soft);
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.45rem 1.1rem;
+    border-radius: var(--radius-pill);
     display: inline-flex;
     align-items: center;
-    gap: .45rem;
-    background: rgba(20, 10, 16, .82);
-    color: #fdf6ec;
-    font-family: var(--font-ui);
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    border-radius: var(--radius-pill);
-    padding: .45rem .9rem;
-    backdrop-filter: blur(3px);
+    gap: 0.6rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    z-index: 3;
 }
 
 .evtc-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
+    background: var(--gradient-gold);
     border-radius: 50%;
-    background: #4ade80;
-    animation: evtc-pulse 1.6s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--gold-light);
 }
 
-@keyframes evtc-pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: scale(1.5);
-        opacity: .6;
-    }
-}
-
-.evtc-body {
+/* Right Content Column */
+.evtc-card .evtc-body {
+    padding: 3.25rem;
     display: flex;
     flex-direction: column;
-    padding: var(--sp-5);
+    justify-content: space-between;
+    background: #FFFFFF;
+    position: relative;
+    border-left: 1px solid var(--border);
 }
 
-.evtc-title {
+.evtc-card .evtc-title {
     font-family: var(--font-heading);
+    font-size: clamp(2rem, 3.2vw, 2.4rem);
     font-weight: 700;
-    font-size: clamp(1.35rem, 2vw, 1.65rem);
-    color: var(--primary);
-    line-height: 1.25;
-    margin: 0 0 var(--sp-1);
+    color: var(--heading);
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+    letter-spacing: -0.01em;
 }
 
-.evtc-desc {
-    font-size: .96rem;
+.evtc-card .evtc-desc {
+    font-size: 0.98rem;
+    color: var(--text);
+    margin-bottom: 1.75rem;
     line-height: 1.7;
-    color: var(--muted);
-    margin: 0 0 var(--sp-3);
+    font-weight: 400;
 }
 
-.evtc-meta {
+/* Premium Highlights Box */
+.evtc-card .evtc-highlights {
+    background: linear-gradient(145deg, #FAF3EB 0%, #FFF9F4 100%);
+    padding: 1.35rem 1.6rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(184, 134, 59, 0.2);
+    box-shadow: 0 4px 15px rgba(58, 8, 18, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gold Accent Strip */
+.evtc-card .evtc-highlights::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-gold);
+}
+
+.evtc-card .evtc-highlights h4 {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    margin-bottom: 0.85rem;
+}
+
+.evtc-card .evtc-highlights ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.evtc-card .evtc-highlights li {
+    margin-bottom: 0.6rem;
+    color: var(--heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    line-height: 1.5;
+}
+
+.evtc-card .evtc-highlights li::before {
+    content: "✦";
+    color: var(--gold);
+    font-size: 0.75rem;
+}
+
+.evtc-card .evtc-highlights li:last-child {
+    margin-bottom: 0;
+}
+
+/* Quote / Sub-text Styling */
+.evtc-card .evtc-quote {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--gold-soft);
+}
+
+/* Date / Time Metadata Ribbon */
+.evtc-card .evtc-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem var(--sp-3);
-    margin-bottom: var(--sp-3);
-    padding-top: var(--sp-2);
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 2rem;
+    padding-top: 1.25rem;
     border-top: 1px solid var(--border);
 }
 
-.evtc-meta span {
+.evtc-card .evtc-meta span {
     display: inline-flex;
     align-items: center;
-    gap: .4rem;
-    font-family: var(--font-ui);
-    font-size: .85rem;
-    font-weight: 600;
-    color: var(--text);
+    gap: 0.5rem;
 }
 
-.evtc-meta .material-symbols-outlined {
-    font-size: 1.05rem;
-    color: var(--gold-dark, var(--gold));
+.evtc-card .evtc-meta i {
+    color: var(--gold);
+    font-size: 1rem;
 }
 
-.evtc-cta {
+/* CTA Button Styling */
+.evtc-card .evtc-cta {
+    align-self: flex-start;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: .5rem;
-    align-self: flex-start;
-    margin-top: auto;
+    padding: 0.9rem 2.25rem;
+    background: var(--gradient-primary);
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 20px rgba(90, 15, 27, 0.25);
+    text-decoration: none;
+    transition: all 0.4s ease;
 }
 
-.evtc-highlights {
-    margin: var(--sp-2) 0;
+.evtc-card .evtc-cta:hover {
+    background: var(--gradient-gold);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(184, 134, 59, 0.35);
 }
 
-.evtc-highlights h4 {
-    margin-bottom: .6rem;
-    font-size: 1rem;
-    color: #1f2937;
-    font-weight: 700;
-}
+/* --------------------------------------------------------------------------
+   Responsive Layout Refining for Homepage
+   -------------------------------------------------------------------------- */
 
-.evtc-highlights ul {
-    margin: 0;
-    padding-left: 1.2rem;
-}
-
-.evtc-highlights li {
-    margin-bottom: .5rem;
-    line-height: 1.6;
-}
-
-.evtc-extra {
-    margin-top: var(--sp-2);
-    padding-top: var(--sp-2);
-    border-top: 1px solid #e5e7eb;
-}
-
-.evtc-extra p {
-    margin: .5rem 0;
-}
-
-.evtc-quote {
-    margin-top: var(--sp-2);
-    padding: .95rem 1.1rem;
-    border-left: 4px solid #16a34a;
-    background: #f8fafc;
-    font-style: italic;
-    color: #374151;
-    border-radius: var(--radius-sm);
-}
-
-@media (max-width: 780px) {
+@media (max-width: 991px) {
     .evtc-card {
         grid-template-columns: 1fr;
     }
 
-    .evtc-media {
-        min-height: 200px;
+    .evtc-card .evtc-body {
+        padding: 2.25rem;
+        border-left: none;
+        border-top: 1px solid var(--border);
     }
 
-    .evtc-body {
-        padding: var(--sp-3);
+    .evtc-card .evtc-media {
+        min-height: 320px;
     }
 }
 
+@media (max-width: 576px) {
+    .evtc-card .evtc-body {
+        padding: 1.5rem;
+    }
+
+    .evtc-card .evtc-cta {
+        width: 100%;
+    }
+}
 /* =========================================================
    8) OUR PROGRAMS
 ========================================================= */
