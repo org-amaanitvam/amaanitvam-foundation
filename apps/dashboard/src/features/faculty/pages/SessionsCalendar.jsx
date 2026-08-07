@@ -43,6 +43,15 @@ export default function SessionsCalendar() {
     }
   };
 
+  const handleSessionCreated = (newSession) => {
+    if (newSession) {
+      // Optimistically add to top of list (works in demo mode)
+      setSessions((prev) => [newSession, ...prev]);
+    } else {
+      loadSessions();
+    }
+  };
+
   const handleLaunchClass = (session) => {
     if (session?.meetingUrl) {
       window.open(session.meetingUrl, '_blank', 'noopener,noreferrer');
@@ -63,12 +72,20 @@ export default function SessionsCalendar() {
     try {
       const formData = new FormData();
       formData.append('minutes', minutesFile);
-      const res = await uploadSessionMinutes(uploadModalSession._id || uploadModalSession.id, formData);
+      const sessionId = uploadModalSession._id || uploadModalSession.id;
+      const res = await uploadSessionMinutes(sessionId, formData);
       if (res.success) {
         toast.success('Meeting minutes document uploaded successfully!');
+        // Update the session in local state to mark minutes as uploaded
+        setSessions((prev) =>
+          prev.map((s) =>
+            (s._id || s.id) === sessionId
+              ? { ...s, minutesUrl: res.data?.minutesUrl || '#minutes' }
+              : s
+          )
+        );
         setUploadModalSession(null);
         setMinutesFile(null);
-        loadSessions();
       }
     } catch (err) {
       toast.error('Failed to upload meeting minutes.');
@@ -195,7 +212,7 @@ export default function SessionsCalendar() {
       <ScheduleSessionModal
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
-        onSessionCreated={loadSessions}
+        onSessionCreated={handleSessionCreated}
         courses={COURSES}
       />
 

@@ -30,13 +30,24 @@ export default function FacultyAnnouncements() {
     }
   };
 
+  const handleAnnouncementCreated = (newAnnouncement) => {
+    if (newAnnouncement) {
+      // Optimistically add to local state (works in both live & demo mode)
+      setAnnouncements((prev) => [newAnnouncement, ...prev]);
+    } else {
+      // Fallback: re-fetch from API
+      loadAnnouncements();
+    }
+  };
+
   const handleDelete = async (ann) => {
     if (!window.confirm(`Archive announcement "${ann.title}"?`)) return;
     try {
       const res = await deleteAnnouncement(ann._id || ann.id);
       if (res.success) {
         toast.success('Announcement archived.');
-        loadAnnouncements();
+        // Remove from local state immediately (works in demo mode too)
+        setAnnouncements((prev) => prev.filter((a) => (a._id || a.id) !== (ann._id || ann.id)));
       }
     } catch (err) {
       toast.error('Failed to archive announcement.');
@@ -188,7 +199,7 @@ export default function FacultyAnnouncements() {
       <CreateAnnouncementModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onAnnouncementCreated={loadAnnouncements}
+        onAnnouncementCreated={handleAnnouncementCreated}
       />
     </div>
   );

@@ -48,7 +48,15 @@ export default function FacultyPunchControl({ userProfile, isPunchedIn, onPunchT
         if (res.success) {
           toast.success('Clocked out successfully! Shift completed.');
           onPunchToggle?.(false);
-          loadPunchHistory();
+          // Update local state: mark today's log as completed
+          const now = new Date().toISOString();
+          setPunchLogs((prev) =>
+            prev.map((log) =>
+              log.date === new Date().toISOString().split('T')[0] && !log.punchOut
+                ? { ...log, punchOut: now, status: 'Completed' }
+                : log
+            )
+          );
         } else {
           toast.error(res.message || 'Failed to clock out.');
         }
@@ -57,7 +65,19 @@ export default function FacultyPunchControl({ userProfile, isPunchedIn, onPunchT
         if (res.success) {
           toast.success('Clocked in successfully! Have a productive shift.');
           onPunchToggle?.(true);
-          loadPunchHistory();
+          // Add today's new clock-in entry to local state
+          const todayStr = new Date().toISOString().split('T')[0];
+          const alreadyHasToday = punchLogs.some((l) => l.date === todayStr);
+          if (!alreadyHasToday) {
+            const newEntry = res.record || {
+              _id: 'punch-' + Date.now(),
+              date: todayStr,
+              punchIn: new Date().toISOString(),
+              punchOut: null,
+              status: 'In Progress',
+            };
+            setPunchLogs((prev) => [newEntry, ...prev]);
+          }
         } else {
           toast.error(res.message || 'Failed to clock in.');
         }

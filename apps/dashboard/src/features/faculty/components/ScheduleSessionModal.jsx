@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, Video, BookOpen, Link, AlignLeft, Check } from 'lucide-react';
 import { createLiveSession } from '../services/sessionsApi';
 import toast from 'react-hot-toast';
 
 export default function ScheduleSessionModal({ isOpen, onClose, onSessionCreated, courses = [] }) {
   const [title, setTitle] = useState('');
-  const [courseId, setCourseId] = useState(courses[0]?.id || 'crs-1');
+  const [courseId, setCourseId] = useState('crs-1');
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
   const [startTime, setStartTime] = useState('10:00');
   const [endTime, setEndTime] = useState('11:30');
   const [meetingUrl, setMeetingUrl] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Sync courseId when courses prop becomes available
+  useEffect(() => {
+    if (courses.length > 0 && !courses.find((c) => c.id === courseId)) {
+      setCourseId(courses[0].id);
+    }
+  }, [courses]);
 
   if (!isOpen) return null;
 
@@ -47,7 +54,19 @@ export default function ScheduleSessionModal({ isOpen, onClose, onSessionCreated
       const res = await createLiveSession(payload);
       if (res.success) {
         toast.success('Live class session scheduled successfully!');
-        onSessionCreated?.();
+        const newSession = res.meeting || {
+          ...payload,
+          _id: 'sess-local-' + Date.now(),
+          id: 'sess-local-' + Date.now(),
+          attendeesCount: 0,
+          maxCapacity: 40,
+        };
+        onSessionCreated?.(newSession);
+        // Reset form
+        setTitle('');
+        setMeetingUrl('');
+        setDescription('');
+        setIsPinned && setIsPinned(false);
         onClose?.();
       }
     } catch (err) {

@@ -38,7 +38,7 @@ export default function CreateAnnouncementModal({ isOpen, onClose, onAnnouncemen
         courseId,
         targetAudience,
         isPinned,
-        author: 'Prof. Aryan Doshi',
+        author: 'Prof. ABC',
         created_at: new Date().toISOString(),
         is_active: true,
         is_deleted: false,
@@ -47,7 +47,19 @@ export default function CreateAnnouncementModal({ isOpen, onClose, onAnnouncemen
       const res = await createAnnouncement(payload);
       if (res.success) {
         toast.success('Announcement broadcasted successfully!');
-        onAnnouncementCreated?.();
+        const newAnnouncement = res.announcement || {
+          ...payload,
+          _id: 'ann-local-' + Date.now(),
+          id: 'ann-local-' + Date.now(),
+        };
+        onAnnouncementCreated?.(newAnnouncement);
+        // Reset form
+        setTitle('');
+        setContent('');
+        setCategory('General');
+        setPriority('Normal');
+        setCourseId('all');
+        setIsPinned(false);
         onClose?.();
       }
     } catch (err) {

@@ -312,7 +312,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('demo') === 'faculty' || window.location.pathname.startsWith('/faculty')) {
+    if (params.get('demo') === 'faculty') {
       localStorage.setItem('demo_faculty', 'true');
     }
 
@@ -322,21 +322,19 @@ export function AuthProvider({ children }) {
         setLoading(true);
 
         if (!firebaseUser) {
-          const isDemoFaculty =
-            localStorage.getItem('demo_faculty') === 'true' ||
-            window.location.pathname.startsWith('/faculty');
+          const isDemoFaculty = localStorage.getItem('demo_faculty') === 'true';
 
           if (isDemoFaculty) {
             const demoUser = {
               uid: 'faculty-demo-001',
               email: 'faculty@amaanitvam.org',
-              displayName: 'Prof. Aryan Doshi',
+              displayName: 'Prof. ABC',
               getIdToken: async () => 'demo-token',
             };
             const demoProfile = {
               _id: 'faculty-demo-001',
-              name: 'Prof. Aryan Doshi',
-              displayName: 'Prof. Aryan Doshi',
+              name: 'Prof. ABC',
+              displayName: 'Prof. ABC',
               email: 'faculty@amaanitvam.org',
               role: 'faculty',
               department: 'Full Stack Web Development',
@@ -410,8 +408,16 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    await signOut(auth);
+    localStorage.removeItem('demo_faculty');
+    sessionStorage.removeItem('demo_faculty');
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.warn('[AuthContext] SignOut warning:', err?.message);
+    }
     clearSessionState();
+    setUser(null);
+    window.location.href = 'http://localhost:5175/src/pages/login.html';
   };
 
   const completeFirstLoginPasswordChange = async () => {

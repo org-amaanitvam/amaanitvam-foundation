@@ -1,7 +1,7 @@
 import React from 'react';
-import { Search, Bell, Clock, CheckCircle2 } from 'lucide-react';
+import { Search, Bell, Clock, CheckCircle2, LogOut } from 'lucide-react';
 
-export default function FacultyHeader({ userProfile, isPunchedIn, onPunchToggle }) {
+export default function FacultyHeader({ userProfile, isPunchedIn, onPunchToggle, onLogout }) {
   return (
     <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-200/80 px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       {/* Search Input */}
@@ -55,6 +55,15 @@ export default function FacultyHeader({ userProfile, isPunchedIn, onPunchToggle 
             </h4>
             <p className="text-xs text-gray-500 font-medium">{userProfile?.email || 'faculty@amaanitvam.org'}</p>
           </div>
+
+          {/* Sign Out Action Button */}
+          <button
+            onClick={onLogout}
+            className="p-2 ml-1 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors"
+            title="Sign Out"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>

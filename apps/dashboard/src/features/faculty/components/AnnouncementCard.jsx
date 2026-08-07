@@ -66,7 +66,7 @@ export default function AnnouncementCard({ announcement, onDelete, onEdit }) {
             <div className="flex items-center gap-4 text-xs text-gray-400 pt-2 flex-wrap border-t border-gray-50">
               <span className="flex items-center gap-1.5 font-medium text-gray-700">
                 <User className="w-3.5 h-3.5 text-[#8a164b]" />
-                {announcement?.author || 'Prof. Aryan Doshi'}
+                {announcement?.author || 'Prof. ABC'}
               </span>
 
               <span className="flex items-center gap-1.5 font-medium text-gray-400">

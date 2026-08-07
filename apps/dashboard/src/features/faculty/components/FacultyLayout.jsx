@@ -22,6 +22,7 @@ export default function FacultyLayout({ children }) {
           userProfile={userProfile}
           isPunchedIn={isPunchedIn}
           onPunchToggle={handlePunchToggle}
+          onLogout={logout}
         />
 
         <main className="flex-1 overflow-y-auto bg-[#fafafa]">
