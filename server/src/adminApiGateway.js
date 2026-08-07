@@ -544,6 +544,10 @@ function isAdministrator(decodedToken, profileResult) {
     "super-admin",
     "super_admin",
     "owner",
+    "department_head",
+    "departmenthead",
+    "coordinator",
+    "hod",
   ]);
 
   const configuredEmails = clean(process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL)
@@ -2867,6 +2871,140 @@ app.get(
 // FINAL_ADMIN_DATA_RECOVERY_END
 
 registerCrud("candidates", ["/api/admin/candidates"]);
+
+// MEMBER MANAGEMENT ROUTES START
+// These routes handle member-specific operations (deactivate, activate, role update, permissions)
+// that the admin portal frontend expects. They must be registered BEFORE the generic CRUD
+// registerCrud("members") call, otherwise /:id would match first.
+
+app.put(
+  ["/api/admin/members/:id/deactivate"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { status: "inactive", updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Member deactivated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.put(
+  ["/api/admin/members/:id/activate"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { status: "active", updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Member activated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.put(
+  ["/api/admin/members/:id/role"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const newRole = clean(req.body?.role);
+      if (!newRole) {
+        return res.status(400).json({ success: false, message: "role is required" });
+      }
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { role: newRole, updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Role updated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.put(
+  ["/api/admin/members/:id/permissions"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const permissions = Array.isArray(req.body?.permissions)
+        ? req.body.permissions.map((v) => String(v).trim()).filter(Boolean)
+        : [];
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { permissions, updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Permissions updated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+// MEMBER MANAGEMENT ROUTES END
+
 registerCrud("members", ["/api/admin/members", "/api/members"]);
 registerCrud("campaigns", ["/api/admin/campaigns", "/api/campaigns"]);
 registerCrud("donations", ["/api/admin/donations", "/api/donations"]);
@@ -3502,6 +3640,37 @@ app.post(
   provisionUser
 );
 // ADMIN_MEMBER_PROVISION_GATEWAY_END
+
+// CROSS_PORTAL_AUTH_TOKEN_START
+// Creates a Firebase custom token so the common login page can pass authentication
+// to other portals (admin, dashboard) running on different origins/ports.
+app.post(
+  "/api/auth/cross-portal-token",
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const firebaseUser = req.firebaseUser;
+      if (!firebaseUser?.uid) {
+        return res.status(401).json({
+          success: false,
+          message: "Valid Firebase authentication required",
+        });
+      }
+      const customToken = await getAuth().createCustomToken(firebaseUser.uid);
+      console.log(`[admin-gateway] Cross-portal token created for uid=${firebaseUser.uid}`);
+      return res.json({
+        success: true,
+        customToken,
+        uid: firebaseUser.uid,
+      });
+    } catch (error) {
+      console.error("[admin-gateway] Cross-portal token error:", error.message);
+      return next(error);
+    }
+  }
+);
+// CROSS_PORTAL_AUTH_TOKEN_END
 
 function proxyToExistingBackend(req, res) {
   const headers = { ...req.headers };

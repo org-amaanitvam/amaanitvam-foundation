@@ -78,11 +78,12 @@ body[data-page="about"] .section-label {
     align-items: center;
     gap: 0.5em;
     font-family: var(--font-ui, "Montserrat", sans-serif) !important;
-    font-size: 0.78rem !important;
+    font-size: 0.88rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.18em !important;
     text-transform: uppercase;
     color: var(--about-gold) !important;
+ 
 }
 
 body[data-page="about"] .section-title {
@@ -95,7 +96,7 @@ body[data-page="about"] .section-title {
 body[data-page="about"] .section-desc {
     font-family: var(--font-body, "Inter", sans-serif);
     color: var(--about-text-muted);
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     line-height: 1.7;
 }
 
@@ -103,79 +104,217 @@ body[data-page="about"] .section-desc {
    Hero
    -------------------------------------------------------------------------- */
 
+
+/* ==========================================
+   ABOUT PAGE HERO SECTION (BURGUNDY GRADIENT)
+   ========================================== */
+
+/* --- Hero Container: Short Height & Image Base --- */
+body[data-page="about"] .about-hero,
 body[data-page="about"] .about-hero.page-hero.has-image {
     position: relative;
     overflow: hidden;
-    min-height: clamp(320px, 52vw, 420px);
-    padding: clamp(2.75rem, 8vw, var(--space-10)) 0 !important;
+    /* Compact section height */
+    min-height: clamp(380px, 50vh, 520px) !important;
     display: flex;
     align-items: center;
-    background-color: var(--about-primary-dark) !important;
-    background-image: linear-gradient(160deg, rgba(61, 4, 19, 0.92) 0%, rgba(86, 5, 26, 0.72) 55%, rgba(140, 47, 69, 0.55) 100%),
-        url("/images/Hero/hero3.jpg") !important;
+    justify-content: center;
+    padding: clamp(3rem, 6vw, 4.5rem) 0 !important;
+
+    /* Background Image Base */
+    background-color: #56051a !important;
+    background-image: url("/images/Hero/hero3.jpg") !important;
     background-size: cover !important;
-    background-position: center !important;
+    background-position: center center !important;
     background-repeat: no-repeat !important;
-    color: #fff !important;
+    background-attachment: scroll;
+    color: #ffffff !important;
 }
 
+/* --- Specified Gradient Overlay --- */
+body[data-page="about"] .about-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* Your exact linear gradient overlay */
+    background: linear-gradient(180deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.60)) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: 0;
+}
+
+/* --- Bottom Edge Transition Fade --- */
 body[data-page="about"] .about-hero::after {
     content: "";
     position: absolute;
     inset: auto 0 0 0;
-    height: 120px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.22), transparent);
+    height: 60px;
+    background: linear-gradient(to top, rgba(86, 5, 26, 0.95), transparent);
     pointer-events: none;
-}
-
-body[data-page="about"] .about-hero__container {
-    position: relative;
     z-index: 1;
 }
 
-body[data-page="about"] .about-hero__content {
-    max-width: 640px;
+/* --- Container & Content Alignment --- */
+body[data-page="about"] .about-hero .container,
+body[data-page="about"] .about-hero__container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    /* centers the block horizontally */
-    text-align: center;
-    /* centers the text inside it */
-    animation: about-rise 0.7s var(--about-ease) both;
+    padding: 0 var(--sp-3, 1.5rem);
 }
 
+body[data-page="about"] .about-hero-content,
+body[data-page="about"] .about-hero__content {
+    max-width: 1000px;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    text-align: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: hp-fadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* --- Simple Text Eyebrow (About Us) --- */
+body[data-page="about"] .about-hero-kicker,
 body[data-page="about"] .about-hero__eyebrow {
     display: inline-flex;
-    padding: 0.4em 1em;
-    margin-bottom: clamp(0.75rem, 2vw, var(--space-3));
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #f4d9b8 !important;
-    font-size: clamp(0.64rem, 1.6vw, 0.72rem) !important;
-    letter-spacing: 0.18em !important;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    color: #DFB582 !important;
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.8rem !important;
+    font-weight: 700;
+    letter-spacing: 0.22em !important;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    background: transparent !important;
+    border: none !important;
+    margin-top: 1.5rem !important;
+        
+        margin-bottom: 1rem !important;
 }
 
+body[data-page="about"] .about-hero-kicker-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #DFB582;
+    box-shadow: 0 0 8px #DFB582;
+}
+
+/* --- One-Line Luxury Heading --- */
+body[data-page="about"] .about-hero-title,
 body[data-page="about"] .about-hero__title {
-    font-size: clamp(2.1rem, 7vw, 4.4rem) !important;
-    line-height: 1.1 !important;
-    margin: 0 0 clamp(0.75rem, 2vw, var(--space-3)) !important;
-    color: #fff !important;
+    font-family: var(--font-heading, serif);
+    font-size: clamp(2rem, 4vw, 3.5rem) !important;
+    font-weight: 600;
+    line-height: 1.15 !important;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.85rem !important;
+    white-space: nowrap;
+    background: linear-gradient(120deg, #FFFFFF 0%, #FBE8C5 40%, #DFB582 75%, #D8A15F 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6));
+    text-align: center !important;
     overflow-wrap: break-word;
 }
 
+/* --- Subtitle Description --- */
+body[data-page="about"] .about-hero .hero-desc,
 body[data-page="about"] .about-hero__desc {
-    font-size: clamp(0.95rem, 2.4vw, 1.15rem) !important;
-    line-height: 1.65 !important;
-    color: rgba(255, 255, 255, 0.82) !important;
-    max-width: 46ch;
+    color: rgba(255, 243, 214, 0.95) !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    max-width: 720px;
+    font-family: var(--font-heading, serif) !important;
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem) !important;
+    font-weight: 300;
+    line-height: 1.6 !important;
+    margin: 0 auto 1.75rem !important;
+    text-align: center !important;
 }
 
-/* Short / landscape viewports (phones rotated, small laptops) */
-@media (max-height: 480px) {
-    body[data-page="about"] .about-hero.page-hero.has-image {
-        min-height: 0;
-        padding: var(--space-5) 0 !important;
+/* --- Action Buttons Layout --- */
+body[data-page="about"] .about-hero .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center !important;
+    align-items: center;
+    margin-top: 0;
+}
+
+/* --- Button Styling: Default State --- */
+body[data-page="about"] .about-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--radius-pill, 50px);
+    font-family: var(--font-ui, sans-serif);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+
+    background: rgba(230, 220, 209, 0.94);
+    color: #3B1F16;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        background 0.35s ease,
+        color 0.35s ease,
+        border-color 0.35s ease;
+}
+
+body[data-page="about"] .about-btn-pill .material-symbols-outlined {
+    font-size: 1.15rem;
+    color: #7A4E3A;
+    transition: transform 0.35s ease, color 0.35s ease;
+}
+
+/* --- Button Styling: Hover State --- */
+body[data-page="about"] .about-btn-pill:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #3A0A19 0%, #631530 50%, #8E2545 100%);
+    color: #FCE8D5;
+    border-color: #FBE8C5;
+    box-shadow: 0 0 20px rgba(223, 181, 130, 0.55), 0 10px 25px rgba(45, 8, 20, 0.8);
+}
+
+body[data-page="about"] .about-btn-pill:hover .material-symbols-outlined {
+    color: #E2B47E;
+    transform: scale(1.15) rotate(-6deg);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+
+    body[data-page="about"] .about-hero-title,
+    body[data-page="about"] .about-hero__title {
+        white-space: normal;
+    }
+}
+
+/* Fade-Up Animation */
+@keyframes hp-fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

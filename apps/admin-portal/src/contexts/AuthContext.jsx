@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithCustomToken,
   signOut,
   sendPasswordResetEmail,
 } from 'firebase/auth';
@@ -96,6 +97,30 @@ export function AuthProvider({ children }) {
     });
 
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // CROSS_PORTAL_AUTH: Accept a custom token passed by the common login page
+  // via `?authToken=...` so the user does not need to sign in twice.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const crossToken = params.get('authToken');
+      if (!crossToken) return;
+
+      // Remove the token from the URL immediately so it is not leaked via
+      // history, referrer, or screenshots.
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, '', cleanUrl);
+
+      // onAuthStateChanged above will pick up the new signed-in user and
+      // complete profile loading.
+      signInWithCustomToken(auth, crossToken).catch((err) => {
+        console.error('[admin-portal] Cross-portal auth failed:', err?.message || err);
+      });
+    } catch (error) {
+      console.error('[admin-portal] Cross-portal auth error:', error?.message || error);
+    }
   }, []);
 
   const login = useCallback(async (email, password) => {
@@ -137,6 +162,7 @@ export function AuthProvider({ children }) {
       refreshProfile: fetchUserProfile,
       isAuthenticated: Boolean(user),
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, userProfile, profileError, loading, login, resetPassword]
   );
 

@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext.jsx';
 import api from '../../../config/api.js';
+
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [searchParams] = useSearchParams();
+  const initialEmail = searchParams.get('email') || '';
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,9 +20,51 @@ export default function Login() {
   const [show2FA, setShow2FA] = useState(false);
   const [code2fa, setCode2fa] = useState('');
   const [tempCredentials, setTempCredentials] = useState(null);
+  const [ssoInProgress, setSsoInProgress] = useState(false);
 
   const { user, login, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const ssoAttempted = useRef(false);
+
+  // ── SSO Auto-Login ────────────────────────────────────────────────
+  // When redirected from the Learning Portal admin login, credentials
+  // are passed in the URL hash (#sso_email=...&sso_pwd=...).
+  // This effect reads them, cleans the URL immediately, and auto-signs
+  // in using Firebase client SDK on THIS origin (port 5173).
+  // ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (ssoAttempted.current) return;
+
+    const hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash);
+    const ssoEmail = params.get('sso_email');
+    const ssoPwd = params.get('sso_pwd');
+
+    // Clean the hash immediately — credentials must never linger in browser history
+    window.history.replaceState(null, '', window.location.pathname);
+
+    if (!ssoEmail || !ssoPwd) return;
+
+    ssoAttempted.current = true;
+    setSsoInProgress(true);
+    setIsLoading(true);
+    setError('');
+
+    // Auto-login with Firebase client SDK on this origin
+    login(ssoEmail, ssoPwd)
+      .then(() => {
+        navigate('/', { replace: true });
+      })
+      .catch((err) => {
+        console.error('[SSO Auto-Login] Failed:', err);
+        setEmail(ssoEmail);
+        setError(err?.message || 'SSO auto-login failed. Please try again manually.');
+        setSsoInProgress(false);
+        setIsLoading(false);
+      });
+  }, [login, navigate]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -37,6 +82,20 @@ export default function Login() {
 
     fetchSettings();
   }, []);
+
+  // Show loading screen during SSO auto-login
+  if (ssoInProgress) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#5d0f2d] px-3 sm:px-4 py-6 sm:py-8 relative overflow-hidden font-[family-name:var(--font-body)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,161,95,0.22),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(93,15,45,0.35),transparent_45%)]" />
+        <div className="relative z-10 text-center">
+          <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg font-semibold">Signing you into the Super Admin Portal...</p>
+          <p className="text-white/60 text-sm mt-2">Credentials verified. Please wait.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (user && !show2FA) {
     return <Navigate to="/" replace />;

@@ -117,8 +117,6 @@ api.interceptors.request.use(
   async (config) => {
     const headers = ensureHeaders(config);
 
-    // Never allow an old localStorage/default Axios token to override the
-    // currently authenticated Firebase user's ID token.
     removeAuthorization(headers);
 
     const user = await waitForFirebaseUser();
@@ -126,6 +124,11 @@ api.interceptors.request.use(
     if (user) {
       const token = await user.getIdToken(false);
       setAuthorization(headers, token);
+    } else {
+      const storedToken = localStorage.getItem('adminToken') || localStorage.getItem('firebaseToken') || localStorage.getItem('token');
+      if (storedToken) {
+        setAuthorization(headers, storedToken);
+      }
     }
 
     return config;
