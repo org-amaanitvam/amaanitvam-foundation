@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'learner@amaanitvam.org',
       submitBtn: 'Launch LMS Workspace',
       footerNote: `Looking for digital resources? <a href="../pages/programs.html" class="portal-link">View Digital Library</a>`,
-      redirectUrl: 'http://localhost:5173/lms'
+      redirectUrl: 'http://localhost:5176/'
     },
     admin: {
       index: 3,
