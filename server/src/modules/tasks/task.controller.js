@@ -33,7 +33,9 @@ const assertAssigneeAllowed = async (req, assignedTo) => {
 export const getAllTasks = async (req, res) => {
   try {
     const ids = await allowedUserIds(req);
-    const query = ids === null ? { is_deleted: false } : { is_deleted: false, assignedTo: { $in: ids } };
+    const query = ids === null
+      ? { is_deleted: false }
+      : { is_deleted: false, $or: [{ assigned_to_id: { $in: ids } }, { assignedTo: { $in: ids } }] };
 
     // Local Feature: Dynamic Search and Category filters
     if (req.query.status) query.status = req.query.status;
@@ -44,8 +46,8 @@ export const getAllTasks = async (req, res) => {
     }
 
     const tasks = await Task.find(query)
-      .populate("assignedTo", "name email role department")
-      .sort({ createdAt: -1 });
+      .populate("assigned_to_id", "name email role department")
+      .sort({ created_at: -1 });
 
     return res.json({
       success: true,
@@ -66,7 +68,10 @@ export const getAllTasks = async (req, res) => {
 export const createTask = async (req, res) => {
   try {
     await assertAssigneeAllowed(req, req.body?.assignedTo || req.body?.assigned_to_id);
-    const task = await Task.create(req.body);
+    const payload = { ...(req.body || {}) };
+    if (payload.assignedTo && !payload.assigned_to_id) payload.assigned_to_id = payload.assignedTo;
+    delete payload.assignedTo;
+    const task = await Task.create(payload);
 
     return res.status(201).json({
       success: true,
@@ -89,11 +94,15 @@ export const updateTask = async (req, res) => {
       return res.status(404).json({ success: false, message: "Task not found." });
     }
 
-    await assertAssigneeAllowed(req, req.body?.assignedTo || req.body?.assigned_to_id || existing.assignedTo);
+    await assertAssigneeAllowed(req, req.body?.assignedTo || req.body?.assigned_to_id || existing.assigned_to_id);
+
+    const patch = { ...(req.body || {}) };
+    if (patch.assignedTo && !patch.assigned_to_id) patch.assigned_to_id = patch.assignedTo;
+    delete patch.assignedTo;
 
     const task = await Task.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      patch,
       { returnDocument: "after", runValidators: true }
     );
 
@@ -157,11 +166,11 @@ export const addTaskComment = async (req, res) => {
 // 6. EXPORT TASKS TO CSV
 export const exportTasksToCSV = async (req, res) => {
   try {
-    const tasks = await Task.find({ is_deleted: false }).populate('assignedTo', 'name email');
+    const tasks = await Task.find({ is_deleted: false }).populate('assigned_to_id', 'name email');
     
     let csvData = "Task Title,Status,Priority,Due Date,Assigned To\n";
     tasks.forEach(task => {
-      const assigned = task.assignedTo ? task.assignedTo.name : 'Unassigned';
+      const assigned = task.assigned_to_id ? task.assigned_to_id.name : 'Unassigned';
       const date = task.deadline ? new Date(task.deadline).toLocaleDateString() : 'N/A';
       csvData += `"${task.title}",${task.status},${task.priority},${date},${assigned}\n`;
     });

@@ -509,6 +509,7 @@ async function adminProfileFor(decodedToken) {
   const emailRegex = email ? new RegExp(`^${escapeRegex(email)}$`, "i") : null;
 
   const conditions = [
+    { firebase_uid: decodedToken.uid },
     { firebaseUid: decodedToken.uid },
     { firebaseUID: decodedToken.uid },
     { uid: decodedToken.uid },
@@ -1165,11 +1166,34 @@ app.get(
 );
 
 app.get("/api/auth/session", async (req, res) => {
+  // UPSTREAM_SESSION_PASSTHROUGH
+  // The upstream API owns UserAccess (role, permissions, mustChangePassword).
+  // Ask it FIRST so the dashboard can show the first-login password screen.
+  const authorization = clean(req.headers.authorization);
+
+  if (!authorization.toLowerCase().startsWith("bearer ")) {
+    return res.status(401).json({ success: false, message: "No token provided", code: "AUTH_TOKEN_INVALID" });
+  }
+
   try {
-    const authorization = clean(req.headers.authorization);
-    if (!authorization.toLowerCase().startsWith("bearer ")) {
-      return res.status(401).json({ success: false, message: "No token provided", code: "AUTH_TOKEN_INVALID" });
+    const upstream = await fetch(
+      `http://${UPSTREAM_HOST}:${UPSTREAM_PORT}/api/auth/session`,
+      { headers: { authorization, accept: "application/json" } }
+    );
+
+    const payload = await upstream.json().catch(() => null);
+
+    // Forward anything the upstream can answer authoritatively, including
+    // 403 PASSWORD_CHANGE_REQUIRED / ACCOUNT_INACTIVE.
+    if (payload && (upstream.ok || payload.code !== "USER_NOT_REGISTERED")) {
+      return res.status(upstream.status).json(payload);
     }
+  } catch (error) {
+    console.warn("[admin-gateway] upstream session lookup failed:", error.message);
+  }
+
+  // Fallback: accounts that only exist in the admin collections.
+  try {
     const decodedToken = await getAuth().verifyIdToken(authorization.slice(7).trim());
     const profileResult = await adminProfileFor(decodedToken);
     const user = profileResult?.document || {
@@ -1178,7 +1202,7 @@ app.get("/api/auth/session", async (req, res) => {
       name: decodedToken.name || decodedToken.email || "User",
       role: "user",
     };
-    return res.json({ success: true, user });
+    return res.json({ success: true, user: { mustChangePassword: false, ...user } });
   } catch (error) {
     const code = error.code === "auth/argument-error" ? "AUTH_TOKEN_INVALID" : "SESSION_ERROR";
     return res.status(401).json({ success: false, message: "Invalid or expired token", code });
