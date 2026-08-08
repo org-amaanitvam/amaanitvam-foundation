@@ -613,6 +613,21 @@ async function requireAdministrator(req, res, next) {
   });
 }
 
+// AF_REQUIRE_AUTHENTICATED_USER
+// Any signed-in Firebase user (intern, member, staff, admin) may exchange their
+// ID token for a cross-portal custom token. Administrator-only gating here was
+// what forced non-admin users to log in a second time on the Dashboard.
+async function requireAuthenticatedUser(req, res, next) {
+  await optionalAdministrator(req, res, () => {});
+
+  if (req.firebaseUser?.uid) return next();
+
+  return res.status(401).json({
+    success: false,
+    message: "Authentication token is required",
+  });
+}
+
 function publicList(resourceKey) {
   return async (_req, res, next) => {
     try {
@@ -3670,7 +3685,7 @@ app.post(
 // to other portals (admin, dashboard) running on different origins/ports.
 app.post(
   "/api/auth/cross-portal-token",
-  requireAdministrator,
+  requireAuthenticatedUser,
   jsonParser,
   async (req, res, next) => {
     try {

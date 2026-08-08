@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './styles/auth.css';
 
 :root {
   --color-brand-deep: #5d0f2d;

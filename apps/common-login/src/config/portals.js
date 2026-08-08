@@ -13,6 +13,7 @@ const PROD_URLS = {
   admin: 'https://admin.amaanitvam.org',
   dashboard: 'https://dashboard.amaanitvam.org',
   website: 'https://www.amaanitvam.org',
+  lms: 'https://lms.amaanitvam.org',
   login: 'https://login.amaanitvam.org',
   lms: 'https://learn.amaanitvam.org',
 };
