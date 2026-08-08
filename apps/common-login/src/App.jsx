@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './config/firebase.js';
 import LoginPage from './pages/LoginPage.jsx';
 import PortalSelector from './pages/PortalSelector.jsx';
@@ -10,6 +10,36 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState(null);
+
+  // A portal redirected here after signing out. Clear the session that still
+  // lives on this origin, otherwise a single-portal user is instantly bounced
+  // back into the portal they just left.
+  const [clearingSession, setClearingSession] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('loggedOut') === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (!clearingSession) return;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      try {
+        sessionStorage.setItem('af.suppressAutoPortal', '1');
+        const url = new URL(window.location.href);
+        url.searchParams.delete('loggedOut');
+        window.history.replaceState({}, '', url.pathname + url.hash);
+      } catch {
+        /* ignore */
+      }
+      setClearingSession(false);
+    };
+    signOut(auth).catch(() => {}).finally(finish);
+  }, [clearingSession]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -22,39 +52,19 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  if (loading) {
+  if (loading || clearingSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#5d0f2d]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-3 border-[#d8a15f] border-t-transparent rounded-full animate-spin" />
-          <p className="text-[#e9c9a3] text-sm font-medium tracking-wider">Loading...</p>
-        </div>
+      <div className="af-splash">
+        <div className="af-spinner" />
+        <p>{clearingSession ? 'Signing you out…' : 'Loading…'}</p>
       </div>
     );
   }
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          user ? (
-            <Navigate to="/select-portal" replace />
-          ) : (
-            <LoginPage />
-          )
-        }
-      />
-      <Route
-        path="/login"
-        element={
-          user ? (
-            <Navigate to="/select-portal" replace />
-          ) : (
-            <LoginPage />
-          )
-        }
-      />
+      <Route path="/" element={user ? <Navigate to="/select-portal" replace /> : <LoginPage />} />
+      <Route path="/login" element={user ? <Navigate to="/select-portal" replace /> : <LoginPage />} />
       <Route
         path="/select-portal"
         element={
@@ -71,13 +81,7 @@ export default function App() {
       />
       <Route
         path="/change-password"
-        element={
-          user ? (
-            <ChangePassword user={user} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
+        element={user ? <ChangePassword user={user} /> : <Navigate to="/login" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

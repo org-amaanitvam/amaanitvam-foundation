@@ -1,4 +1,4 @@
-import admin, { firebaseReady } from "../config/firebase.js";
+import { adminAuth, firebaseReady } from "../config/firebase.js";
 import { UnauthorizedError } from "../shared/errors/AppError.js";
 import User from "../modules/users/user.model.js";
 
@@ -24,9 +24,22 @@ export const authenticate = async (req, _res, next) => {
     const token = authHeader.split(" ")[1];
     let decodedToken;
     try {
-      decodedToken = await admin.auth().verifyIdToken(token);
+      decodedToken = await adminAuth().verifyIdToken(token);
     } catch (err) {
-      throw new UnauthorizedError("Invalid or expired token", "AUTH_TOKEN_INVALID");
+      // Surface the real reason - "Invalid or expired token" on its own made
+      // this impossible to diagnose (expired vs. clock skew vs. wrong project).
+      console.error(
+        "[authenticate] verifyIdToken failed:",
+        err?.code || "unknown",
+        "-",
+        err?.message,
+      );
+      throw new UnauthorizedError(
+        err?.code === "auth/id-token-expired"
+          ? "Session expired, please sign in again"
+          : "Invalid or expired token",
+        "AUTH_TOKEN_INVALID",
+      );
     }
 
     if (!decodedToken.uid) {

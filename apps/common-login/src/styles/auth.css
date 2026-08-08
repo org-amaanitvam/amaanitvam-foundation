@@ -1,0 +1,694 @@
+/* ─────────────────────────────────────────────────────────────
+   Amaanitvam · Common Login theme
+   Mirrors the Admin Portal / Dashboard auth screens.
+   Plain CSS (no utility-class dependency) so the layout renders
+   identically regardless of Tailwind purge behaviour.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --af-deep: #5d0f2d;
+  --af-maroon: #8a164b;
+  --af-gold: #d8a15f;
+  --af-cream: #faf7f2;
+  --af-warm: #e9c9a3;
+  --af-text: #3a2a22;
+  --af-muted: #8a7468;
+  --af-border: #e3d6c8;
+  --font-heading: 'Playfair Display', serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+.af-shell, .af-shell *, .af-shell *::before, .af-shell *::after,
+.af-splash, .af-splash * {
+  box-sizing: border-box;
+}
+
+.af-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, #5d0f2d 0%, #3d0a1f 50%, #2a0715 100%);
+}
+
+.af-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(216, 161, 95, 0.22), transparent 45%),
+    radial-gradient(circle at bottom right, rgba(138, 22, 75, 0.35), transparent 45%);
+}
+
+.af-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* ── Left brand panel ── */
+.af-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem;
+  min-height: 580px;
+  overflow: hidden;
+  background: linear-gradient(
+    155deg,
+    rgba(138, 22, 75, 0.92) 0%,
+    rgba(93, 15, 45, 0.95) 60%,
+    rgba(61, 10, 31, 0.98) 100%
+  );
+}
+
+.af-brand-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.af-brand-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    155deg,
+    rgba(138, 22, 75, 0.88) 0%,
+    rgba(93, 15, 45, 0.92) 60%,
+    rgba(61, 10, 31, 0.96) 100%
+  );
+}
+
+.af-brand-dots {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: radial-gradient(circle, #d8a15f 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.af-brand > * {
+  position: relative;
+  z-index: 2;
+}
+
+.af-brand-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.af-logo {
+  height: 84px;
+  width: 84px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--af-deep);
+}
+
+.af-logo img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.af-org {
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.af-org-sub {
+  color: var(--af-warm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-top: 0.4rem;
+}
+
+.af-tagline h1 {
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.af-tagline p {
+  margin-top: 0.9rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  max-width: 26rem;
+}
+
+.af-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+}
+
+.af-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+}
+
+.af-brand-foot {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ── Right form panel ── */
+.af-panel {
+  background: var(--af-cream);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.af-form-wrap {
+  width: 100%;
+  max-width: 340px;
+}
+
+.af-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.af-eyebrow span:first-child {
+  width: 22px;
+  height: 1px;
+  background: var(--af-gold);
+}
+
+.af-eyebrow span:last-child {
+  color: var(--af-maroon);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.af-title {
+  color: var(--af-deep);
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 0 0 1.4rem;
+}
+
+.af-tabs {
+  display: flex;
+  background: #f0e7de;
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 1.4rem;
+}
+
+.af-tab {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--af-muted);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.65rem 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.af-tab.is-active {
+  background: var(--af-deep);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(93, 15, 45, 0.3);
+}
+
+.af-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.af-alert.is-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.af-alert.is-success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.af-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.af-label {
+  display: block;
+  color: var(--af-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.af-field {
+  position: relative;
+  display: block;
+}
+
+.af-field .af-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--af-muted);
+  pointer-events: none;
+}
+
+.af-field .af-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  color: var(--af-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.af-input {
+  width: 100%;
+  border: 1px solid var(--af-border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--af-text);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  padding: 0.8rem 2.6rem 0.8rem 2.6rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.af-input:focus {
+  border-color: var(--af-maroon);
+  box-shadow: 0 0 0 3px rgba(138, 22, 75, 0.12);
+}
+
+.af-input::placeholder {
+  color: #b3a297;
+}
+
+.af-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.af-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--af-muted);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.af-check input {
+  accent-color: var(--af-maroon);
+  cursor: pointer;
+}
+
+.af-link {
+  background: transparent;
+  border: 0;
+  color: var(--af-maroon);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.af-link:hover {
+  text-decoration: underline;
+}
+
+.af-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--af-deep);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(93, 15, 45, 0.35);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.af-btn:hover:not(:disabled) {
+  background: var(--af-maroon);
+  transform: translateY(-1px);
+}
+
+.af-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.af-btn-ghost {
+  width: auto;
+  background: transparent;
+  color: var(--af-muted);
+  box-shadow: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  padding: 0.6rem 0;
+}
+
+.af-btn-ghost:hover:not(:disabled) {
+  background: transparent;
+  color: var(--af-deep);
+  transform: none;
+}
+
+.af-note {
+  text-align: center;
+  color: #b3a297;
+  font-size: 0.7rem;
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+
+/* ── Portal selector ── */
+.af-select-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 580px;
+}
+
+.af-select-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.af-select-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.af-select-brand .af-logo {
+  height: 44px;
+  width: 44px;
+  border-radius: 12px;
+  padding: 4px;
+  font-size: 0.8rem;
+}
+
+.af-select-brand strong {
+  display: block;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+}
+
+.af-select-brand span {
+  display: block;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.af-signout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.af-signout:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.af-user-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  border-radius: 18px;
+  margin-bottom: 1.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  animation: slideUp 0.4s ease-out;
+}
+
+.af-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  background: linear-gradient(135deg, #d8a15f, #8a164b);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.af-user-card h2 {
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.af-user-card p {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.76rem;
+  margin: 2px 0 0;
+}
+
+.af-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--af-warm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+
+.af-section-label {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem 4px;
+}
+
+.af-portal {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  padding: 1.15rem 1.25rem;
+  margin-bottom: 0.75rem;
+  border-radius: 18px;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  animation: slideUp 0.4s ease-out;
+}
+
+.af-portal:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(216, 161, 95, 0.5);
+}
+
+.af-portal:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.af-portal-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(216, 161, 95, 0.22), rgba(138, 22, 75, 0.22));
+}
+
+.af-portal-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.af-portal-body h3 {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.af-portal-body p {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.76rem;
+  margin: 3px 0 0;
+}
+
+.af-portal-go {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  display: flex;
+}
+
+.af-splash {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  background: linear-gradient(135deg, #5d0f2d 0%, #3d0a1f 60%, #2a0715 100%);
+}
+
+.af-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 3px solid var(--af-gold);
+  border-top-color: transparent;
+  animation: spin 0.9s linear infinite;
+}
+
+.af-splash p {
+  color: var(--af-warm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .af-card { grid-template-columns: 1fr; max-width: 460px; }
+  .af-brand { min-height: 220px; padding: 1.75rem; }
+  .af-brand .af-tagline { margin: 1.25rem 0; }
+  .af-panel { padding: 1.75rem; }
+  .af-org { font-size: 1.35rem; }
+  .af-logo { height: 60px; width: 60px; }
+  .af-tagline h1 { font-size: 1.5rem; }
+}
+
+.animate-spin {
+  animation: spin 0.9s linear infinite;
+}

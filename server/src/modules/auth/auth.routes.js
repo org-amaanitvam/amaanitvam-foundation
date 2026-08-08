@@ -6,7 +6,7 @@ import Session from './session.model.js';
 import { sendSuccess } from '../../shared/response/index.js';
 import { UnauthorizedError } from '../../shared/errors/AppError.js';
 import { authenticate } from '../../middleware/authenticate.js';
-import admin, { firebaseReady } from '../../config/firebase.js';
+import { adminAuth, firebaseReady } from '../../config/firebase.js';
 
 import accountAccessRoutes from "./accountAccess.routes.js";
 const router = express.Router();
@@ -114,7 +114,7 @@ router.post('/sso-token', async (req, res) => {
     // Verify the incoming ID token
     let decodedToken;
     try {
-      decodedToken = await admin.auth().verifyIdToken(idToken);
+      decodedToken = await adminAuth().verifyIdToken(idToken);
     } catch {
       return res.status(401).json({ success: false, message: 'Invalid or expired Firebase token.' });
     }
@@ -127,7 +127,7 @@ router.post('/sso-token', async (req, res) => {
 
     // Create a custom token for the same UID — the client can use this
     // to signInWithCustomToken on any portal origin
-    const customToken = await admin.auth().createCustomToken(decodedToken.uid, {
+    const customToken = await adminAuth().createCustomToken(decodedToken.uid, {
       role: user.role,
       dbId: String(user._id),
     });

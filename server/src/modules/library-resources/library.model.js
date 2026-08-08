@@ -24,7 +24,6 @@ const categorySchema = new mongoose.Schema(
   }, { timestamps: true }
 );
 
-categorySchema.index({ name: 1 });
 
 const Category = mongoose.model("Category", categorySchema);
 
@@ -268,10 +267,6 @@ resourceSchema.index({
   createdAt: -1,
 });
 
-// AI Retrieval
-resourceSchema.index({
-  ai_indexed: 1,
-});
 
 // Text Search
 resourceSchema.index({

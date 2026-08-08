@@ -6,13 +6,16 @@ const DEV_URLS = {
   dashboard: 'http://localhost:5174',
   website: 'http://localhost:5175',
   login: 'http://localhost:5176',
+  lms: 'http://localhost:5177',
 };
 
 const PROD_URLS = {
   admin: 'https://admin.amaanitvam.org',
   dashboard: 'https://dashboard.amaanitvam.org',
   website: 'https://www.amaanitvam.org',
+  lms: 'https://lms.amaanitvam.org',
   login: 'https://login.amaanitvam.org',
+  lms: 'https://learn.amaanitvam.org',
 };
 
 const urls = import.meta.env.DEV ? DEV_URLS : PROD_URLS;
@@ -43,7 +46,7 @@ export const PORTAL_CONFIG = {
   },
   lms: {
     name: 'Learning Portal',
-    url: import.meta.env.VITE_LMS_URL || urls.dashboard,
+    url: import.meta.env.VITE_LMS_URL || urls.lms,
     description: 'Courses, resources & assignments',
     icon: '📚',
     roles: ['faculty', 'student', 'content_manager'],
