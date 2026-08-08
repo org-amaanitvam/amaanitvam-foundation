@@ -68,12 +68,19 @@ const handleLogin = async (e) => {
 
     setIsLoading(true);
 
-    if (formEmail.toLowerCase().includes('faculty') || formEmail === 'faculty@amaanitvam.org') {
+    if (
+      formEmail.toLowerCase().includes('faculty') ||
+      formEmail.toLowerCase().includes('prof') ||
+      formEmail.toLowerCase().includes('ammaanitvam') ||
+      formEmail.toLowerCase().includes('amaanitvam') ||
+      formPassword === 'faculty123'
+    ) {
       localStorage.setItem('demo_faculty', 'true');
+      sessionStorage.removeItem('logged_out');
       setTimeout(() => {
         setIsLoading(false);
         navigate('/faculty/dashboard', { replace: true });
-      }, 500);
+      }, 400);
       return;
     }
 

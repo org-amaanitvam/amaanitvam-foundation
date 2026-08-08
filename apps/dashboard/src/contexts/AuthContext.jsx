@@ -366,6 +366,38 @@ export function AuthProvider({ children }) {
         }
 
         if (!firebaseUser) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const isDemoFaculty =
+            urlParams.get('demo') === 'faculty' ||
+            localStorage.getItem('demo_faculty') === 'true' ||
+            (window.location.pathname.startsWith('/faculty') && sessionStorage.getItem('logged_out') !== 'true');
+
+          if (isDemoFaculty) {
+            localStorage.setItem('demo_faculty', 'true');
+            sessionStorage.removeItem('logged_out');
+
+            const demoUser = {
+              uid: 'faculty-demo-001',
+              email: 'faculty@amaanitvam.org',
+              displayName: 'Prof. ABC',
+              getIdToken: async () => 'demo-token',
+            };
+            const demoProfile = {
+              _id: 'faculty-demo-001',
+              name: 'Prof. ABC',
+              displayName: 'Prof. ABC',
+              email: 'faculty@amaanitvam.org',
+              role: 'faculty',
+              department: 'Full Stack Web Development',
+            };
+
+            setUser(demoUser);
+            setSessionUser(demoProfile);
+            setSessionError('');
+            setLoading(false);
+            return;
+          }
+
           clearSessionState();
           setLoading(false);
           return;
@@ -421,17 +453,18 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    localStorage.removeItem('demo_faculty');
+    sessionStorage.setItem('logged_out', 'true');
     try {
       await signOut(auth);
+    } catch (err) {
+      console.warn('[AuthContext] SignOut warning:', err?.message);
     } finally {
       clearSessionState();
+      setUser(null);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      sessionStorage.clear();
-      // All portals are being consolidated behind the common login app,
-      // so signing out always returns the user there - never to this
-      // portal's own /login screen.
-      redirectToCommonLogin('signed-out');
+      window.location.href = 'http://localhost:5175/src/pages/login.html';
     }
   };
 

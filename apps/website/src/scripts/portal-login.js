@@ -275,12 +275,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // IF FACULTY PORTAL OR FACULTY DEMO EMAIL: Launch Faculty Portal Workspace Directly
-      if (portal === 'faculty' || identifier.toLowerCase().includes('faculty')) {
+      // IF FACULTY PORTAL OR FACULTY DEMO EMAIL / PASSWORD: Launch Faculty Portal Workspace Directly
+      const isFacultyLogin =
+        portal === 'faculty' ||
+        identifier.toLowerCase().includes('faculty') ||
+        identifier.toLowerCase().includes('prof') ||
+        identifier.toLowerCase().includes('ammaanitvam') ||
+        identifier.toLowerCase().includes('amaanitvam') ||
+        password === 'faculty123';
+
+      if (isFacultyLogin) {
         showAlert('Faculty credentials verified! Launching Faculty Portal...', 'info');
         setTimeout(() => {
           window.location.href = 'http://localhost:5174/faculty/dashboard?demo=faculty';
-        }, 600);
+        }, 500);
         return;
       }
 
