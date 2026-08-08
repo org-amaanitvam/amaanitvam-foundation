@@ -51,6 +51,7 @@ taskSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => {
     ret.id = ret._id.toString();
+    if (ret.assigned_to_id !== undefined) ret.assignedTo = ret.assigned_to_id;
     delete ret._id;
     delete ret.__v;
     return ret;
