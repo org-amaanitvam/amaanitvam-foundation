@@ -6,6 +6,8 @@ import {
 } from 'react';
 import { auth } from '../config/firebase';
 import { redirectToCommonLogin } from '../config/portal';
+
+
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -15,6 +17,41 @@ import {
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
+
+
+// CROSS_PORTAL_SSO
+// The common login page hands off a Firebase custom token via `?authToken=`.
+// We consume it at module scope — before React renders — so the portal never
+// flashes its own login screen and never asks for credentials a second time.
+const CROSS_PORTAL_SSO = (() => {
+  const state = { pending: false, promise: Promise.resolve(null) };
+  if (typeof window === 'undefined') return state;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const crossToken = params.get('authToken');
+    if (!crossToken) return state;
+
+    // Strip the token from the URL immediately (history / referrer safety).
+    window.history.replaceState(
+      {},
+      '',
+      window.location.pathname + window.location.hash,
+    );
+
+    state.pending = true;
+    state.promise = signInWithCustomToken(auth, crossToken)
+      .catch((err) => {
+        console.error('[cross-portal-sso] sign-in failed:', err?.message || err);
+        return null;
+      })
+      .finally(() => {
+        state.pending = false;
+      });
+  } catch (err) {
+    console.error('[cross-portal-sso] init failed:', err?.message || err);
+  }
+  return state;
+})();
 
 const apiEndpoint = (path) => {
   const configuredBase =
@@ -321,6 +358,13 @@ export function AuthProvider({ children }) {
         setLoading(true);
         setUser(firebaseUser || null);
 
+        // Wait for a cross-portal hand-off before treating the user as
+        // signed out — otherwise the login screen flashes for a moment.
+        if (!firebaseUser && CROSS_PORTAL_SSO.pending) {
+          await CROSS_PORTAL_SSO.promise;
+          if (auth.currentUser) return;
+        }
+
         if (!firebaseUser) {
           clearSessionState();
           setLoading(false);
@@ -356,20 +400,6 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  // CROSS_PORTAL_AUTH: Accept custom tokens from the common login page
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const crossToken = params.get('authToken');
-    if (crossToken) {
-      // Remove token from URL immediately for security
-      const cleanUrl = window.location.pathname + window.location.hash;
-      window.history.replaceState({}, '', cleanUrl);
-      // Sign in with the custom token - onAuthStateChanged will handle the rest
-      signInWithCustomToken(auth, crossToken).catch((err) => {
-        console.error('[dashboard] Cross-portal auth failed:', err.message);
-      });
-    }
-  }, []);
 
   const login = async (identifier, password) => {
     const resolvedEmail =
