@@ -88,28 +88,28 @@ export default function FacultyAttendanceCenter() {
   };
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="p-8 space-y-8 max-w-7xl mx-auto text-gray-900 animate-fade-in">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8a164b]/10 text-[#8a164b] text-xs font-semibold mb-2">
-            <ClipboardCheck className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5d0f2d]/10 text-[#5d0f2d] border border-[#8a164b]/20 text-xs font-bold mb-2">
+            <ClipboardCheck className="w-3.5 h-3.5 text-[#8a164b]" />
             <span>Academic Attendance & Time Tracking</span>
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Attendance Center</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Attendance Center</h2>
+          <p className="text-sm text-gray-600 mt-1 font-medium">
             Log faculty shift working hours and mark live class student attendance rosters.
           </p>
         </div>
 
         {/* Tab Selector Buttons */}
-        <div className="bg-gray-100/80 p-1.5 rounded-2xl flex items-center gap-1 border border-gray-200/60 shadow-inner">
+        <div className="bg-white/90 p-1.5 rounded-2xl flex items-center gap-1 border border-rose-100 shadow-md">
           <button
             onClick={() => setActiveTab('faculty_punch')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-200 ${
               activeTab === 'faculty_punch'
-                ? 'bg-[#5d0f2d] text-white shadow-md shadow-[#5d0f2d]/30'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
+                ? 'bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] text-white shadow-md shadow-[#5d0f2d]/25'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-rose-50'
             }`}
           >
             <Clock className="w-4 h-4 text-[#d4af37]" />
@@ -118,10 +118,10 @@ export default function FacultyAttendanceCenter() {
 
           <button
             onClick={() => setActiveTab('student_marking')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-200 ${
               activeTab === 'student_marking'
-                ? 'bg-[#5d0f2d] text-white shadow-md shadow-[#5d0f2d]/30'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
+                ? 'bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] text-white shadow-md shadow-[#5d0f2d]/25'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-rose-50'
             }`}
           >
             <Users className="w-4 h-4 text-[#d4af37]" />
@@ -143,14 +143,14 @@ export default function FacultyAttendanceCenter() {
       {activeTab === 'student_marking' && (
         <div className="space-y-6">
           {/* Class Selection & Filters */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-white/95 p-5 rounded-3xl border border-rose-100 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <div className="flex flex-col gap-1 w-full sm:w-72">
-                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Select Course / Batch</label>
+                <label className="text-xs font-extrabold text-[#5d0f2d] uppercase tracking-wider">Select Course / Batch</label>
                 <select
                   value={selectedCourse}
                   onChange={(e) => setSelectedCourse(e.target.value)}
-                  className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold outline-none focus:border-[#8a164b] focus:ring-2 focus:ring-[#8a164b]/10 text-gray-800"
+                  className="px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-[#8a164b] focus:ring-2 focus:ring-[#8a164b]/10 text-gray-900"
                 >
                   {COURSES_LIST.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -161,25 +161,25 @@ export default function FacultyAttendanceCenter() {
               </div>
 
               <div className="flex flex-col gap-1 w-full sm:w-48">
-                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Session Date</label>
+                <label className="text-xs font-extrabold text-[#5d0f2d] uppercase tracking-wider">Session Date</label>
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold outline-none focus:border-[#8a164b] text-gray-800"
+                  className="px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-[#8a164b] text-gray-900"
                 />
               </div>
             </div>
 
             <div className="text-right text-xs text-gray-500 hidden md:block">
-              <p className="font-semibold text-gray-700">Course Roster Sync</p>
+              <p className="font-extrabold text-gray-800">Course Roster Sync</p>
               <p>Updates reflect immediately in Student LMS</p>
             </div>
           </div>
 
           {/* Roster Marking Grid Component */}
           {loadingRoster ? (
-            <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center space-y-3">
+            <div className="bg-white/95 p-12 rounded-3xl border border-rose-100 text-center space-y-3 shadow-md">
               <div className="w-8 h-8 border-3 border-[#8a164b]/20 border-t-[#8a164b] rounded-full animate-spin mx-auto" />
               <p className="text-xs text-gray-500 font-medium">Fetching student roster from database...</p>
             </div>
