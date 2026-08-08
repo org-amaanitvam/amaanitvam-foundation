@@ -5,6 +5,7 @@ import {
   useState,
 } from 'react';
 import { auth } from '../config/firebase';
+import { redirectToCommonLogin } from '../config/portal';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -89,6 +90,9 @@ const fetchDashboardSession = async (firebaseUser) => {
       'Your dashboard session could not be validated.',
     );
     error.code = data?.code || `HTTP_${response.status}`;
+    // Only 401/403 mean "this account may not use the dashboard".
+    // Network hiccups and 5xx must not lock the user out.
+    error.fatal = response.status === 401 || response.status === 403;
     throw error;
   }
 
@@ -326,12 +330,23 @@ export function AuthProvider({ children }) {
         try {
           await loadSession(firebaseUser);
         } catch (error) {
-          setSessionUser(null);
           setMustChangePassword(false);
-          setSessionError(
-            error?.message ||
-            'Your dashboard session could not be validated.',
-          );
+
+          if (error?.fatal) {
+            setSessionUser(null);
+            setSessionError(
+              error?.message ||
+              'Your dashboard session could not be validated.',
+            );
+          } else {
+            // Transient failure (offline, API restarting, 5xx):
+            // keep the user signed in instead of bouncing them to /login.
+            console.warn(
+              '[dashboard] session check failed, keeping session:',
+              error?.message,
+            );
+            setSessionError('');
+          }
         } finally {
           setLoading(false);
         }
@@ -376,8 +391,18 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    await signOut(auth);
-    clearSessionState();
+    try {
+      await signOut(auth);
+    } finally {
+      clearSessionState();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
+      // All portals are being consolidated behind the common login app,
+      // so signing out always returns the user there - never to this
+      // portal's own /login screen.
+      redirectToCommonLogin('signed-out');
+    }
   };
 
   const completeFirstLoginPasswordChange = async () => {

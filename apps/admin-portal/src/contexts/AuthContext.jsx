@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebase.js';
 import api from '../config/api.js';
+import { redirectToCommonLogin } from '../config/portal.js';
 
 const AuthContext = createContext(null);
 
@@ -140,11 +141,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = async () => {
-    await signOut(auth);
-    clearTokens();
-    setUser(null);
-    setUserProfile(null);
-    setProfileError('');
+    try {
+      await signOut(auth);
+    } finally {
+      clearTokens();
+      setUser(null);
+      setUserProfile(null);
+      setProfileError('');
+      redirectToCommonLogin('signed-out');
+    }
   };
 
   const resetPassword = useCallback(async (email) => sendPasswordResetEmail(auth, email), []);

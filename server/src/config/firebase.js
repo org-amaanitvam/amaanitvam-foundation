@@ -1,5 +1,6 @@
 import admin from "firebase-admin";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -132,6 +133,10 @@ if (!firebaseReady) {
     "no readable Admin SDK service-account key or complete Firebase environment credentials were found";
   console.warn(`Firebase Admin initialization skipped: ${detail}`);
 }
+
+// firebase-admin v13+ ESM no longer exposes the legacy `admin.auth()`
+// namespace on the default export. Always use the modular Auth instance.
+export const adminAuth = () => getAuth();
 
 export { firebaseReady, authProjectId };
 export default admin;
