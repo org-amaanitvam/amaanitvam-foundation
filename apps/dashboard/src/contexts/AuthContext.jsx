@@ -5,7 +5,7 @@ import {
   useState,
 } from 'react';
 import { auth } from '../config/firebase';
-import { redirectToCommonLogin } from '../config/portal';
+import { redirectToCommonLogin, showLogoutOverlay } from '../config/portal';
 
 
 import {
@@ -453,6 +453,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    showLogoutOverlay();
     localStorage.removeItem('demo_faculty');
     sessionStorage.setItem('logged_out', 'true');
     try {

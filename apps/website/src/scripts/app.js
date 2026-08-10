@@ -1,6 +1,7 @@
 import { loadSharedComponents } from "./component-loader.js";
 import { initNavbar } from "./navbar.js";
 import { startCmsContentSync } from "./cms-content.js";
+import { initGalleryPreview } from "./gallery-preview.js";
 
 function loadIndependentModules() {
     import("./forms.js").catch((error) => {
@@ -113,6 +114,7 @@ async function initApp() {
         initNavbar();
         initFAQ();
         await startCmsContentSync();
+        await initGalleryPreview();
 } catch (error) {
         console.error("App initialization failed:", error);
     }

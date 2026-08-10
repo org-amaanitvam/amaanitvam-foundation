@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebase.js';
 import api from '../config/api.js';
-import { redirectToCommonLogin } from '../config/portal.js';
+import { redirectToCommonLogin, showLogoutOverlay } from '../config/portal.js';
 
 
 const AuthContext = createContext(null);
@@ -161,6 +161,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = async () => {
+    showLogoutOverlay();
     try {
       await signOut(auth);
     } finally {
