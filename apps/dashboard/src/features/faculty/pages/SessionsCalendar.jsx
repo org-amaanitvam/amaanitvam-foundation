@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, Video, ListFilter, Grid, Clock, ChevronLeft, ChevronRight, Upload, X } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Video, ListFilter, Grid, Clock, ChevronLeft, ChevronRight, Upload, X, Play } from 'lucide-react';
 import SessionAgendaList from '../components/SessionAgendaList';
 import ScheduleSessionModal from '../components/ScheduleSessionModal';
-import { fetchFacultySessions, uploadSessionMinutes } from '../services/sessionsApi';
+import RecordedSessionModal from '../components/RecordedSessionModal';
+import { fetchFacultySessions, uploadSessionMinutes, attachSessionRecording } from '../services/sessionsApi';
 import { useAuth } from '../../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -10,13 +11,16 @@ export default function SessionsCalendar() {
   const { userProfile } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('agenda'); // 'agenda' | 'month' | 'week'
+  const [viewMode, setViewMode] = useState('agenda'); // 'agenda' | 'month'
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   // Minutes Upload State
   const [uploadModalSession, setUploadModalSession] = useState(null);
   const [minutesFile, setMinutesFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+
+  // Recorded Session Modal State
+  const [recordedModalSession, setRecordedModalSession] = useState(null);
 
   const COURSES = [
     { id: 'crs-1', name: 'Full Stack Web Development (Batch 2026-A)' },
@@ -45,7 +49,6 @@ export default function SessionsCalendar() {
 
   const handleSessionCreated = (newSession) => {
     if (newSession) {
-      // Optimistically add to top of list (works in demo mode)
       setSessions((prev) => [newSession, ...prev]);
     } else {
       loadSessions();
@@ -58,6 +61,24 @@ export default function SessionsCalendar() {
       toast.success(`Launching live session for ${session.title}...`);
     } else {
       toast.error('No video link attached to this session.');
+    }
+  };
+
+  const handleSaveRecordingUrl = async (sessionId, recordingUrl) => {
+    try {
+      const res = await attachSessionRecording(sessionId, recordingUrl);
+      if (res.success) {
+        setSessions((prev) =>
+          prev.map((s) =>
+            (s._id || s.id) === sessionId ? { ...s, recordingUrl: res.recordingUrl } : s
+          )
+        );
+        if (recordedModalSession) {
+          setRecordedModalSession((prev) => (prev ? { ...prev, recordingUrl: res.recordingUrl } : null));
+        }
+      }
+    } catch (err) {
+      toast.error('Failed to attach recording URL.');
     }
   };
 
@@ -76,7 +97,6 @@ export default function SessionsCalendar() {
       const res = await uploadSessionMinutes(sessionId, formData);
       if (res.success) {
         toast.success('Meeting minutes document uploaded successfully!');
-        // Update the session in local state to mark minutes as uploaded
         setSessions((prev) =>
           prev.map((s) =>
             (s._id || s.id) === sessionId
@@ -101,11 +121,11 @@ export default function SessionsCalendar() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8a164b]/10 text-[#8a164b] text-xs font-semibold mb-2">
             <CalendarIcon className="w-3.5 h-3.5" />
-            <span>Interactive Live Classroom Scheduler</span>
+            <span>Interactive Live Classroom & Recorded Sessions</span>
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Live Sessions & Meetings</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Live & Recorded Sessions</h2>
           <p className="text-sm text-gray-500 mt-1">
-            Schedule interactive classes, manage Google Meet/Zoom links, and upload meeting minutes.
+            Schedule interactive classes, view recorded session streams, and manage meeting documents.
           </p>
         </div>
 
@@ -147,13 +167,14 @@ export default function SessionsCalendar() {
       {loading ? (
         <div className="bg-white p-16 rounded-3xl border border-gray-100 shadow-sm text-center space-y-3">
           <div className="w-10 h-10 border-3 border-[#8a164b]/20 border-t-[#8a164b] rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-gray-500 font-medium">Loading session calendar and schedule...</p>
+          <p className="text-xs text-gray-500 font-medium">Loading session schedule and recorded lectures...</p>
         </div>
       ) : viewMode === 'agenda' ? (
         <SessionAgendaList
           sessions={sessions}
           onLaunchSession={handleLaunchClass}
           onUploadMinutes={(sess) => setUploadModalSession(sess)}
+          onViewRecording={(sess) => setRecordedModalSession(sess)}
           onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
         />
       ) : (
@@ -214,6 +235,14 @@ export default function SessionsCalendar() {
         onClose={() => setIsScheduleModalOpen(false)}
         onSessionCreated={handleSessionCreated}
         courses={COURSES}
+      />
+
+      {/* Modal: View & Play Recorded Session */}
+      <RecordedSessionModal
+        session={recordedModalSession}
+        isOpen={!!recordedModalSession}
+        onClose={() => setRecordedModalSession(null)}
+        onSaveRecording={handleSaveRecordingUrl}
       />
 
       {/* Modal: Upload Minutes */}

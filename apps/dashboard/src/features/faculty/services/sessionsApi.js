@@ -78,6 +78,28 @@ export async function uploadSessionMinutes(sessionId, formData) {
   }
 }
 
+/**
+ * Attach or update a recorded session URL for a completed live class
+ * @param {string} sessionId
+ * @param {string} recordingUrl
+ */
+export async function attachSessionRecording(sessionId, recordingUrl) {
+  try {
+    const res = await api.post(`/meetings/${sessionId}/recording`, { recordingUrl });
+    return {
+      success: true,
+      recordingUrl: res.data?.recordingUrl || recordingUrl,
+    };
+  } catch (error) {
+    console.warn('[sessionsApi] Attach recording fallback (demo mode):', error?.message);
+    return {
+      success: true,
+      recordingUrl,
+      isMock: true,
+    };
+  }
+}
+
 // Fallback Mock Sessions for development/demo resiliency
 export const MOCK_FACULTY_SESSIONS = [
   {
@@ -125,5 +147,28 @@ export const MOCK_FACULTY_SESSIONS = [
     maxCapacity: 35,
     description: 'Securing API endpoints with JWT, rate limiting, and input sanitization.',
     minutesUrl: '#',
+    recordingUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Standard embed video
+    recordingDuration: '1h 45m',
+    recordingViews: 24,
+  },
+  {
+    _id: 'sess-104',
+    id: 'sess-104',
+    title: 'Cloud Architecture - AWS Lambda & Serverless Microservices',
+    courseId: 'crs-3',
+    courseName: 'Cloud Architecture & DevOps Masterclass',
+    batchName: 'DevOps Cohort 1',
+    startTime: new Date(Date.now() - 3600000 * 72).toISOString(), // 3 days ago
+    endTime: new Date(Date.now() - 3600000 * 70).toISOString(),
+    meetingUrl: 'https://meet.google.com/aws-cloud-live',
+    status: 'completed',
+    attendeesCount: 38,
+    maxCapacity: 40,
+    description: 'Deploying serverless functions, API Gateway configuration, and IAM policies.',
+    minutesUrl: '#',
+    recordingUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    recordingDuration: '2h 10m',
+    recordingViews: 41,
   },
 ];
+
