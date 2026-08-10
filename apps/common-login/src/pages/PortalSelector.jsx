@@ -16,6 +16,7 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
   const [redirecting, setRedirecting] = useState(null);
   const [logoFailed, setLogoFailed] = useState(false);
   const autoRedirectStarted = useRef(false);
+  const signingOut = useRef(false);
 
   // Set when a portal bounced the user back here after signing out — the
   // chooser (or a manual "Continue") is shown instead of an instant redirect.
@@ -124,14 +125,21 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
     redirectToPortal(resolvedPortal);
   }, [loading, allowChooser, suppressAuto, resolvedPortal, redirectToPortal]);
 
+  // Returning here after signing out of a portal:
+  //  - super_admin  -> stay signed in and show the chooser (switch portals)
+  //  - every other role (only one portal) -> finish the sign-out, show login
   useEffect(() => {
-    if (!suppressAuto) return;
+    if (loading || !suppressAuto) return;
     try {
       sessionStorage.removeItem('af.suppressAutoPortal');
     } catch {
       /* ignore */
     }
-  }, [suppressAuto]);
+    if (allowChooser) return;
+    if (signingOut.current) return;
+    signingOut.current = true;
+    signOut(auth).catch(() => {});
+  }, [loading, suppressAuto, allowChooser]);
 
   const handleLogout = async () => {
     try {
@@ -152,12 +160,16 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
   const allPortals = getAllPortals();
   const otherPortals = allPortals.filter((p) => p.portalKey !== resolvedPortal.portalKey);
   const showRedirectSplash = !loading && !allowChooser && !suppressAuto;
+  const showSignOutSplash = !loading && !allowChooser && suppressAuto;
 
-  if (loading || showRedirectSplash) {
+  if (loading || showRedirectSplash || showSignOutSplash) {
+    let splashText = 'Loading your workspace…';
+    if (showRedirectSplash) splashText = `Opening ${resolvedPortal.name}…`;
+    if (showSignOutSplash) splashText = 'Signing you out…';
     return (
       <div className="af-splash">
         <div className="af-spinner" />
-        <p>{loading ? 'Loading your workspace…' : `Opening ${resolvedPortal.name}…`}</p>
+        <p>{splashText}</p>
       </div>
     );
   }
