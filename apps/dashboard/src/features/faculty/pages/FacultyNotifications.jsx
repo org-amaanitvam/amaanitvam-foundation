@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bell,
   CheckCircle2,
@@ -11,6 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../services/api';
 import toast from 'react-hot-toast';
 
 const INITIAL_NOTIFICATIONS = [
@@ -60,6 +61,34 @@ export default function FacultyNotifications() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   const [activeCategory, setActiveCategory] = useState('all');
+
+  useEffect(() => {
+    loadNotifications();
+    const interval = setInterval(loadNotifications, 15000); // 15s real-time polling
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadNotifications = async () => {
+    try {
+      const res = await api.get('/notifications');
+      const list = res.data?.notifications || res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      if (list && list.length > 0) {
+        const formatted = list.map((n) => ({
+          id: n._id || n.id,
+          title: n.title || 'Notification',
+          desc: n.message || n.content || n.desc || '',
+          category: n.category || 'system',
+          time: n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent',
+          unread: !n.is_read,
+          link: n.link || '/faculty/dashboard',
+          type: n.category || 'system',
+        }));
+        setNotifications(formatted);
+      }
+    } catch (err) {
+      // Demo fallback mode
+    }
+  };
 
   const handleMarkAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));

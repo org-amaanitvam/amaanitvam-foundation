@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart3,
   Users,
@@ -22,53 +22,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-
-const performanceData = [
-  {
-    course: 'React',
-    engagement: 92,
-    completion: 88,
-    doubts: 95,
-  },
-  {
-    course: 'Python',
-    engagement: 86,
-    completion: 82,
-    doubts: 91,
-  },
-  {
-    course: 'UI/UX',
-    engagement: 95,
-    completion: 90,
-    doubts: 97,
-  },
-  {
-    course: 'Database',
-    engagement: 81,
-    completion: 79,
-    doubts: 89,
-  },
-  {
-    course: 'Java',
-    engagement: 89,
-    completion: 85,
-    doubts: 93,
-  },
-];
-
-const monthlyData = [
-  { month: 'Jan', students: 82 },
-  { month: 'Feb', students: 96 },
-  { month: 'Mar', students: 108 },
-  { month: 'Apr', students: 115 },
-  { month: 'May', students: 121 },
-  { month: 'Jun', students: 128 },
-];
-
-const doubtData = [
-  { name: 'Resolved', value: 94 },
-  { name: 'Pending', value: 6 },
-];
+import { fetchFacultyStats, MOCK_FACULTY_STATS } from '../services/facultyApi';
 
 const PIE_COLORS = ['#8a164b', '#e8d5dc'];
 function CustomTooltip({ active, payload, label }) {
@@ -100,6 +54,28 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function FacultyAnalytics() {
+  const [statsData, setStatsData] = useState(MOCK_FACULTY_STATS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetchFacultyStats();
+        if (res.success && res.stats) {
+          setStatsData(res.stats);
+        }
+      } catch (err) {
+        console.warn('[FacultyAnalytics] Failed to load stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const performanceData = statsData.performanceData || MOCK_FACULTY_STATS.performanceData;
+  const monthlyData = statsData.monthlyData || MOCK_FACULTY_STATS.monthlyData;
+  const doubtData = statsData.doubtData || MOCK_FACULTY_STATS.doubtData;
   return (
     <div className="animate-fade-in min-h-full bg-[#faf7f8] px-5 py-8 lg:px-8">
       {/* ================= HEADER ================= */}

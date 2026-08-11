@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ArrowLeft,
   BookOpen,
@@ -11,34 +11,18 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  fetchCourseById,
+  fetchCourseModules,
+  createCourseModule,
+  createModuleLesson,
+} from "../services/coursesApi";
 
 export default function CourseDetailBuilder() {
   const navigate = useNavigate();
   const { courseId } = useParams();
 
-  const [expandedModules, setExpandedModules] = React.useState([1]);
-  const [showModuleModal, setShowModuleModal] = React.useState(false);
-  const [newModuleTitle, setNewModuleTitle] = React.useState("");
-  const [showLessonModal, setShowLessonModal] = React.useState(false);
-  const [selectedModuleId, setSelectedModuleId] = React.useState(null);
-  const [newLessonTitle, setNewLessonTitle] = React.useState("");
-  const [showEditLessonModal, setShowEditLessonModal] = React.useState(false);
-  const [editingLesson, setEditingLesson] = React.useState(null);
-  const [editLessonTitle, setEditLessonTitle] = React.useState("");
-  
-
-   const [activeModuleMenu, setActiveModuleMenu] = React.useState(null);
-  const [showEditModuleModal, setShowEditModuleModal] = React.useState(false);
-  const [editingModule, setEditingModule] = React.useState(null);
-  const [editModuleTitle, setEditModuleTitle] = React.useState("");
-
-  const [showDeleteModuleModal, setShowDeleteModuleModal] =
-    React.useState(false);
-  const [deletingModule, setDeletingModule] = React.useState(null);
-
-  // Temporary UI data
-  // API integration baad me karenge
-  const course = {
+  const [course, setCourse] = React.useState({
     title: "Full Stack Web Development",
     category: "Web Development",
     description:
@@ -50,36 +34,54 @@ export default function CourseDetailBuilder() {
     status: "Published",
     image:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200",
+  });
+
+  const [modules, setModules] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  const [expandedModules, setExpandedModules] = React.useState([1]);
+  const [showModuleModal, setShowModuleModal] = React.useState(false);
+  const [newModuleTitle, setNewModuleTitle] = React.useState("");
+  const [showLessonModal, setShowLessonModal] = React.useState(false);
+  const [selectedModuleId, setSelectedModuleId] = React.useState(null);
+  const [newLessonTitle, setNewLessonTitle] = React.useState("");
+  const [showEditLessonModal, setShowEditLessonModal] = React.useState(false);
+  const [editingLesson, setEditingLesson] = React.useState(null);
+  const [editLessonTitle, setEditLessonTitle] = React.useState("");
+
+  const [activeModuleMenu, setActiveModuleMenu] = React.useState(null);
+  const [showEditModuleModal, setShowEditModuleModal] = React.useState(false);
+  const [editingModule, setEditingModule] = React.useState(null);
+  const [editModuleTitle, setEditModuleTitle] = React.useState("");
+
+  const [showDeleteModuleModal, setShowDeleteModuleModal] =
+    React.useState(false);
+  const [deletingModule, setDeletingModule] = React.useState(null);
+
+  useEffect(() => {
+    loadCourseData();
+  }, [courseId]);
+
+  const loadCourseData = async () => {
+    setLoading(true);
+    try {
+      const cRes = await fetchCourseById(courseId || "crs-1");
+      if (cRes.success && cRes.course) {
+        setCourse(cRes.course);
+      }
+      const mRes = await fetchCourseModules(courseId || "crs-1");
+      if (mRes.success && mRes.modules) {
+        setModules(mRes.modules);
+        if (mRes.modules.length > 0) {
+          setExpandedModules([mRes.modules[0].id || mRes.modules[0]._id]);
+        }
+      }
+    } catch (err) {
+      console.warn("[CourseDetailBuilder] Error loading course data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const [modules, setModules] = React.useState([
-    {
-      id: 1,
-      title: "HTML & CSS Fundamentals",
-      lessons: 6,
-      duration: "4h 20m",
-      items: [
-        "Introduction to HTML",
-        "HTML Semantic Elements",
-        "CSS Fundamentals",
-      ],
-    },
-    {
-      id: 2,
-      title: "JavaScript Fundamentals",
-      lessons: 8,
-      duration: "6h 15m",
-      items: [],
-    },
-    {
-      id: 3,
-      title: "React.js Development",
-      lessons: 10,
-      duration: "8h 40m",
-      items: [],
-    },
-  ]);
-
 
   const toggleModule = (moduleId) => {
     setExpandedModules((prev) =>
@@ -89,43 +91,53 @@ export default function CourseDetailBuilder() {
     );
   };
 
-  const handleAddModule = () => {
+  const handleAddModule = async () => {
     const title = newModuleTitle.trim();
-
     if (!title) return;
 
-    const newModule = {
-      id: Date.now(),
-      title,
-      lessons: 0,
-      duration: "0h",
-      items: [],
-    };
-
-    setModules((prev) => [...prev, newModule]);
-
-    setExpandedModules((prev) => [...prev, newModule.id]);
+    try {
+      const res = await createCourseModule(courseId || "crs-1", { title });
+      if (res.success && res.module) {
+        const added = {
+          id: res.module.id || res.module._id || Date.now(),
+          _id: res.module._id,
+          title: res.module.title || title,
+          lessons: 0,
+          duration: "0h",
+          items: [],
+        };
+        setModules((prev) => [...prev, added]);
+        setExpandedModules((prev) => [...prev, added.id]);
+      }
+    } catch (err) {
+      console.warn("[CourseDetailBuilder] Error creating module:", err);
+    }
 
     setNewModuleTitle("");
     setShowModuleModal(false);
   };
 
-
-  const handleAddLesson = () => {
+  const handleAddLesson = async () => {
     const title = newLessonTitle.trim();
-
     if (!title || !selectedModuleId) return;
+
+    try {
+      await createModuleLesson(courseId || "crs-1", selectedModuleId, { title });
+    } catch (err) {
+      console.warn("[CourseDetailBuilder] Error creating lesson:", err);
+    }
 
     setModules((prev) =>
       prev.map((module) => {
-        if (module.id !== selectedModuleId) {
+        const modId = module.id || module._id;
+        if (modId !== selectedModuleId) {
           return module;
         }
 
         return {
           ...module,
-          items: [...module.items, title],
-          lessons: module.items.length + 1,
+          items: [...(module.items || []), title],
+          lessons: (module.items?.length || 0) + 1,
         };
       })
     );

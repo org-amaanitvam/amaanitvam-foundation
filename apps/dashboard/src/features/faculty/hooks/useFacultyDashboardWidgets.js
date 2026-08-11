@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { fetchFacultySessions } from '../services/sessionsApi';
 import { fetchFacultyPunchHistory } from '../services/attendanceApi';
 import { fetchAnnouncements } from '../services/announcementsApi';
+import { fetchApplications } from '../services/applicationsApi';
 
 /**
- * Custom hook to export upcoming live sessions for FacultyDashboard (Anushka's module)
+ * Custom hook to export upcoming live sessions with real-time 15s polling
  */
 export function useUpcomingSessions(facultyId) {
   const [sessions, setSessions] = useState([]);
@@ -27,13 +28,15 @@ export function useUpcomingSessions(facultyId) {
       }
     }
     load();
+    const interval = setInterval(load, 15000); // 15s polling
+    return () => clearInterval(interval);
   }, [facultyId]);
 
   return { sessions, loading };
 }
 
 /**
- * Custom hook to export faculty self-punch status for FacultyDashboard
+ * Custom hook to export faculty self-punch status with real-time 10s polling
  */
 export function useTodayPunchStatus(userId) {
   const [todayLog, setTodayLog] = useState(null);
@@ -57,13 +60,15 @@ export function useTodayPunchStatus(userId) {
       }
     }
     load();
+    const interval = setInterval(load, 10000); // 10s polling
+    return () => clearInterval(interval);
   }, [userId]);
 
   return { todayLog, isPunchedIn, loading };
 }
 
 /**
- * Custom hook to export recent announcements feed for FacultyDashboard & Notifications
+ * Custom hook to export recent announcements feed with real-time 15s polling
  */
 export function useRecentAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
@@ -83,7 +88,38 @@ export function useRecentAnnouncements() {
       }
     }
     load();
+    const interval = setInterval(load, 15000); // 15s polling
+    return () => clearInterval(interval);
   }, []);
 
   return { announcements, loading };
+}
+
+/**
+ * Custom hook to export pending candidate applications count with real-time 15s polling
+ */
+export function usePendingApplicationsCount() {
+  const [count, setCount] = useState(3);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetchApplications();
+        if (res.success && res.applications) {
+          const pending = res.applications.filter((a) => a.status === 'pending').length;
+          setCount(pending);
+        }
+      } catch (err) {
+        console.warn('[usePendingApplicationsCount] Failed to load applications:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+    const interval = setInterval(load, 15000); // 15s polling
+    return () => clearInterval(interval);
+  }, []);
+
+  return { count, loading };
 }

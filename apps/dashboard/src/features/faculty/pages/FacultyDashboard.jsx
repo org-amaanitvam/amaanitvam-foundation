@@ -21,6 +21,7 @@ import {
   useUpcomingSessions,
   useTodayPunchStatus,
   useRecentAnnouncements,
+  usePendingApplicationsCount,
 } from '../hooks/useFacultyDashboardWidgets';
 
 export default function FacultyDashboard() {
@@ -29,6 +30,7 @@ export default function FacultyDashboard() {
   const { sessions, loading: loadingSessions } = useUpcomingSessions(userProfile?.uid);
   const { isPunchedIn } = useTodayPunchStatus(userProfile?.uid);
   const { announcements, loading: loadingAnnouncements } = useRecentAnnouncements();
+  const { count: pendingCount } = usePendingApplicationsCount();
 
   const handleLaunchMeeting = (meetingUrl) => {
     if (meetingUrl) {
@@ -96,7 +98,7 @@ export default function FacultyDashboard() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-4xl font-black text-gray-900 tracking-tight">3</h3>
+            <h3 className="text-4xl font-black text-gray-900 tracking-tight">{pendingCount}</h3>
             <p className="text-xs font-extrabold text-[#8a164b] mt-1 flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-[#8a164b] animate-pulse" />
               Student & TA candidates

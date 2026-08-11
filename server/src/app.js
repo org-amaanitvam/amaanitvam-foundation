@@ -37,6 +37,8 @@ import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
 import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
 import libraryRoutes from "./modules/library-resources/library.routes.js";
+import facultyRoutes from "./modules/faculty/faculty.routes.js";
+import doubtRoutes from "./modules/doubts/doubts.routes.js";
 
 const app = express();
 
@@ -140,6 +142,8 @@ app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/digital-library", libraryRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/doubts", doubtRoutes);
 
 
 // Unhandled routes & errors

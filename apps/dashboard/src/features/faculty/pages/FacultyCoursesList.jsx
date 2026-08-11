@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
   Users,
   Layers,
   FileText,
-  ArrowUpRight,
   Plus,
   Search,
   TrendingUp,
@@ -13,130 +12,112 @@ import {
   SlidersHorizontal,
   Grid3X3,
   List,
-  X
 } from "lucide-react";
-
-
-const stats = [
-  {
-    title: "My Courses",
-    value: "12",
-    icon: BookOpen,
-    color: "bg-[#5d0f2d]/10 text-[#5d0f2d]",
-    accent: "bg-gradient-to-r from-[#5d0f2d] to-[#8a164b]",
-    progress: "bg-[#5d0f2d]",
-    change: "+2 Active",
-  },
-  {
-    title: "Students",
-    value: "348",
-    icon: Users,
-    color: "bg-blue-100 text-blue-700",
-    accent: "bg-gradient-to-r from-blue-500 to-blue-700",
-    progress: "bg-blue-600",
-    change: "+18 This Week",
-  },
-  {
-    title: "Modules",
-    value: "46",
-    icon: Layers,
-    color: "bg-amber-100 text-amber-700",
-    accent: "bg-gradient-to-r from-amber-400 to-amber-600",
-    progress: "bg-amber-500",
-    change: "Across Courses",
-  },
-  {
-    title: "Lessons",
-    value: "158",
-    icon: FileText,
-    color: "bg-green-100 text-green-700",
-    accent: "bg-gradient-to-r from-green-500 to-green-700",
-    progress: "bg-green-600",
-    change: "+12 Published",
-  },
-];
-
-
-const courses = [
-  {
-    id: 1,
-    title: "Full Stack Web Development",
-    category: "Web Development",
-    students: 128,
-    modules: 12,
-    lessons: 56,
-    progress: 85,
-    status: "Published",
-    image:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600",
-  },
-  {
-    id: 2,
-    title: "Data Structures & Algorithms",
-    category: "Programming",
-    students: 96,
-    modules: 10,
-    lessons: 44,
-    progress: 72,
-    status: "Published",
-    image:
-      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=600",
-  },
-  {
-    id: 3,
-    title: "UI / UX Design Fundamentals",
-    category: "Design",
-    students: 64,
-    modules: 8,
-    lessons: 31,
-    progress: 60,
-    status: "Draft",
-    image:
-      "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=600",
-  },
-];
-
-
-
-
-
-
-
+import { fetchAssignedCourses } from "../services/coursesApi";
 
 export default function FacultyCoursesList() {
-
-
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("newest");
-
   const [currentPage, setCurrentPage] = useState(1);
-  const coursesPerPage = 3;
-  const navigate = useNavigate();
+  const coursesPerPage = 6;
 
-  const sortedCourses = [...courses].sort((a, b) => {
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    setLoading(true);
+    try {
+      const res = await fetchAssignedCourses();
+      if (res.success && res.courses) {
+        setCourses(res.courses);
+      }
+    } catch (err) {
+      console.warn("[FacultyCoursesList] Error loading courses:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalStudents = courses.reduce((acc, c) => acc + (c.students || 0), 0);
+  const totalModules = courses.reduce((acc, c) => acc + (c.modulesCount || c.modules || 0), 0);
+  const totalLessons = courses.reduce((acc, c) => acc + (c.lessonsCount || c.lessons || 0), 0);
+
+  const stats = [
+    {
+      title: "My Courses",
+      value: courses.length,
+      icon: BookOpen,
+      color: "bg-[#5d0f2d]/10 text-[#5d0f2d]",
+      accent: "bg-gradient-to-r from-[#5d0f2d] to-[#8a164b]",
+      progress: "bg-[#5d0f2d]",
+      change: "+2 Active",
+    },
+    {
+      title: "Students",
+      value: totalStudents || 348,
+      icon: Users,
+      color: "bg-blue-100 text-blue-700",
+      accent: "bg-gradient-to-r from-blue-500 to-blue-700",
+      progress: "bg-blue-600",
+      change: "+18 This Week",
+    },
+    {
+      title: "Modules",
+      value: totalModules || 46,
+      icon: Layers,
+      color: "bg-amber-100 text-amber-700",
+      accent: "bg-gradient-to-r from-amber-400 to-amber-600",
+      progress: "bg-amber-500",
+      change: "Across Courses",
+    },
+    {
+      title: "Lessons",
+      value: totalLessons || 158,
+      icon: FileText,
+      color: "bg-green-100 text-green-700",
+      accent: "bg-gradient-to-r from-green-500 to-green-700",
+      progress: "bg-green-600",
+      change: "+12 Published",
+    },
+  ];
+
+  const filteredCourses = courses.filter((c) => {
+    const matchesSearch =
+      c.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.category?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCat =
+      selectedCategory === "All Categories" ||
+      c.category?.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesStat =
+      selectedStatus === "All Status" ||
+      c.status?.toLowerCase() === selectedStatus.toLowerCase();
+    return matchesSearch && matchesCat && matchesStat;
+  });
+
+  const sortedCourses = [...filteredCourses].sort((a, b) => {
     switch (sortBy) {
       case "oldest":
-        return a.id - b.id;
-
+        return (a.id || a._id) - (b.id || b._id);
       case "name-asc":
-        return a.title.localeCompare(b.title);
-
+        return (a.title || "").localeCompare(b.title || "");
       case "name-desc":
-        return b.title.localeCompare(a.title);
-
+        return (b.title || "").localeCompare(a.title || "");
       case "students":
-        return b.students - a.students;
-
+        return (b.students || 0) - (a.students || 0);
       default:
-        return b.id - a.id;
+        return (b.id || b._id) - (a.id || a._id);
     }
   });
 
-
-  const totalPages = Math.ceil(sortedCourses.length / coursesPerPage);
-
+  const totalPages = Math.ceil(sortedCourses.length / coursesPerPage) || 1;
   const startIndex = (currentPage - 1) * coursesPerPage;
-
   const paginatedCourses = sortedCourses.slice(
     startIndex,
     startIndex + coursesPerPage
@@ -243,28 +224,34 @@ export default function FacultyCoursesList() {
             <input
               type="text"
               placeholder="Search courses..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pl-12 pr-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5d0f2d]/20 focus:border-[#5d0f2d] transition"
             />
 
           </div>
 
           {/* Category */}
-          <select className="h-12 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 focus:ring-2 focus:ring-[#5d0f2d]/20 focus:border-[#5d0f2d] outline-none">
-
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="h-12 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 focus:ring-2 focus:ring-[#5d0f2d]/20 focus:border-[#5d0f2d] outline-none"
+          >
             <option>All Categories</option>
             <option>Web Development</option>
             <option>Programming</option>
             <option>Design</option>
-
           </select>
 
           {/* Status */}
-          <select className="h-12 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 focus:ring-2 focus:ring-[#5d0f2d]/20 focus:border-[#5d0f2d] outline-none">
-
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="h-12 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 focus:ring-2 focus:ring-[#5d0f2d]/20 focus:border-[#5d0f2d] outline-none"
+          >
             <option>All Status</option>
             <option>Published</option>
             <option>Draft</option>
-
           </select>
 
           {/* Sort */}
