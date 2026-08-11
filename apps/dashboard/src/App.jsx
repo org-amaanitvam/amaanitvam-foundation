@@ -57,6 +57,19 @@ export default function App() {
       {/* Public / Auth Route */}
       <Route path="/login" element={<Login />} />
 
+      {/* Safety-net: if Vercel ever sends /index.html to React Router,
+          detect demo param and redirect to the right place */}
+      <Route
+        path="/index.html"
+        element={(() => {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('demo') === 'faculty') {
+            return <Navigate to={`/faculty/dashboard?demo=faculty`} replace />;
+          }
+          return <Navigate to="/" replace />;
+        })()}
+      />
+
       {/* Core Dashboard Routes */}
       <Route path="/" element={<DashPage><DashboardHome /></DashPage>} />
       <Route path="/dashboard" element={<DashPage><DashboardHome /></DashPage>} />
