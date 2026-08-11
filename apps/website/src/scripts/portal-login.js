@@ -295,6 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isFacultyLogin) {
         showAlert('Faculty credentials verified! Launching Faculty Portal...', 'info');
         setTimeout(() => {
+          // NOTE: localStorage is NOT shared across origins (dashboard.amaanitvam.org ≠ www.amaanitvam.org)
+          // The ?demo=faculty URL param is the primary signal — keep it in the URL.
           window.location.href = `${PORTAL_BASE_URLS.dashboard}/faculty/dashboard?demo=faculty`;
         }, 500);
         return;
