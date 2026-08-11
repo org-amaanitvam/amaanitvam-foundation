@@ -248,24 +248,18 @@ document.addEventListener('DOMContentLoaded', () => {
       setLoading(true);
       hideAlert();
 
-      // IF ADMIN EMAIL OR ADMIN PORTAL: Validate credentials & SSO into Super Admin Portal (http://localhost:5173/)
-      if (portal === 'admin' || identifier.toLowerCase() === 'tech.amaanitvam@gmail.com') {
+      // IF ADMIN PORTAL: Validate credentials & SSO into Super Admin Portal
+      if (portal === 'admin') {
         try {
           showAlert('Verifying Super Admin credentials...', 'info');
 
           // Step 1: Validate credentials with Firebase client SDK on this origin
-          const userCredential = await signInWithEmailAndPassword(firebaseAuth, identifier, password);
-          // Sign out on this origin — we only needed to verify credentials are correct
+          await signInWithEmailAndPassword(firebaseAuth, identifier, password);
           await firebaseAuth.signOut();
 
           showAlert('Credentials verified! Launching Super Admin Portal...', 'info');
 
-          // Step 2: Redirect to admin portal login page with credentials in URL hash.
-          // The hash fragment is never sent to the server (safe for transport).
-          // Login.jsx on the admin portal will read these, auto-login via Firebase
-          // client SDK on its own origin (port 5173), and immediately clean the URL.
           const baseUrl = PORTAL_BASE_URLS.admin;
-
           const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}`;
 
           setTimeout(() => {
@@ -283,13 +277,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      // IF DASHBOARD PORTAL: Validate credentials & SSO into Main Dashboard Portal
+      if (portal === 'dashboard') {
+        try {
+          showAlert('Verifying Dashboard credentials...', 'info');
+
+          await signInWithEmailAndPassword(firebaseAuth, identifier, password);
+          await firebaseAuth.signOut();
+
+          showAlert('Credentials verified! Launching Dashboard Portal...', 'info');
+
+          const baseUrl = PORTAL_BASE_URLS.dashboard;
+          const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}`;
+
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 400);
+          return;
+        } catch (fbErr) {
+          console.warn('Firebase Sign-In Error:', fbErr);
+          const msg = fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-email'
+            ? 'Invalid Dashboard email or password.'
+            : (fbErr.message || 'Unable to authenticate with Firebase.');
+          showAlert(msg, 'error');
+          setLoading(false);
+          return;
+        }
+      }
+
       // IF FACULTY PORTAL OR FACULTY DEMO EMAIL / PASSWORD: Launch Faculty Portal Workspace Directly
       const isFacultyLogin =
         portal === 'faculty' ||
         identifier.toLowerCase().includes('faculty') ||
         identifier.toLowerCase().includes('prof') ||
-        identifier.toLowerCase().includes('ammaanitvam') ||
-        identifier.toLowerCase().includes('amaanitvam') ||
         password === 'faculty123';
 
       if (isFacultyLogin) {
