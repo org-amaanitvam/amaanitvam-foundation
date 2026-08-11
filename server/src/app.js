@@ -52,11 +52,18 @@ const allowedOrigins = [
   "http://localhost:5177",
   "https://admin.amaanitvam.org",
   "https://dashboard.amaanitvam.org",
+  "https://amaanitvam-common-login.onrender.com",
+  "https://login.amaanitvam.org",
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
-  ...String(process.env.ADMIN_PORTAL_ORIGIN || process.env.CORS_ORIGINS || "")
-    .split(",")
-    .map((origin) => origin.trim())
+  ...[
+    process.env.ADMIN_PORTAL_ORIGIN,
+    process.env.COMMON_LOGIN_ORIGIN,
+    process.env.CORS_ORIGINS,
+  ]
+    .filter(Boolean)
+    .flatMap((value) => String(value).split(","))
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
     .filter(Boolean),
 ];
 
