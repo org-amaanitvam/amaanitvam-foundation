@@ -42,7 +42,11 @@ import internalRoutes from './modules/internal/internal.routes.js';
 import conversationRoutes from './modules/conversations/conversation.routes.js';
 import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
 import progressRoutes from "./modules/progress/progress.routes.js";
-
+import quizRoutes from "./modules/quizzes/quiz.routes.js";
+import assignmentRoutes from "./modules/assignments/assignment.routes.js";
+import assignmentSubmissionRoutes from "./modules/assignment_submissions/assignment_submission.routes.js";
+import quizAttemptRoutes from "./modules/quiz-attempts/quiz_attempt.routes.js";
+import enrollmentRoutes from "./modules/enrollments/enrollment.routes.js";
 const app = express();
 
 // 1. Proxy Setup (Trust only local gateway)
@@ -135,8 +139,13 @@ app.use("/api/certificates", certificateRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/cms", cmsRoutes);
 app.use("/api/digital-library", libraryRoutes);
+app.use("/api", enrollmentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api", quizRoutes);
+app.use("/api", quizAttemptRoutes);
+app.use("/api", assignmentRoutes);
+app.use("/api", assignmentSubmissionRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/volunteer", volunteerRoutes);

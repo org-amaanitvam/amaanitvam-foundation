@@ -22,17 +22,21 @@ const progressSchema = new mongoose.Schema(
       default: false
     },
     completed_at: {
-      type: Date
+      type: Date,
+      default: null
     },
     time_spent_min: {
       type: Number,
       default: 0
     },
     video_progress_percent: {
-      type: Number
+      type: Number,
+      min: 0,
+      max: 100
     },
     last_position_sec: {
-      type: Number
+      type: Number,
+      default: 0
     },
     last_accessed: {
       type: Date,
