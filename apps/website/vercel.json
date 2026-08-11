@@ -69,6 +69,14 @@
         {
             "source": "/legal/terms-conditions",
             "destination": "/src/pages/legal/terms-conditions.html"
+        },
+        {
+            "source": "/login",
+            "destination": "/src/pages/login.html"
+        },
+        {
+            "source": "/pages/login",
+            "destination": "/src/pages/login.html"
         }
     ]
 }
