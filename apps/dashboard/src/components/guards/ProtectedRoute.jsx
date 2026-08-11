@@ -29,13 +29,8 @@ export default function ProtectedRoute({
   }
 
   if (!user) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ from: location }}
-      />
-    );
+    window.location.href = 'http://localhost:5175/src/pages/login.html';
+    return null;
   }
 
   if (

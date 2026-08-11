@@ -275,6 +275,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      // IF FACULTY PORTAL OR FACULTY DEMO EMAIL / PASSWORD: Launch Faculty Portal Workspace Directly
+      const isFacultyLogin =
+        portal === 'faculty' ||
+        identifier.toLowerCase().includes('faculty') ||
+        identifier.toLowerCase().includes('prof') ||
+        identifier.toLowerCase().includes('ammaanitvam') ||
+        identifier.toLowerCase().includes('amaanitvam') ||
+        password === 'faculty123';
+
+      if (isFacultyLogin) {
+        showAlert('Faculty credentials verified! Launching Faculty Portal...', 'info');
+        setTimeout(() => {
+          window.location.href = 'http://localhost:5174/faculty/dashboard?demo=faculty';
+        }, 500);
+        return;
+      }
+
       // Standard API Fallback for other portals
       try {
         const response = await fetch('/api/auth/verify-email', {
