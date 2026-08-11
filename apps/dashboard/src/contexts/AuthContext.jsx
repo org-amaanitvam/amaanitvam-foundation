@@ -367,14 +367,29 @@ export function AuthProvider({ children }) {
 
         if (!firebaseUser) {
           const urlParams = new URLSearchParams(window.location.search);
+          const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
           const isDemoFaculty =
             urlParams.get('demo') === 'faculty' ||
+            hashParams.get('demo') === 'faculty' ||
             localStorage.getItem('demo_faculty') === 'true' ||
+            sessionStorage.getItem('demo_faculty') === 'true' ||
             (window.location.pathname.startsWith('/faculty') && sessionStorage.getItem('logged_out') !== 'true');
 
           if (isDemoFaculty) {
             localStorage.setItem('demo_faculty', 'true');
+            sessionStorage.setItem('demo_faculty', 'true');
             sessionStorage.removeItem('logged_out');
+
+            // Clean the URL param without losing the path
+            if (urlParams.get('demo') === 'faculty') {
+              urlParams.delete('demo');
+              const newSearch = urlParams.toString();
+              window.history.replaceState(
+                {},
+                '',
+                window.location.pathname + (newSearch ? `?${newSearch}` : '') + window.location.hash,
+              );
+            }
 
             const demoUser = {
               uid: 'faculty-demo-001',
@@ -455,6 +470,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     showLogoutOverlay();
     localStorage.removeItem('demo_faculty');
+    sessionStorage.removeItem('demo_faculty');
     sessionStorage.setItem('logged_out', 'true');
     try {
       await signOut(auth);
