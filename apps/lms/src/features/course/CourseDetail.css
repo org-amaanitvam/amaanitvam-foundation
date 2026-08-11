@@ -1,0 +1,217 @@
+/* Course detail page */
+
+.detail-container {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.detail-back:hover {
+  color: var(--gold-dark);
+  transform: translateX(-3px);
+}
+
+.detail-hero {
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  margin-bottom: 2rem;
+}
+
+.detail-hero .catalog-label {
+  color: var(--gold);
+}
+
+.detail-title {
+  color: #fff;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+}
+
+.detail-desc {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 760px;
+  margin: 0 0 1.25rem;
+}
+
+.detail-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  color: var(--gold);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.detail-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.module-head {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.module-index {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.module-title {
+  font-size: 1.35rem;
+  color: var(--text);
+  margin: 0 0 0.25rem;
+}
+
+.module-desc {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.lesson-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.lesson-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.lesson-item:last-child {
+  border-bottom: 0;
+}
+
+.lesson-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(93, 15, 45, 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.lesson-name {
+  flex: 1;
+}
+
+.lesson-chevron {
+  color: var(--muted);
+}
+
+.detail-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.detail-state h2 {
+  font-size: 1.6rem;
+  color: var(--primary);
+  margin: 0;
+}
+
+.detail-state p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+.detail-state-icon {
+  color: var(--secondary);
+}
+
+.spin {
+  animation: detailSpin 0.9s linear infinite;
+  color: var(--secondary);
+}
+
+@keyframes detailSpin {
+  to { transform: rotate(360deg); }
+}
+
+.detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.detail-btn:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .detail-hero {
+    padding: 1.75rem 1.25rem;
+  }
+}

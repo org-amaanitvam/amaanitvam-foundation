@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Shield, Loader2 } from 'lucide-react';
-import api from '../config/api';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 
 export default function MyCertificatesPage() {

@@ -61,6 +61,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    background: #5b0f2d;
 }
 
 .brand {
@@ -783,7 +784,7 @@
 }
 
 .site-footer {
-    background: #5b0f2d;
+    background:#5b0f2d;
     color: #fff !important;
     padding: 0 !important;
     font-family: var(--font-body);
@@ -3675,7 +3676,7 @@ body.dashboard-page .toast.show {
     background-position: center;
     background-repeat: no-repeat;
     padding: 6rem 0;
-    min-height: 480px;
+    min-height: 420px;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -4123,7 +4124,7 @@ body[data-page="verify"] .card {
     max-width: 95%;
     margin: 40px auto;
     padding: 50px 40px;
-    background: #fff;
+    background: #fff !important;
     border-radius: 24px;
     display: flex;
     flex-direction: column;

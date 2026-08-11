@@ -122,7 +122,7 @@ export default function DashboardHome() {
                 : new Date().getHours() < 18
                   ? "Afternoon"
                   : "Evening"}
-              , {userProfile?.name?.split(" ")[0] || "Member"} 👋
+              , { "Member"} 👋
             </h1>
             <p className="mt-4 text-lg text-pink-100 max-w-xl leading-relaxed">
               Welcome back! Here's today's overview of your tasks, meetings and activities.

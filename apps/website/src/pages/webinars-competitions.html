@@ -17,11 +17,13 @@
 
   <link href="/images/Logo/logo.jpg" rel="icon" type="image/jpg" />
   <link href="../styles/styles.css" rel="stylesheet" />
+  <link href="../styles/webinars.css" rel="stylesheet" />
 </head>
 
 <body data-page="webinars-competitions">
   <div id="navbar-placeholder"></div>
 
+  <!-- HERO SECTION WITH BUTTONS -->
   <section class="page-hero has-image webinar-hero" data-hero>
     <div class="container webinar-hero-container">
       <div class="webinar-hero-content">
@@ -30,27 +32,31 @@
         <p class="section-desc">
           Interactive sessions, expert deep dives, and leadership panels hosted by Amaanitvam Foundation.
         </p>
+
       </div>
     </div>
   </section>
 
-  <main class="container events-container">
+  <main class="container events-container" id="upcoming-webinars">
+
+    <!-- WEBINAR 1: Dr. Ridima Kamal -->
     <div class="featured-webinar-layout">
       <div class="left-gallery-card-wrapper">
-        <div class="left-gallery-card">
-          <div class="top-poster-row">
-            <div class="main-poster">
-              <img alt="नारी शक्ति: Dharma, Samman aur Vikas Poster" src="/images/Webinar/Webinar1.jpeg" />
-            </div>
+        <!-- Equal-Height Image Cycler Container -->
+        <div class="image-cycler-card" data-current-index="0" title="Click to view next poster">
+          <div class="cycler-image-container">
+            <img class="cycler-img active" alt="The Essence of Service Poster 1" src="/images/Webinar/featured_1.png" />
+            <img class="cycler-img" alt="The Essence of Service Poster 2" src="/images/Webinar/featured_2.png" />
+            <img class="cycler-img" alt="The Essence of Service Poster 3" src="/images/Webinar/featured_3.png" />
+            <img class="cycler-img" alt="The Essence of Service Poster 4" src="/images/Webinar/featured_4.png" />
+            <img class="cycler-img" alt="The Essence of Service Poster 5" src="/images/Webinar/featured_5.png" />
+            <img class="cycler-img" alt="The Essence of Service Poster 6" src="/images/Webinar/featured_6.png" />
+            <img class="cycler-img" alt="The Essence of Service Poster 7" src="/images/Webinar/featured_7.png" />
           </div>
 
-          <div class="bottom-snapshots-row">
-            <div class="snapshot-card">
-              <img alt="Webinar Interactive View 1" src="/images/Webinar/Webinar2.jpeg" />
-            </div>
-            <div class="snapshot-card">
-              <img alt="Webinar Interactive View 2" src="/images/Webinar/webinar3.jpeg" />
-            </div>
+          <div class="cycler-controls">
+            <span class="cycler-counter"><i class="fa-solid fa-images"></i> <span class="counter-text">1 / 7</span></span>
+            <span class="cycler-hint">Next <i class="fa-solid fa-rotate-right"></i></span>
           </div>
         </div>
       </div>
@@ -58,6 +64,65 @@
       <div class="webinar-details-pane">
         <div>
           <span class="webinar-status-badge">Featured Webinar</span>
+          <div class="webinar-subtitle-hindi">Finding Humanity Within</div>
+          <h2 class="webinar-main-title">What Does It Truly Mean to Serve?</h2>
+
+          <div class="speaker-profile">
+            <div class="speaker-avatar-icon">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div class="speaker-info">
+              <h4>Dr. Ridima Kamal</h4>
+              <p>BDS, MPH, PhD (Pursuing) | Public Health Leader &amp; Consultant</p>
+            </div>
+          </div>
+
+          <div class="pill-tags-container">
+            <span class="topic-pill">Public Health</span>
+            <span class="topic-pill">Volunteering &amp; Service</span>
+            <span class="topic-pill">Youth Empowerment</span>
+            
+          </div>
+
+          <p class="webinar-description-text">
+            Is social work merely about helping others, or is it about discovering the humanity within ourselves?
+            Join Amaanitvam Foundation for an inspiring session exploring why social work matters, the power of
+            community service, leadership skills, and career pathways in social development.
+          </p>
+
+         
+        </div>
+
+        <div class="webinar-action-row">
+          <a class="btn btn-primary webinar-inquire-btn" href="contact.html">
+            Inquire For Sessions
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEBINAR 2: Ms. Prachi Sharma -->
+    <div class="featured-webinar-layout">
+      <div class="left-gallery-card-wrapper">
+        <!-- Equal-Height Image Cycler Container -->
+        <div class="image-cycler-card" data-current-index="0" title="Click to view next poster">
+          <div class="cycler-image-container">
+            <img class="cycler-img active" alt="Nari Shakti Poster 1" src="/images/Webinar/Webinar1.jpeg" />
+            <img class="cycler-img" alt="Nari Shakti Poster 2" src="/images/Webinar/Webinar2.jpeg" />
+            <img class="cycler-img" alt="Nari Shakti Poster 3" src="/images/Webinar/webinar3.jpeg" />
+          </div>
+
+          <div class="cycler-controls">
+            <span class="cycler-counter"><i class="fa-solid fa-images"></i> <span class="counter-text">1 /
+                3</span></span>
+            <span class="cycler-hint">Next <i class="fa-solid fa-rotate-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="webinar-details-pane">
+        <div>
+          <span class="webinar-status-badge">Past Session</span>
           <div class="webinar-subtitle-hindi">नारी शक्ति:</div>
           <h2 class="webinar-main-title">Dharma, Samman aur Vikas</h2>
 
@@ -83,12 +148,15 @@
           </p>
         </div>
 
-        <a class="btn btn-primary webinar-inquire-btn" href="contact.html">
-          Inquire For Sessions
-        </a>
+        <div class="webinar-action-row">
+          <a class="btn btn-primary webinar-inquire-btn" href="contact.html">
+            Inquire For Sessions
+          </a>
+        </div>
       </div>
     </div>
 
+    <!-- REGISTRATION SECTION -->
     <section class="section section-white" id="registration-form-section">
       <div class="container webinar-registration-container">
         <div class="section-header">
@@ -136,8 +204,8 @@
             <label class="form-label" for="reg-event">
               Event Name <span aria-hidden="true" class="required-star">*</span>
             </label>
-            <input class="form-input" id="reg-event" name="event" placeholder="e.g. Dharma, Samman aur Vikas" required
-              type="text" />
+            <input class="form-input" id="reg-event" name="event" placeholder="e.g. What does it truly mean to serve?"
+              required type="text" />
           </div>
 
           <div class="webinar-form-group">
@@ -170,8 +238,31 @@
 
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 
-  <script src="../scripts/app.js" type="module"></script>
+  <!-- Image Loop JavaScript Handler -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cyclers = document.querySelectorAll('.image-cycler-card');
 
+      cyclers.forEach(cycler => {
+        cycler.addEventListener('click', () => {
+          const images = cycler.querySelectorAll('.cycler-img');
+          const counterText = cycler.querySelector('.counter-text');
+          let currentIndex = parseInt(cycler.getAttribute('data-current-index'), 10) || 0;
+
+          images[currentIndex].classList.remove('active');
+          currentIndex = (currentIndex + 1) % images.length;
+          images[currentIndex].classList.add('active');
+
+          cycler.setAttribute('data-current-index', currentIndex);
+          if (counterText) {
+            counterText.textContent = `${currentIndex + 1} / ${images.length}`;
+          }
+        });
+      });
+    });
+  </script>
+
+  <script src="../scripts/app.js" type="module"></script>
   <script type="module" src="/src/scripts/public-form-handlers.js" data-amaanitvam-public-forms></script>
 </body>
 

@@ -193,94 +193,65 @@ const app = express();
 app.disable("x-powered-by");
 
 
-// FINAL ADMIN CORS START
+// AMAANITVAM_CORS_V14_START
+// One authoritative CORS policy. Keep this before every API route so browser
+// preflights from common-login can reach /api/auth/cross-portal-token.
+const gatewayDefaultOrigins = [
+  "https://admin.amaanitvam.org",
+  "https://dashboard.amaanitvam.org",
+  "https://amaanitvam.org",
+  "https://www.amaanitvam.org",
+  "https://amaanitvam-common-login.onrender.com",
+  "https://login.amaanitvam.org",
+];
+
+const gatewayConfiguredOrigins = [
+  process.env.ADMIN_PORTAL_ORIGIN,
+  process.env.COMMON_LOGIN_ORIGIN,
+  process.env.CORS_ORIGINS,
+]
+  .filter(Boolean)
+  .flatMap((value) => String(value).split(","))
+  .map((value) => value.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+
+const gatewayAllowedOrigins = new Set([
+  ...gatewayDefaultOrigins,
+  ...gatewayConfiguredOrigins,
+]);
+
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  const origin = String(req.headers.origin || "").replace(/\/+$/, "");
+  const isLocal = /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin);
+  const originAllowed = !origin || isLocal || gatewayAllowedOrigins.has(origin);
 
-  const allowed =
-    !origin ||
-    /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin) ||
-    origin === "https://admin.amaanitvam.org" ||
-      origin === "https://www.amaanitvam.org" ||
-      origin === "https://amaanitvam.org" ||
-      origin === "https://dashboard.amaanitvam.org";
-
-  if (origin && allowed) {
-    res.setHeader(
-      "Access-Control-Allow-Origin",
-      origin
-    );
-    res.setHeader("Vary", "Origin");
-    res.setHeader(
-      "Access-Control-Allow-Credentials",
-      "true"
-    );
+  if (origin && !originAllowed) {
+    console.warn(`[admin-gateway] CORS blocked origin: ${origin}`);
   }
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
-  );
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(allowed ? 204 : 403);
-  }
-
-  next();
-});
-// FINAL ADMIN CORS END
-
-
-// ADMIN GATEWAY CORS FIX START
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  const configuredOrigins = String(
-    process.env.ADMIN_PORTAL_ORIGIN || ""
-  )
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  const originAllowed =
-    !origin ||
-    /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin) ||
-    origin === "https://admin.amaanitvam.org" ||
-      origin === "https://www.amaanitvam.org" ||
-      origin === "https://amaanitvam.org" ||
-      origin === "https://dashboard.amaanitvam.org" ||
-    configuredOrigins.includes(origin);
 
   if (origin && originAllowed) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
   }
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
+    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With"
   );
-
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   );
-
   res.setHeader("Access-Control-Max-Age", "86400");
 
   if (req.method === "OPTIONS") {
-    return res.sendStatus(originAllowed ? 204 : 403);
+    return originAllowed ? res.sendStatus(204) : res.sendStatus(403);
   }
 
-  next();
+  return next();
 });
-// ADMIN GATEWAY CORS FIX END
+// AMAANITVAM_CORS_V14_END
 
 
 function clean(value) {
@@ -509,6 +480,7 @@ async function adminProfileFor(decodedToken) {
   const emailRegex = email ? new RegExp(`^${escapeRegex(email)}$`, "i") : null;
 
   const conditions = [
+    { firebase_uid: decodedToken.uid },
     { firebaseUid: decodedToken.uid },
     { firebaseUID: decodedToken.uid },
     { uid: decodedToken.uid },
@@ -544,6 +516,10 @@ function isAdministrator(decodedToken, profileResult) {
     "super-admin",
     "super_admin",
     "owner",
+    "department_head",
+    "departmenthead",
+    "coordinator",
+    "hod",
   ]);
 
   const configuredEmails = clean(process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL)
@@ -605,6 +581,21 @@ async function requireAdministrator(req, res, next) {
     message: req.firebaseUser
       ? "Administrator access is required"
       : "Authentication token is required",
+  });
+}
+
+// AF_REQUIRE_AUTHENTICATED_USER
+// Any signed-in Firebase user (intern, member, staff, admin) may exchange their
+// ID token for a cross-portal custom token. Administrator-only gating here was
+// what forced non-admin users to log in a second time on the Dashboard.
+async function requireAuthenticatedUser(req, res, next) {
+  await optionalAdministrator(req, res, () => {});
+
+  if (req.firebaseUser?.uid) return next();
+
+  return res.status(401).json({
+    success: false,
+    message: "Authentication token is required",
   });
 }
 
@@ -1161,11 +1152,34 @@ app.get(
 );
 
 app.get("/api/auth/session", async (req, res) => {
+  // UPSTREAM_SESSION_PASSTHROUGH
+  // The upstream API owns UserAccess (role, permissions, mustChangePassword).
+  // Ask it FIRST so the dashboard can show the first-login password screen.
+  const authorization = clean(req.headers.authorization);
+
+  if (!authorization.toLowerCase().startsWith("bearer ")) {
+    return res.status(401).json({ success: false, message: "No token provided", code: "AUTH_TOKEN_INVALID" });
+  }
+
   try {
-    const authorization = clean(req.headers.authorization);
-    if (!authorization.toLowerCase().startsWith("bearer ")) {
-      return res.status(401).json({ success: false, message: "No token provided", code: "AUTH_TOKEN_INVALID" });
+    const upstream = await fetch(
+      `http://${UPSTREAM_HOST}:${UPSTREAM_PORT}/api/auth/session`,
+      { headers: { authorization, accept: "application/json" } }
+    );
+
+    const payload = await upstream.json().catch(() => null);
+
+    // Forward anything the upstream can answer authoritatively, including
+    // 403 PASSWORD_CHANGE_REQUIRED / ACCOUNT_INACTIVE.
+    if (payload && (upstream.ok || payload.code !== "USER_NOT_REGISTERED")) {
+      return res.status(upstream.status).json(payload);
     }
+  } catch (error) {
+    console.warn("[admin-gateway] upstream session lookup failed:", error.message);
+  }
+
+  // Fallback: accounts that only exist in the admin collections.
+  try {
     const decodedToken = await getAuth().verifyIdToken(authorization.slice(7).trim());
     const profileResult = await adminProfileFor(decodedToken);
     const user = profileResult?.document || {
@@ -1174,7 +1188,7 @@ app.get("/api/auth/session", async (req, res) => {
       name: decodedToken.name || decodedToken.email || "User",
       role: "user",
     };
-    return res.json({ success: true, user });
+    return res.json({ success: true, user: { mustChangePassword: false, ...user } });
   } catch (error) {
     const code = error.code === "auth/argument-error" ? "AUTH_TOKEN_INVALID" : "SESSION_ERROR";
     return res.status(401).json({ success: false, message: "Invalid or expired token", code });
@@ -2867,6 +2881,140 @@ app.get(
 // FINAL_ADMIN_DATA_RECOVERY_END
 
 registerCrud("candidates", ["/api/admin/candidates"]);
+
+// MEMBER MANAGEMENT ROUTES START
+// These routes handle member-specific operations (deactivate, activate, role update, permissions)
+// that the admin portal frontend expects. They must be registered BEFORE the generic CRUD
+// registerCrud("members") call, otherwise /:id would match first.
+
+app.put(
+  ["/api/admin/members/:id/deactivate"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { status: "inactive", updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Member deactivated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.put(
+  ["/api/admin/members/:id/activate"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { status: "active", updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Member activated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.put(
+  ["/api/admin/members/:id/role"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const newRole = clean(req.body?.role);
+      if (!newRole) {
+        return res.status(400).json({ success: false, message: "role is required" });
+      }
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { role: newRole, updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Role updated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+app.put(
+  ["/api/admin/members/:id/permissions"],
+  requireAdministrator,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const permissions = Array.isArray(req.body?.permissions)
+        ? req.body.permissions.map((v) => String(v).trim()).filter(Boolean)
+        : [];
+      const found = await findResourceById("members", req.params.id);
+      if (!found) {
+        return res.status(404).json({ success: false, message: "Member not found" });
+      }
+      await mongoose.connection.db
+        .collection(found.collectionName)
+        .updateOne(
+          { _id: found.document._id },
+          { $set: { permissions, updatedAt: new Date() } }
+        );
+      const refreshed = await mongoose.connection.db
+        .collection(found.collectionName)
+        .findOne({ _id: found.document._id });
+      res.json({
+        success: true,
+        message: "Permissions updated successfully",
+        member: normalizeDocument(refreshed, found.collectionName),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+// MEMBER MANAGEMENT ROUTES END
+
 registerCrud("members", ["/api/admin/members", "/api/members"]);
 registerCrud("campaigns", ["/api/admin/campaigns", "/api/campaigns"]);
 registerCrud("donations", ["/api/admin/donations", "/api/donations"]);
@@ -3502,6 +3650,37 @@ app.post(
   provisionUser
 );
 // ADMIN_MEMBER_PROVISION_GATEWAY_END
+
+// CROSS_PORTAL_AUTH_TOKEN_START
+// Creates a Firebase custom token so the common login page can pass authentication
+// to other portals (admin, dashboard) running on different origins/ports.
+app.post(
+  "/api/auth/cross-portal-token",
+  requireAuthenticatedUser,
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const firebaseUser = req.firebaseUser;
+      if (!firebaseUser?.uid) {
+        return res.status(401).json({
+          success: false,
+          message: "Valid Firebase authentication required",
+        });
+      }
+      const customToken = await getAuth().createCustomToken(firebaseUser.uid);
+      console.log(`[admin-gateway] Cross-portal token created for uid=${firebaseUser.uid}`);
+      return res.json({
+        success: true,
+        customToken,
+        uid: firebaseUser.uid,
+      });
+    } catch (error) {
+      console.error("[admin-gateway] Cross-portal token error:", error.message);
+      return next(error);
+    }
+  }
+);
+// CROSS_PORTAL_AUTH_TOKEN_END
 
 function proxyToExistingBackend(req, res) {
   const headers = { ...req.headers };

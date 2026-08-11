@@ -1,6 +1,7 @@
 import { loadSharedComponents } from "./component-loader.js";
 import { initNavbar } from "./navbar.js";
 import { startCmsContentSync } from "./cms-content.js";
+import { initGalleryPreview } from "./gallery-preview.js";
 
 function loadIndependentModules() {
     import("./forms.js").catch((error) => {
@@ -20,32 +21,85 @@ function loadIndependentModules() {
 }
 
 
-function initFAQ() {
+function initFAQ({ allowMultiple = false } = {}) {
     const faqButtons = document.querySelectorAll(".faq-question");
+    if (!faqButtons.length) return;
+
+    const closeItem = (btn) => {
+        const item = btn.closest(".faq-item");
+        const answer = btn.nextElementSibling;
+        if (!answer) return;
+
+        btn.setAttribute("aria-expanded", "false");
+        if (item) item.classList.remove("is-open");
+
+        // 1. Set explicit pixel height before collapsing
+        answer.style.maxHeight = `${answer.scrollHeight}px`;
+        // Force reflow so browser registers starting height
+        void answer.offsetHeight;
+
+        // 2. Animate down to 0
+        answer.style.maxHeight = "0px";
+
+        // 3. Clean up active class after transition finishes
+        const onTransitionEnd = (e) => {
+            if (e.propertyName === "max-height" && answer.style.maxHeight === "0px") {
+                answer.classList.remove("active");
+                answer.removeEventListener("transitionend", onTransitionEnd);
+            }
+        };
+        answer.addEventListener("transitionend", onTransitionEnd);
+    };
+
+    const openItem = (btn) => {
+        const item = btn.closest(".faq-item");
+        const answer = btn.nextElementSibling;
+        if (!answer) return;
+
+        btn.setAttribute("aria-expanded", "true");
+        if (item) item.classList.add("is-open");
+        answer.classList.add("active");
+
+        // Set pixel height to trigger expand transition
+        answer.style.maxHeight = `${answer.scrollHeight}px`;
+
+        // Once transition completes, set maxHeight to "none" so content isn't cut off on resize
+        const onTransitionEnd = (e) => {
+            if (e.propertyName === "max-height" && btn.getAttribute("aria-expanded") === "true") {
+                answer.style.maxHeight = "none";
+                answer.removeEventListener("transitionend", onTransitionEnd);
+            }
+        };
+        answer.addEventListener("transitionend", onTransitionEnd);
+    };
 
     faqButtons.forEach((button) => {
         button.addEventListener("click", () => {
-            const answer = button.nextElementSibling;
-            const expanded =
-                button.getAttribute("aria-expanded") === "true";
+            const isExpanded = button.getAttribute("aria-expanded") === "true";
 
-            // Close all
-            faqButtons.forEach((btn) => {
-                btn.setAttribute("aria-expanded", "false");
-                btn.nextElementSibling.style.maxHeight = null;
-                btn.nextElementSibling.classList.remove("active");
-            });
+            // If single mode (default), close other items first
+            if (!allowMultiple) {
+                faqButtons.forEach((btn) => {
+                    if (btn !== button && btn.getAttribute("aria-expanded") === "true") {
+                        closeItem(btn);
+                    }
+                });
+            }
 
-            // Open clicked
-            if (!expanded) {
-                button.setAttribute("aria-expanded", "true");
-                answer.classList.add("active");
-                answer.style.maxHeight =
-                    answer.scrollHeight + "px";
+            // Toggle target item
+            if (isExpanded) {
+                closeItem(button);
+            } else {
+                openItem(button);
             }
         });
     });
 }
+
+// Initialize FAQ (set allowMultiple: true if you want multiple items open at once)
+document.addEventListener("DOMContentLoaded", () => {
+    initFAQ({ allowMultiple: false });
+});
 
 loadIndependentModules();
 
@@ -60,6 +114,7 @@ async function initApp() {
         initNavbar();
         initFAQ();
         await startCmsContentSync();
+        await initGalleryPreview();
 } catch (error) {
         console.error("App initialization failed:", error);
     }

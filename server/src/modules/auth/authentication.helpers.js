@@ -10,18 +10,23 @@ const ROLE_MAPPINGS = new Map([
   ["superadmin", { userRole: "super_admin", accessRole: "super_admin" }],
   ["admin", { userRole: "admin", accessRole: "super_admin" }],
   ["administrator", { userRole: "admin", accessRole: "super_admin" }],
+  ["coordinator", { userRole: "coordinator", accessRole: "department_head" }],
+  ["hod", { userRole: "hod", accessRole: "department_head" }],
   ["department_head", { userRole: "department_head", accessRole: "department_head" }],
   ["departmenthead", { userRole: "department_head", accessRole: "department_head" }],
   ["head", { userRole: "department_head", accessRole: "department_head" }],
+  ["faculty", { userRole: "faculty", accessRole: "department_head" }],
   ["team_member", { userRole: "member", accessRole: "team_member" }],
   ["teammember", { userRole: "member", accessRole: "team_member" }],
   ["member", { userRole: "member", accessRole: "team_member" }],
   ["user", { userRole: "member", accessRole: "team_member" }],
+  ["staff", { userRole: "staff", accessRole: "team_member" }],
+  ["student", { userRole: "student", accessRole: "team_member" }],
   ["intern", { userRole: "intern", accessRole: "team_member" }],
   ["volunteer", { userRole: "volunteer", accessRole: "team_member" }],
 ]);
 
-export const SUPPORTED_PROVISION_ROLES = ["super_admin", "admin", "department_head", "team_member", "member", "intern", "volunteer"];
+export const SUPPORTED_PROVISION_ROLES = ["super_admin", "admin", "coordinator", "hod", "department_head", "faculty", "team_member", "member", "staff", "student", "intern", "volunteer"];
 export const resolveRoleMapping = (value = "team_member") => ROLE_MAPPINGS.get(canonicalRoleKey(value)) || null;
 export const normalizeRole = (value = "team_member") => resolveRoleMapping(value)?.accessRole || "team_member";
 export const normalizeUserRole = (value = "team_member") => resolveRoleMapping(value)?.userRole || "member";
@@ -31,6 +36,8 @@ const namePrefix = (name = "") => {
   const firstToken = String(name).trim().split(/\s+/).find(Boolean);
   return String(firstToken || "USER").replace(/[^A-Za-z0-9]/g, "").toUpperCase() || "USER";
 };
+
+const escapeRegex = (value = "") => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const generateUniqueUserId = async (name) => {
   const prefix = namePrefix(name);
@@ -68,31 +75,110 @@ export const validateNewPassword = (password) => {
   return null;
 };
 
+// FIX: the User schema stores the Firebase UID as `firebase_uid` (snake_case).
+// The previous lookup only queried camelCase variants, so every dashboard request
+// fell back to an exact-case email match — and returned null whenever the stored
+// email casing differed, producing a blanket 403 USER_NOT_REGISTERED.
 export const findMongoUserFromFirebase = async (firebaseUser) => {
-  const uid = String(firebaseUser?.uid || "").trim();
+  const uid = String(firebaseUser?.uid || firebaseUser?.firebase_uid || firebaseUser?.firebaseUid || "").trim();
   const email = normalizeEmail(firebaseUser?.email);
   const or = [];
-  if (uid) or.push({ firebaseUid: uid }, { firebaseUID: uid }, { userId: uid });
-  if (email) or.push({ email });
-  return or.length ? User.findOne({ $or: or }) : null;
+  if (uid) {
+    or.push(
+      { firebase_uid: uid },
+      { firebaseUid: uid },
+      { firebaseUID: uid },
+      { uid },
+      { userId: uid },
+    );
+  }
+  if (email) {
+    const emailRegex = new RegExp(`^${escapeRegex(email)}$`, "i");
+    or.push({ email: emailRegex });
+  }
+  if (!or.length) return null;
+
+  const user = await User.findOne({ $or: or });
+
+  // Backfill the UID so subsequent lookups do not depend on the email at all.
+  if (user && uid && !user.firebase_uid) {
+    user.firebase_uid = uid;
+    try {
+      await user.save();
+    } catch {
+      /* non-fatal: a duplicate-key race just means another request won */
+    }
+  }
+
+  return user;
 };
 
+// FIX: an existing UserAccess row was returned verbatim, so it kept whatever role
+// and flags it was created with. Promoting a user in the `users` collection never
+// reached UserAccess, and rows provisioned with the default
+// `mustChangePassword: true` blocked every dashboard route with a 403 even after
+// the password had been changed. Keep the row in sync with the source of truth.
 export const getOrCreateAccessForExistingUser = async (user, firebaseUser, { mustChangePassword = false } = {}) => {
   let access = await UserAccess.findOne({ user: user._id });
+
   if (access) {
-    if (!access.firebaseUid && firebaseUser?.uid) { access.firebaseUid = firebaseUser.uid; await access.save(); }
+    let dirty = false;
+
+    if (!access.firebaseUid && firebaseUser?.uid) {
+      access.firebaseUid = firebaseUser.uid;
+      dirty = true;
+    }
+
+    const expectedRole = normalizeRole(user.role);
+    if (expectedRole && access.role !== expectedRole) {
+      access.role = expectedRole;
+      dirty = true;
+    }
+
+    const expectedActive = user.status !== "inactive" && user.status !== "suspended";
+    if (access.isActive !== expectedActive) {
+      access.isActive = expectedActive;
+      dirty = true;
+    }
+
+    // A change-password gate is only meaningful while an unused temporary
+    // password is outstanding. Stale `true` flags are cleared here.
+    if (access.mustChangePassword === true) {
+      const temporaryOutstanding =
+        Boolean(access.temporaryPasswordIssuedAt) &&
+        (!access.passwordChangedAt || access.passwordChangedAt < access.temporaryPasswordIssuedAt);
+      if (!temporaryOutstanding) {
+        access.mustChangePassword = false;
+        dirty = true;
+      }
+    }
+
+    if (dirty) await access.save();
     return access;
   }
-  const uniqueId = String(user.memberId || "").trim().toUpperCase() || await generateUniqueUserId(user.name || firebaseUser?.name || "USER");
+
+  const uniqueId =
+    String(user.memberId || user.member_id || "").trim().toUpperCase() ||
+    (await generateUniqueUserId(user.name || firebaseUser?.name || "USER"));
+
   access = await UserAccess.create({
     user: user._id,
-    firebaseUid: firebaseUser?.uid || user.firebaseUid || undefined,
+    firebaseUid: firebaseUser?.uid || user.firebase_uid || user.firebaseUid || undefined,
     uniqueId,
     role: normalizeRole(user.role),
-    isActive: user.status !== "inactive",
+    isActive: user.status !== "inactive" && user.status !== "suspended",
     mustChangePassword,
   });
-  if (!user.memberId) { user.memberId = uniqueId; await user.save(); }
+
+  if (!user.memberId && !user.member_id) {
+    user.member_id = uniqueId;
+    try {
+      await user.save();
+    } catch {
+      /* non-fatal */
+    }
+  }
+
   return access;
 };
 

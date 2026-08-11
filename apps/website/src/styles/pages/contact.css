@@ -1,12 +1,6 @@
 /* ==========================================================================
    Contact Page — Premium Redesign
-   Every selector, grid-template-columns value, and breakpoint below is
-   unchanged from the original — layout/functionality is identical. What
-   changed: spacing pulled onto an 8px rhythm, corner radius standardized
-   to 12–16px, soft elevation + hover/focus micro-interactions added to
-   cards and interactive elements, and a touch of glass on the donation
-   panel (it was already semi-transparent, just needed the blur to read
-   as glass instead of a flat tint).
+
    ========================================================================== */
 
 body[data-page="contact"] {
@@ -32,7 +26,6 @@ body[data-page="contact"] .page-hero.has-image .section-title,
 body[data-page="contact"] .page-hero.has-image .section-desc {
     text-align: center;
 }
-
 
 
 /* --------------------------------------------------------------------------
@@ -191,8 +184,8 @@ body[data-page="contact"] .contact-info-link {
 }
 
 /* --------------------------------------------------------------------------
-   FAQ — flat rows with divider lines, no card box
-   -------------------------------------------------------------------------- */
+    FAQ layout on contact page
+    -------------------------------------------------------------------------- */
 
 body[data-page="contact"] #faq {
     padding: clamp(3rem, 7vw, 4.5rem) 0 clamp(3.5rem, 8vw, 4.5rem) !important;
@@ -213,52 +206,6 @@ body[data-page="contact"] #faq [role="region"] {
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
-}
-
-body[data-page="contact"] #faq .faq-item {
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border-bottom: 1px solid var(--border, #dcc8b6) !important;
-}
-
-body[data-page="contact"] #faq .faq-item:last-child {
-    border-bottom: none !important;
-}
-
-body[data-page="contact"] #faq .faq-question {
-    width: 100%;
-    min-height: 56px;
-    padding: 24px 0;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-weight: 700;
-    color: var(--primary, #5d0f2d);
-    cursor: pointer;
-    transition: color 0.2s var(--contact-ease);
-}
-
-body[data-page="contact"] #faq .faq-question:hover {
-    background: transparent;
-    color: var(--gold-dark, #b58241);
-}
-
-body[data-page="contact"] #faq .faq-question:focus-visible {
-    outline: 2px solid var(--gold, #d8a15f);
-    outline-offset: 4px;
-    border-radius: 4px;
-}
-
-body[data-page="contact"] #faq .faq-answer {
-    padding: 0 0 24px;
-    color: var(--muted, #7a7a7a);
-    line-height: 1.7;
 }
 
 /* --------------------------------------------------------------------------

@@ -27,8 +27,9 @@ import donationRoutes from "./modules/donations/donation.routes.js";
 import certificateRoutes from "./modules/certificates/certificate.routes.js";
 import galleryRoutes from "./modules/gallery/gallery.routes.js";
 import cmsRoutes from "./modules/cms/cms.routes.js";
-import libraryRoutes from "./modules/digital-library/library.routes.js";
 import courseRoutes from "./modules/courses/course.routes.js";
+import courseModuleRoutes from './modules/course-modules/course_module.routes.js';
+import lessonRoutes from './modules/lessons/lesson.routes.js';
 import volunteerRoutes from "./modules/volunteers/volunteer.routes.js";
 import internshipRoutes from "./modules/internships/internship.routes.js";
 import publicFormRoutes from "./modules/public-forms/publicForm.routes.js";
@@ -47,6 +48,11 @@ import assignmentRoutes from "./modules/assignments/assignment.routes.js";
 import assignmentSubmissionRoutes from "./modules/assignment_submissions/assignment_submission.routes.js";
 import quizAttemptRoutes from "./modules/quiz-attempts/quiz_attempt.routes.js";
 import enrollmentRoutes from "./modules/enrollments/enrollment.routes.js";
+import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
+import libraryRoutes from "./modules/library-resources/library.routes.js";
+import facultyRoutes from "./modules/faculty/faculty.routes.js";
+import doubtRoutes from "./modules/doubts/doubts.routes.js";
+
 const app = express();
 
 // 1. Proxy Setup (Trust only local gateway)
@@ -61,11 +67,18 @@ const allowedOrigins = [
   "http://localhost:5177",
   "https://admin.amaanitvam.org",
   "https://dashboard.amaanitvam.org",
+  "https://amaanitvam-common-login.onrender.com",
+  "https://login.amaanitvam.org",
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
-  ...String(process.env.ADMIN_PORTAL_ORIGIN || process.env.CORS_ORIGINS || "")
-    .split(",")
-    .map((origin) => origin.trim())
+  ...[
+    process.env.ADMIN_PORTAL_ORIGIN,
+    process.env.COMMON_LOGIN_ORIGIN,
+    process.env.CORS_ORIGINS,
+  ]
+    .filter(Boolean)
+    .flatMap((value) => String(value).split(","))
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
     .filter(Boolean),
 ];
 
@@ -140,6 +153,8 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/cms", cmsRoutes);
 app.use("/api/digital-library", libraryRoutes);
 app.use("/api", enrollmentRoutes);
+app.use("/api/courses/:courseId/modules/:moduleId/lessons", lessonRoutes);
+app.use("/api/courses/:courseId/modules", courseModuleRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api", quizRoutes);
@@ -153,18 +168,12 @@ app.use("/api/internship", internshipRoutes);
 app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/digital-library", libraryRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/doubts", doubtRoutes);
-app.use("/internal", internalRoutes);
-app.use("/api/conversations", conversationRoutes);
-app.use("/api/ai-notifications", aiNotificationRoutes);
-app.use("/api/dashboard", dashboardRoutes);
 
-app.use("/api/admin/gallery", galleryRoutes);
 
-// 6. Error Handling Middleware (MUST be at the very end)
-// app.use("/api/admin/gallery", galleryRoutes);
-
+// Unhandled routes & errors
 app.use(notFound);
 app.use(errorHandler);
 
