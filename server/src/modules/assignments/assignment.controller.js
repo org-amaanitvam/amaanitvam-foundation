@@ -57,7 +57,7 @@ export const updateAssignment = async (req, res, next) => {
 export const deleteAssignment = async (req, res, next) => {
   try {
     await assignmentService.deleteAssignment(req.params.assignmentId);
-    res.json({ success: true, data: null });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
