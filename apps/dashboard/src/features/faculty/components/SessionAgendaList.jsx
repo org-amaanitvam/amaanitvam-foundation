@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import SessionCard from './SessionCard';
 import { Calendar, Filter, Search, Plus } from 'lucide-react';
 
-export default function SessionAgendaList({ sessions = [], onLaunchSession, onUploadMinutes, onOpenScheduleModal }) {
+export default function SessionAgendaList({
+  sessions = [],
+  onLaunchSession,
+  onUploadMinutes,
+  onViewRecording,
+  onOpenScheduleModal,
+}) {
   const [filterTab, setFilterTab] = useState('all'); // 'all' | 'upcoming' | 'completed'
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -32,14 +38,14 @@ export default function SessionAgendaList({ sessions = [], onLaunchSession, onUp
           {[
             { id: 'all', label: 'All Sessions' },
             { id: 'upcoming', label: 'Upcoming & Live' },
-            { id: 'completed', label: 'Completed' },
+            { id: 'completed', label: 'Completed & Recorded' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setFilterTab(tab.id)}
               className={`flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 filterTab === tab.id
-                  ? 'bg-white text-[#5d0f2d] shadow-sm font-extrabold'
+                  ? 'bg-[#5d0f2d] text-white shadow-sm font-extrabold'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -85,6 +91,7 @@ export default function SessionAgendaList({ sessions = [], onLaunchSession, onUp
               session={session}
               onLaunch={onLaunchSession}
               onUploadMinutes={onUploadMinutes}
+              onViewRecording={onViewRecording}
             />
           ))
         )}

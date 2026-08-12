@@ -1,45 +1,40 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './config/firebase.js';
 import LoginPage from './pages/LoginPage.jsx';
 import PortalSelector from './pages/PortalSelector.jsx';
 import ChangePassword from './pages/ChangePassword.jsx';
 
+// v11 portal-switch handoff
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState(null);
 
-  // A portal redirected here after signing out. Clear the session that still
-  // lives on this origin, otherwise a single-portal user is instantly bounced
-  // back into the portal they just left.
-  const [clearingSession, setClearingSession] = useState(() => {
-    try {
-      return new URLSearchParams(window.location.search).get('loggedOut') === '1';
-    } catch {
-      return false;
-    }
-  });
-
+  // A portal bounced the user back here after signing out of that portal.
+  // We deliberately KEEP the session on this origin: a super_admin must land
+  // on the portal chooser, not on the login form. Single-portal roles are
+  // signed out by the selector once their role is known.
   useEffect(() => {
-    if (!clearingSession) return;
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
-      try {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('switch') === '1' || params.get('loggedOut') === '1') {
         sessionStorage.setItem('af.suppressAutoPortal', '1');
-        const url = new URL(window.location.href);
-        url.searchParams.delete('loggedOut');
-        window.history.replaceState({}, '', url.pathname + url.hash);
-      } catch {
-        /* ignore */
+        params.delete('switch');
+        params.delete('loggedOut');
+        params.delete('reason');
+        const qs = params.toString();
+        window.history.replaceState(
+          {},
+          '',
+          window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash,
+        );
       }
-      setClearingSession(false);
-    };
-    signOut(auth).catch(() => {}).finally(finish);
-  }, [clearingSession]);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -52,11 +47,11 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  if (loading || clearingSession) {
+  if (loading) {
     return (
       <div className="af-splash">
         <div className="af-spinner" />
-        <p>{clearingSession ? 'Signing you out…' : 'Loading…'}</p>
+        <p>Loading…</p>
       </div>
     );
   }

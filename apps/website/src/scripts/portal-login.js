@@ -57,6 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const cardTitle3 = document.getElementById('cardTitle3');
   const cardDesc3 = document.getElementById('cardDesc3');
 
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  const PORTAL_BASE_URLS = {
+    admin: isLocalhost ? 'http://localhost:5173' : 'https://admin.amaanitvam.org',
+    dashboard: isLocalhost ? 'http://localhost:5174' : 'https://dashboard.amaanitvam.org',
+    website: isLocalhost ? 'http://localhost:5175' : 'https://www.amaanitvam.org',
+    login: isLocalhost ? 'http://localhost:5176' : 'https://login.amaanitvam.org',
+    lms: isLocalhost ? 'http://localhost:5177' : 'https://learn.amaanitvam.org',
+  };
+
   // Unified Portal Data Configuration Model
   const portalData = {
     dashboard: {
@@ -75,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'director@amaanitvam.org',
       submitBtn: 'Sign In to Dashboard Portal',
       footerNote: `Don't have portal credentials? <a href="../pages/contact.html" class="portal-link">Contact System Administrator</a>`,
-      redirectUrl: 'http://localhost:5174/'
+      redirectUrl: `${PORTAL_BASE_URLS.dashboard}/`
     },
     faculty: {
       index: 1,
@@ -93,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'faculty@amaanitvam.org',
       submitBtn: 'Sign In to Faculty Portal',
       footerNote: `Need faculty access provisioned? <a href="../pages/contact.html" class="portal-link">Contact Administration</a>`,
-      redirectUrl: 'http://localhost:5174/faculty'
+      redirectUrl: `${PORTAL_BASE_URLS.dashboard}/faculty`
     },
     lms: {
       index: 2,
@@ -111,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'learner@amaanitvam.org',
       submitBtn: 'Launch LMS Workspace',
       footerNote: `Looking for digital resources? <a href="../pages/programs.html" class="portal-link">View Digital Library</a>`,
-      redirectUrl: 'http://localhost:5176/'
+      redirectUrl: `${PORTAL_BASE_URLS.lms}/`
     },
     admin: {
       index: 3,
@@ -129,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeholder: 'admin@amaanitvam.org',
       submitBtn: 'Sign In to Admin Portal',
       footerNote: `Admin accounts are restricted. Require access? <a href="../pages/contact.html" class="portal-link">Contact Super Admin</a>`,
-      redirectUrl: 'http://localhost:5173/'
+      redirectUrl: `${PORTAL_BASE_URLS.admin}/`
     }
   };
 
@@ -254,9 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // The hash fragment is never sent to the server (safe for transport).
           // Login.jsx on the admin portal will read these, auto-login via Firebase
           // client SDK on its own origin (port 5173), and immediately clean the URL.
-          const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:5173'
-            : 'https://admin.amaanitvam.org';
+          const baseUrl = PORTAL_BASE_URLS.admin;
 
           const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}`;
 
@@ -287,7 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isFacultyLogin) {
         showAlert('Faculty credentials verified! Launching Faculty Portal...', 'info');
         setTimeout(() => {
-          window.location.href = 'http://localhost:5174/faculty/dashboard?demo=faculty';
+          // NOTE: localStorage is NOT shared across origins (dashboard.amaanitvam.org ≠ www.amaanitvam.org)
+          // The ?demo=faculty URL param is the primary signal — keep it in the URL.
+          window.location.href = `${PORTAL_BASE_URLS.dashboard}/faculty/dashboard?demo=faculty`;
         }, 500);
         return;
       }

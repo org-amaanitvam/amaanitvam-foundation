@@ -193,94 +193,65 @@ const app = express();
 app.disable("x-powered-by");
 
 
-// FINAL ADMIN CORS START
+// AMAANITVAM_CORS_V14_START
+// One authoritative CORS policy. Keep this before every API route so browser
+// preflights from common-login can reach /api/auth/cross-portal-token.
+const gatewayDefaultOrigins = [
+  "https://admin.amaanitvam.org",
+  "https://dashboard.amaanitvam.org",
+  "https://amaanitvam.org",
+  "https://www.amaanitvam.org",
+  "https://amaanitvam-common-login.onrender.com",
+  "https://login.amaanitvam.org",
+];
+
+const gatewayConfiguredOrigins = [
+  process.env.ADMIN_PORTAL_ORIGIN,
+  process.env.COMMON_LOGIN_ORIGIN,
+  process.env.CORS_ORIGINS,
+]
+  .filter(Boolean)
+  .flatMap((value) => String(value).split(","))
+  .map((value) => value.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+
+const gatewayAllowedOrigins = new Set([
+  ...gatewayDefaultOrigins,
+  ...gatewayConfiguredOrigins,
+]);
+
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  const origin = String(req.headers.origin || "").replace(/\/+$/, "");
+  const isLocal = /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin);
+  const originAllowed = !origin || isLocal || gatewayAllowedOrigins.has(origin);
 
-  const allowed =
-    !origin ||
-    /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin) ||
-    origin === "https://admin.amaanitvam.org" ||
-      origin === "https://www.amaanitvam.org" ||
-      origin === "https://amaanitvam.org" ||
-      origin === "https://dashboard.amaanitvam.org";
-
-  if (origin && allowed) {
-    res.setHeader(
-      "Access-Control-Allow-Origin",
-      origin
-    );
-    res.setHeader("Vary", "Origin");
-    res.setHeader(
-      "Access-Control-Allow-Credentials",
-      "true"
-    );
+  if (origin && !originAllowed) {
+    console.warn(`[admin-gateway] CORS blocked origin: ${origin}`);
   }
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
-  );
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(allowed ? 204 : 403);
-  }
-
-  next();
-});
-// FINAL ADMIN CORS END
-
-
-// ADMIN GATEWAY CORS FIX START
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  const configuredOrigins = String(
-    process.env.ADMIN_PORTAL_ORIGIN || ""
-  )
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  const originAllowed =
-    !origin ||
-    /^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/.test(origin) ||
-    origin === "https://admin.amaanitvam.org" ||
-      origin === "https://www.amaanitvam.org" ||
-      origin === "https://amaanitvam.org" ||
-      origin === "https://dashboard.amaanitvam.org" ||
-    configuredOrigins.includes(origin);
 
   if (origin && originAllowed) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
   }
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With, Accept, Cache-Control, Pragma, X-Requested-With, Cache-Control, Pragma"
+    "Content-Type, Authorization, Accept, Cache-Control, Pragma, X-Requested-With"
   );
-
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   );
-
   res.setHeader("Access-Control-Max-Age", "86400");
 
   if (req.method === "OPTIONS") {
-    return res.sendStatus(originAllowed ? 204 : 403);
+    return originAllowed ? res.sendStatus(204) : res.sendStatus(403);
   }
 
-  next();
+  return next();
 });
-// ADMIN GATEWAY CORS FIX END
+// AMAANITVAM_CORS_V14_END
 
 
 function clean(value) {

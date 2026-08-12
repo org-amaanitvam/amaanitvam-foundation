@@ -37,6 +37,8 @@ import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
 import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
 import libraryRoutes from "./modules/library-resources/library.routes.js";
+import facultyRoutes from "./modules/faculty/faculty.routes.js";
+import doubtRoutes from "./modules/doubts/doubts.routes.js";
 
 const app = express();
 
@@ -52,11 +54,18 @@ const allowedOrigins = [
   "http://localhost:5177",
   "https://admin.amaanitvam.org",
   "https://dashboard.amaanitvam.org",
+  "https://amaanitvam-common-login.onrender.com",
+  "https://login.amaanitvam.org",
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
-  ...String(process.env.ADMIN_PORTAL_ORIGIN || process.env.CORS_ORIGINS || "")
-    .split(",")
-    .map((origin) => origin.trim())
+  ...[
+    process.env.ADMIN_PORTAL_ORIGIN,
+    process.env.COMMON_LOGIN_ORIGIN,
+    process.env.CORS_ORIGINS,
+  ]
+    .filter(Boolean)
+    .flatMap((value) => String(value).split(","))
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
     .filter(Boolean),
 ];
 
@@ -140,6 +149,8 @@ app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/digital-library", libraryRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/doubts", doubtRoutes);
 
 
 // Unhandled routes & errors

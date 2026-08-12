@@ -29,7 +29,10 @@ export default function ProtectedRoute({
   }
 
   if (!user) {
-    window.location.href = 'http://localhost:5175/src/pages/login.html';
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    window.location.href = isLocal
+      ? 'http://localhost:5175/src/pages/login.html'
+      : 'https://www.amaanitvam.org/login';
     return null;
   }
 
