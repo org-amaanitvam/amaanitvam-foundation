@@ -66,7 +66,7 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
 
   // Temporary UI data
   // API integration baad me karenge
-  const course = {
+   course = {
     title: "Full Stack Web Development",
     category: "Web Development",
     description:
@@ -80,7 +80,7 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200",
   };
 
-  const [modules, setModules] = React.useState([
+   [modules, setModules] = React.useState([
     {
       id: 1,
       title: "HTML & CSS Fundamentals",
