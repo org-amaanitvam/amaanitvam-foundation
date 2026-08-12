@@ -1,248 +1,923 @@
-import React, { useState, useEffect } from 'react';
+import React from "react";
 import {
-  MessageSquare,
-  Search,
-  Filter,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  ArrowRight,
-  UserCheck,
-  Sparkles,
   HelpCircle,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { fetchAssignedDoubts, updateDoubtStatus } from '../services/doubtsApi';
-import toast from 'react-hot-toast';
-
+  Filter,
+  Search,
+  X,
+  ChevronDown,
+  Clock3,
+  MessageCircle,
+  Eye,
+  MoreVertical,
+  CheckCircle2,
+} from "lucide-react";
 export default function DoubtsInbox() {
-  const navigate = useNavigate();
-  const [doubts, setDoubts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [search, setSearch] = React.useState("");
+const [statusFilter, setStatusFilter] = React.useState("All");
+const [courseFilter, setCourseFilter] = React.useState("All");
+const [activeDoubtMenu, setActiveDoubtMenu] = React.useState(null);
+const [selectedDoubt, setSelectedDoubt] = React.useState(null);
+const [showDoubtModal, setShowDoubtModal] = React.useState(false);
 
-  useEffect(() => {
-    loadDoubts();
-  }, [selectedStatus]);
+const doubts = [
+  {
+    id: 1,
+    student: "Rahul Sharma",
+    question: "How does useEffect work in React?",
+    course: "React.js Development",
+    status: "Pending",
+  },
+  {
+    id: 2,
+    student: "Priya Singh",
+    question: "What is the difference between let and const?",
+    course: "JavaScript Fundamentals",
+    status: "In Progress",
+  },
+  {
+    id: 3,
+    student: "Aman Verma",
+    question: "How can I connect MongoDB with Node.js?",
+    course: "Full Stack Web Development",
+    status: "Resolved",
+  },
+  {
+    id: 4,
+    student: "Neha Gupta",
+    question: "What are semantic HTML elements?",
+    course: "HTML & CSS Fundamentals",
+    status: "Pending",
+  },
+  {
+    id: 5,
+    student: "Rohan Kumar",
+    question: "Why is my React component not rendering?",
+    course: "React.js Development",
+    status: "Resolved",
+  },
+];
 
-  const loadDoubts = async () => {
-    setLoading(true);
-    try {
-      const statusParam = selectedStatus === 'all' ? '' : selectedStatus;
-      const res = await fetchAssignedDoubts(statusParam);
-      if (res.success && res.doubts) {
-        setDoubts(res.doubts);
-      }
-    } catch (err) {
-      toast.error('Failed to load student doubts.');
-    } finally {
-      setLoading(false);
-    }
-  };
+const filteredDoubts = doubts.filter((doubt) => {
+  const searchText = search.toLowerCase().trim();
 
-  const handleToggleResolve = async (doubtId, currentStatus) => {
-    const nextStatus = currentStatus === 'resolved' ? 'open' : 'resolved';
-    try {
-      const res = await updateDoubtStatus(doubtId, nextStatus);
-      if (res.success) {
-        toast.success(`Doubt marked as ${nextStatus.toUpperCase()}!`);
-        setDoubts((prev) =>
-          prev.map((d) => ((d._id || d.id) === doubtId ? { ...d, status: nextStatus } : d))
-        );
-      }
-    } catch (err) {
-      toast.error('Failed to update doubt status.');
-    }
-  };
+  const matchesSearch =
+    doubt.student.toLowerCase().includes(searchText) ||
+    doubt.question.toLowerCase().includes(searchText) ||
+    doubt.course.toLowerCase().includes(searchText);
 
-  const filteredDoubts = doubts.filter((d) => {
-    const matchesSearch =
-      d.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.studentName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.courseName?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+  const matchesStatus =
+    statusFilter === "All" || doubt.status === statusFilter;
 
-  const counts = {
-    total: doubts.length,
-    open: doubts.filter((d) => d.status === 'open').length,
-    in_progress: doubts.filter((d) => d.status === 'in_progress').length,
-    resolved: doubts.filter((d) => d.status === 'resolved').length,
-  };
+  const matchesCourse =
+    courseFilter === "All" || doubt.course === courseFilter;
+
+  return matchesSearch && matchesStatus && matchesCourse;
+});
+
+const clearFilters = () => {
+  setSearch("");
+  setStatusFilter("All");
+  setCourseFilter("All");
+};
+
+const hasActiveFilters =
+  search.trim() !== "" ||
+  statusFilter !== "All" ||
+  courseFilter !== "All";
+
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto animate-fade-in text-gray-900">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5d0f2d]/10 text-[#5d0f2d] border border-[#8a164b]/20 text-xs font-bold mb-2">
-            <HelpCircle className="w-4 h-4 text-[#8a164b]" />
-            <span>Academic Consultation & SLA Doubt Inbox</span>
+    <div className="space-y-6">
+
+      {/* ============================= */}
+      {/* PAGE HEADER */}
+      {/* ============================= */}
+
+      <div>
+        <h1 className="text-2xl px-3 py-3 md:text-3xl font-bold text-gray-900">
+          Student Doubts Resolution
+        </h1>
+
+        <p className="text-sm md:text-base text-gray-500 mt-1 px-3 py-1">
+          Review and resolve questions submitted by enrolled students.
+        </p>
+      </div>
+
+
+      {/* ============================= */}
+      {/* STATS CARDS */}
+      {/* ============================= */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+
+        {/* ============================= */}
+        {/* TOTAL DOUBTS */}
+        {/* ============================= */}
+
+        <div
+          className="relative overflow-hidden
+                     bg-white rounded-2xl
+                     border border-gray-100
+                     shadow-sm
+                     hover:shadow-md
+                     hover:-translate-y-0.5
+                     transition-all duration-200"
+        >
+
+          {/* Top Color Line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1
+                       bg-gradient-to-r
+                       from-[#5d0f2d]
+                       to-[#8a164b]"
+          />
+
+          <div className="p-5 flex items-center justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Total Doubts
+              </p>
+
+              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+                24
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                All student questions
+              </p>
+            </div>
+
+            <div
+              className="w-11 h-11 shrink-0
+                         rounded-xl
+                         bg-[#5d0f2d]/10
+                         text-[#5d0f2d]
+                         flex items-center justify-center"
+            >
+              <HelpCircle size={21} />
+            </div>
+
           </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Student Doubts Resolution</h2>
-          <p className="text-sm text-gray-600 mt-1 font-medium">
-            Review, reply, and resolve technical queries submitted by enrolled students in your batches.
+        </div>
+
+
+        {/* ============================= */}
+        {/* PENDING */}
+        {/* ============================= */}
+
+        <div
+          className="relative overflow-hidden
+                     bg-white rounded-2xl
+                     border border-gray-100
+                     shadow-sm
+                     hover:shadow-md
+                     hover:-translate-y-0.5
+                     transition-all duration-200"
+        >
+
+          {/* Top Color Line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1
+                       bg-gradient-to-r
+                       from-orange-400
+                       to-amber-400"
+          />
+
+          <div className="p-5 flex items-center justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Pending
+              </p>
+
+              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+                8
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Awaiting response
+              </p>
+            </div>
+
+            <div
+              className="w-11 h-11 shrink-0
+                         rounded-xl
+                         bg-orange-100
+                         text-orange-600
+                         flex items-center justify-center"
+            >
+              <Clock3 size={21} />
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* ============================= */}
+        {/* IN PROGRESS */}
+        {/* ============================= */}
+
+        <div
+          className="relative overflow-hidden
+                     bg-white rounded-2xl
+                     border border-gray-100
+                     shadow-sm
+                     hover:shadow-md
+                     hover:-translate-y-0.5
+                     transition-all duration-200"
+        >
+
+          {/* Top Color Line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1
+                       bg-gradient-to-r
+                       from-blue-400
+                       to-indigo-400"
+          />
+
+          <div className="p-5 flex items-center justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                In Progress
+              </p>
+
+              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+                5
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Being resolved
+              </p>
+            </div>
+
+            <div
+              className="w-11 h-11 shrink-0
+                         rounded-xl
+                         bg-blue-100
+                         text-blue-600
+                         flex items-center justify-center"
+            >
+              <MessageCircle size={21} />
+            </div>
+
+          </div>
+        </div>
+
+
+        {/* ============================= */}
+        {/* RESOLVED */}
+        {/* ============================= */}
+
+        <div
+          className="relative overflow-hidden
+                     bg-white rounded-2xl
+                     border border-gray-100
+                     shadow-sm
+                     hover:shadow-md
+                     hover:-translate-y-0.5
+                     transition-all duration-200"
+        >
+
+          {/* Top Color Line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1
+                       bg-gradient-to-r
+                       from-emerald-400
+                       to-green-400"
+          />
+
+          <div className="p-5 flex items-center justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Resolved
+              </p>
+
+              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+                11
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Successfully resolved
+              </p>
+            </div>
+
+            <div
+              className="w-11 h-11 shrink-0
+                         rounded-xl
+                         bg-emerald-100
+                         text-emerald-600
+                         flex items-center justify-center"
+            >
+              <CheckCircle2 size={21} />
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      {/* ============================= */}
+{/* PREMIUM SEARCH & FILTERS */}
+{/* ============================= */}
+
+<div
+  className="relative overflow-hidden
+             bg-white
+             rounded-2xl
+             border border-gray-100
+             shadow-sm"
+>
+  {/* Subtle top accent */}
+  <div
+    className="absolute top-0 left-0 right-0 h-[2px]
+               bg-gradient-to-r
+               from-[#5d0f2d]
+               via-[#8a164b]
+               to-transparent"
+  />
+
+  <div className="p-5">
+
+    {/* Header */}
+    <div className="flex flex-col sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    gap-3 mb-5">
+
+      <div className="flex items-center gap-3">
+
+        <div
+          className="w-10 h-10
+                     rounded-xl
+                     bg-[#5d0f2d]/10
+                     text-[#5d0f2d]
+                     flex items-center justify-center"
+        >
+          <Filter size={18} />
+        </div>
+
+        <div>
+          <h3 className="text-sm font-bold text-gray-900">
+            Find Student Doubts
+          </h3>
+
+          <p className="text-xs text-gray-400 mt-0.5">
+            Search and filter questions quickly
           </p>
         </div>
+
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Doubts</span>
-          <h3 className="text-3xl font-black text-[#5d0f2d] mt-2">{counts.total}</h3>
-          <p className="text-[11px] text-gray-400 font-medium mt-0.5">Across assigned courses</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Unresolved (Open)</span>
-          <h3 className="text-3xl font-black text-rose-700 mt-2">{counts.open}</h3>
-          <p className="text-[11px] text-rose-600 font-medium mt-0.5">Awaiting faculty reply</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">In Discussion</span>
-          <h3 className="text-3xl font-black text-amber-700 mt-2">{counts.in_progress}</h3>
-          <p className="text-[11px] text-amber-600 font-medium mt-0.5">Active dialogue</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Resolved</span>
-          <h3 className="text-3xl font-black text-emerald-700 mt-2">{counts.resolved}</h3>
-          <p className="text-[11px] text-emerald-600 font-medium mt-0.5">Successfully answered</p>
-        </div>
+      {/* Result count */}
+      <div
+        className="self-start sm:self-auto
+                   px-3 py-1.5
+                   rounded-full
+                   bg-gray-50
+                   border border-gray-100"
+      >
+        <span className="text-xs font-semibold text-gray-600">
+          {filteredDoubts.length} Results
+        </span>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-rose-100 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Status Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          {[
-            { id: 'all', label: `All Doubts (${counts.total})` },
-            { id: 'open', label: `Open (${counts.open})` },
-            { id: 'in_progress', label: `In Progress (${counts.in_progress})` },
-            { id: 'resolved', label: `Resolved (${counts.resolved})` },
-          ].map((pill) => (
-            <button
-              key={pill.id}
-              onClick={() => setSelectedStatus(pill.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
-                selectedStatus === pill.id
-                  ? 'bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] text-white shadow-md'
-                  : 'bg-gray-100/80 text-gray-600 hover:bg-rose-50'
-              }`}
-            >
-              {pill.label}
-            </button>
-          ))}
-        </div>
+    </div>
 
-        {/* Search */}
-        <div className="relative w-full md:w-72">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search doubt title, student name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-[#8a164b] font-medium"
+
+    {/* Controls */}
+    <div className="flex flex-col lg:flex-row gap-3">
+
+      {/* ============================= */}
+      {/* SEARCH */}
+      {/* ============================= */}
+
+      <div className="relative flex-1 group">
+
+        <div
+          className="absolute left-3.5 top-1/2
+                     -translate-y-1/2
+                     w-7 h-7
+                     rounded-lg
+                     bg-gray-100
+                     group-focus-within:bg-[#5d0f2d]/10
+                     flex items-center justify-center
+                     transition-all"
+        >
+          <Search
+            size={15}
+            className="text-gray-400
+                       group-focus-within:text-[#5d0f2d]"
           />
         </div>
+
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by student, question or course..."
+          className="w-full h-12
+                     pl-12 pr-11
+                     rounded-xl
+                     bg-gray-50
+                     border border-gray-200
+                     text-sm text-gray-800
+                     placeholder:text-gray-400
+                     outline-none
+
+                     hover:bg-white
+                     hover:border-gray-300
+
+                     focus:bg-white
+                     focus:border-[#5d0f2d]
+                     focus:ring-4
+                     focus:ring-[#5d0f2d]/10
+
+                     transition-all duration-200"
+        />
+
+        {search && (
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="absolute right-3
+                       top-1/2
+                       -translate-y-1/2
+                       w-7 h-7
+                       rounded-lg
+                       flex items-center justify-center
+                       text-gray-400
+                       hover:bg-gray-200
+                       hover:text-gray-700
+                       transition"
+          >
+            <X size={14} />
+          </button>
+        )}
+
       </div>
 
-      {/* Doubts List Feed */}
-      {loading ? (
-        <div className="bg-white p-16 rounded-3xl border border-rose-100 shadow-sm text-center space-y-3">
-          <div className="w-8 h-8 border-3 border-[#8a164b]/20 border-t-[#8a164b] rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-gray-500 font-medium">Fetching student doubts...</p>
+
+      {/* ============================= */}
+      {/* STATUS */}
+      {/* ============================= */}
+
+      <div className="relative w-full lg:w-48 group">
+
+        <div
+          className="absolute left-3.5 top-1/2
+                     -translate-y-1/2
+                     w-7 h-7
+                     rounded-lg
+                     bg-gray-100
+                     group-focus-within:bg-[#5d0f2d]/10
+                     flex items-center justify-center
+                     pointer-events-none
+                     transition-all"
+        >
+          <span className="w-2 h-2 rounded-full bg-[#5d0f2d]" />
         </div>
-      ) : filteredDoubts.length === 0 ? (
-        <div className="bg-white p-16 rounded-3xl border border-rose-100 shadow-sm text-center space-y-3">
-          <HelpCircle className="w-12 h-12 mx-auto text-gray-300" />
-          <h4 className="font-bold text-gray-800 text-base">No Doubts Found</h4>
-          <p className="text-xs text-gray-500 max-w-sm mx-auto">
-            No student questions match your current search or status filter.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredDoubts.map((doubt) => {
-            const doubtId = doubt._id || doubt.id;
-            return (
-              <div
-                key={doubtId}
-                className="bg-white p-6 rounded-3xl border border-rose-100 shadow-md hover:shadow-xl transition-all duration-200 space-y-4 group"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#5d0f2d]/10 text-[#5d0f2d] border border-[#8a164b]/20">
-                      {doubt.courseName || 'Course Query'}
-                    </span>
-                    <span
-                      className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
-                        doubt.status === 'resolved'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : doubt.status === 'in_progress'
-                          ? 'bg-amber-50 text-amber-700 border-amber-200'
-                          : 'bg-rose-50 text-rose-700 border-rose-200'
-                      }`}
-                    >
-                      {doubt.status}
-                    </span>
-                  </div>
 
-                  <span className="text-xs text-gray-400 font-medium">
-                    {doubt.created_at ? new Date(doubt.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently'}
-                  </span>
-                </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="appearance-none
+                     w-full h-12
+                     pl-12 pr-10
+                     rounded-xl
+                     bg-gray-50
+                     border border-gray-200
+                     text-sm text-gray-700
+                     font-medium
+                     outline-none
+                     cursor-pointer
 
-                <div className="space-y-1.5">
-                  <h3 className="text-base font-black text-gray-900 group-hover:text-[#8a164b] transition-colors">
-                    {doubt.subject}
-                  </h3>
-                  <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed font-medium">
-                    {doubt.question}
-                  </p>
-                </div>
+                     hover:bg-white
+                     hover:border-gray-300
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#5d0f2d] to-[#8a164b] text-white flex items-center justify-center text-xs font-bold">
-                      {doubt.studentName?.[0] || 'S'}
-                    </div>
-                    <span className="text-xs font-bold text-gray-800">{doubt.studentName}</span>
-                    <span className="text-xs text-gray-400">({doubt.studentEmail})</span>
-                  </div>
+                     focus:bg-white
+                     focus:border-[#5d0f2d]
+                     focus:ring-4
+                     focus:ring-[#5d0f2d]/10
 
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    <button
-                      onClick={() => handleToggleResolve(doubtId, doubt.status)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                        doubt.status === 'resolved'
-                          ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300'
-                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200'
-                      }`}
-                    >
-                      {doubt.status === 'resolved' ? 'Reopen Doubt' : 'Mark Resolved'}
-                    </button>
+                     transition-all duration-200"
+        >
+          <option value="All">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
 
-                    <button
-                      onClick={() => navigate(`/faculty/doubts/${doubtId}`)}
-                      className="flex items-center gap-1.5 px-4 py-2 bg-[#5d0f2d] hover:bg-[#8a164b] text-white text-xs font-extrabold rounded-xl shadow-md transition-all"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5 text-[#d4af37]" />
-                      <span>Open Workspace</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <ChevronDown
+          size={16}
+          className="absolute right-3.5
+                     top-1/2
+                     -translate-y-1/2
+                     text-gray-400
+                     pointer-events-none"
+        />
+
+      </div>
+
+
+      {/* ============================= */}
+      {/* COURSE */}
+      {/* ============================= */}
+
+      <div className="relative w-full lg:w-56 group">
+
+        <select
+          value={courseFilter}
+          onChange={(e) => setCourseFilter(e.target.value)}
+          className="appearance-none
+                     w-full h-12
+                     pl-4 pr-10
+                     rounded-xl
+                     bg-gray-50
+                     border border-gray-200
+                     text-sm text-gray-700
+                     font-medium
+                     outline-none
+                     cursor-pointer
+
+                     hover:bg-white
+                     hover:border-gray-300
+
+                     focus:bg-white
+                     focus:border-[#5d0f2d]
+                     focus:ring-4
+                     focus:ring-[#5d0f2d]/10
+
+                     transition-all duration-200"
+        >
+          <option value="All">All Courses</option>
+
+          <option value="React.js Development">
+            React.js Development
+          </option>
+
+          <option value="JavaScript Fundamentals">
+            JavaScript Fundamentals
+          </option>
+
+          <option value="Full Stack Web Development">
+            Full Stack Web Development
+          </option>
+
+          <option value="HTML & CSS Fundamentals">
+            HTML & CSS Fundamentals
+          </option>
+        </select>
+
+        <ChevronDown
+          size={16}
+          className="absolute right-3.5
+                     top-1/2
+                     -translate-y-1/2
+                     text-gray-400
+                     pointer-events-none"
+        />
+
+      </div>
+
+
+      {/* ============================= */}
+      {/* CLEAR */}
+      {/* ============================= */}
+
+      {hasActiveFilters && (
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="h-12
+                     px-4
+                     rounded-xl
+                     bg-[#5d0f2d]
+                     text-white
+                     text-sm
+                     font-semibold
+                     flex items-center
+                     justify-center
+                     gap-2
+
+                     hover:bg-[#4b0c24]
+                     hover:shadow-md
+                     hover:-translate-y-0.5
+
+                     active:translate-y-0
+
+                     transition-all duration-200"
+        >
+          <X size={15} />
+          Clear
+        </button>
+      )}
+
+    </div>
+
+
+    {/* ============================= */}
+    {/* BOTTOM INFO */}
+    {/* ============================= */}
+
+    <div
+      className="flex flex-col sm:flex-row
+                 sm:items-center
+                 sm:justify-between
+                 gap-2
+                 mt-4
+                 pt-4
+                 border-t border-gray-100"
+    >
+
+      <p className="text-xs text-gray-500">
+
+        Showing{" "}
+
+        <span className="font-bold text-gray-800">
+          {filteredDoubts.length}
+        </span>
+
+        {" "}of{" "}
+
+        <span className="font-bold text-gray-800">
+          {doubts.length}
+        </span>
+
+        {" "}student doubts
+
+      </p>
+
+
+      {hasActiveFilters && (
+        <div
+          className="inline-flex items-center gap-1.5
+                     text-xs
+                     font-semibold
+                     text-[#5d0f2d]"
+        >
+          <span
+            className="w-1.5 h-1.5
+                       rounded-full
+                       bg-[#5d0f2d]"
+          />
+
+          Filters active
         </div>
       )}
+
+    </div>
+
+  </div>
+
+</div>
+      {/* ============================= */}
+      {/* TEMPORARY CONTENT */}
+      {/* ============================= */}
+
+      {/* ============================= */}
+{/* DOUBT INBOX */}
+{/* ============================= */}
+
+{/* Doubt Inbox */}
+<div className="space-y-4">
+
+  {/* Doubt Card */}
+  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                  hover:shadow-md transition-all duration-200 overflow-hidden">
+
+    {/* Top Accent Line */}
+    <div className="h-1 bg-gradient-to-r from-[#5d0f2d] to-[#8a164b]" />
+
+    <div className="p-5">
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+
+        <div className="flex items-start gap-3 min-w-0">
+
+          {/* Icon */}
+          <div className="w-11 h-11 shrink-0 rounded-xl
+                          bg-[#5d0f2d]/10
+                          text-[#5d0f2d]
+                          flex items-center justify-center">
+            <HelpCircle size={21} />
+          </div>
+
+          {/* Student Info */}
+          <div className="min-w-0">
+
+            <h3 className="font-bold text-gray-900 truncate">
+              How does useEffect work in React?
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1">
+              Rahul Sharma • Full Stack Web Development
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* Status */}
+        <span className="shrink-0 inline-flex items-center gap-1.5
+                         px-3 py-1.5 rounded-full
+                         bg-orange-100 text-orange-700
+                         text-xs font-semibold">
+          <Clock3 size={13} />
+          Pending
+        </span>
+
+      </div>
+
+
+      {/* Doubt Description */}
+      <div className="mt-4 rounded-xl bg-gray-50 border border-gray-100 p-4">
+
+        <p className="text-sm text-gray-600 leading-relaxed">
+          I understand the basic concept of useEffect, but I am confused
+          about when the dependency array should be used and how it
+          affects component rendering.
+        </p>
+
+      </div>
+
+
+      {/* Bottom Details */}
+      <div className="flex flex-wrap items-center justify-between
+                      gap-3 mt-4">
+
+        {/* Meta */}
+        <div className="flex flex-wrap items-center gap-4">
+
+          <div className="flex items-center gap-1.5
+                          text-xs text-gray-500">
+            <MessageCircle size={15} />
+            2 replies
+          </div>
+
+          <div className="flex items-center gap-1.5
+                          text-xs text-gray-500">
+            <Clock3 size={15} />
+            2 hours ago
+          </div>
+
+        </div>
+
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+
+          <button
+            type="button"
+            className="inline-flex items-center gap-2
+                       px-3.5 py-2 rounded-lg
+                       border border-gray-200
+                       text-sm font-semibold text-gray-600
+                       hover:bg-gray-50
+                       transition"
+          >
+            <Eye size={16} />
+            View
+          </button>
+
+          <button
+            type="button"
+            className="inline-flex items-center gap-2
+                       px-3.5 py-2 rounded-lg
+                       bg-[#5d0f2d]
+                       text-white
+                       text-sm font-semibold
+                       hover:bg-[#4b0c24]
+                       transition"
+          >
+            <CheckCircle2 size={16} />
+            Resolve
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  {/* Second Doubt Card */}
+  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                  hover:shadow-md transition-all duration-200 overflow-hidden">
+
+    {/* Top Accent Line */}
+    <div className="h-1 bg-gradient-to-r from-orange-400 to-amber-500" />
+
+    <div className="p-5">
+
+      <div className="flex items-start justify-between gap-4">
+
+        <div className="flex items-start gap-3 min-w-0">
+
+          <div className="w-11 h-11 shrink-0 rounded-xl
+                          bg-orange-100
+                          text-orange-600
+                          flex items-center justify-center">
+            <HelpCircle size={21} />
+          </div>
+
+          <div className="min-w-0">
+
+            <h3 className="font-bold text-gray-900 truncate">
+              Difference between let and const?
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1">
+              Priya Verma • JavaScript Fundamentals
+            </p>
+
+          </div>
+
+        </div>
+
+        <span className="shrink-0 inline-flex items-center gap-1.5
+                         px-3 py-1.5 rounded-full
+                         bg-orange-100 text-orange-700
+                         text-xs font-semibold">
+          <Clock3 size={13} />
+          Pending
+        </span>
+
+      </div>
+
+
+      <div className="mt-4 rounded-xl bg-gray-50 border border-gray-100 p-4">
+
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Can you explain the main difference between let and const?
+          Also, when should I prefer one over the other?
+        </p>
+
+      </div>
+
+
+      <div className="flex flex-wrap items-center justify-between
+                      gap-3 mt-4">
+
+        <div className="flex flex-wrap items-center gap-4">
+
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <MessageCircle size={15} />
+            0 replies
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <Clock3 size={15} />
+            5 hours ago
+          </div>
+
+        </div>
+
+        <div className="flex items-center gap-2">
+
+          <button
+            type="button"
+            className="inline-flex items-center gap-2
+                       px-3.5 py-2 rounded-lg
+                       border border-gray-200
+                       text-sm font-semibold text-gray-600
+                       hover:bg-gray-50
+                       transition"
+          >
+            <Eye size={16} />
+            View
+          </button>
+
+          <button
+            type="button"
+            className="inline-flex items-center gap-2
+                       px-3.5 py-2 rounded-lg
+                       bg-[#5d0f2d]
+                       text-white
+                       text-sm font-semibold
+                       hover:bg-[#4b0c24]
+                       transition"
+          >
+            <CheckCircle2 size={16} />
+            Resolve
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
     </div>
   );
 }

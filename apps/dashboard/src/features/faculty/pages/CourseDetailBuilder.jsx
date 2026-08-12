@@ -57,31 +57,57 @@ export default function CourseDetailBuilder() {
   const [showDeleteModuleModal, setShowDeleteModuleModal] =
     React.useState(false);
   const [deletingModule, setDeletingModule] = React.useState(null);
+  const [activeLessonMenu, setActiveLessonMenu] = React.useState(null);
 
-  useEffect(() => {
-    loadCourseData();
-  }, [courseId]);
+const [showDeleteLessonModal, setShowDeleteLessonModal] =
+  React.useState(false);
 
-  const loadCourseData = async () => {
-    setLoading(true);
-    try {
-      const cRes = await fetchCourseById(courseId || "crs-1");
-      if (cRes.success && cRes.course) {
-        setCourse(cRes.course);
-      }
-      const mRes = await fetchCourseModules(courseId || "crs-1");
-      if (mRes.success && mRes.modules) {
-        setModules(mRes.modules);
-        if (mRes.modules.length > 0) {
-          setExpandedModules([mRes.modules[0].id || mRes.modules[0]._id]);
-        }
-      }
-    } catch (err) {
-      console.warn("[CourseDetailBuilder] Error loading course data:", err);
-    } finally {
-      setLoading(false);
-    }
+const [deletingLesson, setDeletingLesson] = React.useState(null);
+
+  // Temporary UI data
+  // API integration baad me karenge
+   course = {
+    title: "Full Stack Web Development",
+    category: "Web Development",
+    description:
+      "Learn frontend, backend and database development with modern web technologies.",
+    students: 128,
+    modules: 12,
+    lessons: 56,
+    progress: 85,
+    status: "Published",
+    image:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200",
   };
+
+   [modules, setModules] = React.useState([
+    {
+      id: 1,
+      title: "HTML & CSS Fundamentals",
+      lessons: 6,
+      duration: "4h 20m",
+      items: [
+        "Introduction to HTML",
+        "HTML Semantic Elements",
+        "CSS Fundamentals",
+      ],
+    },
+    {
+      id: 2,
+      title: "JavaScript Fundamentals",
+      lessons: 8,
+      duration: "6h 15m",
+      items: [],
+    },
+    {
+      id: 3,
+      title: "React.js Development",
+      lessons: 10,
+      duration: "8h 40m",
+      items: [],
+    },
+  ]);
+
 
   const toggleModule = (moduleId) => {
     setExpandedModules((prev) =>
@@ -172,6 +198,29 @@ export default function CourseDetailBuilder() {
     setEditingLesson(null);
     setEditLessonTitle("");
   };
+
+  const handleDeleteLesson = () => {
+  if (!deletingLesson) return;
+
+  setModules((prev) =>
+    prev.map((module) => {
+      if (module.id !== deletingLesson.moduleId) {
+        return module;
+      }
+
+      return {
+        ...module,
+        items: module.items.filter(
+          (_, index) => index !== deletingLesson.lessonIndex
+        ),
+      };
+    })
+  );
+
+  setShowDeleteLessonModal(false);
+  setDeletingLesson(null);
+  setActiveLessonMenu(null);
+};
 
 
   const handleEditModule = () => {
@@ -504,23 +553,91 @@ export default function CourseDetailBuilder() {
                 </span>
 
                 {/* Edit Lesson */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingLesson({
-                      moduleId: module.id,
-                      lessonIndex: index,
-                    });
+                <div className="relative shrink-0">
+  {/* 3 Dot Button */}
+  <button
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
 
-                    setEditLessonTitle(lesson);
-                    setShowEditLessonModal(true);
-                  }}
-                  className="text-xs font-semibold
-                             text-[#5d0f2d] hover:underline"
-                >
-                  Edit
-                </button>
+      setActiveLessonMenu((current) =>
+        current === `${module.id}-${index}`
+          ? null
+          : `${module.id}-${index}`
+      );
+    }}
+    className="w-8 h-8 rounded-lg
+               flex items-center justify-center
+               text-gray-500
+               hover:text-[#5d0f2d]
+               hover:bg-[#5d0f2d]/10
+               transition"
+  >
+    <MoreVertical size={17} />
+  </button>
 
+  {/* Lesson Dropdown */}
+  {activeLessonMenu === `${module.id}-${index}` && (
+    <div
+      className="absolute right-0 top-9 z-[100]
+                 w-40 rounded-xl
+                 border border-gray-200
+                 bg-white shadow-xl
+                 p-1.5"
+      onClick={(e) => e.stopPropagation()}
+    >
+
+      {/* Edit Lesson */}
+      <button
+        type="button"
+        onClick={() => {
+          setEditingLesson({
+            moduleId: module.id,
+            lessonIndex: index,
+          });
+
+          setEditLessonTitle(lesson);
+          setShowEditLessonModal(true);
+          setActiveLessonMenu(null);
+        }}
+        className="w-full flex items-center gap-3
+                   px-3 py-2.5 rounded-lg
+                   text-sm font-medium
+                   text-gray-700
+                   hover:bg-gray-50
+                   transition text-left"
+      >
+        <span>✏️</span>
+        <span>Edit Lesson</span>
+      </button>
+
+      {/* Delete Lesson */}
+      <button
+        type="button"
+        onClick={() => {
+          setDeletingLesson({
+            moduleId: module.id,
+            lessonIndex: index,
+            title: lesson,
+          });
+
+          setShowDeleteLessonModal(true);
+          setActiveLessonMenu(null);
+        }}
+        className="w-full flex items-center gap-3
+                   px-3 py-2.5 rounded-lg
+                   text-sm font-medium
+                   text-red-600
+                   hover:bg-red-50
+                   transition text-left"
+      >
+        <span>🗑️</span>
+        <span>Delete Lesson</span>
+      </button>
+
+    </div>
+  )}
+</div>
               </div>
             ))
           ) : (
@@ -883,6 +1000,62 @@ export default function CourseDetailBuilder() {
           </div>
         </div>
       )}
+
+
+      {showDeleteLessonModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
+
+      <div className="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
+        🗑️
+      </div>
+
+      <h3 className="text-lg font-bold text-gray-900">
+        Delete Lesson?
+      </h3>
+
+      <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+        Are you sure you want to delete{" "}
+        <span className="font-semibold text-gray-800">
+          {deletingLesson?.title}
+        </span>
+        ?
+      </p>
+
+      <div className="flex justify-end gap-3 mt-6">
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowDeleteLessonModal(false);
+            setDeletingLesson(null);
+          }}
+          className="px-4 py-2.5 rounded-xl
+                     border border-gray-200
+                     text-sm font-semibold
+                     text-gray-600
+                     hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={handleDeleteLesson}
+          className="px-5 py-2.5 rounded-xl
+                     bg-red-600 text-white
+                     text-sm font-semibold
+                     hover:bg-red-700 transition"
+        >
+          Delete Lesson
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
 
     </div>
   );

@@ -1,358 +1,860 @@
-import React, { useState, useEffect } from 'react';
+import React, { createPortal } from "react";
 import {
   FileCheck,
   Plus,
   Search,
-  Filter,
-  Calendar,
+  MoreVertical,
+  CalendarDays,
   Users,
-  CheckCircle2,
-  Clock,
-  ArrowRight,
-  Sparkles,
-  FileText,
+  Clock3,
+  Pencil,
+  Trash2,
+  Eye,
   X,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { fetchFacultyAssignments, createAssignment } from '../services/assignmentsApi';
-import toast from 'react-hot-toast';
+  Clock,
+} from "lucide-react";
 
 export default function AssignmentsManager() {
-  const navigate = useNavigate();
-  const [assignments, setAssignments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
+  const [search, setSearch] = React.useState("");
+  const [activeMenu, setActiveMenu] = React.useState(null);
 
-  // Form State
-  const [form, setForm] = useState({
-    title: '',
-    courseName: 'Full Stack Web Development (Batch 2026-A)',
-    dueDate: '',
-    totalPoints: 100,
-    description: '',
-    status: 'Published',
+const [menuPosition, setMenuPosition] = React.useState({
+  top: 0,
+  left: 0,
+});
+
+  const [assignments, setAssignments] = React.useState([
+    {
+      id: 1,
+      title: "Build a Responsive Portfolio",
+      course: "Full Stack Web Development",
+      dueDate: "18 Aug 2026",
+      submissions: 32,
+      totalStudents: 40,
+      status: "Published",
+      marks: 100,
+    },
+    {
+      id: 2,
+      title: "JavaScript DOM Project",
+      course: "JavaScript Fundamentals",
+      dueDate: "22 Aug 2026",
+      submissions: 24,
+      totalStudents: 38,
+      status: "Published",
+      marks: 50,
+    },
+    {
+      id: 3,
+      title: "React Component Challenge",
+      course: "React.js Development",
+      dueDate: "28 Aug 2026",
+      submissions: 0,
+      totalStudents: 35,
+      status: "Draft",
+      marks: 100,
+    },
+  ]);
+
+  const [newAssignment, setNewAssignment] = React.useState({
+    title: "",
+    course: "",
+    dueDate: "",
+    marks: "",
+    description: "",
   });
-  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadAssignments();
-  }, []);
-
-  const loadAssignments = async () => {
-    setLoading(true);
-    try {
-      const res = await fetchFacultyAssignments();
-      if (res.success && res.assignments) {
-        setAssignments(res.assignments);
-      }
-    } catch (err) {
-      toast.error('Failed to load assignments.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreateSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.title.trim() || !form.dueDate) {
-      toast.error('Please enter assignment title and due date.');
+  const handleCreateAssignment = () => {
+    if (
+      !newAssignment.title.trim() ||
+      !newAssignment.course.trim() ||
+      !newAssignment.dueDate
+    ) {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      const res = await createAssignment(form);
-      if (res.success && res.assignment) {
-        toast.success('Coursework assignment published successfully!');
-        setAssignments((prev) => [res.assignment, ...prev]);
-        setForm({
-          title: '',
-          courseName: 'Full Stack Web Development (Batch 2026-A)',
-          dueDate: '',
-          totalPoints: 100,
-          description: '',
-          status: 'Published',
-        });
-        setIsCreateModalOpen(false);
-      }
-    } catch (err) {
-      toast.error('Failed to create assignment.');
-    } finally {
-      setSubmitting(false);
-    }
+    const assignment = {
+      id: Date.now(),
+      title: newAssignment.title.trim(),
+      course: newAssignment.course.trim(),
+      dueDate: newAssignment.dueDate,
+      submissions: 0,
+      totalStudents: 0,
+      status: "Draft",
+      marks: newAssignment.marks || 100,
+    };
+
+    setAssignments((prev) => [assignment, ...prev]);
+
+    setNewAssignment({
+      title: "",
+      course: "",
+      dueDate: "",
+      marks: "",
+      description: "",
+    });
+
+    setShowCreateModal(false);
   };
 
-  const filtered = assignments.filter((asg) => {
-    const matchesSearch =
-      asg.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      asg.courseName?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      selectedStatus === 'all' || asg.status?.toLowerCase() === selectedStatus.toLowerCase();
-    return matchesSearch && matchesStatus;
-  });
+  const handleDeleteAssignment = (id) => {
+    setAssignments((prev) =>
+      prev.filter((assignment) => assignment.id !== id)
+    );
 
-  const totalSubmitted = assignments.reduce((acc, a) => acc + (a.submittedCount || 0), 0);
-  const totalPending = assignments.reduce((acc, a) => acc + (a.pendingReviewCount || 0), 0);
+    setActiveMenu(null);
+  };
+
+  const filteredAssignments = assignments.filter((assignment) =>
+    `${assignment.title} ${assignment.course}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  const totalAssignments = assignments.length;
+
+  const publishedAssignments = assignments.filter(
+    (assignment) => assignment.status === "Published"
+  ).length;
+
+  const draftAssignments = assignments.filter(
+    (assignment) => assignment.status === "Draft"
+  ).length;
+
+  const pendingSubmissions = assignments.reduce(
+    (total, assignment) =>
+      total +
+      Math.max(
+        assignment.totalStudents - assignment.submissions,
+        0
+      ),
+    0
+  );
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto animate-fade-in text-gray-900">
-      {/* Header */}
+    <div className="space-y-6">
+
+      {/* ================= HEADER ================= */}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5d0f2d]/10 text-[#5d0f2d] border border-[#8a164b]/20 text-xs font-bold mb-2">
-            <FileCheck className="w-4 h-4 text-[#8a164b]" />
-            <span>Academic Coursework & Submissions Control</span>
-          </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Assignments & Projects</h2>
-          <p className="text-sm text-gray-600 mt-1 font-medium">
-            Publish coursework deadlines, track submission metrics, and evaluate student project code repositories.
+          <h1 className="text-2xl md:text-3xl px-3 py-3 font-bold text-gray-900">
+            Assignments & Projects
+          </h1>
+
+          <p className="text-sm px-3 py-1 text-gray-500 mt-1">
+            Publish coursework deadlines and review student submissions.
           </p>
         </div>
 
         <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] hover:from-[#741339] hover:to-[#a11a58] text-white text-xs font-extrabold rounded-2xl shadow-lg transition-all transform hover:scale-[1.02] self-start sm:self-center"
+          type="button"
+          onClick={() => setShowCreateModal(true)}
+          className="inline-flex items-center justify-center gap-2
+                     px-5 py-3 rounded-xl
+                     bg-gradient-to-r from-[#5d0f2d] to-[#8a164b]
+                     text-white text-sm font-semibold
+                     shadow-md hover:shadow-lg
+                     hover:-translate-y-0.5
+                     transition-all"
         >
-          <Plus className="w-4 h-4 text-[#d4af37]" />
-          <span>Create New Assignment</span>
+          <Plus size={18} />
+          Create Assignment
         </button>
+
       </div>
 
-      {/* KPI Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Coursework</span>
-          <h3 className="text-3xl font-black text-[#5d0f2d] mt-2">{assignments.length}</h3>
-          <p className="text-[11px] text-gray-400 font-medium mt-0.5">Published assignments</p>
+
+      {/* ================= STATS ================= */}
+
+      {/* ============================= */}
+      {/* STATS CARDS */}
+      {/* ============================= */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+
+        {/* Total Assignments */}
+        <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(93,15,45,0.10)]">
+
+          {/* Top Color Line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5d0f2d] to-[#8a164b]" />
+
+          {/* Glow */}
+          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#5d0f2d]/5 blur-2xl group-hover:bg-[#5d0f2d]/10 transition" />
+
+          <div className="relative flex items-start justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Total Assignments
+              </p>
+
+              <h3 className="mt-3 text-3xl font-bold text-gray-900">
+                3
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                All coursework
+              </p>
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-[#5d0f2d]/10 text-[#5d0f2d] flex items-center justify-center group-hover:scale-105 transition-transform">
+              <FileCheck size={22} />
+            </div>
+
+          </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-sky-600 uppercase tracking-wider">Total Submissions</span>
-          <h3 className="text-3xl font-black text-sky-700 mt-2">{totalSubmitted}</h3>
-          <p className="text-[11px] text-sky-600 font-medium mt-0.5">Student uploads</p>
+
+        {/* Published */}
+        <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(16,185,129,0.10)]">
+
+          {/* Top Color Line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-300" />
+
+          {/* Glow */}
+          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-emerald-500/5 blur-2xl group-hover:bg-emerald-500/10 transition" />
+
+          <div className="relative flex items-start justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Published
+              </p>
+
+              <h3 className="mt-3 text-3xl font-bold text-gray-900">
+                2
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Live assignments
+              </p>
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <FileCheck size={22} />
+            </div>
+
+          </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Pending Evaluation</span>
-          <h3 className="text-3xl font-black text-amber-700 mt-2">{totalPending}</h3>
-          <p className="text-[11px] text-amber-600 font-medium mt-0.5">Awaiting grading</p>
+
+        {/* Drafts */}
+        <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(245,158,11,0.10)]">
+
+          {/* Top Color Line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-amber-300" />
+
+          {/* Glow */}
+          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-500/5 blur-2xl group-hover:bg-amber-500/10 transition" />
+
+          <div className="relative flex items-start justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Drafts
+              </p>
+
+              <h3 className="mt-3 text-3xl font-bold text-gray-900">
+                1
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Not published yet
+              </p>
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Clock3 size={22} />
+            </div>
+
+          </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Submission Rate</span>
-          <h3 className="text-3xl font-black text-emerald-700 mt-2">94.2%</h3>
-          <p className="text-[11px] text-emerald-600 font-medium mt-0.5">Batch average</p>
+
+        {/* Pending Submissions */}
+        <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(59,130,246,0.10)]">
+
+          {/* Top Color Line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-300" />
+
+          {/* Glow */}
+          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-500/5 blur-2xl group-hover:bg-blue-500/10 transition" />
+
+          <div className="relative flex items-start justify-between">
+
+            <div>
+              <p className="text-sm font-medium text-gray-500">
+                Pending Submissions
+              </p>
+
+              <h3 className="mt-3 text-3xl font-bold text-gray-900">
+                57
+              </h3>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Awaiting review
+              </p>
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Users size={22} />
+            </div>
+
+          </div>
         </div>
+
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-rose-100 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          {[
-            { id: 'all', label: 'All Assignments' },
-            { id: 'published', label: 'Published' },
-            { id: 'completed', label: 'Completed' },
-          ].map((pill) => (
-            <button
-              key={pill.id}
-              onClick={() => setSelectedStatus(pill.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
-                selectedStatus === pill.id
-                  ? 'bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] text-white shadow-md'
-                  : 'bg-gray-100/80 text-gray-600 hover:bg-rose-50'
-              }`}
-            >
-              {pill.label}
-            </button>
-          ))}
-        </div>
 
-        <div className="relative w-full md:w-72">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+      {/* ================= SEARCH ================= */}
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+
+        <div className="relative w-full max-w-md">
+
+          <Search
+            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2
+               text-gray-400 pointer-events-none"
+          />
+
           <input
             type="text"
-            placeholder="Search coursework title..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-[#8a164b] font-medium"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search assignments..."
+            className="
+      w-full h-11
+      pl-11 pr-4
+      rounded-xl
+
+      bg-gray-50
+      border border-gray-200
+
+      text-sm text-gray-800
+      placeholder:text-gray-400
+
+      outline-none
+
+      transition-all duration-200
+
+      hover:bg-white
+      hover:border-gray-300
+
+      focus:bg-white
+      focus:border-[#5d0f2d]
+      focus:ring-4
+      focus:ring-[#5d0f2d]/10
+
+      shadow-sm
+      focus:shadow-md
+    "
           />
+
         </div>
+
       </div>
 
-      {/* Assignments List */}
-      {loading ? (
-        <div className="bg-white p-16 rounded-3xl border border-rose-100 shadow-sm text-center space-y-3">
-          <div className="w-8 h-8 border-3 border-[#8a164b]/20 border-t-[#8a164b] rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-gray-500 font-medium">Fetching coursework assignments...</p>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="bg-white p-16 rounded-3xl border border-rose-100 shadow-sm text-center space-y-3">
-          <FileCheck className="w-12 h-12 mx-auto text-gray-300" />
-          <h4 className="font-bold text-gray-800 text-base">No Assignments Found</h4>
-          <p className="text-xs text-gray-500 max-w-sm mx-auto">
-            No coursework assignments match your search or filter settings.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((asg) => {
-            const asgId = asg._id || asg.id;
-            const submittedPercent = asg.totalEnrolled
-              ? Math.round((asg.submittedCount / asg.totalEnrolled) * 100)
-              : 85;
 
-            return (
-              <div
-                key={asgId}
-                className="bg-white p-6 rounded-3xl border border-rose-100 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-5 group relative overflow-hidden"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-[#5d0f2d]/10 text-[#5d0f2d] border border-[#8a164b]/20">
-                      {asg.status}
-                    </span>
-                    <span className="text-xs font-extrabold text-[#8a164b] bg-rose-50 px-2.5 py-0.5 rounded-md">
-                      {asg.totalPoints} Marks
-                    </span>
-                  </div>
+      {/* ================= ASSIGNMENT LIST ================= */}
 
-                  <h3 className="font-extrabold text-gray-900 text-base group-hover:text-[#8a164b] transition-colors leading-snug">
-                    {asg.title}
-                  </h3>
+      <div className="space-y-4">
 
-                  <p className="text-xs text-gray-500 font-medium">{asg.courseName}</p>
+        {filteredAssignments.length > 0 ? (
 
-                  <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-                    {asg.description}
-                  </p>
-                </div>
+          filteredAssignments.map((assignment) => (
 
-                <div className="space-y-3 pt-3 border-t border-gray-100">
-                  <div className="flex items-center justify-between text-xs font-bold text-gray-600">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4 text-[#8a164b]" />
-                      <span>Due: {asg.dueDate}</span>
-                    </div>
-                    <span>{asg.submittedCount} / {asg.totalEnrolled || 30} Submissions</span>
-                  </div>
+            <div
+              key={assignment.id}
+              className="group relative overflow-hidden
+           bg-white rounded-2xl
+           border border-gray-200
+           shadow-[0_4px_20px_rgba(0,0,0,0.04)]
+           hover:shadow-[0_12px_35px_rgba(93,15,45,0.10)]
+           hover:-translate-y-1
+           transition-all duration-300"
+            >
+              {/* Top Accent Line */}
+              <div className="absolute top-0 left-0 right-0 h-1
+                bg-gradient-to-r
+                from-[#5d0f2d]
+                via-[#8a164b]
+                to-[#d4a5b5]" />
+              <div className="p-5">
 
-                  {/* Submission Progress Bar */}
-                  <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] h-full rounded-full transition-all"
-                      style={{ width: `${submittedPercent}%` }}
+                <div className="flex items-start gap-4">
+
+                  {/* Icon */}
+
+                  {/* Assignment Icon */}
+                  {/* Assignment Icon */}
+                  <div
+                    className="w-12 h-12 shrink-0
+             rounded-xl
+             bg-gradient-to-br
+             from-[#5d0f2d]/10
+             to-[#8a164b]/10
+             border border-[#5d0f2d]/15
+             text-[#5d0f2d]
+             flex items-center justify-center"
+                  >
+                    <FileCheck
+                      size={22}
+                      strokeWidth={2.2}
+                      className="text-[#5d0f2d]"
                     />
                   </div>
 
-                  {/* Review Button */}
-                  <button
-                    onClick={() => navigate(`/faculty/assignments/${asgId}/submissions`)}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-[#5d0f2d] to-[#8a164b] text-white text-xs font-extrabold shadow-md hover:from-[#741339] hover:to-[#a11a58] transition-all"
-                  >
-                    <span>Review Submissions ({asg.pendingReviewCount || 0} Pending)</span>
-                    <ArrowRight className="w-4 h-4 text-[#d4af37]" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
 
-      {/* Modal: Create Assignment */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-gray-100 overflow-hidden space-y-5 p-6">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h4 className="font-extrabold text-gray-900 text-lg">Publish New Coursework Assignment</h4>
-              <button onClick={() => setIsCreateModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-5 h-5" />
-              </button>
+                  {/* Main Info */}
+
+                  <div className="flex-1 min-w-0">
+
+                    <div className="flex items-start justify-between gap-4">
+
+                      <div>
+
+                        <h3 className="font-bold text-gray-900 text-[15px]
+               group-hover:text-[#5d0f2d]
+               transition-colors">
+                          {assignment.title}
+                        </h3>
+
+                        <p className="text-sm text-gray-500 mt-1">
+                          {assignment.course}
+                        </p>
+
+                      </div>
+
+
+                      {/* Status */}
+
+                      <span
+                        className={`shrink-0 px-3 py-1.5 rounded-full
+                                   text-xs font-semibold ${assignment.status === "Published"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-orange-100 text-orange-700"
+                          }`}
+                      >
+                        {assignment.status}
+                      </span>
+
+                    </div>
+
+
+                    {/* Details */}
+
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4">
+
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <CalendarDays size={16} />
+                        Due {assignment.dueDate}
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Users size={16} />
+                        {assignment.submissions}/
+                        {assignment.totalStudents} submitted
+                      </div>
+
+                      <div className="text-sm text-gray-500">
+                        {assignment.marks} marks
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* 3 DOT MENU */}
+
+                  {/* 3 DOT MENU */}
+{/* 3 DOT MENU */}
+<div className="relative shrink-0">
+
+  {/* Menu Button */}
+  <button
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
+
+      const rect = e.currentTarget.getBoundingClientRect();
+
+      const menuWidth = 176;
+      const menuHeight = 150;
+
+      let left = rect.right - menuWidth;
+      let top = rect.bottom + 8;
+
+      // Right side se bahar na nikle
+      if (left < 8) {
+        left = 8;
+      }
+
+      if (left + menuWidth > window.innerWidth - 8) {
+        left = window.innerWidth - menuWidth - 8;
+      }
+
+      // Agar neeche space nahi hai to upar open hoga
+      if (top + menuHeight > window.innerHeight - 8) {
+        top = rect.top - menuHeight - 8;
+      }
+
+      setMenuPosition({
+        top,
+        left,
+      });
+
+      setActiveMenu((current) =>
+        current === assignment.id ? null : assignment.id
+      );
+    }}
+    className={`w-9 h-9 rounded-lg
+               flex items-center justify-center
+               transition-all duration-200
+               ${
+                 activeMenu === assignment.id
+                   ? "bg-[#5d0f2d]/10 text-[#5d0f2d]"
+                   : "text-gray-500 hover:text-[#5d0f2d] hover:bg-[#5d0f2d]/10"
+               }`}
+  >
+    <MoreVertical size={18} />
+  </button>
+
+</div>
+
+                </div>
+
+              </div>
+
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-extrabold uppercase tracking-wider text-[#5d0f2d]">Assignment Title</label>
+          ))
+
+        ) : (
+
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+
+            <div className="w-14 h-14 mx-auto rounded-2xl
+                            bg-gray-100
+                            text-gray-400
+                            flex items-center justify-center">
+              <FileCheck size={25} />
+            </div>
+
+            <h3 className="font-semibold text-gray-900 mt-4">
+              No assignments found
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1">
+              Try changing your search or create a new assignment.
+            </p>
+
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/* ================= CREATE MODAL ================= */}
+
+      {showCreateModal && (
+
+        <div className="fixed inset-0 z-50
+                        flex items-center justify-center
+                        bg-black/40 backdrop-blur-sm
+                        px-4">
+
+          <div className="w-full max-w-lg
+                          bg-white rounded-2xl
+                          shadow-2xl p-6">
+
+            {/* Header */}
+
+            <div className="flex items-center justify-between mb-6">
+
+              <div>
+
+                <h3 className="text-xl font-bold text-gray-900">
+                  Create Assignment
+                </h3>
+
+                <p className="text-sm text-gray-500 mt-1">
+                  Add a new assignment for your students.
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(false)}
+                className="w-9 h-9 rounded-lg
+                           hover:bg-gray-100
+                           text-gray-500
+                           flex items-center justify-center"
+              >
+                <X size={18} />
+              </button>
+
+            </div>
+
+
+            {/* Title */}
+
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Assignment Title
+            </label>
+
+            <input
+              type="text"
+              value={newAssignment.title}
+              onChange={(e) =>
+                setNewAssignment({
+                  ...newAssignment,
+                  title: e.target.value,
+                })
+              }
+              placeholder="e.g. Build a React Dashboard"
+              className="w-full h-11 px-4 rounded-xl
+                         border border-gray-200
+                         outline-none
+                         focus:border-[#5d0f2d]
+                         focus:ring-2
+                         focus:ring-[#5d0f2d]/10"
+            />
+
+
+            {/* Course */}
+
+            <label className="block text-sm font-semibold text-gray-700 mt-5 mb-2">
+              Course
+            </label>
+
+            <input
+              type="text"
+              value={newAssignment.course}
+              onChange={(e) =>
+                setNewAssignment({
+                  ...newAssignment,
+                  course: e.target.value,
+                })
+              }
+              placeholder="e.g. Full Stack Web Development"
+              className="w-full h-11 px-4 rounded-xl
+                         border border-gray-200
+                         outline-none
+                         focus:border-[#5d0f2d]
+                         focus:ring-2
+                         focus:ring-[#5d0f2d]/10"
+            />
+
+
+            {/* Date + Marks */}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+
+              <div>
+
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Due Date
+                </label>
+
                 <input
-                  type="text"
-                  required
-                  placeholder="e.g. React State Architecture Capstone"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-[#8a164b]"
+                  type="date"
+                  value={newAssignment.dueDate}
+                  onChange={(e) =>
+                    setNewAssignment({
+                      ...newAssignment,
+                      dueDate: e.target.value,
+                    })
+                  }
+                  className="w-full h-11 px-4 rounded-xl
+                             border border-gray-200
+                             outline-none
+                             focus:border-[#5d0f2d]"
                 />
+
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-extrabold uppercase tracking-wider text-[#5d0f2d]">Course Batch</label>
-                  <select
-                    value={form.courseName}
-                    onChange={(e) => setForm({ ...form, courseName: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-[#8a164b]"
-                  >
-                    <option value="Full Stack Web Development (Batch 2026-A)">Full Stack Web Development</option>
-                    <option value="UI/UX Product Design (Cohort 4)">UI/UX Product Design</option>
-                    <option value="Cloud Architecture & DevOps">Cloud Architecture & DevOps</option>
-                  </select>
-                </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-extrabold uppercase tracking-wider text-[#5d0f2d]">Due Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={form.dueDate}
-                    onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-[#8a164b]"
-                  />
-                </div>
-              </div>
+              <div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-extrabold uppercase tracking-wider text-[#5d0f2d]">Total Maximum Points</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Maximum Marks
+                </label>
+
                 <input
                   type="number"
-                  required
-                  value={form.totalPoints}
-                  onChange={(e) => setForm({ ...form, totalPoints: Number(e.target.value) })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-[#8a164b]"
+                  value={newAssignment.marks}
+                  onChange={(e) =>
+                    setNewAssignment({
+                      ...newAssignment,
+                      marks: e.target.value,
+                    })
+                  }
+                  placeholder="100"
+                  className="w-full h-11 px-4 rounded-xl
+                             border border-gray-200
+                             outline-none
+                             focus:border-[#5d0f2d]"
                 />
+
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-extrabold uppercase tracking-wider text-[#5d0f2d]">Instructions & Project Guidelines</label>
-                <textarea
-                  rows={3}
-                  placeholder="Detail instructions, repository requirements, or scoring rubrics..."
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:border-[#8a164b]"
-                />
-              </div>
+            </div>
 
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="px-5 py-2.5 bg-[#5d0f2d] hover:bg-[#8a164b] text-white text-xs font-extrabold rounded-xl shadow-md"
-                >
-                  {submitting ? 'Publishing...' : 'Publish Assignment'}
-                </button>
-              </div>
-            </form>
+
+            {/* Description */}
+
+            <label className="block text-sm font-semibold text-gray-700 mt-5 mb-2">
+              Description
+            </label>
+
+            <textarea
+              rows="3"
+              value={newAssignment.description}
+              onChange={(e) =>
+                setNewAssignment({
+                  ...newAssignment,
+                  description: e.target.value,
+                })
+              }
+              placeholder="Describe the assignment..."
+              className="w-full px-4 py-3 rounded-xl
+                         border border-gray-200
+                         outline-none resize-none
+                         focus:border-[#5d0f2d]
+                         focus:ring-2
+                         focus:ring-[#5d0f2d]/10"
+            />
+
+
+            {/* Actions */}
+
+            <div className="flex justify-end gap-3 mt-6">
+
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2.5 rounded-xl
+                           border border-gray-200
+                           text-sm font-semibold
+                           text-gray-600
+                           hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCreateAssignment}
+                disabled={
+                  !newAssignment.title.trim() ||
+                  !newAssignment.course.trim() ||
+                  !newAssignment.dueDate
+                }
+                className={`px-5 py-2.5 rounded-xl
+                            text-sm font-semibold transition ${newAssignment.title.trim() &&
+                    newAssignment.course.trim() &&
+                    newAssignment.dueDate
+                    ? "bg-[#5d0f2d] text-white hover:bg-[#4b0c24]"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }`}
+              >
+                Create Assignment
+              </button>
+
+            </div>
+
           </div>
+
         </div>
+
       )}
+
+
+      {activeMenu && (
+  <div
+    className="fixed z-[9999] w-44
+               rounded-xl
+               border border-gray-200
+               bg-white
+               shadow-2xl
+               p-1.5"
+    style={{
+      top: menuPosition.top,
+      left: menuPosition.left,
+    }}
+    onClick={(e) => e.stopPropagation()}
+  >
+
+    {/* View */}
+    <button
+      type="button"
+      onClick={() => {
+        setActiveMenu(null);
+      }}
+      className="w-full flex items-center gap-3
+                 px-3 py-2.5
+                 rounded-lg
+                 text-sm font-medium
+                 text-gray-700
+                 hover:bg-gray-50
+                 transition
+                 text-left"
+    >
+      <Eye size={16} className="text-gray-500" />
+      <span>View</span>
+    </button>
+
+    {/* Edit */}
+    <button
+      type="button"
+      onClick={() => {
+        setActiveMenu(null);
+      }}
+      className="w-full flex items-center gap-3
+                 px-3 py-2.5
+                 rounded-lg
+                 text-sm font-medium
+                 text-gray-700
+                 hover:bg-gray-50
+                 transition
+                 text-left"
+    >
+      <Pencil size={16} className="text-gray-500" />
+      <span>Edit</span>
+    </button>
+
+    <div className="my-1.5 h-px bg-gray-100" />
+
+    {/* Delete */}
+    <button
+      type="button"
+      onClick={() => {
+        handleDeleteAssignment(activeMenu);
+        setActiveMenu(null);
+      }}
+      className="w-full flex items-center gap-3
+                 px-3 py-2.5
+                 rounded-lg
+                 text-sm font-medium
+                 text-red-600
+                 hover:bg-red-50
+                 transition
+                 text-left"
+    >
+      <Trash2 size={16} />
+      <span>Delete</span>
+    </button>
+
+  </div>
+)}
+
     </div>
   );
 }
