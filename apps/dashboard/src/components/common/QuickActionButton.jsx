@@ -184,13 +184,8 @@ hover:shadow-2xl
             →
           </span>
         </Link>
-
-
-
-
       </div>
-
-
+      
       {/* Bottom Hover Line */}
       <div className="absolute inset-x-0 bottom-0 h-1 scale-x-0 bg-[#8b1730] transition-transform duration-300 origin-left group-hover:scale-x-100"></div>
     </button>
