@@ -33,7 +33,7 @@ const assertAssigneeAllowed = async (req, assignedTo) => {
 export const getAllTasks = async (req, res) => {
   try {
     const ids = await allowedUserIds(req);
-    const query = ids === null ? { is_deleted: false } : { is_deleted: false, assignedTo: { $in: ids } };
+    const query = ids === null ? { is_deleted: false } : { is_deleted: false, assigned_to_id: { $in: ids } };
 
     // Local Feature: Dynamic Search and Category filters
     if (req.query.status) query.status = req.query.status;

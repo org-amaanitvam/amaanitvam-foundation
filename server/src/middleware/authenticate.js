@@ -1,4 +1,5 @@
-import admin, { firebaseReady } from "../config/firebase.js";
+import { getAuth } from "firebase-admin/auth";
+import { firebaseReady } from "../config/firebase.js";
 import { UnauthorizedError } from "../shared/errors/AppError.js";
 import User from "../modules/users/user.model.js";
 
@@ -24,7 +25,7 @@ export const authenticate = async (req, _res, next) => {
     const token = authHeader.split(" ")[1];
     let decodedToken;
     try {
-      decodedToken = await admin.auth().verifyIdToken(token);
+      decodedToken = await getAuth().verifyIdToken(token);
     } catch (err) {
       throw new UnauthorizedError("Invalid or expired token", "AUTH_TOKEN_INVALID");
     }

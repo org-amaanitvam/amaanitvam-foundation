@@ -57,4 +57,13 @@ taskSchema.set('toJSON', {
   }
 });
 
+// Virtual populate alias: the frontend expects task.assignedTo (populated User)
+// while the document stores assigned_to_id.
+taskSchema.virtual('assignedTo', {
+  ref: 'User',
+  localField: 'assigned_to_id',
+  foreignField: '_id',
+  justOne: true,
+});
+
 export default mongoose.models.Task || mongoose.model('Task', taskSchema);
