@@ -20,7 +20,17 @@ const courseSchema = new mongoose.Schema(
     is_free: { type: Boolean, default: false },
     is_published: { type: Boolean, default: false, index: true },
     is_deleted: { type: Boolean, default: false },
-    validity_days: { type: Number, default: null },
+    validity_days: { 
+      type: Number, 
+      default: null,
+      min: 0,
+      validate: {
+        validator: function(v) {
+          return v == null || Number.isFinite(v);
+        },
+        message: '{VALUE} is not a finite number'
+      }
+    },
     created_by_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

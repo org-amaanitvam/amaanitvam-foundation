@@ -95,26 +95,24 @@ api.interceptors.response.use(
     }
 
     /*
-     * Log out only when the API also rejects the newly refreshed token.
+     * IMPORTANT: a 401 on ONE endpoint must NOT destroy the whole session.
+     * The previous code called signOut() + window.location.replace('/login')
+     * from here, so any single failing widget request (a burst of parallel
+     * dashboard calls) kicked the user straight back out of the dashboard a
+     * second after login. Session validity is owned solely by AuthContext
+     * (/api/auth/session). Here we only notify listeners.
      */
     if (status === 401 && request?._firebaseTokenRetried) {
       console.error(
-        '[API Auth] Backend rejected the refreshed Firebase token'
+        '[API Auth] Backend rejected the refreshed Firebase token for',
+        request?.url
       );
 
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      sessionStorage.clear();
-
-      try {
-        await signOut(auth);
-      } catch (signOutError) {
-        console.error('[API Auth] Sign-out failed:', signOutError);
-      }
-
-      if (window.location.pathname !== '/login') {
-        window.location.replace('/login');
-      }
+      window.dispatchEvent(
+        new CustomEvent('dashboard:auth-rejected', {
+          detail: { url: request?.url },
+        })
+      );
     }
 
     return Promise.reject(error);

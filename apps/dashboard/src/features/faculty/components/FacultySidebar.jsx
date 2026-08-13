@@ -33,15 +33,15 @@ const facultyNavItems = [
 
 export default function FacultySidebar({ onLogout }) {
   return (
-    <aside className="w-64 bg-[#5d0f2d] text-white flex flex-col min-h-screen shadow-xl border-r border-[#8a164b]/30">
+    <aside className="w-64 bg-[#5d0f2d] text-white flex flex-col min-h-screen shadow-2xl border-r border-[#8a164b]/40">
       {/* Brand Header */}
       <div className="p-6 border-b border-[#8a164b]/40 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#8a164b] to-[#d4af37] flex items-center justify-center font-bold text-white shadow-lg">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#8a164b] to-[#d4af37] flex items-center justify-center font-black text-white shadow-lg border border-[#d4af37]/40">
           AF
         </div>
         <div>
-          <h1 className="font-bold text-lg leading-tight tracking-wide text-white">Faculty Portal</h1>
-          <p className="text-xs text-rose-200/70 font-medium">Amaanitvam LMS</p>
+          <h1 className="font-extrabold text-lg leading-tight tracking-wide text-white">Faculty Portal</h1>
+          <p className="text-xs text-[#d4af37] font-semibold">Amaanitvam LMS</p>
         </div>
       </div>
 
@@ -56,12 +56,12 @@ export default function FacultySidebar({ onLogout }) {
               className={({ isActive }) =>
                 `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#8a164b] text-white shadow-md shadow-[#8a164b]/40 font-semibold'
+                    ? 'bg-[#8a164b] text-white shadow-md shadow-[#8a164b]/40 border-l-4 border-[#d4af37] font-extrabold'
                     : 'text-rose-100/80 hover:bg-[#8a164b]/30 hover:text-white'
                 }`
               }
             >
-              <Icon className="w-5 h-5 text-rose-200" />
+              <Icon className="w-5 h-5 text-[#d4af37]" />
               <span>{item.name}</span>
             </NavLink>
           );
@@ -72,7 +72,7 @@ export default function FacultySidebar({ onLogout }) {
       <div className="p-4 border-t border-[#8a164b]/40">
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-200 hover:bg-rose-900/50 hover:text-white transition-all duration-200"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-200 hover:bg-rose-900/50 hover:text-white transition-all duration-200 border border-rose-800/30"
         >
           <LogOut className="w-5 h-5 text-rose-300" />
           <span>Sign Out</span>

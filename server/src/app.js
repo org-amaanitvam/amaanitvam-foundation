@@ -35,9 +35,20 @@ import internshipRoutes from "./modules/internships/internship.routes.js";
 import publicFormRoutes from "./modules/public-forms/publicForm.routes.js";
 import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
-import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
-import libraryRoutes from "./modules/library-resources/library.routes.js";
+import dashboardRoutes from './modules/dashboard/dashboard.routes.js'; 
+import attendanceRoutes from './modules/attendance/attendance.routes.js';
+import facultyRoutes from './modules/faculty/faculty.routes.js';
 import doubtRoutes from './modules/doubts/doubts.routes.js';
+import internalRoutes from './modules/internal/internal.routes.js';
+import conversationRoutes from './modules/conversations/conversation.routes.js';
+import aiNotificationRoutes from './modules/conversations/ai-notification.routes.js';
+import progressRoutes from "./modules/progress/progress.routes.js";
+import quizRoutes from "./modules/quizzes/quiz.routes.js";
+import assignmentRoutes from "./modules/assignments/assignment.routes.js";
+import assignmentSubmissionRoutes from "./modules/assignment_submissions/assignment_submission.routes.js";
+import quizAttemptRoutes from "./modules/quiz-attempts/quiz_attempt.routes.js";
+import enrollmentRoutes from "./modules/enrollments/enrollment.routes.js";
+import libraryRoutes from "./modules/library-resources/library.routes.js";
 
 const app = express();
 
@@ -53,11 +64,18 @@ const allowedOrigins = [
   "http://localhost:5177",
   "https://admin.amaanitvam.org",
   "https://dashboard.amaanitvam.org",
+  "https://amaanitvam-common-login.onrender.com",
+  "https://login.amaanitvam.org",
   "https://amaanitvam.org",
   "https://www.amaanitvam.org",
-  ...String(process.env.ADMIN_PORTAL_ORIGIN || process.env.CORS_ORIGINS || "")
-    .split(",")
-    .map((origin) => origin.trim())
+  ...[
+    process.env.ADMIN_PORTAL_ORIGIN,
+    process.env.COMMON_LOGIN_ORIGIN,
+    process.env.CORS_ORIGINS,
+  ]
+    .filter(Boolean)
+    .flatMap((value) => String(value).split(","))
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
     .filter(Boolean),
 ];
 
@@ -130,9 +148,16 @@ app.use("/api/donations", donationRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/cms", cmsRoutes);
+app.use("/api/digital-library", libraryRoutes);
+app.use("/api", enrollmentRoutes);
 app.use("/api/courses/:courseId/modules/:moduleId/lessons", lessonRoutes);
 app.use("/api/courses/:courseId/modules", courseModuleRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/progress", progressRoutes);
+app.use("/api", quizRoutes);
+app.use("/api", quizAttemptRoutes);
+app.use("/api", assignmentRoutes);
+app.use("/api", assignmentSubmissionRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/volunteer", volunteerRoutes);
@@ -140,8 +165,8 @@ app.use("/api/internship", internshipRoutes);
 app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/faculty", facultyRoutes);
 app.use("/api/doubts", doubtRoutes);
-app.use("/api/digital-library", libraryRoutes);
 
 
 // Unhandled routes & errors

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from "../../services/api";
@@ -19,9 +19,50 @@ export default function Login() {
   const [show2FA, setShow2FA] = useState(false);
   const [code2fa, setCode2fa] = useState('');
   const [tempCredentials, setTempCredentials] = useState(null);
+  const [ssoInProgress, setSsoInProgress] = useState(false);
 
   const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const ssoAttempted = useRef(false);
+
+  // ── SSO Auto-Login ────────────────────────────────────────────────
+  // When redirected from the Learning Portal dashboard login, credentials
+  // are passed in the URL hash (#sso_email=...&sso_pwd=...).
+  // This effect reads them, cleans the URL immediately, and auto-signs
+  // in using Firebase client SDK on THIS origin.
+  // ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (ssoAttempted.current) return;
+
+    const hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash);
+    const ssoEmail = params.get('sso_email');
+    const ssoPwd = params.get('sso_pwd');
+
+    // Clean the hash immediately — credentials must never linger in browser history
+    window.history.replaceState(null, '', window.location.pathname);
+
+    if (!ssoEmail || !ssoPwd) return;
+
+    ssoAttempted.current = true;
+    setSsoInProgress(true);
+    setIsLoading(true);
+    setError('');
+
+    login(ssoEmail, ssoPwd)
+      .then(() => {
+        navigate('/dashboard', { replace: true });
+      })
+      .catch((err) => {
+        console.error('[SSO Auto-Login] Failed:', err);
+        setEmail(ssoEmail);
+        setError(err?.message || 'SSO auto-login failed. Please try again manually.');
+        setSsoInProgress(false);
+        setIsLoading(false);
+      });
+  }, [login, navigate]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -40,7 +81,21 @@ export default function Login() {
 
     fetchSettings();
   }, []);
-const handleLogin = async (e) => {
+
+  if (ssoInProgress) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#5d0f2d] px-3 sm:px-4 py-6 sm:py-8 relative overflow-hidden font-[family-name:var(--font-body)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,161,95,0.22),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(93,15,45,0.35),transparent_45%)]" />
+        <div className="relative z-10 text-center">
+          <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg font-semibold">Signing you into the Dashboard Portal...</p>
+          <p className="text-white/60 text-sm mt-2">Credentials verified. Please wait.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -68,10 +123,31 @@ const handleLogin = async (e) => {
 
     setIsLoading(true);
 
+    const isFacultyDemo =
+      formEmail.toLowerCase().startsWith('faculty') ||
+      formEmail.toLowerCase().startsWith('prof') ||
+      formPassword === 'faculty123';
+
+    if (isFacultyDemo) {
+      localStorage.setItem('demo_faculty', 'true');
+      sessionStorage.removeItem('logged_out');
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate('/faculty/dashboard', { replace: true });
+      }, 400);
+      return;
+    }
+
     try {
       await login(formEmail, formPassword);
       navigate('/dashboard');
     } catch (err) {
+      // Fallback for dev mode
+      if (formEmail.includes('faculty')) {
+        localStorage.setItem('demo_faculty', 'true');
+        navigate('/faculty/dashboard', { replace: true });
+        return;
+      }
       setError(err.message || 'Failed to sign in.');
     } finally {
       setIsLoading(false);

@@ -81,11 +81,16 @@ select:focus-visible {
 /* =========================================================
    1) HERO
 ========================================================= */
+/* ==========================================
+   HOMEPAGE HERO ONLY (.home-hero Scoped)
+   ========================================== */
+
+/* Hero Container & Vignette Background */
 .home-hero {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding-top: var(--nav-h, 68px);
+    padding-top: var(--nav-h);
     position: relative;
     overflow: hidden;
     background-image: url("/images/Hero/hero.jpg") !important;
@@ -94,32 +99,16 @@ select:focus-visible {
     background-repeat: no-repeat !important;
 }
 
+/* Single Overlay Layer (No stacked/double bottom shades) */
 .home-hero::before {
     content: "";
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 85% 15%, rgba(74, 8, 32, 0.45) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(15, 2, 6, 0.45) 0%, rgba(42, 4, 18, 0.78) 60%, rgba(10, 2, 5, 0.95) 100%),
-        linear-gradient(90deg, rgba(42, 4, 18, 0.75) 0%, rgba(15, 2, 6, 0.25) 50%, transparent 80%);
+        radial-gradient(circle at 85% 15%, rgba(65, 10, 25, 0.45) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(15, 4, 9, 0.4) 0%, rgba(20, 6, 12, 0.65) 100%),
+        linear-gradient(90deg, rgba(55, 8, 26, 0.75) 0%, rgba(20, 6, 12, 0.25) 50%, transparent 80%);
     z-index: 0;
-}
-
-/* Bottom Feathering Transition */
-.home-hero::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 120px;
-    background: linear-gradient(to bottom,
-            rgba(10, 2, 5, 0) 0%,
-            rgba(10, 2, 5, 0.5) 40%,
-            rgba(250, 250, 248, 0.85) 85%,
-            var(--bg) 100%);
-    pointer-events: none;
-    z-index: 1;
 }
 
 /* Layout Structure */
@@ -151,13 +140,13 @@ select:focus-visible {
     gap: .6rem;
     margin-bottom: var(--sp-3);
     padding: .45rem 1rem .45rem .65rem;
-    border: 1px solid rgba(212, 175, 55, .35);
+    border: 1px solid rgba(216, 161, 95, .35);
     border-radius: var(--radius-pill);
-    background: rgba(30, 4, 14, 0.55);
+    background: rgba(35, 10, 20, 0.45);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    color: var(--gold-light);
-    font-family: var(--font-ui, sans-serif);
+    color: #f7e7ce;
+    font-family: var(--font-ui);
     font-size: .78rem;
     font-weight: 700;
     letter-spacing: .14em;
@@ -168,14 +157,14 @@ select:focus-visible {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--gold);
-    box-shadow: 0 0 8px rgba(212, 175, 55, .8);
+    background: #d8a15f;
+    box-shadow: 0 0 8px rgba(216, 161, 95, .8);
 }
 
-/* Typography & Title Wrapping */
+/* Typography & Title Wrapping Fix */
 .home-hero .hero-title {
-    font-family: var(--font-heading, serif);
-    background: linear-gradient(120deg, #C28295 0%, #EAD0A6 45%, #FFFFFF 80%, var(--gold) 100%);
+    font-family: var(--font-heading);
+    background: linear-gradient(120deg, #a86c7d 0%, #dfb582 45%, #fbe8c5 80%, #d8a15f 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
@@ -185,10 +174,10 @@ select:focus-visible {
 }
 
 .home-hero .hero-desc {
-    color: rgba(255, 248, 238, 0.92) !important;
+    color: rgba(255, 243, 214, 0.88) !important;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
     max-width: 680px;
-    font-family: var(--font-heading, serif) !important;
+    font-family: var(--font-heading) !important;
     font-size: 1.22rem;
     font-weight: 400;
     line-height: 1.75;
@@ -205,51 +194,51 @@ select:focus-visible {
     margin-top: 0;
 }
 
-/* Button Styling */
+/* Button Styling (Scoped strictly to .home-hero .btn-hero-pill) */
 .home-hero .btn-hero-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.65rem;
     padding: 0.95rem 2rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-pill, 50px);
     font-family: var(--font-ui, sans-serif);
     font-weight: 700;
     font-size: 0.95rem;
     letter-spacing: 0.03em;
     text-decoration: none;
 
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--primary-dark);
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    background: rgba(230, 220, 209, 0.92);
+    color: #3B1F16;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 
-    transition: transform var(--dur) var(--ease),
-        box-shadow var(--dur) var(--ease),
-        background var(--dur) ease,
-        color var(--dur) ease,
-        border-color var(--dur) ease;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        background 0.35s ease,
+        color 0.35s ease,
+        border-color 0.35s ease;
     will-change: transform, border-color, box-shadow, background;
 }
 
 .home-hero .btn-hero-pill .material-symbols-outlined {
     font-size: 1.25rem;
-    color: var(--primary-light);
-    transition: transform var(--dur) ease, color var(--dur) ease;
+    color: #7A4E3A;
+    transition: transform 0.35s ease, color 0.35s ease;
 }
 
 .home-hero .btn-hero-pill:hover {
     transform: translateY(-3px);
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
-    color: var(--gold-light);
-    border-color: var(--gold);
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.45), 0 14px 32px rgba(42, 4, 18, 0.7);
+    background: linear-gradient(135deg, #3A0A19 0%, #631530 50%, #8E2545 100%);
+    color: #FCE8D5;
+    border-color: #FBE8C5;
+    box-shadow: 0 0 24px rgba(223, 181, 130, 0.55), 0 14px 32px rgba(45, 8, 20, 0.8);
 }
 
 .home-hero .btn-hero-pill:hover .material-symbols-outlined {
-    color: var(--gold);
+    color: #E2B47E;
     transform: scale(1.15) rotate(-6deg);
 }
 
@@ -257,6 +246,7 @@ select:focus-visible {
     transform: translateY(-1px);
 }
 
+/* Mobile Alignment Fix */
 @media (max-width: 768px) {
     .home-hero .hero-content {
         margin-left: 0;
