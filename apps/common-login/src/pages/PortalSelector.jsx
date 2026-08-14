@@ -28,6 +28,29 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
     }
   });
 
+  // A portal sent us here with ?returnTo=<its url>. If a session already
+  // exists we mint a hand-off token and go straight back — no form, no chooser.
+  const returnTo = useMemo(() => {
+    let raw = null;
+    try {
+      raw = new URLSearchParams(window.location.search).get('returnTo');
+    } catch {
+      return null;
+    }
+    if (!raw) return null;
+    try {
+      const u = new URL(raw);
+      if (u.protocol !== 'https:' && u.hostname !== 'localhost') return null;
+      const allowed = getAllPortals().map((p) => {
+        try { return new URL(p.url).origin; } catch { return null; }
+      }).filter(Boolean);
+      if (u.hostname !== 'localhost' && !allowed.includes(u.origin)) return null;
+      return u;
+    } catch {
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     const fetchSession = async () => {
@@ -84,8 +107,7 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
   // Mints a Firebase custom token so the destination portal signs the user in
   // automatically — credentials are only ever entered on this page. Available
   // to every authenticated role, not just administrators.
-  const redirectToPortal = useCallback(async (portal) => {
-    setRedirecting(portal.portalKey);
+  const mintCrossPortalToken = useCallback(async () => {
     let customToken = null;
     try {
       const res = await api.post('/auth/cross-portal-token');
@@ -105,6 +127,12 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
         console.error('[common-login] SSO token fallback failed:', err?.message || err);
       }
     }
+    return customToken;
+  }, []);
+
+  const redirectToPortal = useCallback(async (portal) => {
+    setRedirecting(portal.portalKey);
+    const customToken = await mintCrossPortalToken();
     if (!customToken) {
       toast.error('Secure hand-off unavailable; the portal may ask you to sign in.');
     }
@@ -114,22 +142,49 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
       /* ignore */
     }
     window.location.replace(buildPortalUrl(portal, customToken));
-  }, []);
+  }, [mintCrossPortalToken]);
+
+  // returnTo hand-off: highest priority, beats both the chooser and suppressAuto.
+  useEffect(() => {
+    if (loading || !returnTo) return;
+    if (autoRedirectStarted.current) return;
+    autoRedirectStarted.current = true;
+    (async () => {
+      const customToken = await mintCrossPortalToken();
+      const target = new URL(returnTo.toString());
+      target.searchParams.delete('authToken');
+      target.searchParams.delete('token');
+      target.searchParams.delete('returnTo');
+      if (customToken) target.searchParams.set('authToken', customToken);
+      try {
+        sessionStorage.removeItem('af.suppressAutoPortal');
+      } catch {
+        /* ignore */
+      }
+      if (!customToken) {
+        // No token: stay here and let the user pick, rather than ping-ponging.
+        autoRedirectStarted.current = false;
+        toast.error('Secure hand-off unavailable; please choose a portal.');
+        return;
+      }
+      window.location.replace(target.toString());
+    })();
+  }, [loading, returnTo, mintCrossPortalToken]);
 
   // Every non super_admin role goes straight to its portal — no chooser,
   // no second credential prompt.
   useEffect(() => {
-    if (loading || allowChooser || suppressAuto) return;
+    if (loading || returnTo || allowChooser || suppressAuto) return;
     if (autoRedirectStarted.current) return;
     autoRedirectStarted.current = true;
     redirectToPortal(resolvedPortal);
-  }, [loading, allowChooser, suppressAuto, resolvedPortal, redirectToPortal]);
+  }, [loading, returnTo, allowChooser, suppressAuto, resolvedPortal, redirectToPortal]);
 
   // Returning here after signing out of a portal:
   //  - super_admin  -> stay signed in and show the chooser (switch portals)
   //  - every other role (only one portal) -> finish the sign-out, show login
   useEffect(() => {
-    if (loading || !suppressAuto) return;
+    if (loading || returnTo || !suppressAuto) return;
     try {
       sessionStorage.removeItem('af.suppressAutoPortal');
     } catch {
@@ -139,7 +194,7 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
     if (signingOut.current) return;
     signingOut.current = true;
     signOut(auth).catch(() => {});
-  }, [loading, suppressAuto, allowChooser]);
+  }, [loading, returnTo, suppressAuto, allowChooser]);
 
   const handleLogout = async () => {
     try {
@@ -159,11 +214,13 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
 
   const allPortals = getAllPortals();
   const otherPortals = allPortals.filter((p) => p.portalKey !== resolvedPortal.portalKey);
-  const showRedirectSplash = !loading && !allowChooser && !suppressAuto;
-  const showSignOutSplash = !loading && !allowChooser && suppressAuto;
+  const showReturnSplash = !loading && !!returnTo;
+  const showRedirectSplash = !loading && !returnTo && !allowChooser && !suppressAuto;
+  const showSignOutSplash = !loading && !returnTo && !allowChooser && suppressAuto;
 
-  if (loading || showRedirectSplash || showSignOutSplash) {
+  if (loading || showReturnSplash || showRedirectSplash || showSignOutSplash) {
     let splashText = 'Loading your workspace…';
+    if (showReturnSplash) splashText = 'Signing you in…';
     if (showRedirectSplash) splashText = `Opening ${resolvedPortal.name}…`;
     if (showSignOutSplash) splashText = 'Signing you out…';
     return (

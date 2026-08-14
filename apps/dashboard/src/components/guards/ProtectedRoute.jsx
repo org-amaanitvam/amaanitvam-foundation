@@ -49,12 +49,22 @@ export default function ProtectedRoute({
         </div>
       );
     }
+      // A hand-off token is present (or being consumed) — never redirect yet.
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get('authToken') || sp.get('token')) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="spinner" />
+        </div>
+      );
+    }
 
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    window.location.href = isLocal
-      ? buildCommonLoginUrl()
-      : buildCommonLoginUrl();
+
+    const target = new URL(buildCommonLoginUrl('session-expired'));
+    target.searchParams.set('returnTo', window.location.href);
+    window.location.replace(target.toString());
     return null;
+
   }
 
   if (
