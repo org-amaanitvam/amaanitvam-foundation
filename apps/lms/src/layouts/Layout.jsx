@@ -73,7 +73,7 @@ export default function Layout() {
             <span>Programs</span>
             <ExternalLink className="w-3.5 h-3.5 ml-auto opacity-60" />
           </a>
-          <a className="sidebar-nav-link" href="https://www.amaanitvam.org/src/pages/login.html" target="_blank" rel="noreferrer">
+          <a className="sidebar-nav-link" href="https://amaanitvam-common-login.onrender.com" target="_blank" rel="noreferrer">
             <LogOut className="w-4.5 h-4.5" />
             <span>Portal Login</span>
             <ExternalLink className="w-3.5 h-3.5 ml-auto opacity-60" />

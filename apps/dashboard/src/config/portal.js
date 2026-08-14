@@ -38,3 +38,10 @@ export function showLogoutOverlay(message = 'Signing you out\u2026') {
   if (p) p.textContent = message;
   document.body.appendChild(el);
 }
+
+const COMMON_LOGIN_URL = (
+  import.meta.env.VITE_COMMON_LOGIN_URL ||
+  (import.meta.env.PROD
+    ? 'https://amaanitvam-common-login.onrender.com'
+    : 'http://localhost:5175')
+).replace(/\/+$/, '');

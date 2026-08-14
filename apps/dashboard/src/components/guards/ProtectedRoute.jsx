@@ -1,3 +1,4 @@
+import { buildCommonLoginUrl, redirectToCommonLogin } from '../../config/portal';
 import {
   Navigate,
   useLocation,
@@ -51,8 +52,8 @@ export default function ProtectedRoute({
 
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     window.location.href = isLocal
-      ? 'http://localhost:5175/src/pages/login.html'
-      : 'https://www.amaanitvam.org/pages/login.html';
+      ? buildCommonLoginUrl()
+      : buildCommonLoginUrl();
     return null;
   }
 
