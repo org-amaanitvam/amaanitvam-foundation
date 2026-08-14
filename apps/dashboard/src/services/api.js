@@ -118,5 +118,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+const raw = (import.meta.env.VITE_API_URL || 'https://amaanitvam-foundation.onrender.com/api').replace(/\/+$/, '');
+export const apiBaseURL = raw.endsWith('/api') ? raw : `${raw}/api`;
 
 export default api;
