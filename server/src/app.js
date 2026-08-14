@@ -83,7 +83,11 @@ const uniqueAllowedOrigins = [...new Set(allowedOrigins)];
 
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || uniqueAllowedOrigins.includes(origin)) {
+    const isVercelCommonLogin =
+      /^https:\/\/[a-z0-9-]*amaanitvam[a-z0-9-]*\.vercel\.app$/.test(
+        String(origin || ""),
+      );
+    if (!origin || isVercelCommonLogin || uniqueAllowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     console.error(`[CORS] Blocked origin: ${origin}`);
