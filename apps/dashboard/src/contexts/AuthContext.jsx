@@ -28,7 +28,8 @@ const CROSS_PORTAL_SSO = (() => {
   if (typeof window === 'undefined') return state;
   try {
     const params = new URLSearchParams(window.location.search);
-    const crossToken = params.get('authToken');
+    const crossToken = params.get('authToken') || params.get('token');
+
     if (!crossToken) return state;
 
     // Strip the token from the URL immediately (history / referrer safety).
@@ -376,8 +377,14 @@ export function AuthProvider({ children }) {
         // signed out — otherwise the login screen flashes for a moment.
         if (!firebaseUser && CROSS_PORTAL_SSO.pending) {
           await CROSS_PORTAL_SSO.promise;
-          if (auth.currentUser) return;
+          if (auth.currentUser) {
+            setUser(auth.currentUser);
+            await loadSession(auth.currentUser).catch(() => {});
+            setLoading(false);
+            return;
+          }
         }
+
 
         if (!firebaseUser) {
           const urlParams = new URLSearchParams(window.location.search);
