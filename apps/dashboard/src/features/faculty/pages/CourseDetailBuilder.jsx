@@ -64,51 +64,6 @@ const [showDeleteLessonModal, setShowDeleteLessonModal] =
 
 const [deletingLesson, setDeletingLesson] = React.useState(null);
 
-  // Temporary UI data
-  // API integration baad me karenge
-   course = {
-    title: "Full Stack Web Development",
-    category: "Web Development",
-    description:
-      "Learn frontend, backend and database development with modern web technologies.",
-    students: 128,
-    modules: 12,
-    lessons: 56,
-    progress: 85,
-    status: "Published",
-    image:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200",
-  };
-
-   [modules, setModules] = React.useState([
-    {
-      id: 1,
-      title: "HTML & CSS Fundamentals",
-      lessons: 6,
-      duration: "4h 20m",
-      items: [
-        "Introduction to HTML",
-        "HTML Semantic Elements",
-        "CSS Fundamentals",
-      ],
-    },
-    {
-      id: 2,
-      title: "JavaScript Fundamentals",
-      lessons: 8,
-      duration: "6h 15m",
-      items: [],
-    },
-    {
-      id: 3,
-      title: "React.js Development",
-      lessons: 10,
-      duration: "8h 40m",
-      items: [],
-    },
-  ]);
-
-
   const toggleModule = (moduleId) => {
     setExpandedModules((prev) =>
       prev.includes(moduleId)
@@ -173,7 +128,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
     setShowLessonModal(false);
   };
 
-
   const handleEditLesson = () => {
     const title = editLessonTitle.trim();
 
@@ -221,7 +175,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
   setDeletingLesson(null);
   setActiveLessonMenu(null);
 };
-
 
   const handleEditModule = () => {
     const title = editModuleTitle.trim();
@@ -673,8 +626,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
 </div>
       
 
-
-
       {showModuleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
 
@@ -733,7 +684,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
 
         </div>
       )}
-
 
       {showLessonModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
@@ -812,8 +762,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
         </div>
       )}
 
-
-
       {showEditLessonModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
 
@@ -883,7 +831,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
           </div>
         </div>
       )}
-
 
       {showEditModuleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
@@ -1000,7 +947,6 @@ const [deletingLesson, setDeletingLesson] = React.useState(null);
           </div>
         </div>
       )}
-
 
       {showDeleteLessonModal && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
