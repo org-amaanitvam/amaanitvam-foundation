@@ -5,7 +5,7 @@ import {
   useState,
 } from 'react';
 import { auth } from '../config/firebase';
-import { redirectToCommonLogin, showLogoutOverlay } from '../config/portal';
+import { buildCommonLoginUrl, redirectToCommonLogin, showLogoutOverlay } from '../config/portal';
 
 
 import {

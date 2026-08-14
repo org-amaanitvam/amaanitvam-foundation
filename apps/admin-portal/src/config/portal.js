@@ -1,20 +1,27 @@
+// Single source of truth for the common-login portal URL.
 const DEV_LOGIN_URL = 'http://localhost:5176';
-const PROD_LOGIN_URL = 'https://login.amaanitvam.org';
+const PROD_LOGIN_URL = 'https://amaanitvam-common-login.onrender.com';
 
-export const COMMON_LOGIN_URL =
+export const COMMON_LOGIN_URL = (
   import.meta.env.VITE_COMMON_LOGIN_URL ||
-  (import.meta.env.DEV ? DEV_LOGIN_URL : PROD_LOGIN_URL);
+  (import.meta.env.DEV ? DEV_LOGIN_URL : PROD_LOGIN_URL)
+).replace(/\/+$/, '');
 
-export function redirectToCommonLogin(reason = 'signed-out') {
-  showLogoutOverlay();
+// Builds the common-login URL, always keeping the portal-switcher session alive.
+export function buildCommonLoginUrl(reason = 'signed-out') {
   const url = new URL(COMMON_LOGIN_URL);
   url.searchParams.set('switch', '1');
   if (reason) url.searchParams.set('reason', reason);
-  window.location.replace(url.toString());
+  return url.toString();
 }
 
-// Paints an instant, full-screen curtain so the portal's own login screen can
-// never flash between signOut() and the navigation to the common login app.
+export function redirectToCommonLogin(reason = 'signed-out') {
+  showLogoutOverlay();
+  window.location.replace(buildCommonLoginUrl(reason));
+}
+
+// Full-screen curtain so the portal's own login screen never flashes
+// between signOut() and the navigation to the common login app.
 export function showLogoutOverlay(message = 'Signing you out\u2026') {
   if (typeof document === 'undefined') return;
   if (document.getElementById('af-logout-overlay')) return;
