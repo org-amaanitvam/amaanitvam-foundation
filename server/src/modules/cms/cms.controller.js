@@ -1,4 +1,5 @@
 import Cms from "./cms.model.js";
+import { sanitizeTeam, teamForResponse, DEFAULT_TEAM } from "./cms.team.js";
 
 const DEFAULT_CONTENT = {
   homepage: {
@@ -11,6 +12,7 @@ const DEFAULT_CONTENT = {
     vision: "",
     history: "",
   },
+  team: DEFAULT_TEAM,
 };
 
 const clean = (input, max) =>
@@ -45,6 +47,7 @@ const sanitizeContent = (body = {}) => ({
       10000,
     ),
   },
+  team: sanitizeTeam(body?.team),
 });
 
 export const getAll = async (_req, res, next) => {
@@ -61,9 +64,11 @@ export const getAll = async (_req, res, next) => {
       key: "website",
     }).lean();
 
-    const content =
-      document?.content ||
-      DEFAULT_CONTENT;
+    const stored = document?.content || DEFAULT_CONTENT;
+    const content = {
+      ...stored,
+      team: teamForResponse(stored?.team),
+    };
 
     return res.json({
       success: true,

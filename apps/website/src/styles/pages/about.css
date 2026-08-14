@@ -1244,3 +1244,10 @@ border-radius:12px;
     color:#5f4a4a;
     font-style:italic;
 }
+/* CMS-managed team bios */
+body[data-page="about"] .team-card__bio {
+    margin-top: var(--space-2, 8px);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    text-align: center;
+}

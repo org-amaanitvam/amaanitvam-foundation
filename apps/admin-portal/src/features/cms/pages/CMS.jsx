@@ -2,20 +2,31 @@ import { useState, useEffect } from 'react';
 import { Save, Loader2, Globe, LayoutTemplate } from 'lucide-react';
 import api from '../../../config/api.js';
 import toast from 'react-hot-toast';
+import TeamBiosEditor from '../components/TeamBiosEditor.jsx';
 
 export default function CMS() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [cms, setCms] = useState({
     homepage: { heroTitle: '', heroSubtitle: '', aboutSummary: '' },
-    aboutUs: { mission: '', vision: '', history: '' }
+    aboutUs: { mission: '', vision: '', history: '' },
+    team: { heading: '', subheading: '', members: [] }
   });
 
   const fetchCMS = async () => {
     try {
       const res = await api.get('/cms');
       if (res.data.content) {
-        setCms(res.data.content);
+        const content = res.data.content;
+        setCms({
+          homepage: { heroTitle: '', heroSubtitle: '', aboutSummary: '', ...(content.homepage || {}) },
+          aboutUs: { mission: '', vision: '', history: '', ...(content.aboutUs || {}) },
+          team: {
+            heading: content.team?.heading || '',
+            subheading: content.team?.subheading || '',
+            members: Array.isArray(content.team?.members) ? content.team.members : [],
+          },
+        });
       }
     } catch {
       toast.error('Failed to load CMS content');
@@ -141,6 +152,11 @@ export default function CMS() {
             </div>
           </div>
         </div>
+
+        <TeamBiosEditor
+          team={cms.team}
+          onChange={(team) => setCms({ ...cms, team })}
+        />
       </div>
     </div>
   );
