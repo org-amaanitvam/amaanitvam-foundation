@@ -68,7 +68,12 @@ function CertificateForm({ mode, form, domains, creating, updating, certificateF
           <span className="text-sm font-semibold text-slate-700">Internship Domain *</span>
           <select name="domain" value={form.domain} onChange={handleFormChange} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20">
             <option value="" disabled>Select a domain</option>
-            {domains.map(d => <option key={d} value={d}>{d}</option>)}
+            {domains.map((d, i) => {
+              const label = typeof d === 'string' ? d : (d?.departmentName || d?.name || d?.title || '');
+              const value = label;
+              if (!label) return null;
+              return <option key={d?._id || d?.id || value || i} value={value}>{label}</option>;
+            })}
           </select>
         </label>
         <label className="block">
@@ -132,9 +137,15 @@ export default function Certificates() {
   const fetchDomains = async () => {
     try {
       const res = await api.get('/public/departments');
-      if (res.data && res.data.departments) {
-        setDomains(res.data.departments);
-      }
+      const raw = Array.isArray(res.data?.departments)
+        ? res.data.departments
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
+      const names = raw
+        .map((d) => (typeof d === 'string' ? d : d?.departmentName || d?.name || d?.title || ''))
+        .filter(Boolean);
+      setDomains(Array.from(new Set(names)));
     } catch (err) {
       console.error('Failed to load domains', err);
     }
