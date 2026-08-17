@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import multer from "multer";
 import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { provisionUser } from "./modules/auth/accountAccess.controller.js";
@@ -3483,6 +3484,308 @@ registerCrud(
   ],
   { publicWrite: true }
 );
+
+
+// FINAL_CERTIFICATE_MULTIPART_WRITE_START
+// The admin portal posts certificates as multipart/form-data (fields + PDF).
+// The generic CRUD layer only mounts jsonParser/urlEncodedParser, so req.body
+// arrived empty -> records were saved with blank name/email/domain and no PDF,
+// which also made the download endpoint 404. These routes are registered BEFORE
+// registerCrud("certificates") so they win for write verbs.
+
+const certificateUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 },
+}).any();
+
+function certificateMultipart(req, res, next) {
+  const contentType = String(req.headers["content-type"] || "");
+
+  if (!/multipart\/form-data/i.test(contentType)) return next();
+
+  certificateUpload(req, res, (error) => {
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Invalid upload",
+      });
+    }
+    next();
+  });
+}
+
+function certificatePickFile(req) {
+  const files = Array.isArray(req.files) ? req.files : [];
+
+  return (
+    files.find((f) => /certificate|pdf|file|document/i.test(f.fieldname)) ||
+    files[0] ||
+    null
+  );
+}
+
+async function certificateCollection() {
+  const names = await collectionNames();
+  const exact = names.find((name) => /^certificates$/i.test(name));
+
+  return mongoose.connection.db.collection(exact || "certificates");
+}
+
+async function certificateNextId(collection) {
+  const year = new Date().getFullYear();
+  const prefix = `AF-${year}-`;
+
+  const rows = await collection
+    .find({ certificateId: { $regex: `^${prefix}` } })
+    .project({ certificateId: 1 })
+    .toArray();
+
+  const max = rows.reduce((highest, row) => {
+    const numeric = parseInt(
+      String(row.certificateId || "").slice(prefix.length),
+      10
+    );
+    return Number.isFinite(numeric) ? Math.max(highest, numeric) : highest;
+  }, 0);
+
+  return `${prefix}${String(max + 1).padStart(4, "0")}`;
+}
+
+function certificateParseDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function certificateDurationFrom(start, end) {
+  if (!start || !end || end < start) return "";
+
+  const days = Math.ceil((end - start) / 86400000) + 1;
+
+  if (days >= 60) {
+    const months = Math.max(1, Math.round(days / 30));
+    return `${months} Month${months > 1 ? "s" : ""}`;
+  }
+
+  return `${days} Day${days > 1 ? "s" : ""}`;
+}
+
+function certificateDocFromBody(body = {}) {
+  const doc = {};
+  const text = (value) => (typeof value === "string" ? value.trim() : value);
+
+  for (const key of [
+    "issuedTo",
+    "email",
+    "phone",
+    "type",
+    "domain",
+    "duration",
+    "issuedBy",
+  ]) {
+    if (body[key] !== undefined) doc[key] = text(body[key]);
+  }
+
+  if (doc.email) doc.email = String(doc.email).toLowerCase();
+
+  for (const key of ["startDate", "endDate", "issueDate"]) {
+    if (body[key] !== undefined) doc[key] = certificateParseDate(body[key]);
+  }
+
+  if (body.isValid !== undefined) {
+    doc.isValid = !(body.isValid === false || String(body.isValid) === "false");
+  }
+
+  if (!clean(doc.duration) && doc.startDate && doc.endDate) {
+    doc.duration = certificateDurationFrom(doc.startDate, doc.endDate);
+  }
+
+  return doc;
+}
+
+function certificateAttachFile(doc, file) {
+  if (!file) return doc;
+
+  doc.pdfBuffer = file.buffer;
+  doc.pdfContentType = file.mimetype || "application/pdf";
+  doc.pdfOriginalName = file.originalname || "certificate.pdf";
+  doc.pdfUploadedAt = new Date();
+
+  return doc;
+}
+
+function certificateResponseShape(doc) {
+  const { pdfBuffer, ...rest } = doc || {};
+  return { ...rest, hasPdf: Boolean(pdfBuffer) };
+}
+
+async function certificateCreateHandler(req, res, next) {
+  try {
+    const doc = certificateDocFromBody(req.body || {});
+    const file = certificatePickFile(req);
+
+    const missing = ["issuedTo", "email"].filter((key) => !clean(doc[key]));
+
+    if (missing.length) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing required field(s): ${missing.join(", ")}`,
+      });
+    }
+
+    const collection = await certificateCollection();
+
+    doc.type = clean(doc.type) || "Internship";
+    doc.issuedBy = clean(doc.issuedBy) || "Amaanitvam Foundation";
+    doc.issueDate = doc.issueDate || new Date();
+    doc.isValid = doc.isValid !== false;
+    doc.certificateId =
+      clean(req.body?.certificateId).toUpperCase() ||
+      (await certificateNextId(collection));
+    doc.createdAt = new Date();
+    doc.updatedAt = new Date();
+
+    certificateAttachFile(doc, file);
+
+    const result = await collection.insertOne(doc);
+
+    console.log(
+      `[admin-gateway] certificate created ${doc.certificateId} (pdf=${Boolean(file)})`
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Certificate created successfully",
+      certificate: certificateResponseShape({ ...doc, _id: result.insertedId }),
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function certificateLocateForWrite(rawId) {
+  const found = await localCertFindRecord(rawId);
+
+  if (!found) return null;
+
+  const collection = mongoose.connection.db.collection(found.collectionName);
+  const _id = objectId(found.record?._id) || found.record?._id;
+  const document = await collection.findOne({ _id });
+
+  return document ? { collection, document } : null;
+}
+
+async function certificateUpdateHandler(req, res, next) {
+  try {
+    const target = await certificateLocateForWrite(req.params.id);
+
+    if (!target) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Certificate not found" });
+    }
+
+    const update = certificateDocFromBody(req.body || {});
+    const file = certificatePickFile(req);
+
+    certificateAttachFile(update, file);
+    update.updatedAt = new Date();
+
+    // Never blank out stored values with empty strings from partial submits.
+    for (const [key, value] of Object.entries(update)) {
+      if (value === "" || value === null) delete update[key];
+    }
+
+    await target.collection.updateOne(
+      { _id: target.document._id },
+      { $set: update }
+    );
+
+    const refreshed = await target.collection.findOne(
+      { _id: target.document._id },
+      { projection: { pdfBuffer: 0 } }
+    );
+
+    return res.json({
+      success: true,
+      message: "Certificate updated successfully",
+      certificate: refreshed,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function certificatePdfUploadHandler(req, res, next) {
+  try {
+    const file = certificatePickFile(req);
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No certificate PDF received" });
+    }
+
+    const target = await certificateLocateForWrite(req.params.id);
+
+    if (!target) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Certificate not found" });
+    }
+
+    const update = certificateAttachFile({ updatedAt: new Date() }, file);
+
+    await target.collection.updateOne(
+      { _id: target.document._id },
+      { $set: update }
+    );
+
+    return res.json({
+      success: true,
+      message: "Certificate PDF uploaded successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+for (const basePath of ["/api/admin/certificates", "/api/certificates"]) {
+  app.post(
+    basePath,
+    requireAdministrator,
+    certificateMultipart,
+    jsonParser,
+    urlEncodedParser,
+    certificateCreateHandler
+  );
+
+  app.put(
+    `${basePath}/:id/file`,
+    requireAdministrator,
+    certificateMultipart,
+    certificatePdfUploadHandler
+  );
+
+  app.post(
+    `${basePath}/:id/file`,
+    requireAdministrator,
+    certificateMultipart,
+    certificatePdfUploadHandler
+  );
+
+  for (const method of ["put", "patch"]) {
+    app[method](
+      `${basePath}/:id`,
+      requireAdministrator,
+      certificateMultipart,
+      jsonParser,
+      urlEncodedParser,
+      certificateUpdateHandler
+    );
+  }
+}
+// FINAL_CERTIFICATE_MULTIPART_WRITE_END
 
 registerCrud("certificates", [
   "/api/admin/certificates",
