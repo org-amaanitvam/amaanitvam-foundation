@@ -312,6 +312,7 @@ export default function LoginPage() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     placeholder="you@amaanitvam.org or JOHN001"
+                    disabled={loading}
                     required
                   />
                 </div>
@@ -349,12 +350,12 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
+                    disabled={loading}
                     required
                   />
                   <button
                     type="button"
                     className="pwd-toggle-btn"
-                    tabIndex={-1}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     onClick={() => setShowPassword((v) => !v)}
                   >
@@ -413,10 +414,12 @@ export default function LoginPage() {
                     id="resetEmail"
                     name="reset-email"
                     type="email"
+                    autoComplete="email"
                     className="form-input"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     placeholder="you@amaanitvam.org"
+                    disabled={loading}
                     required
                   />
                 </div>
