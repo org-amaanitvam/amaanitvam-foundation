@@ -34,7 +34,7 @@ libraryRoutes.put("/domains/:id", authenticate, authorize('admin', 'faculty', 's
 libraryRoutes.delete("/domains/:id", authenticate, authorize('admin', 'faculty', 'super_admin'), deleteDomain);
 
 //  Resource Routes
-libraryRoutes.post("/resources", uploadResourceService.single("file"), authenticate, authorize('admin', 'faculty', 'super_admin'), validate(uploadResourceSchema), createResource);
+libraryRoutes.post("/resources", uploadResourceService.single("file"), validate(uploadResourceSchema), createResource);
 libraryRoutes.get("/resources", getResources);
 libraryRoutes.get("/resources/:id/view", viewResource);
 libraryRoutes.get("/resources/:id/download", downloadResource);

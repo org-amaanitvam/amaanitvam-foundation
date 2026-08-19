@@ -14,7 +14,7 @@ export default function StudentLayout({ children }) {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50/50 overflow-hidden font-[family-name:var(--font-body)] text-[#3d2b2b]">
+    <div className="flex h-screen bg-gray-50/50 overflow-hidden font-(family-name:--font-body) text-[#3d2b2b]">
       <div
         className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity lg:hidden ${
           sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'

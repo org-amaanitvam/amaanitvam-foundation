@@ -100,7 +100,7 @@ export default function StudentCourseDetail() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="card-premium flex flex-col items-center justify-center gap-3 py-20 text-center">
           <School className="w-10 h-10 text-[#c46b87]" aria-hidden="true" />
-          <h2 className="text-2xl font-[family-name:var(--font-heading)] font-bold text-[#5d0f2d]">Course not found</h2>
+          <h2 className="text-2xl font-(family-name:--font-heading) font-bold text-[#5d0f2d]">Course not found</h2>
           <p className="text-sm text-gray-500">This course is unavailable or hasn't been published yet.</p>
           <Link to="/student/courses" className="btn-maroon">
             <ArrowLeft className="w-4 h-4" /> Back to My Courses
@@ -122,13 +122,13 @@ export default function StudentCourseDetail() {
       </Link>
 
       {/* Hero */}
-      <div className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#56051a] via-[#6f0b24] to-[#8b1730] text-white p-8 lg:p-10 shadow-xl">
+      <div className="rounded-3xl overflow-hidden bg-linear-to-r from-[#56051a] via-[#6f0b24] to-[#8b1730] text-white p-8 lg:p-10 shadow-xl">
         <div className="flex flex-col lg:flex-row justify-between lg:items-start gap-8">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#d8a15f]/15 border border-[#d8a15f]/30 text-[#ffd9a0] text-[11px] font-bold uppercase tracking-widest rounded-full">
               {category}
             </span>
-            <h1 className="mt-4 text-3xl lg:text-4xl font-[family-name:var(--font-heading)] font-bold text-white leading-tight">
+            <h1 className="mt-4 text-3xl lg:text-4xl font-(family-name:--font-heading) font-bold text-white leading-tight">
               {course.title}
             </h1>
             <p className="mt-4 text-base text-pink-100 leading-relaxed">
