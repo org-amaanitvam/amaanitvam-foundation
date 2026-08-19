@@ -242,4 +242,10 @@ export async function markAllNotificationsRead(token) {
   return data;
 }
 
+// Resources ─────────────────────────────────────────────────────────
+export async function fetchPublishedResources() {
+  const { data } = await api.get('/digital-library/resources');
+  return data;
+}
+
 export default api;

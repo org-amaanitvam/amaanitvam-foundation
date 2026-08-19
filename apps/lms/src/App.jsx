@@ -21,6 +21,8 @@ import StudentApplications from './features/student/pages/StudentApplications';
 import StudentCourseDetail from './features/student/pages/StudentCourseDetail';
 import StudentDoubtWorkspace from './features/student/pages/StudentDoubtWorkspace';
 import StudentSubmissions from './features/student/pages/StudentSubmissions';
+import ResourcesCatalog from './features/catalog/ResourcesCatalog';
+import StudentResources from './features/student/pages/StudentResources';
 
 const withStudentLayout = (element) => (
   <StudentLayout>
@@ -36,6 +38,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<CourseCatalog />} />
         <Route path="/course/:slug" element={<CourseDetail />} />
+        <Route path="/resources" element={<ResourcesCatalog />} />
       </Route>
 
       <Route
@@ -61,6 +64,10 @@ export default function App() {
       <Route
         path="/student/sessions"
         element={<ProtectedRoute>{withStudentLayout(<StudentSessions />)}</ProtectedRoute>}
+      />
+      <Route
+        path="/student/library"
+        element={<ProtectedRoute>{withStudentLayout(<StudentResources />)}</ProtectedRoute>}
       />
       <Route
         path="/student/doubts"

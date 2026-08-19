@@ -64,11 +64,10 @@ export default function StudentCourses({ searchQuery = '' }) {
             key={category}
             type="button"
             onClick={() => setActiveCategory(category)}
-            className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-              activeCategory === category
-                ? 'bg-[#5d0f2d] text-white shadow-md'
-                : 'bg-white text-[#8a7468] border border-gray-200 hover:border-[#5d0f2d] hover:text-[#5d0f2d]'
-            }`}
+            className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${activeCategory === category
+              ? 'bg-[#5d0f2d] text-white shadow-md'
+              : 'bg-white text-[#8a7468] border border-gray-200 hover:border-[#5d0f2d] hover:text-[#5d0f2d]'
+              }`}
           >
             {category}
           </button>
@@ -85,7 +84,7 @@ export default function StudentCourses({ searchQuery = '' }) {
               to={`/student/courses/${course._id}`}
               className="card-premium group flex flex-col"
             >
-              <div className="flex h-28 items-center justify-center rounded-xl bg-gradient-to-tr from-[#5d0f2d] to-[#8a164b] text-white">
+              <div className="flex h-28 items-center justify-center rounded-xl bg-linear-to-tr from-[#5d0f2d] to-[#8a164b] text-white">
                 {course.thumbnail ? (
                   <img
                     src={course.thumbnail}
@@ -102,14 +101,16 @@ export default function StudentCourses({ searchQuery = '' }) {
                     {course.category || 'Course'}
                   </span>
                   {course.price ? (
-                    <span className="text-xs font-bold text-emerald-700">&#8377;{course.price}</span>
+                    <span className="text-xs font-bold text-emerald-700">
+                      ₹{course.price}
+                    </span>
                   ) : (
                     <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-700">
                       Free
                     </span>
                   )}
                 </div>
-                <h3 className="mt-2 font-[family-name:var(--font-heading)] text-lg font-bold text-[#5d0f2d] leading-tight">
+                <h3 className="mt-2 font-(family-name:--font-heading) text-lg font-bold text-[#5d0f2d] leading-tight">
                   {course.title}
                 </h3>
                 <p className="mt-1 line-clamp-2 text-sm text-gray-500 font-medium">

@@ -15,7 +15,16 @@ const handleValidationError = (res, error) => {
 export const getCourses = async (req, res, next) => {
   try {
     const courses = await courseService.getCourses(req.query);
-    res.json({ success: true, data: courses });
+
+    const formattedCourses = courses.map(course => ({
+      ...course.toObject(),
+      price: course.price?.toString()
+    }));
+
+    res.json({
+      success: true,
+      data: formattedCourses
+    });
   } catch (error) {
     next(error);
   }
@@ -36,9 +45,9 @@ export const createCourse = async (req, res, next) => {
     if (error) return handleValidationError(res, error);
 
     // Assuming req.user is set by authentication middleware
-    const userId = req.user ? req.user.id : '000000000000000000000000'; 
+    const userId = req.user ? req.user.id : '000000000000000000000000';
     const course = await courseService.createCourse(value, userId);
-    
+
     res.status(201).json({ success: true, data: course });
   } catch (error) {
     next(error);
