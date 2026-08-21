@@ -6,6 +6,7 @@ import {
 } from "../../middleware/dashboardAccess.js";
 import {
   deleteCandidate,
+  downloadResume,
   getAll,
   updateStatus,
 } from "./candidate.controller.js";
@@ -19,6 +20,7 @@ router.use(
 );
 
 router.get("/", getAll);
+router.get("/:id/resume", downloadResume);
 router.put("/:id/status", updateStatus);
 router.patch("/:id/status", updateStatus);
 router.delete("/:id", deleteCandidate);

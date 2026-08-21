@@ -145,3 +145,42 @@ export const deleteCandidate = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// Serves resumes that were stored in MongoDB (Cloudinary fallback path).
+export const downloadResume = async (req, res, next) => {
+  try {
+    const Candidate = (await import("./candidate.model.js")).default;
+    const candidate = await Candidate.findById(req.params.id).select(
+      "+resumeData resumeMimeType resumeOriginalName resumeUrl resumeStorage",
+    );
+
+    if (!candidate) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Application not found." });
+    }
+
+    if (candidate.resumeStorage === "cloudinary" && candidate.resumeUrl) {
+      return res.redirect(candidate.resumeUrl);
+    }
+
+    if (!candidate.resumeData?.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No resume stored for this application." });
+    }
+
+    res.setHeader(
+      "Content-Type",
+      candidate.resumeMimeType || "application/octet-stream",
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${(candidate.resumeOriginalName || "resume").replace(/"/g, "")}"`,
+    );
+    return res.send(candidate.resumeData);
+  } catch (error) {
+    return next(error);
+  }
+};
