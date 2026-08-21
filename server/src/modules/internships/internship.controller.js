@@ -1,4 +1,5 @@
 import Candidate from "../candidates/candidate.model.js";
+import { ensureResumeUrl } from "../../services/resumeUrl.service.js";
 import {
   uploadApplicationResume,
 } from "../../services/resumeUpload.service.js";
@@ -149,6 +150,8 @@ export const submitInternshipApplication = async (
         motivation,
         resumeUrl: resume.url,
         resumePublicId: resume.publicId,
+      resumeStorage: resume.storage,
+      resumeData: resume.storage === "mongodb" ? resume.buffer : undefined,
         resumeOriginalName:
           req.file.originalname || "",
         resumeMimeType:
@@ -164,6 +167,8 @@ export const submitInternshipApplication = async (
           ),
         },
       });
+    await ensureResumeUrl(candidate);
+
 
     return res.status(201).json({
       success: true,
