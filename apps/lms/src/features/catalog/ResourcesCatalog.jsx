@@ -579,7 +579,7 @@ function ResourceCard({ resource }) {
         {/* VIEW RESOURCE */}
         <div className="pt-4 border-t border-border-custom mt-auto">
           <Link
-            to={`/student/library/${resource?._id}`}
+            to={`/resource/${resource?._id}`}
             className="btn-maroon w-full"
           >
             View Resource

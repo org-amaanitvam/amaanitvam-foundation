@@ -248,4 +248,13 @@ export async function fetchPublishedResources() {
   return data;
 }
 
+export async function fetchResourceById(id){
+  const {data} = await api.get(`/digital-library/resources/${id}`);
+  return data;
+}
+
+export async function incrementViewCountOfResource(id){
+  await api.get(`/digital-library/resources/${id}/view`);
+}
+
 export default api;
