@@ -28,17 +28,11 @@ const studentNavSections = [
         path: "/student/sessions",
         icon: Calendar,
       },
-    ],
-  },
-
-  {
-    title: "Digital Library",
-    items: [
       {
-        name: "Resource Library",
-        path: "/student/library",
+        name: "My Resources",
+        path: "/student/resources",
         icon: Library,
-      },
+      }
     ],
   },
 

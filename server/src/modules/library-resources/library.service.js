@@ -1,6 +1,6 @@
 import multer from "multer";
 
-import { countDomainsBySubject, countResourcesByCategory, countResourcesByDomain, countResourcesBySubject, countSubjectsByCategory, createCategory, createDomain, createResource, createSubject, deleteDomainById, deleteResourceById, deleteSubjectById, findCategoryByName, findDomainByName, findSubjectByName, getAccessHistoryById, getCategories, getCategoryById, getDomainById, getDomains, getResourceById, getResources, getSubjectById, getSubjects, updateCategoryById, updateDomainById, updateSubjectById } from "./library.repository.js"
+import { countDomainsBySubject, countResourcesByCategory, countResourcesByDomain, countResourcesBySubject, countSubjectsByCategory, createAccessHistory, createCategory, createDomain, createResource, createSubject, deleteDomainById, deleteResourceById, deleteSubjectById, findCategoryByName, findDomainByName, findSubjectByName, getAccessHistoryById, getCategories, getCategoryById, getDomainById, getDomains, getResourceById, getResources, getSubjectById, getSubjects, incrementDownloadCount, incrementViewCount, updateCategoryById, updateDomainById, updateSubjectById } from "./library.repository.js"
 import logger from "../../shared/logger/index.js";
 import cloudinary from "../../config/cloudinary.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -407,12 +407,18 @@ export async function getResourcesService(query) {
 }
 
 export async function getResourceByIdService(id) {
-  const resource = await getDomainById(id);
+  const resource = await getResourceById(id);
   if (!resource) {
     throw new Error("Resource not found.");
   }
 
-  return domain;
+  const [domain, category, subject] = await Promise.all([
+    getDomainById(resource.domain_id),
+    getCategoryById(resource.category_id),
+    getSubjectById(resource.subject_id),
+  ]);
+
+  return { resource, category, subject, domain };
 }
 
 export async function updateResourceService(id, data, file) {
@@ -497,7 +503,6 @@ export async function downloadResourceService(resourceId, userId) {
 
 export async function viewResourceService(resourceId, userId) {
   const resource = await validateResource(resourceId);
-
   await incrementViewCount(resourceId);
 
   await createAccessHistory({

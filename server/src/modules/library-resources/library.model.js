@@ -298,7 +298,7 @@ const resourceAccessHistorySchema = new mongoose.Schema(
 
     action: {
       type: String,
-      enum: ["view", "download"],
+      enum: ["VIEW", "DOWNLOAD"],
       required: true,
       index: true,
     },

@@ -4,10 +4,16 @@ import { Toaster } from 'react-hot-toast';
 import { BookOpen, Home, ExternalLink, LogOut, Menu, X, GraduationCap, LogIn } from 'lucide-react';
 import logo from '../assets/images/logo.jpg';
 import './Layout.css';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Layout() {
+  const { user, loading, logout, userProfile } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const displayName = userProfile?.displayName || userProfile?.name || "Student Learner";
+
+  const initials = String(displayName).trim().charAt(0).toUpperCase() || "S";
 
   const handleLogout = () => {
     navigate('/login', { replace: true });
@@ -74,7 +80,7 @@ export default function Layout() {
           </NavLink>
           <NavLink to="/resources" end onClick={close} className="sidebar-nav-link">
             <BookOpen className="w-4.5 h-4.5" />
-            <span>Resources Catalog</span>
+            <span>Resource Catalog</span>
           </NavLink>
 
           <p className="sidebar-section-title px-4 pt-4 pb-1 text-xs font-bold text-[#d8a15f]/70 uppercase tracking-[0.18em]">
@@ -92,32 +98,72 @@ export default function Layout() {
           </a>
         </nav>
 
+        {/* User Profile Info*/}
         <div className="border-t border-white/10 px-4 py-4">
-          <div className="rounded-xl border border-[#d8a15f]/15 bg-white/3 p-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-[#8a164b] to-[#d8a15f] text-white shadow-md">
-                <GraduationCap className="h-5 w-5" />
+          {loading ?
+            (<div className="p-4">
+              <div className="flex items-center gap-3 animate-pulse">
+                <div className="h-10 w-10 rounded-full bg-white/10" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 w-24 rounded bg-white/10" />
+                  <div className="h-2.5 w-32 rounded bg-white/10" />
+                </div>
               </div>
+            </div>)
+            :
+            (user ?
+              <div>
+                <div className="flex items-center gap-3 mb-3 px-1 cursor-pointer"
+                onClick={() => navigate("/student")}>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d8a15f] text-sm font-bold text-[#56051a]">
+                    {initials}
+                  </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-white">
-                  Guest User
-                </p>
-                <p className="truncate text-[10px] text-white/50">
-                  Sign in to access your account
-                </p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-white">
+                      {displayName}
+                    </p>
+
+                    <p className="truncate text-[11px] text-white/55">
+                      {userProfile?.email || "student@amaanitvam.org"}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={logout}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-200 hover:bg-rose-900/50 hover:text-white transition-all duration-200 cursor-pointer"
+                >
+                  <LogOut className="w-5 h-5 text-rose-300" />
+                  <span>Sign Out</span>
+                </button>
               </div>
-            </div>
+              :
+              <div className="rounded-xl border border-[#d8a15f]/15 bg-white/3 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-[#8a164b] to-[#d8a15f] text-white shadow-md">
+                    <GraduationCap className="h-5 w-5" />
+                  </div>
 
-            <button
-              type="button"
-              onClick={() => navigate('/login')}
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-[#8a164b] to-[#a51f55] px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-300 hover:from-[#a51f55] hover:to-[#8a164b] hover:shadow-[0_4px_15px_rgba(138,22,75,0.3)]"
-            >
-              <LogIn className="h-4 w-4" />
-              Sign In
-            </button>
-          </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-white">
+                      Guest User
+                    </p>
+                    <p className="truncate text-[10px] text-white/50">
+                      Sign in to access your account
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => navigate('/login')}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-[#8a164b] to-[#a51f55] px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-300 hover:from-[#a51f55] hover:to-[#8a164b] hover:shadow-[0_4px_15px_rgba(138,22,75,0.3)]"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </button>
+              </div>)}
         </div>
       </aside>
 

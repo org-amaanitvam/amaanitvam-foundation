@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createCategory, getCategories, getCategoryById, updateCategory, deleteCategory, createSubject, getSubjects, getSubjectById, updateSubject, deleteSubject, createDomain, getDomains, getDomainById, updateDomain, deleteDomain,  createResource, getResources, getResourceById, updateResource, deleteResource, viewResource, downloadResource } from "./library.controller.js";
+import { createCategory, getCategories, getCategoryById, updateCategory, deleteCategory, createSubject, getSubjects, getSubjectById, updateSubject, deleteSubject, createDomain, getDomains, getDomainById, updateDomain, deleteDomain, createResource, getResources, getResourceById, updateResource, deleteResource, viewResource, downloadResource } from "./library.controller.js";
 
 import { validate } from "../../middleware/validate.js";
 import { authenticate } from '../../middleware/authenticate.js';
@@ -12,7 +12,7 @@ import { uploadResourceService } from "./library.service.js";
 const libraryRoutes = Router();
 
 // Category Routes
-libraryRoutes.post("/categories",authenticate, authorize('admin', 'faculty', 'super_admin'), validate(createCategorySchema), createCategory);
+libraryRoutes.post("/categories", authenticate, authorize('admin', 'faculty', 'super_admin'), validate(createCategorySchema), createCategory);
 libraryRoutes.get("/categories", getCategories);
 libraryRoutes.get("/categories/:id", getCategoryById);
 libraryRoutes.put("/categories/:id", authenticate, authorize('admin', 'faculty', 'super_admin'), validate(updateCategorySchema), updateCategory);
@@ -30,16 +30,16 @@ libraryRoutes.delete("/subjects/:id", authenticate, authorize('admin', 'faculty'
 libraryRoutes.post("/domains", authenticate, authorize('admin', 'faculty', 'super_admin'), validate(createDomainSchema), createDomain);
 libraryRoutes.get("/domains", getDomains);
 libraryRoutes.get("/domains/:id", getDomainById);
-libraryRoutes.put("/domains/:id", authenticate, authorize('admin', 'faculty', 'super_admin'),  validate(updateDomainSchema), updateDomain);
+libraryRoutes.put("/domains/:id", authenticate, authorize('admin', 'faculty', 'super_admin'), validate(updateDomainSchema), updateDomain);
 libraryRoutes.delete("/domains/:id", authenticate, authorize('admin', 'faculty', 'super_admin'), deleteDomain);
 
 //  Resource Routes
-libraryRoutes.post("/resources", uploadResourceService.single("file"), validate(uploadResourceSchema), createResource);
+libraryRoutes.post("/resources", authenticate, authorize('admin', 'faculty', 'super_admin'), uploadResourceService.single("file"), validate(uploadResourceSchema), createResource);
 libraryRoutes.get("/resources", getResources);
-libraryRoutes.get("/resources/:id/view", viewResource);
-libraryRoutes.get("/resources/:id/download", downloadResource);
+libraryRoutes.get("/resources/:id/view", authenticate, viewResource);
+libraryRoutes.get("/resources/:id/download", authenticate, downloadResource);
 libraryRoutes.get("/resources/:id", getResourceById);
 libraryRoutes.put("/resources/:id", authenticate, authorize('admin', 'faculty', 'super_admin'), uploadResourceService.single("file"), validate(updateResourceSchema), updateResource);
 libraryRoutes.delete("/resources/:id", authenticate, authorize('admin', 'faculty', 'super_admin'), deleteResource);
-  
+
 export default libraryRoutes;
