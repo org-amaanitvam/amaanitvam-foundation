@@ -316,7 +316,7 @@
           <img src="/images/Webinar/webinar5.jpeg"
             alt="Upcoming webinar: Beyond Loss | A Veer Nari's Journey of Courage, Leadership, and Service"
             loading="lazy">
-          <span class="evtc-badge"><span class="evtc-dot" aria-hidden="true"></span>Registration Open</span>
+          <span class="evtc-badge"><span class="evtc-dot" aria-hidden="true"></span><span id="evtc-badge-text">Registration Open</span></span>
         </div>
   
         <div class="evtc-body">
@@ -350,8 +350,8 @@
             <span><span class="material-symbols-outlined" aria-hidden="true">videocam</span>Google Meet</span>
           </div>
           <a href="https://forms.gle/1GvGJqij4fbSzNvH7" target="_blank" rel="noopener noreferrer"
-            class="btn btn-primary evtc-cta">
-            Register Now
+            class="btn btn-primary evtc-cta" id="evtc-cta-btn">
+            <span id="evtc-cta-text">Register Now</span>
             <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
           </a>
         </div>
@@ -611,6 +611,48 @@
     </a>
   </div>
   <script type="module" src="./src/scripts/app.js"></script>
+  <script>
+    (function () {
+      function updateEventStatus() {
+        const eventDeadline = new Date('2026-08-23T18:00:00+05:30');
+        const now = new Date();
+        if (now >= eventDeadline) {
+          const badgeText = document.getElementById('evtc-badge-text');
+          const ctaBtn = document.getElementById('evtc-cta-btn');
+          const ctaText = document.getElementById('evtc-cta-text');
+
+          if (badgeText) {
+            badgeText.textContent = 'Registration Closed';
+          }
+          if (ctaText) {
+            ctaText.textContent = 'Event Passed';
+          }
+          if (ctaBtn) {
+            ctaBtn.removeAttribute('href');
+            ctaBtn.removeAttribute('target');
+            ctaBtn.setAttribute('aria-disabled', 'true');
+            ctaBtn.setAttribute('tabindex', '-1');
+            ctaBtn.style.pointerEvents = 'none';
+            ctaBtn.style.opacity = '0.65';
+            ctaBtn.style.cursor = 'not-allowed';
+            ctaBtn.style.boxShadow = 'none';
+            ctaBtn.style.transform = 'none';
+            ctaBtn.addEventListener('click', function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            });
+          }
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateEventStatus);
+      } else {
+        updateEventStatus();
+      }
+    })();
+  </script>
 
 </body>
 
