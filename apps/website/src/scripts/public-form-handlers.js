@@ -62,13 +62,33 @@ const FORM_CONFIG = {
       return null;
     },
   },
-  contactForm: {
+    contactForm: {
     endpoint: '/contact',
     statusId: 'contact-status',
     pending: 'Sending your message...',
     success:
       'Thank you for contacting Amaanitvam Foundation. Your message has been delivered successfully, and our team will respond as soon as possible.',
     multipart: false,
+    validate(form) {
+      const name = form.elements.namedItem('name')?.value?.trim();
+      const email = form.elements.namedItem('email')?.value?.trim();
+      const subject = form.elements.namedItem('subject')?.value?.trim();
+      const message = form.elements.namedItem('message')?.value?.trim();
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!name || name.length < 2) {
+        return 'Please enter your full name.';
+      }
+      if (!email || !emailPattern.test(email)) {
+        return 'Please enter a valid email address.';
+      }
+      if (!subject || subject.length < 3) {
+        return 'Please provide a brief subject.';
+      }
+      if (!message || message.length < 10) {
+        return 'Please provide a message of at least 10 characters.';
+      }
+      return null;
+    },
   },
   registrationForm: {
     endpoint: '/learning-hub/register',
