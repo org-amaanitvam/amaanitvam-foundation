@@ -74,6 +74,7 @@ const FORM_CONFIG = {
       const email = form.elements.namedItem('email')?.value?.trim();
       const subject = form.elements.namedItem('subject')?.value?.trim();
       const message = form.elements.namedItem('message')?.value?.trim();
+      const otp = form.elements.namedItem('otp')?.value?.trim();
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!name || name.length < 2) {
         return 'Please enter your full name.';
@@ -86,6 +87,9 @@ const FORM_CONFIG = {
       }
       if (!message || message.length < 10) {
         return 'Please provide a message of at least 10 characters.';
+      }
+      if (!otp || !/^\d{6}$/.test(otp)) {
+        return 'Please verify your email — click "Send Code" and enter the 6-digit code.';
       }
       return null;
     },
@@ -376,3 +380,102 @@ window.addEventListener(
   'pageshow',
   clearAccidentalQueryString,
 );
+
+const initContactOtpButton = () => {
+  const sendBtn = document.getElementById('contact-send-otp');
+  const emailInput = document.getElementById('contact-email');
+  const otpField = document.getElementById('contact-otp-field');
+  const otpHint = document.getElementById('contact-otp-hint');
+  const statusElement = document.getElementById('contact-status');
+
+  if (!sendBtn || !emailInput || !otpField) return;
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let cooldownTimer = null;
+
+  const startCooldown = (seconds) => {
+    let remaining = seconds;
+    sendBtn.disabled = true;
+    const originalLabel = 'Send Code';
+
+    clearInterval(cooldownTimer);
+    sendBtn.textContent = `Resend in ${remaining}s`;
+
+    cooldownTimer = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        clearInterval(cooldownTimer);
+        sendBtn.disabled = false;
+        sendBtn.textContent = originalLabel;
+      } else {
+        sendBtn.textContent = `Resend in ${remaining}s`;
+      }
+    }, 1000);
+  };
+
+  sendBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+
+    if (!emailPattern.test(email)) {
+      setStatus(
+        statusElement,
+        'Please enter a valid email address before requesting a code.',
+        'error',
+      );
+      emailInput.focus();
+      return;
+    }
+
+    sendBtn.disabled = true;
+    const originalLabel = sendBtn.textContent;
+    sendBtn.textContent = 'Sending...';
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/contact/request-otp`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      const result = await readResponse(response);
+
+      if (!response.ok) {
+        throw new Error(
+          professionalMessage(
+            result?.message,
+            'Could not send a verification code. Please try again.',
+          ),
+        );
+      }
+
+      otpField.hidden = false;
+      const otpInput = document.getElementById('contact-otp');
+      otpInput?.focus();
+
+      if (otpHint) {
+        otpHint.textContent = `We've sent a 6-digit code to ${email}. It expires in 10 minutes.`;
+      }
+
+      setStatus(
+        statusElement,
+        professionalMessage(result?.message, `A code was sent to ${email}.`),
+        'success',
+      );
+
+      startCooldown(45);
+    } catch (error) {
+      sendBtn.disabled = false;
+      sendBtn.textContent = originalLabel;
+      setStatus(
+        statusElement,
+        error?.message || 'Could not send a verification code. Please try again.',
+        'error',
+      );
+    }
+  });
+};
+
+initContactOtpButton();
