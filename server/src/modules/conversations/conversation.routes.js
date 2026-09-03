@@ -4,6 +4,27 @@ import { proxyToAI } from './conversation.proxy.js';
 
 const router = express.Router();
 
+// POST /api/conversations
+router.post('/', authenticate, async (req, res, next) => {
+  try {
+    const firebase_uid = req.user.uid || req.user.firebase_uid;
+    if (!firebase_uid) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const data = await proxyToAI('/api/conversations', 'POST', {
+      context_type: req.body.context_type || 'general',
+      context_id: req.body.context_id || null,
+    }, firebase_uid);
+    res.status(201).json(data);
+  } catch (err) {
+    if (err.success === false) {
+      return res.status(400).json(err);
+    }
+    next(err);
+  }
+});
+
 // GET /api/conversations
 router.get('/', authenticate, async (req, res, next) => {
   try {
@@ -16,8 +37,10 @@ router.get('/', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/conversations?page=${page}&limit=${limit}&firebase_uid=${firebase_uid}`,
-      'GET'
+      `/api/conversations?page=${page}&limit=${limit}`,
+      'GET',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {
@@ -37,8 +60,10 @@ router.get('/:id', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/conversations/${req.params.id}?firebase_uid=${firebase_uid}`,
-      'GET'
+      `/api/conversations/${req.params.id}`,
+      'GET',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {
@@ -58,8 +83,10 @@ router.patch('/:id/archive', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/conversations/${req.params.id}/archive?firebase_uid=${firebase_uid}`,
-      'PATCH'
+      `/api/conversations/${req.params.id}/archive`,
+      'PATCH',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {
@@ -80,8 +107,10 @@ router.get('/:id/messages', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/conversations/${req.params.id}/messages?page=${page}&limit=${limit}&firebase_uid=${firebase_uid}`,
-      'GET'
+      `/api/conversations/${req.params.id}/messages?page=${page}&limit=${limit}`,
+      'GET',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {
@@ -106,7 +135,7 @@ router.post('/:id/messages', authenticate, async (req, res, next) => {
       message: req.body.content,
       context_type: req.body.context_type || 'general',
       context_id: req.body.context_id || null,
-    });
+    }, firebase_uid);
     res.json(data);
   } catch (err) {
     if (err.success === false) {

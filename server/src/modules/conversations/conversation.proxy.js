@@ -3,12 +3,19 @@ import axios from 'axios';
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8001';
 const INTERNAL_SECRET = process.env.INTERNAL_SHARED_SECRET;
 
-export const proxyToAI = async (path, method, body = {}) => {
+export const proxyToAI = async (path, method, body = {}, firebaseUid) => {
+  if (!firebaseUid) {
+    throw new Error('Cannot call AI service without an authenticated Firebase UID');
+  }
+
   try {
     const config = {
       method,
       url: `${AI_SERVICE_URL}${path}`,
-      headers: { 'X-Internal-Secret': INTERNAL_SECRET },
+      headers: {
+        'X-Internal-Secret': INTERNAL_SECRET,
+        'X-Firebase-UID': firebaseUid,
+      },
     };
 
     if (method.toUpperCase() !== 'GET' && method.toUpperCase() !== 'HEAD') {

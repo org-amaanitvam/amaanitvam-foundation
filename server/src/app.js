@@ -171,6 +171,9 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/doubts", doubtRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/ai-notifications", aiNotificationRoutes);
+app.use("/internal", internalRoutes);
 
 
 // Unhandled routes & errors
