@@ -21,6 +21,24 @@
         }
       });
     });
+
+    const contactCardLinks = {
+      'Partner With Us': 'https://www.amaanitvam.org/src/pages/contact.html',
+      'Pitch an Idea': 'https://www.amaanitvam.org/src/pages/contact.html',
+      'Volunteer On-Ground': 'https://www.amaanitvam.org/src/pages/volunteer.html'
+    };
+
+    document.querySelectorAll('.contact-card').forEach(card => {
+      const title = card.querySelector('h3')?.textContent.trim();
+      const url = contactCardLinks[title];
+      if (!url) return;
+
+      card.style.cursor = 'pointer';
+
+      card.addEventListener('click', () => {
+        window.location.href = url;
+      });
+    });
   };
 
   if (document.readyState === 'loading') {
