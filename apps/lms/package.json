@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amaanitvam/chat-api": "1.0.0",
     "axios": "^1.7.0",
     "firebase": "^11.0.0",
     "lucide-react": "^0.400.0",
