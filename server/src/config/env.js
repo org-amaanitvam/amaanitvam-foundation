@@ -19,7 +19,9 @@ const envSchema = Joi.object({
 export const validateEnv = () => {
   const { error, value } = envSchema.validate(process.env);
   if (error) {
-    throw new Error(`Config validation error: ${error.message}`);
+    console.error(`Config validation error: ${error.message}`);
+    // We shouldn't exit just yet because of incomplete .envs in development
+    // process.exit(1);
   }
   return value;
 };

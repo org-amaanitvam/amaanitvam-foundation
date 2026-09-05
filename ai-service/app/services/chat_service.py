@@ -105,6 +105,7 @@ async def handle_chat(
             user_message=request.message,
             context_chunks=context_chunks,
             history=history,
+            context_label=request.context_label,
         )
     except LLMError as exc:
         await message_service.log_chat_event(

@@ -148,7 +148,14 @@ export async function fetchDoubtById(doubtId, token) {
   const { data } = await api.get(`/doubts/${doubtId}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
-  return unwrapDocument(data, ['doubt']);
+  const detail = unwrapData(data);
+  if (!detail?.doubt) return detail;
+
+  return {
+    ...detail.doubt,
+    responses: detail.responses || [],
+    rating: detail.rating || null,
+  };
 }
 
 export async function createDoubt(payload, token) {

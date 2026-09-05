@@ -15,7 +15,7 @@ from app.models.message import Message
 
 logger = logging.getLogger("ai_service")
 
-CHAT_MODEL = "gemini-1.5-flash"
+CHAT_MODEL = settings.GEMINI_MODEL
 
 # System prompt — instructs Gemini to act as an academic assistant
 SYSTEM_PROMPT = """You are an AI academic assistant for Amaanitvam Foundation, \
@@ -28,6 +28,11 @@ Your role:
 - Use simple language appropriate for the student's grade level when known
 - If you are unsure about something, say so honestly rather than guessing
 - Do not discuss topics unrelated to academics or the platform
+- Always finish your answer with a complete sentence. Be concise and avoid unnecessary repetition.
+- Keep answers under 300 words unless the student explicitly asks for a detailed explanation.
+- Format answers using Markdown: use a short heading for multi-step explanations, bullet or numbered lists for grouped points, and **bold** important terms.
+- Use fenced code blocks for code and LaTeX delimiters only for mathematical expressions.
+- Do not return HTML or Markdown tables unless a table genuinely improves the explanation.
 
 Always be encouraging, patient, and supportive."""
 
@@ -50,6 +55,7 @@ def _build_contents(
     user_message: str,
     context_chunks: list[str],
     history: list[Message],
+    context_label: str | None = None,
 ):
     """
     Build the Gemini contents list:
@@ -64,6 +70,11 @@ def _build_contents(
 
     # System prompt + RAG context as the opening exchange
     system_text = SYSTEM_PROMPT
+    if context_label:
+        system_text += (
+            f"\n\nCURRENT LEARNING CONTEXT: {context_label}\n"
+            "Keep the answer focused on this course or module when relevant."
+        )
     if context_chunks:
         context_block = "\n\n---\n".join(context_chunks)
         system_text += f"\n\nRELEVANT CONTENT FROM THE PLATFORM:\n{context_block}"
@@ -96,6 +107,7 @@ async def generate_response(
     user_message: str,
     context_chunks: list[str],
     history: list[Message],
+    context_label: str | None = None,
 ) -> tuple[str, int | None, int]:
     """
     Call Gemini and return (response_text, token_count, latency_ms).
@@ -104,6 +116,7 @@ async def generate_response(
         user_message: The user's current question.
         context_chunks: Retrieved RAG documents (may be empty).
         history: Recent conversation messages for multi-turn context.
+        context_label: Human-readable course/module focus for the prompt.
 
     Returns:
         Tuple of (ai_text, token_count, latency_ms).
@@ -114,7 +127,12 @@ async def generate_response(
     from google.genai import types
 
     client = _get_client()
-    contents = _build_contents(user_message, context_chunks, history)
+    contents = _build_contents(
+        user_message,
+        context_chunks,
+        history,
+        context_label,
+    )
 
     t0 = time.monotonic()
     try:

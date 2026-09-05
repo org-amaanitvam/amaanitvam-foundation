@@ -49,6 +49,11 @@ class InternalChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=4000)
     context_type: Literal["general", "course", "library_resource"] = "general"
     context_id: str | None = None
+    context_label: str | None = Field(
+        default=None,
+        max_length=200,
+        description="Human-readable course/module context for the AI prompt.",
+    )
 
     @field_validator("message")
     @classmethod

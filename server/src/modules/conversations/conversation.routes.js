@@ -15,6 +15,7 @@ router.post('/', authenticate, async (req, res, next) => {
     const data = await proxyToAI('/api/conversations', 'POST', {
       context_type: req.body.context_type || 'general',
       context_id: req.body.context_id || null,
+      context_label: req.body.context_label || null,
     }, firebase_uid);
     res.status(201).json(data);
   } catch (err) {
@@ -135,6 +136,7 @@ router.post('/:id/messages', authenticate, async (req, res, next) => {
       message: req.body.content,
       context_type: req.body.context_type || 'general',
       context_id: req.body.context_id || null,
+      context_label: req.body.context_label || null,
     }, firebase_uid);
     res.json(data);
   } catch (err) {

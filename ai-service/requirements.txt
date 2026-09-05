@@ -12,7 +12,7 @@ uvicorn[standard]==0.30.6
 
 # ── Database ─────────────────────────────────────────────────────────
 sqlalchemy[asyncio]==2.0.35
-asyncpg==0.29.0
+psycopg[binary]
 alembic==1.13.3
 
 # ── HTTP client (for internal API calls to Node.js) ───────────────────
