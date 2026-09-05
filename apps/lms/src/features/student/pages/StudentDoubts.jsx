@@ -2,11 +2,17 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Send, Star, MessageSquarePlus, ArrowUpRight } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { useAuth } from '../../../contexts/AuthContext';
 import { fetchMyDoubts, createDoubt, rateDoubt, fetchDoubtById } from '../../../config/api';
 import PageHeader from '../components/PageHeader';
 import LoadingState from '../components/LoadingState';
 import EmptyState from '../components/EmptyState';
+import StudentChatPanel from '../components/StudentChatPanel';
 
 const STATUS_STYLES = {
   open: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -32,6 +38,8 @@ const formatDate = (value) => {
     year: 'numeric',
   });
 };
+
+const getDoubtId = (doubt) => doubt?.id || doubt?._id;
 
 export default function StudentDoubts() {
   const { user } = useAuth();
@@ -115,17 +123,23 @@ export default function StudentDoubts() {
   };
 
   const handleExpand = async (doubt) => {
-    if (expandedId === doubt._id) {
+    const doubtId = getDoubtId(doubt);
+    if (!doubtId) {
+      toast.error('This doubt has no valid ID.');
+      return;
+    }
+
+    if (expandedId === doubtId) {
       setExpandedId(null);
       setDetail(null);
       setRating(0);
       return;
     }
-    setExpandedId(doubt._id);
+    setExpandedId(doubtId);
     setRating(0);
     try {
       const token = await user?.getIdToken();
-      const data = await fetchDoubtById(doubt._id, token);
+      const data = await fetchDoubtById(doubtId, token);
       setDetail(data);
     } catch (error) {
       toast.error(error?.message || 'Could not load doubt details');
@@ -159,6 +173,8 @@ export default function StudentDoubts() {
         subtitle="Get help from faculty on any topic you are learning"
         image="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1600&q=70"
       />
+
+      <StudentChatPanel />
 
       <form
         onSubmit={handleCreate}
@@ -229,8 +245,10 @@ export default function StudentDoubts() {
           <EmptyState title="No doubts yet" message="Submit your first doubt above to get help from faculty." />
         ) : (
           <div className="space-y-4">
-            {doubts.map((doubt) => (
-              <div key={doubt._id} className="card-premium">
+            {doubts.map((doubt) => {
+              const doubtId = getDoubtId(doubt);
+              return (
+              <div key={doubtId} className="card-premium">
                 <button
                   type="button"
                   onClick={() => handleExpand(doubt)}
@@ -242,7 +260,7 @@ export default function StudentDoubts() {
                         {doubt.title}
                       </p>
                       <Link
-                        to={`/student/doubts/${doubt._id}`}
+                        to={`/student/doubts/${doubtId}`}
                         onClick={(event) => event.stopPropagation()}
                         className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#5d0f2d]/5 px-2.5 py-1 text-[11px] font-bold text-[#8a164b] hover:bg-[#5d0f2d] hover:text-white transition-colors"
                         title="Open thread"
@@ -264,7 +282,7 @@ export default function StudentDoubts() {
                   </div>
                 </button>
 
-                {expandedId === doubt._id && (
+                {expandedId === doubtId && (
                   <div className="mt-4 border-t border-gray-100 pt-4">
                     <p className="text-sm text-gray-600 leading-relaxed">{doubt.description}</p>
 
@@ -279,14 +297,25 @@ export default function StudentDoubts() {
                             className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3"
                           >
                             <p className="text-xs font-semibold text-[#8a164b]">
-                              {response.is_faculty_response ? 'Faculty response' : 'You'}
+                              {response.is_faculty_response ? 'Faculty response' : response.is_ai_generated ? 'AI Assistant' : 'You'}
                               {response.is_solution && (
                                 <span className="ml-2 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-700">
                                   Solution
                                 </span>
                               )}
                             </p>
-                            <p className="mt-1 text-sm text-gray-700">{response.message}</p>
+                            {response.is_ai_generated ? (
+                              <div className="mt-1 text-sm text-gray-700">
+                                <ReactMarkdown
+                                  remarkPlugins={[remarkGfm, remarkMath]}
+                                  rehypePlugins={[rehypeKatex]}
+                                >
+                                  {response.message}
+                                </ReactMarkdown>
+                              </div>
+                            ) : (
+                              <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">{response.message}</p>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -312,7 +341,7 @@ export default function StudentDoubts() {
                         {rating > 0 && (
                           <button
                             type="button"
-                            onClick={() => handleRate(doubt._id)}
+                            onClick={() => handleRate(doubtId)}
                             className="rounded-lg bg-[#5d0f2d] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8a164b] cursor-pointer"
                           >
                             Submit Rating
@@ -329,7 +358,8 @@ export default function StudentDoubts() {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

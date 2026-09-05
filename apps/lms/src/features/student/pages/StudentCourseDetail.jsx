@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Loader2, School, Clock, Languages, ListChecks, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { fetchPublishedCourses, fetchCourseModules, fetchModuleLessons } from '../../../config/api';
+import StudentChatPanel from '../components/StudentChatPanel';
 
 const CATEGORY_LABELS = {
   academic: 'Academic',
@@ -29,6 +30,7 @@ export default function StudentCourseDetail() {
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [modules, setModules] = useState([]);
+  const [activeModule, setActiveModule] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -174,6 +176,13 @@ export default function StudentCourseDetail() {
         </div>
       </div>
 
+      <StudentChatPanel
+        contextType="course"
+        contextId={course._id}
+        contextLabel={`${course.title}${activeModule ? ` / ${activeModule.title}` : ''}`}
+        escalationSubject={activeModule ? `${course.title}: ${activeModule.title}` : course.title}
+      />
+
       {/* Syllabus */}
       <div className="card-premium overflow-hidden p-0">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2 bg-slate-50/60">
@@ -196,7 +205,13 @@ export default function StudentCourseDetail() {
                     {String(idx + 1).padStart(2, '0')}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-xl font-[family-name:var(--font-heading)] font-bold text-[#5d0f2d]">{mod.title}</h3>
+                    <button
+                      type="button"
+                      onClick={() => setActiveModule(mod)}
+                      className="text-left text-xl font-[family-name:var(--font-heading)] font-bold text-[#5d0f2d] hover:text-[#8a164b]"
+                    >
+                      {mod.title}
+                    </button>
                     {mod.description && (
                       <p className="mt-1 text-sm text-gray-500 leading-relaxed">{mod.description}</p>
                     )}

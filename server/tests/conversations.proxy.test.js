@@ -76,7 +76,7 @@ describe('conversation route identity forwarding', () => {
     expect(proxyRouteMock).toHaveBeenCalledWith(
       '/api/conversations',
       'POST',
-      { context_type: 'general', context_id: null },
+      { context_type: 'general', context_id: null, context_label: null },
       'verified-user-uid',
     );
   });

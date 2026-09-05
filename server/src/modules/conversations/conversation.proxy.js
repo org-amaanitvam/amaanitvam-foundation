@@ -28,7 +28,8 @@ export const proxyToAI = async (path, method, body = {}, firebaseUid) => {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      throw error.response.data;
+      // FastAPI places its standard error envelope under `detail`.
+      throw error.response.data?.detail || error.response.data;
     } else if (error.request) {
       // The request was made but no response was received
       throw new Error(`Could not connect to AI service at ${AI_SERVICE_URL}`);
