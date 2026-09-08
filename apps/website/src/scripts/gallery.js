@@ -15,7 +15,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Project Shiksha",
     "description": "Education support, tutoring sessions, and learning material distribution for underprivileged students.",
     "folder": "Projects/ProjectShiksha",
-    "mediaCount": 30,
+    "mediaCount": 26,
     "coverUrl": "/images/Projects/ProjectShiksha/1.jpg",
     "images": [
       {
@@ -82,148 +82,120 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-10.jpg",
-        "title": "Project Shiksha - Photo 10",
-        "imageUrl": "/images/Projects/ProjectShiksha/10.jpg",
-        "url": "/images/Projects/ProjectShiksha/10.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-11.jpg",
-        "title": "Project Shiksha - Photo 11",
+        "title": "Project Shiksha - Photo 10",
         "imageUrl": "/images/Projects/ProjectShiksha/11.jpg",
         "url": "/images/Projects/ProjectShiksha/11.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-12.png",
-        "title": "Project Shiksha - Photo 12",
+        "title": "Project Shiksha - Photo 11",
         "imageUrl": "/images/Projects/ProjectShiksha/12.png",
         "url": "/images/Projects/ProjectShiksha/12.png",
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-13.jpg",
-        "title": "Project Shiksha - Photo 13",
-        "imageUrl": "/images/Projects/ProjectShiksha/13.jpg",
-        "url": "/images/Projects/ProjectShiksha/13.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-14.jpg",
-        "title": "Project Shiksha - Photo 14",
+        "title": "Project Shiksha - Photo 12",
         "imageUrl": "/images/Projects/ProjectShiksha/14.jpg",
         "url": "/images/Projects/ProjectShiksha/14.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-15.jpg",
-        "title": "Project Shiksha - Photo 15",
+        "title": "Project Shiksha - Photo 13",
         "imageUrl": "/images/Projects/ProjectShiksha/15.jpg",
         "url": "/images/Projects/ProjectShiksha/15.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-16.jpg",
-        "title": "Project Shiksha - Photo 16",
+        "title": "Project Shiksha - Photo 14",
         "imageUrl": "/images/Projects/ProjectShiksha/16.jpg",
         "url": "/images/Projects/ProjectShiksha/16.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-17.jpg",
-        "title": "Project Shiksha - Photo 17",
+        "title": "Project Shiksha - Photo 15",
         "imageUrl": "/images/Projects/ProjectShiksha/17.jpg",
         "url": "/images/Projects/ProjectShiksha/17.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-18.png",
-        "title": "Project Shiksha - Photo 18",
+        "title": "Project Shiksha - Photo 16",
         "imageUrl": "/images/Projects/ProjectShiksha/18.png",
         "url": "/images/Projects/ProjectShiksha/18.png",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-19.jpg",
-        "title": "Project Shiksha - Photo 19",
+        "title": "Project Shiksha - Photo 17",
         "imageUrl": "/images/Projects/ProjectShiksha/19.jpg",
         "url": "/images/Projects/ProjectShiksha/19.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-20.jpg",
-        "title": "Project Shiksha - Photo 20",
+        "title": "Project Shiksha - Photo 18",
         "imageUrl": "/images/Projects/ProjectShiksha/20.jpg",
         "url": "/images/Projects/ProjectShiksha/20.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-21.png",
-        "title": "Project Shiksha - Photo 21",
+        "title": "Project Shiksha - Photo 19",
         "imageUrl": "/images/Projects/ProjectShiksha/21.png",
         "url": "/images/Projects/ProjectShiksha/21.png",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-22.jpg",
-        "title": "Project Shiksha - Photo 22",
+        "title": "Project Shiksha - Photo 20",
         "imageUrl": "/images/Projects/ProjectShiksha/22.jpg",
         "url": "/images/Projects/ProjectShiksha/22.jpg",
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-23.png",
-        "title": "Project Shiksha - Photo 23",
-        "imageUrl": "/images/Projects/ProjectShiksha/23.png",
-        "url": "/images/Projects/ProjectShiksha/23.png",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-24.jpg",
-        "title": "Project Shiksha - Photo 24",
+        "title": "Project Shiksha - Photo 21",
         "imageUrl": "/images/Projects/ProjectShiksha/24.jpg",
         "url": "/images/Projects/ProjectShiksha/24.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-25.jpg",
-        "title": "Project Shiksha - Photo 25",
+        "title": "Project Shiksha - Photo 22",
         "imageUrl": "/images/Projects/ProjectShiksha/25.jpg",
         "url": "/images/Projects/ProjectShiksha/25.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-26.png",
-        "title": "Project Shiksha - Photo 26",
+        "title": "Project Shiksha - Photo 23",
         "imageUrl": "/images/Projects/ProjectShiksha/26.png",
         "url": "/images/Projects/ProjectShiksha/26.png",
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-27.jpg",
-        "title": "Project Shiksha - Photo 27",
-        "imageUrl": "/images/Projects/ProjectShiksha/27.jpg",
-        "url": "/images/Projects/ProjectShiksha/27.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-28.jpg",
-        "title": "Project Shiksha - Photo 28",
+        "title": "Project Shiksha - Photo 24",
         "imageUrl": "/images/Projects/ProjectShiksha/28.jpg",
         "url": "/images/Projects/ProjectShiksha/28.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-29.jpg",
-        "title": "Project Shiksha - Photo 29",
+        "title": "Project Shiksha - Photo 25",
         "imageUrl": "/images/Projects/ProjectShiksha/29.jpg",
         "url": "/images/Projects/ProjectShiksha/29.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-30.jpg",
-        "title": "Project Shiksha - Photo 30",
+        "title": "Project Shiksha - Photo 26",
         "imageUrl": "/images/Projects/ProjectShiksha/30.jpg",
         "url": "/images/Projects/ProjectShiksha/30.jpg",
         "mediaType": "image"
@@ -235,7 +207,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Project Manthan",
     "description": "Awareness campaigns, mental health workshops, and community counselling drives.",
     "folder": "Projects/ProjectManthan",
-    "mediaCount": 16,
+    "mediaCount": 13,
     "coverUrl": "/images/Projects/ProjectManthan/1.jpg",
     "images": [
       {
@@ -302,50 +274,29 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "project-manthan-10.jpg",
-        "title": "Project Manthan - Photo 10",
-        "imageUrl": "/images/Projects/ProjectManthan/10.jpg",
-        "url": "/images/Projects/ProjectManthan/10.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-manthan-11.jpg",
-        "title": "Project Manthan - Photo 11",
+        "title": "Project Manthan - Photo 10",
         "imageUrl": "/images/Projects/ProjectManthan/11.jpg",
         "url": "/images/Projects/ProjectManthan/11.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-manthan-12.jpg",
-        "title": "Project Manthan - Photo 12",
+        "title": "Project Manthan - Photo 11",
         "imageUrl": "/images/Projects/ProjectManthan/12.jpg",
         "url": "/images/Projects/ProjectManthan/12.jpg",
         "mediaType": "image"
       },
       {
-        "id": "project-manthan-13.jpg",
-        "title": "Project Manthan - Photo 13",
-        "imageUrl": "/images/Projects/ProjectManthan/13.jpg",
-        "url": "/images/Projects/ProjectManthan/13.jpg",
-        "mediaType": "image"
-      },
-      {
-        "id": "project-manthan-14.jpg",
-        "title": "Project Manthan - Photo 14",
-        "imageUrl": "/images/Projects/ProjectManthan/14.jpg",
-        "url": "/images/Projects/ProjectManthan/14.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-manthan-15.jpg",
-        "title": "Project Manthan - Photo 15",
+        "title": "Project Manthan - Photo 12",
         "imageUrl": "/images/Projects/ProjectManthan/15.jpg",
         "url": "/images/Projects/ProjectManthan/15.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-manthan-16.jpg",
-        "title": "Project Manthan - Photo 16",
+        "title": "Project Manthan - Photo 13",
         "imageUrl": "/images/Projects/ProjectManthan/16.jpg",
         "url": "/images/Projects/ProjectManthan/16.jpg",
         "mediaType": "image"
@@ -357,7 +308,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Project Udaan",
     "description": "Community outreach, youth empowerment, and career orientation programs.",
     "folder": "Projects/ProjectUdaan",
-    "mediaCount": 12,
+    "mediaCount": 9,
     "coverUrl": "/images/Projects/ProjectUdaan/1.jpg",
     "images": [
       {
@@ -389,61 +340,40 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "project-udaan-5.jpg",
-        "title": "Project Udaan - Photo 5",
-        "imageUrl": "/images/Projects/ProjectUdaan/5.jpg",
-        "url": "/images/Projects/ProjectUdaan/5.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-udaan-6.jpg",
-        "title": "Project Udaan - Photo 6",
+        "title": "Project Udaan - Photo 5",
         "imageUrl": "/images/Projects/ProjectUdaan/6.jpg",
         "url": "/images/Projects/ProjectUdaan/6.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-udaan-7.jpg",
-        "title": "Project Udaan - Photo 7",
+        "title": "Project Udaan - Photo 6",
         "imageUrl": "/images/Projects/ProjectUdaan/7.jpg",
         "url": "/images/Projects/ProjectUdaan/7.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-udaan-8.jpg",
-        "title": "Project Udaan - Photo 8",
+        "title": "Project Udaan - Photo 7",
         "imageUrl": "/images/Projects/ProjectUdaan/8.jpg",
         "url": "/images/Projects/ProjectUdaan/8.jpg",
         "mediaType": "image"
       },
       {
-        "id": "project-udaan-9.jpg",
-        "title": "Project Udaan - Photo 9",
-        "imageUrl": "/images/Projects/ProjectUdaan/9.jpg",
-        "url": "/images/Projects/ProjectUdaan/9.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-udaan-10.jpg",
-        "title": "Project Udaan - Photo 10",
+        "title": "Project Udaan - Photo 8",
         "imageUrl": "/images/Projects/ProjectUdaan/10.jpg",
         "url": "/images/Projects/ProjectUdaan/10.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-udaan-11.jpg",
-        "title": "Project Udaan - Photo 11",
+        "title": "Project Udaan - Photo 9",
         "imageUrl": "/images/Projects/ProjectUdaan/11.jpg",
         "url": "/images/Projects/ProjectUdaan/11.jpg",
         "mediaType": "image"
       },
-      {
-        "id": "project-udaan-12.jpg",
-        "title": "Project Udaan - Photo 12",
-        "imageUrl": "/images/Projects/ProjectUdaan/12.jpg",
-        "url": "/images/Projects/ProjectUdaan/12.jpg",
-        "mediaType": "image"
-      }
     ]
   },
  
@@ -452,7 +382,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Clothes Donation Drive",
     "description": "Cloth collection and distribution drives for families in need.",
     "folder": "ClothesDonation",
-    "mediaCount": 11,
+    "mediaCount": 9,
     "coverUrl": "/images/ClothesDonation/1.jpg",
     "images": [
       {
@@ -477,57 +407,43 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "clothes-donation-4.jpg",
-        "title": "Clothes Donation Drive - Photo 4",
-        "imageUrl": "/images/ClothesDonation/4.jpg",
-        "url": "/images/ClothesDonation/4.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "clothes-donation-5.jpg",
-        "title": "Clothes Donation Drive - Photo 5",
+        "title": "Clothes Donation Drive - Photo 4",
         "imageUrl": "/images/ClothesDonation/5.jpg",
         "url": "/images/ClothesDonation/5.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-6.jpg",
-        "title": "Clothes Donation Drive - Photo 6",
+        "title": "Clothes Donation Drive - Photo 5",
         "imageUrl": "/images/ClothesDonation/6.jpg",
         "url": "/images/ClothesDonation/6.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-7.jpg",
-        "title": "Clothes Donation Drive - Photo 7",
+        "title": "Clothes Donation Drive - Photo 6",
         "imageUrl": "/images/ClothesDonation/7.jpg",
         "url": "/images/ClothesDonation/7.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-8.jpg",
-        "title": "Clothes Donation Drive - Photo 8",
+        "title": "Clothes Donation Drive - Photo 7",
         "imageUrl": "/images/ClothesDonation/8.jpg",
         "url": "/images/ClothesDonation/8.jpg",
         "mediaType": "image"
       },
       {
-        "id": "clothes-donation-9.jpg",
-        "title": "Clothes Donation Drive - Photo 9",
-        "imageUrl": "/images/ClothesDonation/9.jpg",
-        "url": "/images/ClothesDonation/9.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "clothes-donation-10.jpg",
-        "title": "Clothes Donation Drive - Photo 10",
+        "title": "Clothes Donation Drive - Photo 8",
         "imageUrl": "/images/ClothesDonation/10.jpg",
         "url": "/images/ClothesDonation/10.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-11.jpg",
-        "title": "Clothes Donation Drive - Photo 11",
+        "title": "Clothes Donation Drive - Photo 9",
         "imageUrl": "/images/ClothesDonation/11.jpg",
         "url": "/images/ClothesDonation/11.jpg",
         "mediaType": "image"
