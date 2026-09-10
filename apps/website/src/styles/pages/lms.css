@@ -523,7 +523,7 @@ p {
    connected by an animated signal trace. Click a station to filter.
    ============================================================ */
 .rail-section {
-    background: var(--code-900);
+    background: var(--cream-50);
     position: relative;
     overflow: hidden;
     margin-top: 3rem !important;
@@ -531,25 +531,12 @@ p {
 }
 
 .rail-section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(rgba(143, 224, 220, .06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(143, 224, 220, .06) 1px, transparent 1px);
-    background-size: 34px 34px;
+    display: none;
 }
 
 .rail-section .container {
     position: relative;
     z-index: 1;
-}
-
-.rail-section .section-title {
-    color: var(--cream-50);
-}
-
-.rail-section .section-desc {
-    color: rgba(245, 239, 230, .72);
 }
 
 .rail-track {
@@ -577,7 +564,7 @@ p {
     right: 3rem;
     top: 3.6rem;
     height: 2px;
-    background: linear-gradient(90deg, var(--circuit-500), var(--code-line) 90%);
+    background: linear-gradient(90deg, var(--circuit-500), var(--line) 90%);
     z-index: 0;
 }
 
@@ -609,7 +596,7 @@ p {
     padding: 0 .55rem;
     background: none;
     border: none;
-    color: var(--cream-50);
+    color: var(--ink-900);
 }
 
 .rail-node-dot {
@@ -617,22 +604,22 @@ p {
     height: 58px;
     margin: 0 auto .9rem;
     border-radius: 50%;
-    background: var(--code-800);
-    border: 2px solid var(--code-line);
+    background: var(--card);
+    border: 2px solid var(--line);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    color: var(--ink-400);
+    color: var(--ink-600);
     transition: all .2s ease;
     position: relative;
 }
 
 .rail-node.active .rail-node-dot {
     border-color: var(--circuit-400);
-    color: var(--circuit-300);
-    background: radial-gradient(circle, rgba(47, 179, 175, .25), var(--code-800) 70%);
-    box-shadow: 0 0 0 6px rgba(47, 179, 175, .12), 0 0 22px rgba(47, 179, 175, .5);
+    color: var(--circuit-500);
+    background: radial-gradient(circle, rgba(156, 31, 71, .1), var(--card) 70%);
+    box-shadow: 0 0 0 6px rgba(156, 31, 71, .05), 0 0 15px rgba(156, 31, 71, .15);
 }
 
 .rail-node:hover .rail-node-dot {
@@ -656,7 +643,7 @@ p {
     font-size: .74rem;
     font-weight: 600;
     line-height: 1.3;
-    color: rgba(245, 239, 230, .92);
+    color: var(--ink-900);
 }
 
 .rail-node-count {
