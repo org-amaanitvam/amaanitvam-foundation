@@ -153,19 +153,84 @@ const Store = {
     LS.set("lms_certificates", c);
   },
 
-  courseStats(course){
-    const cp = this.courseProgress(course.id);
-    const lectureTotal = course.lectures.length || 1;
-    const lecturePct = Math.round((cp.completed.length / lectureTotal) * 80);
-    const quiz = this.quizResult(course.id);
-    const quizPct = quiz && quiz.passed ? 20 : 0;
-    const pct = Math.min(100, lecturePct + quizPct);
-    const lecturesDone = cp.completed.length === lectureTotal && lectureTotal > 0;
-    const isComplete = lecturesDone && quiz && quiz.passed;
-    if (isComplete && !this.hasCertificate(course.id)) this.issueCertificate(course.id);
-    return { pct, lecturesDone, quizPassed: !!(quiz && quiz.passed), isComplete, completedCount: cp.completed.length, lectureTotal };
-  },
+  // courseStats(course){
+  //   const cp = this.courseProgress(course.id);
+  //   const lectureTotal = course.lectures.length || 1;
+  //   const lecturePct = Math.round((cp.completed.length / lectureTotal) * 80);
+  //   const quiz = this.quizResult(course.id);
+  //   const quizPct = quiz && quiz.passed ? 20 : 0;
+  //   const pct = Math.min(100, lecturePct + quizPct);
+  //   const lecturesDone = cp.completed.length === lectureTotal && lectureTotal > 0;
+  //   const isComplete = lecturesDone && quiz && quiz.passed;
+  //   if (isComplete && !this.hasCertificate(course.id)) this.issueCertificate(course.id);
+  //   return { pct, lecturesDone, quizPassed: !!(quiz && quiz.passed), isComplete, completedCount: cp.completed.length, lectureTotal };
+  // },
 
+  courseStats(course) {
+
+  const cp = this.courseProgress(course.id);
+
+  const lectureTotal =
+    course.lectures?.length || 0;
+
+  const completedLectures =
+    (cp.completed || []).filter(
+      lectureId =>
+        course.lectures.some(
+          lecture =>
+            lecture.id === lectureId
+        )
+    );
+
+  const completedCount =
+    completedLectures.length;
+
+  const lecturePct =
+    lectureTotal > 0
+      ? Math.round(
+          (completedCount / lectureTotal) * 80
+        )
+      : 0;
+
+  const quiz =
+    this.quizResult(course.id);
+
+  const quizPassed =
+    !!(quiz && quiz.passed);
+
+  const quizPct =
+    quizPassed ? 20 : 0;
+
+  const pct =
+    Math.min(
+      100,
+      lecturePct + quizPct
+    );
+
+  const lecturesDone =
+    lectureTotal > 0 &&
+    completedCount === lectureTotal;
+
+  const isComplete =
+    lecturesDone &&
+    quizPassed;
+
+  if (
+    isComplete &&
+    !this.hasCertificate(course.id)
+  ) {
+    this.issueCertificate(course.id);
+  }
+
+  return {
+    pct,
+    lecturesDone,
+    quizPassed,
+    isComplete,
+    completedCount,
+    lectureTotal
+  };
+},
   prereqsMet(course, courses){
     return (course.prerequisites || []).every(pid=>{
       return this.hasCertificate(pid) || this.courseStats(courses.find(c=>c.id===pid) || { id: pid, lectures: [] }).isComplete;
@@ -348,15 +413,68 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const prereqLine = c.prerequisites && c.prerequisites.length
       ? `<div class="course-prereq${prereqOk ? '' : ' locked'}"><i class="fa-solid ${prereqOk ? 'fa-lock-open' : 'fa-lock'}"></i> Requires: ${c.prerequisites.map(pid=> courseById(pid, courses)?.title || pid).join(", ")}</div>`
       : `<div class="course-prereq"><i class="fa-solid fa-signal"></i> No prerequisites</div>`;
+let actionBtn;
 
-    let actionBtn;
-    if (!prereqOk && !enrolled) {
-      actionBtn = `<button class="btn btn-ghost btn-sm" style="flex:1;" disabled><i class="fa-solid fa-lock"></i> Locked</button>`;
-    } else if (!enrolled) {
-      actionBtn = `<button class="btn btn-circuit btn-sm" style="flex:1;" data-enroll="${c.id}">Enroll Now</button>`;
-    } else {
-      actionBtn = `<button class="btn btn-primary btn-sm" style="flex:1;" data-open-course="${c.id}">${stats.pct > 0 ? 'Resume' : 'Start Course'}</button>`;
-    }
+if (!prereqOk && !enrolled) {
+
+  actionBtn = `
+    <button
+      class="btn btn-ghost btn-sm"
+      style="flex:1;"
+      disabled
+    >
+      <i class="fa-solid fa-lock"></i>
+      Locked
+    </button>
+  `;
+
+} else if (!enrolled) {
+
+  actionBtn = `
+    <button
+      class="btn btn-circuit btn-sm"
+      style="flex:1;"
+      data-enroll="${c.id}"
+    >
+      Enroll Now
+    </button>
+  `;
+
+} else {
+
+  // Course completed
+  if (stats.isComplete) {
+
+    actionBtn = `
+      <button
+        class="btn btn-primary btn-sm"
+        style="flex:1;"
+        data-certificate="${c.id}"
+      >
+        <i class="fa-solid fa-award"></i>
+        View Certificate
+      </button>
+    `;
+
+  } else {
+
+    // Course enrolled but not completed
+    const cp = Store.courseProgress(c.id);
+
+    const hasStarted = !!cp.lastWatched;
+
+    actionBtn = `
+      <button
+        class="btn btn-primary btn-sm"
+        style="flex:1;"
+        data-open-course="${c.id}"
+      >
+        <i class="fa-solid fa-play"></i>
+        ${stats.pct > 0 || hasStarted ? "Resume" : "Start Course"}
+      </button>
+    `;
+  }
+}
 
     return `
     <div class="course-card">
@@ -385,6 +503,57 @@ document.addEventListener("DOMContentLoaded", ()=>{
       </div>
     </div>`;
   }
+
+
+  function resumeCourse(courseId) {
+
+  const courses = Store.getCourses();
+
+  const course = courseById(courseId, courses);
+
+  if (!course) {
+    console.error("Course not found:", courseId);
+    return;
+  }
+
+  if (!Store.isEnrolled(courseId)) {
+    showToast("Please enroll in this course first.");
+    return;
+  }
+
+  const progress = Store.courseProgress(courseId);
+
+  const lastWatchedLecture = course.lectures.find(
+    lecture => lecture.id === progress.lastWatched
+  );
+
+  const lecture =
+    lastWatchedLecture ||
+    course.lectures[0];
+
+  if (!lecture) {
+    showToast("No lectures available.");
+    return;
+  }
+
+  ensureDetailModal();
+
+  openModal("courseModal");
+
+  renderCourseDetail(courseId, false);
+
+  loadLecture(
+    course,
+    lecture.id,
+    false
+  );
+
+  showToast(
+    progress.lastWatched
+      ? `Resuming: ${lecture.title}`
+      : `Starting: ${lecture.title}`
+  );
+}
 
   /* ---------------- Browse grid ---------------- */
   function renderCourses(){
@@ -549,138 +718,805 @@ document.addEventListener("DOMContentLoaded", ()=>{
     renderCourseDetail(course.id, false);
   }
 
-  function renderCourseDetail(courseId, resetViewer){
-    courses = Store.getCourses();
-    const c = courseById(courseId, courses);
-    if (!c) return;
-    currentCourseId = courseId;
-    const enrolled = Store.isEnrolled(c.id);
-    const stats = Store.courseStats(c);
-    const cp = Store.courseProgress(c.id);
-    const prereqOk = Store.prereqsMet(c, courses);
+  // function renderCourseDetail(courseId, resetViewer){
+  //   courses = Store.getCourses();
+  //   const c = courseById(courseId, courses);
+  //   if (!c) return;
+  //   currentCourseId = courseId;
+  //   const enrolled = Store.isEnrolled(c.id);
+  //   const stats = Store.courseStats(c);
+  //   const cp = Store.courseProgress(c.id);
+  //   const prereqOk = Store.prereqsMet(c, courses);
 
-    document.getElementById("cmCat").textContent = catName(c.category);
-    document.getElementById("cmTitle").textContent = c.title;
-    document.getElementById("cmDuration").textContent = c.duration;
-    document.getElementById("cmLevel").textContent = c.level;
-    document.getElementById("cmEnrolledCount").textContent = (c.enrolledBase || 0) + Object.keys(Store.enrollments()).filter(id=>id===c.id).length;
+  //   document.getElementById("cmCat").textContent = catName(c.category);
+  //   document.getElementById("cmTitle").textContent = c.title;
+  //   document.getElementById("cmDuration").textContent = c.duration;
+  //   document.getElementById("cmLevel").textContent = c.level;
+  //   document.getElementById("cmEnrolledCount").textContent = (c.enrolledBase || 0) + Object.keys(Store.enrollments()).filter(id=>id===c.id).length;
 
-    document.getElementById("cmProgressPct").textContent = enrolled ? stats.pct + "%" : "—";
-    document.getElementById("cmProgressFill").style.width = (enrolled ? stats.pct : 0) + "%";
-    document.getElementById("cmProgressHint").textContent = !enrolled
+  //   document.getElementById("cmProgressPct").textContent = enrolled ? stats.pct + "%" : "—";
+  //   document.getElementById("cmProgressFill").style.width = (enrolled ? stats.pct : 0) + "%";
+  //   document.getElementById("cmProgressHint").textContent = !enrolled
+  //     ? "Enroll to start tracking progress."
+  //     : stats.isComplete ? "Course complete — certificate issued!" : "Watch every lecture, then pass the quiz to finish.";
+
+  //   const enrollBtn = document.getElementById("cmEnrollBtn");
+  //   if (stats.isComplete){
+  //     enrollBtn.innerHTML = '<i class="fa-solid fa-award"></i> View Certificate';
+  //     enrollBtn.disabled = false;
+  //     enrollBtn.onclick = ()=> openCertificate(c.id);
+  //   } else if (!prereqOk && !enrolled){
+  //     enrollBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Locked';
+  //     enrollBtn.disabled = true;
+  //     enrollBtn.onclick = null;
+  //   } else if (!enrolled){
+  //     enrollBtn.innerHTML = 'Enroll Now';
+  //     enrollBtn.disabled = false;
+  //     enrollBtn.onclick = ()=>{ Store.enroll(c.id); showToast("Enrolled in " + c.title); renderCourseDetail(c.id, true); renderCourses(); };
+  //   } else {
+  //     enrollBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume Lecture';
+  //     enrollBtn.disabled = false;
+  //     enrollBtn.onclick = ()=>{
+  //       const next = cp.lastWatched || c.lectures[0].id;
+  //       loadLecture(c, next, false);
+  //     };
+  //   }
+
+  //   if (resetViewer || !document.getElementById("cmViewer").innerHTML){
+  //     const startLecture = cp.lastWatched || c.lectures[0].id;
+  //     loadLecture(c, startLecture, false);
+  //     return; // loadLecture re-invokes renderCourseDetail
+  //   }
+
+  //   /* curriculum */
+  //   document.getElementById("cmLectures").innerHTML = c.lectures.map((l, i)=>{
+  //     const done = cp.completed.includes(l.id);
+  //     const isCurrent = cp.lastWatched === l.id || (!cp.lastWatched && i === 0);
+  //     return `<div class="lecture-item${done ? ' done' : ''}${isCurrent ? ' current' : ''}">
+  //       <div class="lecture-check"><i class="fa-solid fa-check"></i></div>
+  //       <div class="lecture-info">
+  //         <div class="lecture-title">${i+1}. ${l.title}</div>
+  //         <div class="lecture-meta">${l.duration}${isCurrent ? ' · Last watched' : ''}</div>
+  //       </div>
+  //       <button class="lecture-play" data-lecture="${l.id}" title="Play & mark complete" ${enrolled ? '' : 'disabled style="opacity:.4;"'}><i class="fa-solid fa-play"></i></button>
+  //     </div>`;
+  //   }).join("");
+
+  //   const quizResult = Store.quizResult(c.id);
+  //   document.getElementById("cmQuizCard").innerHTML = `
+  //     <div class="q-icon"><i class="fa-solid fa-circle-question"></i></div>
+  //     <div class="q-info">
+  //       <div class="q-title">Final Assessment</div>
+  //       <div class="q-sub">${c.quiz.questions.length} questions · pass at 60%${cp.completed.length < c.lectures.length ? ' · finish all lectures first' : ''}</div>
+  //     </div>
+  //     ${quizResult ? `<span class="quiz-score-pill">${quizResult.score}/${quizResult.total} ${quizResult.passed ? '✓' : ''}</span>` : ''}
+  //     <button class="btn ${quizResult && quizResult.passed ? 'btn-ghost' : 'btn-circuit'} btn-sm" id="cmTakeQuizBtn" ${enrolled && cp.completed.length >= c.lectures.length ? '' : 'disabled'}>
+  //       ${quizResult ? 'Retake Quiz' : 'Take Quiz'}
+  //     </button>`;
+  //   const quizBtn = document.getElementById("cmTakeQuizBtn");
+  //   if (quizBtn) quizBtn.addEventListener("click", ()=> openQuiz(c.id));
+
+  //   /* notes */
+  //   document.getElementById("cmNotes").innerHTML = c.notes.map(n=> `
+  //     <div class="resource-row">
+  //       <div class="r-icon"><i class="fa-solid fa-file-pdf"></i></div>
+  //       <div class="r-info"><div class="r-title">${n.title}</div><div class="r-sub">PDF notes</div></div>
+  //       <a class="btn btn-ghost btn-sm" href="${n.url}" target="_blank" rel="noopener">View</a>
+  //       <a class="btn btn-primary btn-sm" href="${n.url}" download>Download</a>
+  //     </div>`).join("") || '<p class="field-hint">No notes uploaded yet.</p>';
+
+  //   /* assignments */
+  //   document.getElementById("cmAssignments").innerHTML = c.assignments.map(a=>{
+  //     const submitted = Store.isAssignmentSubmitted(c.id, a.id);
+  //     return `<div class="assignment-row">
+  //       <div class="a-icon"><i class="fa-solid fa-file-pen"></i></div>
+  //       <div class="r-info"><div class="r-title">${a.title}</div><div class="r-sub">${a.desc}</div></div>
+  //       ${submitted
+  //         ? '<span class="assignment-status submitted"><i class="fa-solid fa-check"></i> Submitted</span>'
+  //         : `<button class="btn btn-primary btn-sm" data-submit-assignment="${a.id}" ${enrolled ? '' : 'disabled'}>Submit</button>`}
+  //     </div>`;
+  //   }).join("") || '<p class="field-hint">No assignments for this course.</p>';
+  //   document.querySelectorAll("[data-submit-assignment]").forEach(btn=>{
+  //     btn.addEventListener("click", ()=>{
+  //       Store.submitAssignment(c.id, btn.dataset.submitAssignment);
+  //       showToast("Assignment submitted");
+  //       renderCourseDetail(c.id, false);
+  //     });
+  //   });
+
+  //   /* prerequisites / path */
+  //   if (!c.prerequisites || !c.prerequisites.length){
+  //     document.getElementById("cmPrereqPath").innerHTML = '<span class="prereq-pill met"><i class="fa-solid fa-signal"></i> Open entry point — no prerequisites</span>';
+  //   } else {
+  //     document.getElementById("cmPrereqPath").innerHTML = c.prerequisites.map((pid, i)=>{
+  //       const pc = courseById(pid, courses);
+  //       const met = pc ? Store.courseStats(pc).isComplete : false;
+  //       return `${i>0 ? '<span class="prereq-arrow">→</span>' : ''}<span class="prereq-pill ${met ? 'met' : 'unmet'}"><i class="fa-solid ${met ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${pc ? pc.title : pid}</span>`;
+  //     }).join("") + `<span class="prereq-arrow">→</span><span class="prereq-pill met"><i class="fa-solid fa-flag-checkered"></i> ${c.title}</span>`;
+  //   }
+
+  //   /* instructor */
+  //   document.getElementById("cmInstructor").innerHTML = `
+  //     <div class="instructor-card">
+  //       <div class="instructor-avatar">${c.instructor.trim().charAt(0)}</div>
+  //       <div>
+  //         <div class="instructor-name">${c.instructor}</div>
+  //         <div class="instructor-title">${c.instructorTitle}</div>
+  //       </div>
+  //     </div>
+  //     <p class="section-desc" style="margin-top:1rem;text-align:left;">${c.description}</p>`;
+
+  //   document.querySelectorAll("[data-lecture]").forEach(btn=>{
+  //     btn.addEventListener("click", ()=> loadLecture(c, btn.dataset.lecture, true));
+  //   });
+  // }
+
+  function renderCourseDetail(courseId, resetViewer) {
+
+  courses = Store.getCourses();
+
+  const c = courseById(courseId, courses);
+
+  if (!c) return;
+
+  currentCourseId = courseId;
+
+  const enrolled = Store.isEnrolled(c.id);
+  const stats = Store.courseStats(c);
+  const cp = Store.courseProgress(c.id);
+  const prereqOk = Store.prereqsMet(c, courses);
+
+
+  // =========================================================
+  // COURSE BASIC DETAILS
+  // =========================================================
+
+  document.getElementById("cmCat").textContent =
+    catName(c.category);
+
+  document.getElementById("cmTitle").textContent =
+    c.title;
+
+  document.getElementById("cmDuration").textContent =
+    c.duration;
+
+  document.getElementById("cmLevel").textContent =
+    c.level;
+
+  document.getElementById("cmEnrolledCount").textContent =
+    (c.enrolledBase || 0) +
+    Object.keys(Store.enrollments()).filter(
+      id => id === c.id
+    ).length;
+
+
+  // =========================================================
+  // COURSE PROGRESS
+  // =========================================================
+
+  document.getElementById("cmProgressPct").textContent =
+    enrolled
+      ? stats.pct + "%"
+      : "—";
+
+  document.getElementById("cmProgressFill").style.width =
+    (enrolled ? stats.pct : 0) + "%";
+
+
+  document.getElementById("cmProgressHint").textContent =
+    !enrolled
       ? "Enroll to start tracking progress."
-      : stats.isComplete ? "Course complete — certificate issued!" : "Watch every lecture, then pass the quiz to finish.";
+      : stats.isComplete
+        ? "Course complete — certificate issued!"
+        : "Watch every lecture, then pass the quiz to finish.";
 
-    const enrollBtn = document.getElementById("cmEnrollBtn");
-    if (stats.isComplete){
-      enrollBtn.innerHTML = '<i class="fa-solid fa-award"></i> View Certificate';
-      enrollBtn.disabled = false;
-      enrollBtn.onclick = ()=> openCertificate(c.id);
-    } else if (!prereqOk && !enrolled){
-      enrollBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Locked';
-      enrollBtn.disabled = true;
-      enrollBtn.onclick = null;
-    } else if (!enrolled){
-      enrollBtn.innerHTML = 'Enroll Now';
-      enrollBtn.disabled = false;
-      enrollBtn.onclick = ()=>{ Store.enroll(c.id); showToast("Enrolled in " + c.title); renderCourseDetail(c.id, true); renderCourses(); };
-    } else {
-      enrollBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume Lecture';
-      enrollBtn.disabled = false;
-      enrollBtn.onclick = ()=>{
-        const next = cp.lastWatched || c.lectures[0].id;
-        loadLecture(c, next, false);
-      };
-    }
 
-    if (resetViewer || !document.getElementById("cmViewer").innerHTML){
-      const startLecture = cp.lastWatched || c.lectures[0].id;
-      loadLecture(c, startLecture, false);
-      return; // loadLecture re-invokes renderCourseDetail
-    }
+  // =========================================================
+  // MAIN COURSE BUTTON
+  // =========================================================
 
-    /* curriculum */
-    document.getElementById("cmLectures").innerHTML = c.lectures.map((l, i)=>{
-      const done = cp.completed.includes(l.id);
-      const isCurrent = cp.lastWatched === l.id || (!cp.lastWatched && i === 0);
-      return `<div class="lecture-item${done ? ' done' : ''}${isCurrent ? ' current' : ''}">
-        <div class="lecture-check"><i class="fa-solid fa-check"></i></div>
-        <div class="lecture-info">
-          <div class="lecture-title">${i+1}. ${l.title}</div>
-          <div class="lecture-meta">${l.duration}${isCurrent ? ' · Last watched' : ''}</div>
-        </div>
-        <button class="lecture-play" data-lecture="${l.id}" title="Play & mark complete" ${enrolled ? '' : 'disabled style="opacity:.4;"'}><i class="fa-solid fa-play"></i></button>
-      </div>`;
-    }).join("");
+  const enrollBtn =
+    document.getElementById("cmEnrollBtn");
 
-    const quizResult = Store.quizResult(c.id);
-    document.getElementById("cmQuizCard").innerHTML = `
-      <div class="q-icon"><i class="fa-solid fa-circle-question"></i></div>
-      <div class="q-info">
-        <div class="q-title">Final Assessment</div>
-        <div class="q-sub">${c.quiz.questions.length} questions · pass at 60%${cp.completed.length < c.lectures.length ? ' · finish all lectures first' : ''}</div>
-      </div>
-      ${quizResult ? `<span class="quiz-score-pill">${quizResult.score}/${quizResult.total} ${quizResult.passed ? '✓' : ''}</span>` : ''}
-      <button class="btn ${quizResult && quizResult.passed ? 'btn-ghost' : 'btn-circuit'} btn-sm" id="cmTakeQuizBtn" ${enrolled && cp.completed.length >= c.lectures.length ? '' : 'disabled'}>
-        ${quizResult ? 'Retake Quiz' : 'Take Quiz'}
-      </button>`;
-    const quizBtn = document.getElementById("cmTakeQuizBtn");
-    if (quizBtn) quizBtn.addEventListener("click", ()=> openQuiz(c.id));
 
-    /* notes */
-    document.getElementById("cmNotes").innerHTML = c.notes.map(n=> `
-      <div class="resource-row">
-        <div class="r-icon"><i class="fa-solid fa-file-pdf"></i></div>
-        <div class="r-info"><div class="r-title">${n.title}</div><div class="r-sub">PDF notes</div></div>
-        <a class="btn btn-ghost btn-sm" href="${n.url}" target="_blank" rel="noopener">View</a>
-        <a class="btn btn-primary btn-sm" href="${n.url}" download>Download</a>
-      </div>`).join("") || '<p class="field-hint">No notes uploaded yet.</p>';
+  if (stats.isComplete) {
 
-    /* assignments */
-    document.getElementById("cmAssignments").innerHTML = c.assignments.map(a=>{
-      const submitted = Store.isAssignmentSubmitted(c.id, a.id);
-      return `<div class="assignment-row">
-        <div class="a-icon"><i class="fa-solid fa-file-pen"></i></div>
-        <div class="r-info"><div class="r-title">${a.title}</div><div class="r-sub">${a.desc}</div></div>
-        ${submitted
-          ? '<span class="assignment-status submitted"><i class="fa-solid fa-check"></i> Submitted</span>'
-          : `<button class="btn btn-primary btn-sm" data-submit-assignment="${a.id}" ${enrolled ? '' : 'disabled'}>Submit</button>`}
-      </div>`;
-    }).join("") || '<p class="field-hint">No assignments for this course.</p>';
-    document.querySelectorAll("[data-submit-assignment]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        Store.submitAssignment(c.id, btn.dataset.submitAssignment);
-        showToast("Assignment submitted");
-        renderCourseDetail(c.id, false);
-      });
-    });
+    // Course completed
+    enrollBtn.innerHTML =
+      '<i class="fa-solid fa-award"></i> View Certificate';
 
-    /* prerequisites / path */
-    if (!c.prerequisites || !c.prerequisites.length){
-      document.getElementById("cmPrereqPath").innerHTML = '<span class="prereq-pill met"><i class="fa-solid fa-signal"></i> Open entry point — no prerequisites</span>';
-    } else {
-      document.getElementById("cmPrereqPath").innerHTML = c.prerequisites.map((pid, i)=>{
-        const pc = courseById(pid, courses);
-        const met = pc ? Store.courseStats(pc).isComplete : false;
-        return `${i>0 ? '<span class="prereq-arrow">→</span>' : ''}<span class="prereq-pill ${met ? 'met' : 'unmet'}"><i class="fa-solid ${met ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${pc ? pc.title : pid}</span>`;
-      }).join("") + `<span class="prereq-arrow">→</span><span class="prereq-pill met"><i class="fa-solid fa-flag-checkered"></i> ${c.title}</span>`;
-    }
+    enrollBtn.disabled = false;
 
-    /* instructor */
-    document.getElementById("cmInstructor").innerHTML = `
-      <div class="instructor-card">
-        <div class="instructor-avatar">${c.instructor.trim().charAt(0)}</div>
-        <div>
-          <div class="instructor-name">${c.instructor}</div>
-          <div class="instructor-title">${c.instructorTitle}</div>
-        </div>
-      </div>
-      <p class="section-desc" style="margin-top:1rem;text-align:left;">${c.description}</p>`;
+    enrollBtn.onclick = () => {
+      openCertificate(c.id);
+    };
 
-    document.querySelectorAll("[data-lecture]").forEach(btn=>{
-      btn.addEventListener("click", ()=> loadLecture(c, btn.dataset.lecture, true));
-    });
+
+  } else if (!prereqOk && !enrolled) {
+
+    // Prerequisite not completed
+    enrollBtn.innerHTML =
+      '<i class="fa-solid fa-lock"></i> Locked';
+
+    enrollBtn.disabled = true;
+
+    enrollBtn.onclick = null;
+
+
+  } else if (!enrolled) {
+
+    // Not enrolled
+    enrollBtn.innerHTML =
+      "Enroll Now";
+
+    enrollBtn.disabled = false;
+
+    enrollBtn.onclick = () => {
+
+      Store.enroll(c.id);
+
+      showToast(
+        "Enrolled in " + c.title
+      );
+
+      renderCourseDetail(
+        c.id,
+        true
+      );
+
+      renderCourses();
+
+    };
+
+
+  } else {
+
+    // Enrolled course
+    enrollBtn.innerHTML =
+      '<i class="fa-solid fa-play"></i> Resume Lecture';
+
+    enrollBtn.disabled = false;
+
+    enrollBtn.onclick = () => {
+
+      const nextLecture =
+        c.lectures.find(
+          lecture =>
+            lecture.id === cp.lastWatched
+        ) || c.lectures[0];
+
+      if (!nextLecture) {
+        showToast("No lectures available.");
+        return;
+      }
+
+      loadLecture(
+        c,
+        nextLecture.id,
+        false
+      );
+
+    };
   }
+
+
+  // =========================================================
+  // INITIAL VIDEO / LAST WATCHED LECTURE
+  // =========================================================
+
+  if (
+    resetViewer ||
+    !document.getElementById("cmViewer").innerHTML
+  ) {
+
+    const startLecture =
+      c.lectures.find(
+        lecture =>
+          lecture.id === cp.lastWatched
+      ) || c.lectures[0];
+
+    if (startLecture) {
+
+      loadLecture(
+        c,
+        startLecture.id,
+        false
+      );
+
+    }
+
+    return;
+  }
+
+
+  // =========================================================
+  // CURRICULUM
+  // =========================================================
+
+  document.getElementById("cmLectures").innerHTML =
+    c.lectures
+      .map((l, i) => {
+
+        const done =
+          cp.completed.includes(l.id);
+
+        const isCurrent =
+          cp.lastWatched === l.id ||
+          (!cp.lastWatched && i === 0);
+
+
+        return `
+          <div
+            class="lecture-item
+              ${done ? "done" : ""}
+              ${isCurrent ? "current" : ""}"
+          >
+
+            <div class="lecture-check">
+              <i class="fa-solid fa-check"></i>
+            </div>
+
+
+            <div class="lecture-info">
+
+              <div class="lecture-title">
+                ${i + 1}. ${l.title}
+              </div>
+
+              <div class="lecture-meta">
+                ${l.duration}
+                ${isCurrent ? " · Last watched" : ""}
+              </div>
+
+            </div>
+
+
+            <button
+              class="lecture-play"
+              data-lecture="${l.id}"
+              title="Play & mark complete"
+              ${enrolled
+                ? ""
+                : 'disabled style="opacity:.4;"'}
+            >
+              <i class="fa-solid fa-play"></i>
+            </button>
+
+          </div>
+        `;
+
+      })
+      .join("");
+
+
+  // =========================================================
+  // FINAL ASSESSMENT / QUIZ
+  // =========================================================
+
+  const quizResult =
+    Store.quizResult(c.id);
+
+
+  /*
+     IMPORTANT:
+
+     stats.lecturesDone is better than
+
+     cp.completed.length >= c.lectures.length
+
+     because courseStats() already checks that
+     only valid lecture IDs are counted.
+  */
+
+  const quizUnlocked =
+    enrolled &&
+    stats.lecturesDone;
+
+
+  document.getElementById("cmQuizCard").innerHTML = `
+
+    <div class="q-icon">
+      <i class="fa-solid fa-circle-question"></i>
+    </div>
+
+
+    <div class="q-info">
+
+      <div class="q-title">
+        Final Assessment
+      </div>
+
+
+      <div class="q-sub">
+
+        ${c.quiz.questions.length}
+        questions · pass at 60%
+
+        ${
+          !stats.lecturesDone
+            ? " · finish all lectures first"
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+
+    ${
+      quizResult
+        ? `
+          <span class="quiz-score-pill">
+            ${quizResult.score}/${quizResult.total}
+            ${quizResult.passed ? "✓" : ""}
+          </span>
+        `
+        : ""
+    }
+
+
+    <button
+      class="btn ${
+        quizResult && quizResult.passed
+          ? "btn-ghost"
+          : "btn-circuit"
+      } btn-sm"
+      id="cmTakeQuizBtn"
+      ${quizUnlocked ? "" : "disabled"}
+    >
+
+      ${
+        quizResult
+          ? "Retake Quiz"
+          : "Take Quiz"
+      }
+
+    </button>
+
+  `;
+
+
+  // =========================================================
+  // QUIZ BUTTON CLICK
+  // =========================================================
+
+  const quizBtn =
+    document.getElementById("cmTakeQuizBtn");
+
+
+  if (quizBtn) {
+
+    quizBtn.onclick = () => {
+
+      // Extra safety check
+      if (!Store.isEnrolled(c.id)) {
+
+        showToast(
+          "Please enroll in this course first."
+        );
+
+        return;
+      }
+
+
+      const latestStats =
+        Store.courseStats(c);
+
+
+      if (!latestStats.lecturesDone) {
+
+        showToast(
+          "Please complete all lectures first."
+        );
+
+        return;
+      }
+
+
+      openQuiz(c.id);
+
+    };
+
+  }
+
+
+  // =========================================================
+  // NOTES
+  // =========================================================
+
+  document.getElementById("cmNotes").innerHTML =
+    c.notes
+      .map(
+        n => `
+          <div class="resource-row">
+
+            <div class="r-icon">
+              <i class="fa-solid fa-file-pdf"></i>
+            </div>
+
+
+            <div class="r-info">
+
+              <div class="r-title">
+                ${n.title}
+              </div>
+
+              <div class="r-sub">
+                PDF notes
+              </div>
+
+            </div>
+
+
+            <a
+              class="btn btn-ghost btn-sm"
+              href="${n.url}"
+              target="_blank"
+              rel="noopener"
+            >
+              View
+            </a>
+
+
+            <a
+              class="btn btn-primary btn-sm"
+              href="${n.url}"
+              download
+            >
+              Download
+            </a>
+
+          </div>
+        `
+      )
+      .join("")
+    ||
+    '<p class="field-hint">No notes uploaded yet.</p>';
+
+
+  // =========================================================
+  // ASSIGNMENTS
+  // =========================================================
+
+  document.getElementById("cmAssignments").innerHTML =
+    c.assignments
+      .map(a => {
+
+        const submitted =
+          Store.isAssignmentSubmitted(
+            c.id,
+            a.id
+          );
+
+
+        return `
+          <div class="assignment-row">
+
+            <div class="a-icon">
+              <i class="fa-solid fa-file-pen"></i>
+            </div>
+
+
+            <div class="r-info">
+
+              <div class="r-title">
+                ${a.title}
+              </div>
+
+              <div class="r-sub">
+                ${a.desc}
+              </div>
+
+            </div>
+
+
+            ${
+              submitted
+
+                ? `
+                  <span class="assignment-status submitted">
+                    <i class="fa-solid fa-check"></i>
+                    Submitted
+                  </span>
+                `
+
+                : `
+                  <button
+                    class="btn btn-primary btn-sm"
+                    data-submit-assignment="${a.id}"
+                    ${enrolled ? "" : "disabled"}
+                  >
+                    Submit
+                  </button>
+                `
+            }
+
+          </div>
+        `;
+
+      })
+      .join("")
+    ||
+    '<p class="field-hint">No assignments for this course.</p>';
+
+
+  // =========================================================
+  // ASSIGNMENT SUBMIT BUTTONS
+  // =========================================================
+
+  document
+    .querySelectorAll("[data-submit-assignment]")
+    .forEach(btn => {
+
+      btn.onclick = () => {
+
+        Store.submitAssignment(
+          c.id,
+          btn.dataset.submitAssignment
+        );
+
+        showToast(
+          "Assignment submitted"
+        );
+
+        renderCourseDetail(
+          c.id,
+          false
+        );
+
+      };
+
+    });
+
+
+  // =========================================================
+  // PREREQUISITES / LEARNING PATH
+  // =========================================================
+
+  if (
+    !c.prerequisites ||
+    !c.prerequisites.length
+  ) {
+
+    document.getElementById("cmPrereqPath").innerHTML =
+      `
+        <span class="prereq-pill met">
+
+          <i class="fa-solid fa-signal"></i>
+
+          Open entry point — no prerequisites
+
+        </span>
+      `;
+
+  } else {
+
+    document.getElementById("cmPrereqPath").innerHTML =
+      c.prerequisites
+        .map((pid, i) => {
+
+          const pc =
+            courseById(
+              pid,
+              courses
+            );
+
+          const met =
+            pc
+              ? Store.courseStats(pc).isComplete
+              : false;
+
+
+          return `
+            ${
+              i > 0
+                ? '<span class="prereq-arrow">→</span>'
+                : ""
+            }
+
+            <span
+              class="prereq-pill ${
+                met ? "met" : "unmet"
+              }"
+            >
+
+              <i class="fa-solid ${
+                met
+                  ? "fa-circle-check"
+                  : "fa-circle-xmark"
+              }"></i>
+
+              ${pc ? pc.title : pid}
+
+            </span>
+          `;
+
+        })
+        .join("")
+      +
+      `
+        <span class="prereq-arrow">
+          →
+        </span>
+
+        <span class="prereq-pill met">
+
+          <i class="fa-solid fa-flag-checkered"></i>
+
+          ${c.title}
+
+        </span>
+      `;
+
+  }
+
+
+  // =========================================================
+  // INSTRUCTOR
+  // =========================================================
+
+  document.getElementById("cmInstructor").innerHTML = `
+
+    <div class="instructor-card">
+
+      <div class="instructor-avatar">
+        ${c.instructor.trim().charAt(0)}
+      </div>
+
+
+      <div>
+
+        <div class="instructor-name">
+          ${c.instructor}
+        </div>
+
+        <div class="instructor-title">
+          ${c.instructorTitle}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <p
+      class="section-desc"
+      style="margin-top:1rem;text-align:left;"
+    >
+      ${c.description}
+    </p>
+
+  `;
+
+
+  // =========================================================
+  // LECTURE PLAY BUTTONS
+  // =========================================================
+
+  document
+    .querySelectorAll("[data-lecture]")
+    .forEach(btn => {
+
+      btn.onclick = () => {
+
+        loadLecture(
+          c,
+          btn.dataset.lecture,
+          true
+        );
+
+      };
+
+    });
+
+
+    document.querySelectorAll("[data-certificate]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    openCertificate(btn.dataset.certificate);
+  });
+});
+
+}
 
   function openCourseDetail(courseId){
     ensureDetailModal();
@@ -731,61 +1567,220 @@ document.addEventListener("DOMContentLoaded", ()=>{
     bindModalClosers();
   }
 
-  function openQuiz(courseId){
-    ensureQuizModal();
-    const c = courseById(courseId, courses);
-    document.getElementById("qzTitle").textContent = c.title + " — Final Assessment";
-    const body = document.getElementById("qzBody");
-    body.innerHTML = c.quiz.questions.map((q, qi)=> `
-      <div class="quiz-question" data-qindex="${qi}">
-        <div class="q-num">QUESTION ${qi+1} / ${c.quiz.questions.length}</div>
-        <div class="q-text">${q.text}</div>
-        <div class="quiz-options">
-          ${q.options.map((opt, oi)=> `
-            <label class="quiz-option">
-              <input type="radio" name="q${qi}" value="${oi}"> <span>${opt}</span>
-            </label>`).join("")}
-        </div>
-      </div>`).join("");
+  // function openQuiz(courseId){
+  //   ensureQuizModal();
+  //   const c = courseById(courseId, courses);
+  //   document.getElementById("qzTitle").textContent = c.title + " — Final Assessment";
+  //   const body = document.getElementById("qzBody");
+  //   body.innerHTML = c.quiz.questions.map((q, qi)=> `
+  //     <div class="quiz-question" data-qindex="${qi}">
+  //       <div class="q-num">QUESTION ${qi+1} / ${c.quiz.questions.length}</div>
+  //       <div class="q-text">${q.text}</div>
+  //       <div class="quiz-options">
+  //         ${q.options.map((opt, oi)=> `
+  //           <label class="quiz-option">
+  //             <input type="radio" name="q${qi}" value="${oi}"> <span>${opt}</span>
+  //           </label>`).join("")}
+  //       </div>
+  //     </div>`).join("");
 
-    body.querySelectorAll(".quiz-option").forEach(lab=>{
-      lab.addEventListener("click", ()=>{
-        const group = lab.closest(".quiz-question").querySelectorAll(".quiz-option");
-        group.forEach(g=> g.classList.remove("selected"));
-        lab.classList.add("selected");
+  //   body.querySelectorAll(".quiz-option").forEach(lab=>{
+  //     lab.addEventListener("click", ()=>{
+  //       const group = lab.closest(".quiz-question").querySelectorAll(".quiz-option");
+  //       group.forEach(g=> g.classList.remove("selected"));
+  //       lab.classList.add("selected");
+  //     });
+  //   });
+
+  //   const submitBtn = document.getElementById("qzSubmitBtn");
+  //   submitBtn.textContent = "Submit Answers";
+  //   submitBtn.disabled = false;
+  //   submitBtn.onclick = ()=>{
+  //     let score = 0;
+  //     c.quiz.questions.forEach((q, qi)=>{
+  //       const checked = body.querySelector(`input[name="q${qi}"]:checked`);
+  //       const qEl = body.querySelector(`.quiz-question[data-qindex="${qi}"]`);
+  //       const opts = qEl.querySelectorAll(".quiz-option");
+  //       opts.forEach((opt, oi)=>{
+  //         if (oi === q.correct) opt.classList.add("correct");
+  //         else if (checked && parseInt(checked.value) === oi) opt.classList.add("incorrect");
+  //       });
+  //       if (checked && parseInt(checked.value) === q.correct) score++;
+  //     });
+  //     const result = Store.saveQuizResult(c.id, score, c.quiz.questions.length);
+  //     body.insertAdjacentHTML("afterbegin", `
+  //       <div class="quiz-result-banner">
+  //         <div class="score">${score}/${c.quiz.questions.length}</div>
+  //         <div class="verdict">${result.passed ? 'Passed — nice work!' : 'Not quite — review the lectures and retake when ready.'}</div>
+  //       </div>`);
+  //     submitBtn.textContent = "Close & Continue";
+  //     submitBtn.disabled = true;
+  //     submitBtn.onclick = ()=>{ closeModal("quizModal"); };
+  //     const closeAndRefresh = ()=>{ closeModal("quizModal"); renderCourseDetail(c.id, false); renderCourses(); };
+  //     document.getElementById("qzSubmitBtn").onclick = closeAndRefresh;
+  //     showToast(result.passed ? "Quiz passed!" : "Quiz submitted");
+  //     if (Store.courseStats(c).isComplete) showToast("Certificate earned for " + c.title);
+  //   };
+  // }
+  function openQuiz(courseId) {
+  ensureQuizModal();
+
+  const c = courseById(courseId, courses);
+
+  if (!c || !c.quiz || !c.quiz.questions) {
+    showToast("Quiz not available.");
+    return;
+  }
+
+  const stats = Store.courseStats(c);
+
+  if (!stats.lecturesDone) {
+    showToast("Please complete all lectures first.");
+    return;
+  }
+
+  document.getElementById("qzTitle").textContent =
+    c.title + " — Final Assessment";
+
+  const body = document.getElementById("qzBody");
+
+  body.innerHTML = c.quiz.questions.map((q, qi) => `
+    <div class="quiz-question" data-qindex="${qi}">
+      <div class="q-num">
+        QUESTION ${qi + 1} / ${c.quiz.questions.length}
+      </div>
+
+      <div class="q-text">
+        ${q.text}
+      </div>
+
+      <div class="quiz-options">
+        ${q.options.map((opt, oi) => `
+          <label class="quiz-option">
+            <input
+              type="radio"
+              name="q${qi}"
+              value="${oi}"
+            >
+            <span>${opt}</span>
+          </label>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+
+  // Option selection
+  body.querySelectorAll(".quiz-option").forEach(label => {
+    label.addEventListener("click", () => {
+      const question = label.closest(".quiz-question");
+
+      question
+        .querySelectorAll(".quiz-option")
+        .forEach(option => {
+          option.classList.remove("selected");
+        });
+
+      label.classList.add("selected");
+    });
+  });
+
+  const submitBtn = document.getElementById("qzSubmitBtn");
+
+  submitBtn.textContent = "Submit Answers";
+  submitBtn.disabled = false;
+
+  submitBtn.onclick = () => {
+
+    let score = 0;
+
+    c.quiz.questions.forEach((q, qi) => {
+
+      const checked = body.querySelector(
+        `input[name="q${qi}"]:checked`
+      );
+
+      const questionEl = body.querySelector(
+        `.quiz-question[data-qindex="${qi}"]`
+      );
+
+      const options = questionEl.querySelectorAll(".quiz-option");
+
+      options.forEach((option, oi) => {
+
+        if (oi === q.correct) {
+          option.classList.add("correct");
+        }
+
+        if (
+          checked &&
+          parseInt(checked.value) === oi &&
+          oi !== q.correct
+        ) {
+          option.classList.add("incorrect");
+        }
+
       });
+
+      if (
+        checked &&
+        parseInt(checked.value) === q.correct
+      ) {
+        score++;
+      }
+
     });
 
-    const submitBtn = document.getElementById("qzSubmitBtn");
-    submitBtn.textContent = "Submit Answers";
+    const result = Store.saveQuizResult(
+      c.id,
+      score,
+      c.quiz.questions.length
+    );
+
+    body.insertAdjacentHTML(
+      "afterbegin",
+      `
+      <div class="quiz-result-banner">
+        <div class="score">
+          ${score}/${c.quiz.questions.length}
+        </div>
+
+        <div class="verdict">
+          ${
+            result.passed
+              ? "Passed — nice work!"
+              : "Not quite — review the lectures and retake when ready."
+          }
+        </div>
+      </div>
+      `
+    );
+
+    submitBtn.textContent = "Close & Continue";
     submitBtn.disabled = false;
-    submitBtn.onclick = ()=>{
-      let score = 0;
-      c.quiz.questions.forEach((q, qi)=>{
-        const checked = body.querySelector(`input[name="q${qi}"]:checked`);
-        const qEl = body.querySelector(`.quiz-question[data-qindex="${qi}"]`);
-        const opts = qEl.querySelectorAll(".quiz-option");
-        opts.forEach((opt, oi)=>{
-          if (oi === q.correct) opt.classList.add("correct");
-          else if (checked && parseInt(checked.value) === oi) opt.classList.add("incorrect");
-        });
-        if (checked && parseInt(checked.value) === q.correct) score++;
-      });
-      const result = Store.saveQuizResult(c.id, score, c.quiz.questions.length);
-      body.insertAdjacentHTML("afterbegin", `
-        <div class="quiz-result-banner">
-          <div class="score">${score}/${c.quiz.questions.length}</div>
-          <div class="verdict">${result.passed ? 'Passed — nice work!' : 'Not quite — review the lectures and retake when ready.'}</div>
-        </div>`);
-      submitBtn.textContent = "Close & Continue";
-      submitBtn.disabled = true;
-      submitBtn.onclick = ()=>{ closeModal("quizModal"); };
-      const closeAndRefresh = ()=>{ closeModal("quizModal"); renderCourseDetail(c.id, false); renderCourses(); };
-      document.getElementById("qzSubmitBtn").onclick = closeAndRefresh;
-      showToast(result.passed ? "Quiz passed!" : "Quiz submitted");
-      if (Store.courseStats(c).isComplete) showToast("Certificate earned for " + c.title);
+
+    submitBtn.onclick = () => {
+      closeModal("quizModal");
+
+      renderCourseDetail(c.id, false);
+      renderCourses();
+
+      if (result.passed) {
+        showToast("Quiz passed!");
+      } else {
+        showToast("Quiz submitted. You can retake it.");
+      }
     };
-  }
+
+    if (result.passed) {
+      showToast("Quiz passed!");
+    } else {
+      showToast("Quiz submitted");
+    }
+  };
+
+  // ⭐ THIS WAS MISSING
+  openModal("quizModal");
+}
 
   /* ============================================================
      CERTIFICATE MODAL
