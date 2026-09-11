@@ -60,13 +60,63 @@ const BASE_COURSES = [
       q("A complementary color scheme uses colors that are...", ["Adjacent on the wheel","Opposite on the wheel","All greyscale","Random"], 1),
     ]),
   },
+  {
+    id: "web-101", title: "Web Development Basics", category: "web-dev", level: "Beginner",
+    duration: "3 weeks", instructor: "Muskan Sharma", instructorTitle: "Web Development Head",
+    description: "Learn the core fundamentals of HTML and CSS to build standard static web pages.",
+    prerequisites: [], rating: 4.8, enrolledBase: 245, createdDate: "2026-01-10",
+    lectures: [ lec("w1-1","Introduction to HTML","20 min"), lec("w1-2","Styling with CSS","25 min"), lec("w1-3","Building your first page","30 min") ],
+    notes: [ note("wn1","HTML/CSS Cheatsheet") ],
+    assignments: [ asg("wa1","Build a landing page","Create a simple HTML/CSS landing page for a fictional NGO.") ],
+    quiz: quizOf([
+      q("What does HTML stand for?", ["HyperText Markup Language","HighText Machine Language","HyperText and links Markup Language","None of these"], 0),
+      q("Which property is used to change the background color?", ["color","bgcolor","background-color","background"], 2),
+    ]),
+  },
+  {
+    id: "web-201", title: "Interactive JavaScript", category: "web-dev", level: "Intermediate",
+    duration: "5 weeks", instructor: "Muskan Sharma", instructorTitle: "Web Development Head",
+    description: "Add interactivity to your web pages using JavaScript, DOM manipulation, and event listeners.",
+    prerequisites: ["web-101"], rating: 4.6, enrolledBase: 190, createdDate: "2026-03-05",
+    lectures: [ lec("w2-1","JS Fundamentals","22 min"), lec("w2-2","DOM Manipulation","28 min"), lec("w2-3","Event Handling","20 min") ],
+    notes: [ note("wn2","JavaScript Quick Reference") ],
+    assignments: [ asg("wa2","Interactive To-Do List","Build a to-do list that lets you add, complete, and delete items using JS.") ],
+    quiz: quizOf([
+      q("Which keyword is used to declare a variable that cannot be reassigned?", ["var","let","const","static"], 2),
+      q("What does DOM stand for?", ["Document Object Model","Data Object Model","Document Oriented Model","Digital Object Model"], 0),
+    ]),
+  },
+  {
+    id: "hr-101", title: "HR Basics for NGOs", category: "hr", level: "Beginner",
+    duration: "2 weeks", instructor: "Roshan Kapar", instructorTitle: "HR Head",
+    description: "Understand the fundamentals of managing human resources, volunteers, and internships within a non-profit.",
+    prerequisites: [], rating: 4.9, enrolledBase: 312, createdDate: "2025-11-20",
+    lectures: [ lec("hr1-1","Role of HR in NGOs","15 min"), lec("hr1-2","Volunteer Management","18 min") ],
+    notes: [ note("hrn1","Volunteer Handbook Template") ],
+    assignments: [ asg("hra1","Draft a volunteer policy","Write a 1-page policy outlining volunteer expectations and benefits.") ],
+    quiz: quizOf([
+      q("What is a primary goal of HR in an NGO context?", ["Maximizing profit","Managing and retaining volunteers/staff","Sales outreach","Product development"], 1),
+    ]),
+  },
+  {
+    id: "hr-201", title: "Recruitment & Onboarding", category: "hr", level: "Intermediate",
+    duration: "3 weeks", instructor: "Roshan Kapar", instructorTitle: "HR Head",
+    description: "Learn advanced techniques for sourcing talent, interviewing candidates, and conducting effective onboarding.",
+    prerequisites: ["hr-101"], rating: 4.7, enrolledBase: 150, createdDate: "2026-04-12",
+    lectures: [ lec("hr2-1","Effective Interviewing","25 min"), lec("hr2-2","The Onboarding Process","20 min") ],
+    notes: [ note("hrn2","Interview Questions Bank") ],
+    assignments: [ asg("hra2","Onboarding Plan","Create a 30-day onboarding plan for a new intern.") ],
+    quiz: quizOf([
+      q("Which of the following is an illegal interview question in many jurisdictions?", ["Why do you want to work here?","What is your greatest strength?","What is your marital status?","Where do you see yourself in 5 years?"], 2),
+    ]),
+  },
 ];
 
 /* ---------------- Storage ---------------- */
 // Bump this whenever BASE_COURSES changes shape — it forces every browser's
 // cached catalog (and any learner data pointing at now-removed course ids)
 // to reset to the new seed on next load, instead of sticking with stale data.
-const SEED_VERSION = 3;
+const SEED_VERSION = 4;
 
 const LS = {
   get(key, fallback){
