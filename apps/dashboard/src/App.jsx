@@ -54,8 +54,10 @@ function FacultyGuard({ children }) {
   useEffect(() => {
     if (loading || !userProfile) return;
     const role = userProfile?.role || userProfile?.userRole || userProfile?.accessRole || '';
+    console.log('[FacultyGuard] Checking access for role:', role, 'userProfile:', userProfile);
     const allowed = ['faculty', 'admin', 'super_admin', 'department_head'];
     if (!allowed.includes(role)) {
+      console.warn('[FacultyGuard] Access denied for role:', role, '- Redirecting to /dashboard');
       navigate('/dashboard', { replace: true });
     }
   }, [loading, userProfile, navigate]);
@@ -81,7 +83,9 @@ function DashboardIndex() {
   useEffect(() => {
     if (loading) return;
     const role = userProfile?.role || userProfile?.userRole || userProfile?.accessRole || '';
+    console.log('[DashboardIndex] Evaluated role:', role);
     if (role === 'faculty') {
+      console.log('[DashboardIndex] Redirecting faculty user to /faculty/dashboard');
       navigate('/faculty/dashboard', { replace: true });
     }
   }, [loading, userProfile, navigate]);
