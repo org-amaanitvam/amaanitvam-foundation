@@ -34,7 +34,11 @@ export default function DashboardHome() {
     userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
   useEffect(() => {
-    if (userProfile?.role === 'faculty' || userProfile?.accessRole === 'faculty') {
+    const isFaculty =
+      userProfile?.role === 'faculty' ||
+      userProfile?.userRole === 'faculty' ||
+      userProfile?.accessRole === 'faculty';
+    if (isFaculty) {
       window.location.replace('/faculty/dashboard');
       return;
     }
