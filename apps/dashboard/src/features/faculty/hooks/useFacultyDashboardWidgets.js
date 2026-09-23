@@ -99,7 +99,7 @@ export function useRecentAnnouncements() {
  * Custom hook to export pending candidate applications count with real-time 15s polling
  */
 export function usePendingApplicationsCount() {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

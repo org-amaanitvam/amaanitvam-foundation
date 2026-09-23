@@ -2,6 +2,7 @@ import { getAuth } from "firebase-admin/auth";
 import User from "../users/user.model.js";
 import UserAccess from "./userAccess.model.js";
 import AuthAudit from "./authAudit.model.js";
+import Faculty from "../faculty/faculty.model.js";
 import {
   SUPPORTED_PROVISION_ROLES,
   findMongoUserFromFirebase,
@@ -97,7 +98,25 @@ export const getSession = async (req, res, next) => {
     }
     access.lastLoginAt = new Date(); await access.save();
     await writeAuthAudit({ req, user, access, action: "SESSION_VALIDATED", success: true });
-    return res.json({ success: true, authProvider: "firebase", session: { firebaseUid: req.user.uid, emailVerified: req.user.email_verified === true }, user: publicUser(user, access) });
+
+    let facultyProfile = null;
+    if (user.role === "faculty" || access.role === "faculty" || access.role === "department_head") {
+      facultyProfile = await Faculty.findOne({ user_id: user._id });
+      if (!facultyProfile && user.role === "faculty") {
+        facultyProfile = await Faculty.create({
+          user_id: user._id,
+          employee_id: access.uniqueId || user.memberId || undefined,
+          department: user.department || "Academic",
+        });
+      }
+    }
+
+    const userData = publicUser(user, access);
+    if (facultyProfile) {
+      userData.facultyProfile = facultyProfile;
+    }
+
+    return res.json({ success: true, authProvider: "firebase", session: { firebaseUid: req.user.uid, emailVerified: req.user.email_verified === true }, user: userData });
   } catch (error) { next(error); }
 };
 
@@ -225,6 +244,20 @@ export const provisionUser = async (req, res, next) => {
       mustChangePassword: true,
       temporaryPasswordIssuedAt: new Date(),
     });
+
+    if (userRole === "faculty" || role === "faculty") {
+      try {
+        await Faculty.create({
+          user_id: user._id,
+          employee_id: uniqueId,
+          department: String(department || "").trim() || "Academic",
+          qualification: String(req.body?.designation || "Faculty Member").trim(),
+          is_active: true,
+        });
+      } catch (facErr) {
+        console.warn("Faculty model record creation warning:", facErr.message);
+      }
+    }
     let emailResult = null;
     try { emailResult = await sendCredentialEmail({ to: cleanEmail, name: cleanName, uniqueId, temporaryPassword }); }
     catch (emailError) { emailResult = { sent: false, error: emailError.message }; }

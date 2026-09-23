@@ -126,28 +126,20 @@ const fetchDashboardSession = async (firebaseUser) => {
     if (response.ok && data?.success) {
       return data;
     }
+
+    // Non-OK response from session API — surface the real error
+    console.error(
+      '[AuthContext] Session API returned non-OK:',
+      response.status,
+      data?.message || data?.code || 'Unknown error',
+    );
   } catch (err) {
-    console.warn('[AuthContext] API session endpoint error:', err);
+    console.error('[AuthContext] API session endpoint error:', err?.message || err);
   }
 
-  // Resilient fallback for authenticated Firebase users (e.g. tech.amaanitvam@gmail.com)
-  if (firebaseUser?.email) {
-    const emailLower = firebaseUser.email.toLowerCase();
-    const isTechAdmin = emailLower === 'tech.amaanitvam@gmail.com' || emailLower.includes('admin');
-    return {
-      success: true,
-      user: {
-        _id: firebaseUser.uid,
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: firebaseUser.displayName || (isTechAdmin ? 'Amaanitvam Admin' : firebaseUser.email.split('@')[0]),
-        displayName: firebaseUser.displayName || (isTechAdmin ? 'Amaanitvam Admin' : firebaseUser.email.split('@')[0]),
-        role: isTechAdmin ? 'super_admin' : 'team_member',
-        mustChangePassword: false,
-      },
-    };
-  }
-
+  // Do NOT fall back to a guessed role — return null so the auth state
+  // is treated as unauthenticated. This prevents faculty users from being
+  // silently assigned 'team_member' when the session API is unreachable.
   return null;
 };
 
@@ -387,53 +379,6 @@ export function AuthProvider({ children }) {
 
 
         if (!firebaseUser) {
-          const urlParams = new URLSearchParams(window.location.search);
-          const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
-          const isDemoFaculty =
-            urlParams.get('demo') === 'faculty' ||
-            hashParams.get('demo') === 'faculty' ||
-            localStorage.getItem('demo_faculty') === 'true' ||
-            sessionStorage.getItem('demo_faculty') === 'true' ||
-            (window.location.pathname.startsWith('/faculty') && sessionStorage.getItem('logged_out') !== 'true');
-
-          if (isDemoFaculty) {
-            localStorage.setItem('demo_faculty', 'true');
-            sessionStorage.setItem('demo_faculty', 'true');
-            sessionStorage.removeItem('logged_out');
-
-            // Clean the URL param without losing the path
-            if (urlParams.get('demo') === 'faculty') {
-              urlParams.delete('demo');
-              const newSearch = urlParams.toString();
-              window.history.replaceState(
-                {},
-                '',
-                window.location.pathname + (newSearch ? `?${newSearch}` : '') + window.location.hash,
-              );
-            }
-
-            const demoUser = {
-              uid: 'faculty-demo-001',
-              email: 'faculty@amaanitvam.org',
-              displayName: 'Prof. ABC',
-              getIdToken: async () => 'demo-token',
-            };
-            const demoProfile = {
-              _id: 'faculty-demo-001',
-              name: 'Prof. ABC',
-              displayName: 'Prof. ABC',
-              email: 'faculty@amaanitvam.org',
-              role: 'faculty',
-              department: 'Full Stack Web Development',
-            };
-
-            setUser(demoUser);
-            setSessionUser(demoProfile);
-            setSessionError('');
-            setLoading(false);
-            return;
-          }
-
           clearSessionState();
           setLoading(false);
           return;

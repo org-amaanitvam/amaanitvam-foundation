@@ -11,14 +11,14 @@ export async function fetchAssignedDoubts(status = '') {
     const doubts = res.data?.doubts || res.data?.data || (Array.isArray(res.data) ? res.data : []);
     return {
       success: true,
-      doubts: doubts.length > 0 ? doubts : MOCK_DOUBTS,
+      doubts,
     };
   } catch (error) {
-    console.warn('[doubtsApi] Fetch doubts fallback (demo mode):', error?.message);
+    console.error('[doubtsApi] Fetch doubts error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      doubts: MOCK_DOUBTS,
-      isMock: true,
+      success: false,
+      doubts: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -35,12 +35,11 @@ export async function fetchDoubtById(doubtId) {
       doubt: res.data?.doubt || res.data,
     };
   } catch (error) {
-    console.warn('[doubtsApi] Fetch doubt by ID fallback:', error?.message);
-    const mock = MOCK_DOUBTS.find((d) => (d._id || d.id) === doubtId) || MOCK_DOUBTS[0];
+    console.error('[doubtsApi] Fetch doubt by ID error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      doubt: mock,
-      isMock: true,
+      success: false,
+      doubt: null,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -56,19 +55,13 @@ export async function postDoubtResponse(doubtId, responseData) {
     return {
       success: true,
       response: res.data?.response || res.data,
+      doubt: res.data?.doubt,
     };
   } catch (error) {
-    console.warn('[doubtsApi] Post doubt response fallback (demo mode):', error?.message);
+    console.error('[doubtsApi] Post doubt response error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      response: {
-        _id: 'resp-' + Date.now(),
-        message: responseData.message,
-        authorName: 'Prof. ABC (Faculty)',
-        created_at: new Date().toISOString(),
-        is_faculty_response: true,
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -86,12 +79,10 @@ export async function updateDoubtStatus(doubtId, status) {
       doubt: res.data?.doubt || res.data,
     };
   } catch (error) {
-    console.warn('[doubtsApi] Update doubt status fallback:', error?.message);
+    console.error('[doubtsApi] Update doubt status error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      doubtId,
-      status,
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }

@@ -51,9 +51,18 @@ export default function Login() {
     setIsLoading(true);
     setError('');
 
+    const targetPath = params.get('target');
+
     login(ssoEmail, ssoPwd)
-      .then(() => {
-        navigate('/dashboard', { replace: true });
+      .then((res) => {
+        const userRole = res?.session?.user?.role || res?.session?.user?.userRole;
+        if (targetPath) {
+          navigate(targetPath, { replace: true });
+        } else if (userRole === 'faculty') {
+          navigate('/faculty/dashboard', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
       })
       .catch((err) => {
         console.error('[SSO Auto-Login] Failed:', err);
@@ -121,33 +130,15 @@ export default function Login() {
       return;
     }
 
-    setIsLoading(true);
-
-    const isFacultyDemo =
-      formEmail.toLowerCase().startsWith('faculty') ||
-      formEmail.toLowerCase().startsWith('prof') ||
-      formPassword === 'faculty123';
-
-    if (isFacultyDemo) {
-      localStorage.setItem('demo_faculty', 'true');
-      sessionStorage.removeItem('logged_out');
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate('/faculty/dashboard', { replace: true });
-      }, 400);
-      return;
-    }
-
     try {
-      await login(formEmail, formPassword);
-      navigate('/dashboard');
-    } catch (err) {
-      // Fallback for dev mode
-      if (formEmail.includes('faculty')) {
-        localStorage.setItem('demo_faculty', 'true');
+      const res = await login(formEmail, formPassword);
+      const userRole = res?.session?.user?.role || res?.session?.user?.userRole;
+      if (userRole === 'faculty') {
         navigate('/faculty/dashboard', { replace: true });
-        return;
+      } else {
+        navigate('/dashboard', { replace: true });
       }
+    } catch (err) {
       setError(err.message || 'Failed to sign in.');
     } finally {
       setIsLoading(false);

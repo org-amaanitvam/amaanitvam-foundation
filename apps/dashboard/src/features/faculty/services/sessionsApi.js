@@ -15,11 +15,11 @@ export async function fetchFacultySessions(organizerId, params = {}) {
       meetings: res.data?.meetings || res.data?.data || (Array.isArray(res.data) ? res.data : []),
     };
   } catch (error) {
-    console.warn('[sessionsApi] Fetch meetings endpoint failed, returning fallback mock data:', error?.message);
+    console.error('[sessionsApi] Fetch meetings error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      meetings: MOCK_FACULTY_SESSIONS,
-      isMock: true,
+      success: false,
+      meetings: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -36,18 +36,10 @@ export async function createLiveSession(sessionData) {
       meeting: res.data?.meeting || res.data?.data || res.data,
     };
   } catch (error) {
-    // Demo/offline fallback – simulate success
-    console.warn('[sessionsApi] Create meeting fallback (demo mode):', error?.message);
+    console.error('[sessionsApi] Create meeting error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      meeting: {
-        ...sessionData,
-        _id: 'sess-local-' + Date.now(),
-        id: 'sess-local-' + Date.now(),
-        attendeesCount: 0,
-        maxCapacity: 40,
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }

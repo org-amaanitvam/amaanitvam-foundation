@@ -305,21 +305,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // IF FACULTY PORTAL OR FACULTY DEMO EMAIL / PASSWORD: Launch Faculty Portal Workspace Directly
-      const isFacultyLogin =
-        portal === 'faculty' ||
-        identifier.toLowerCase().includes('faculty') ||
-        identifier.toLowerCase().includes('prof') ||
-        password === 'faculty123';
+      // IF FACULTY PORTAL: Validate credentials & SSO into Faculty Portal Workspace
+      if (portal === 'faculty') {
+        try {
+          showAlert('Verifying Faculty credentials...', 'info');
 
-      if (isFacultyLogin) {
-        showAlert('Faculty credentials verified! Launching Faculty Portal...', 'info');
-        setTimeout(() => {
-          // NOTE: localStorage is NOT shared across origins (dashboard.amaanitvam.org ≠ www.amaanitvam.org)
-          // The ?demo=faculty URL param is the primary signal — keep it in the URL.
-          window.location.href = `${PORTAL_BASE_URLS.dashboard}/faculty/dashboard?demo=faculty`;
-        }, 500);
-        return;
+          await signInWithEmailAndPassword(firebaseAuth, identifier, password);
+          await firebaseAuth.signOut();
+
+          showAlert('Credentials verified! Launching Faculty Portal...', 'info');
+
+          const baseUrl = PORTAL_BASE_URLS.dashboard;
+          const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}&target=/faculty/dashboard`;
+
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 400);
+          return;
+        } catch (fbErr) {
+          console.warn('Firebase Sign-In Error:', fbErr);
+          const msg = fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-email'
+            ? 'Invalid Faculty email or password.'
+            : (fbErr.message || 'Unable to authenticate with Firebase.');
+          showAlert(msg, 'error');
+          setLoading(false);
+          return;
+        }
       }
 
       // Standard API Fallback for other portals
