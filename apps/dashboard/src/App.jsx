@@ -1,8 +1,10 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // Layouts & Guards
 import ProtectedRoute from './components/guards/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
+import { useAuth } from './contexts/AuthContext';
 
 // Features (The New Architecture Paths)
 import Login from './features/auth/Login';
@@ -43,12 +45,52 @@ function DashPage({ children }) {
   );
 }
 
+// Guard: if profile is loaded and role is NOT faculty/admin, redirect to /dashboard.
+// If still loading, show nothing (ProtectedRoute handles the spinner).
+function FacultyGuard({ children }) {
+  const { userProfile, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading || !userProfile) return;
+    const role = userProfile?.role || userProfile?.userRole || userProfile?.accessRole || '';
+    const allowed = ['faculty', 'admin', 'super_admin', 'department_head'];
+    if (!allowed.includes(role)) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [loading, userProfile, navigate]);
+
+  return children;
+}
+
 function FacultyPage({ children }) {
   return (
-    <ProtectedRoute allowedRoles={['faculty', 'admin', 'super_admin']}>
-      <FacultyLayout>{children}</FacultyLayout>
+    <ProtectedRoute>
+      <FacultyGuard>
+        <FacultyLayout>{children}</FacultyLayout>
+      </FacultyGuard>
     </ProtectedRoute>
   );
+}
+
+// Smart root component: faculty users get redirected to their portal.
+function DashboardIndex() {
+  const { userProfile, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    const role = userProfile?.role || userProfile?.userRole || userProfile?.accessRole || '';
+    if (role === 'faculty') {
+      navigate('/faculty/dashboard', { replace: true });
+    }
+  }, [loading, userProfile, navigate]);
+
+  if (loading) return null;
+  const role = userProfile?.role || userProfile?.userRole || userProfile?.accessRole || '';
+  if (role === 'faculty') return null;
+
+  return <DashPage><DashboardHome /></DashPage>;
 }
 
 export default function App() {
@@ -70,9 +112,9 @@ export default function App() {
         })()}
       />
 
-      {/* Core Dashboard Routes */}
-      <Route path="/" element={<DashPage><DashboardHome /></DashPage>} />
-      <Route path="/dashboard" element={<DashPage><DashboardHome /></DashPage>} />
+      {/* Core Dashboard Routes — DashboardIndex handles faculty redirect */}
+      <Route path="/" element={<DashboardIndex />} />
+      <Route path="/dashboard" element={<DashboardIndex />} />
 
       {/* Feature Routes */}
       <Route path="/meetings" element={<DashPage><MeetingsPage /></DashPage>} />
