@@ -10,7 +10,7 @@ import {
   FolderKanban,
   TrendingUp,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast';
@@ -33,17 +33,19 @@ export default function DashboardHome() {
   const isAdmin =
     userProfile?.role === 'admin' || userProfile?.role === 'super_admin';
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const isFaculty =
       userProfile?.role === 'faculty' ||
       userProfile?.userRole === 'faculty' ||
       userProfile?.accessRole === 'faculty';
     if (isFaculty) {
-      window.location.replace('/faculty/dashboard');
+      navigate('/faculty', { replace: true });
       return;
     }
     fetchDashboardData();
-  }, [userProfile]);
+  }, [userProfile, navigate]);
 
   const fetchDashboardData = useCallback(async () => {
     try {
