@@ -26,7 +26,7 @@ const userAccessSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["super_admin", "department_head", "team_member"],
+      enum: ["super_admin", "department_head", "faculty", "team_member"],
       default: "team_member",
       index: true,
     },
