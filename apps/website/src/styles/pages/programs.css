@@ -138,6 +138,97 @@ body[data-page="programs"] .elegant-desc {
 
 /* ---------- Project showcase (sticky image + scrolling content) ---------- */
 
+body[data-page="programs"] .project-slideshow {
+    isolation: isolate;
+}
+
+body[data-page="programs"] .project-slideshow-incoming {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+body[data-page="programs"] .project-slideshow .project-image-caption {
+    z-index: 2;
+}
+
+body[data-page="programs"] .project-slideshow-incoming.slides-in-next {
+    animation: project-slide-from-right 900ms ease both;
+}
+
+body[data-page="programs"] .project-slideshow-incoming.slides-in-previous {
+    animation: project-slide-from-left 900ms ease both;
+}
+
+@keyframes project-slide-from-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes project-slide-from-left {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-page="programs"] .project-slideshow-incoming.slides-in-next,
+    body[data-page="programs"] .project-slideshow-incoming.slides-in-previous {
+        animation-duration: 1ms;
+    }
+}
+
+body[data-page="programs"] .project-slideshow-arrow {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    padding: 0;
+    color: #fff;
+    background: rgba(30, 25, 24, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+    opacity: 0;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+body[data-page="programs"] .project-slideshow-arrow-previous {
+    left: 1rem;
+}
+
+body[data-page="programs"] .project-slideshow-arrow-next {
+    right: 1rem;
+}
+
+body[data-page="programs"] .project-slideshow:hover .project-slideshow-arrow,
+body[data-page="programs"] .project-slideshow:focus-within .project-slideshow-arrow {
+    opacity: 1;
+}
+
+body[data-page="programs"] .project-slideshow .project-slideshow-arrow:hover,
+body[data-page="programs"] .project-slideshow .project-slideshow-arrow:focus-visible {
+    background: rgba(30, 25, 24, 0.58);
+    transform: translateY(-50%) !important;
+}
+
+body[data-page="programs"] .project-slideshow-arrow .material-symbols-outlined {
+    font-size: 1.8rem;
+}
+
+@media (hover: none) {
+    body[data-page="programs"] .project-slideshow-arrow {
+        opacity: 0.85;
+    }
+}
+
 body[data-page="impact"] .project-showcase,
 body[data-page="programs"] .project-showcase {
     display: grid !important;
