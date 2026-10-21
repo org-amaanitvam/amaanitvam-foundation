@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import StudentSidebar from './StudentSidebar';
 import StudentHeader from './StudentHeader';
+import ChatbotWidget from './chatbot/ChatbotWidget';
 import { useAuth } from '../../../contexts/AuthContext';
 
 export default function StudentLayout({ children }) {
@@ -41,6 +42,8 @@ export default function StudentLayout({ children }) {
           {children({ searchQuery, isPunchedIn })}
         </main>
       </div>
+
+      <ChatbotWidget />
     </div>
   );
 }

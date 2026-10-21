@@ -20,6 +20,7 @@ import StudentHelpDesk from './features/student/pages/StudentHelpDesk';
 import StudentApplications from './features/student/pages/StudentApplications';
 import StudentCourseDetail from './features/student/pages/StudentCourseDetail';
 import StudentDoubtWorkspace from './features/student/pages/StudentDoubtWorkspace';
+import StudentAssistant from './features/student/pages/StudentAssistant';
 import StudentSubmissions from './features/student/pages/StudentSubmissions';
 import ResourcesCatalog from './features/catalog/ResourcesCatalog';
 import StudentResources from './features/student/pages/StudentResources';
@@ -78,6 +79,10 @@ export default function App() {
       <Route
         path="/student/doubts/:doubtId"
         element={<ProtectedRoute>{withStudentLayout(<StudentDoubtWorkspace />)}</ProtectedRoute>}
+      />
+      <Route
+        path="/student/assistant"
+        element={<ProtectedRoute>{withStudentLayout(<StudentAssistant />)}</ProtectedRoute>}
       />
       <Route
         path="/student/assignments"

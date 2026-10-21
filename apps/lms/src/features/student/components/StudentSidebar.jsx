@@ -1,6 +1,6 @@
 import logo from "../../../assets/images/logo.jpg";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Calendar, HelpCircle, FileCheck, ClipboardCheck, Megaphone, BarChart3, Bell, Settings, LifeBuoy, LogOut, UserCheck, Library, X, Home } from "lucide-react";
+import { LayoutDashboard, BookOpen, Calendar, HelpCircle, Bot, FileCheck, ClipboardCheck, Megaphone, BarChart3, Bell, Settings, LifeBuoy, LogOut, UserCheck, Library, X, Home } from "lucide-react";
 import Layout from "../../../layouts/Layout";
 
 const studentNavSections = [
@@ -43,6 +43,11 @@ const studentNavSections = [
         name: "Ask Doubts",
         path: "/student/doubts",
         icon: HelpCircle,
+      },
+      {
+        name: "AI Assistant",
+        path: "/student/assistant",
+        icon: Bot,
       },
     ],
   },
