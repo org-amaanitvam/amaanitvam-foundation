@@ -9,8 +9,7 @@ import { API_BASE_URL } from './api-client.js';
     if (!container || !isGalleryPage) return;
 
     // Optimized static project albums dataset (capped at max 30 images per album)
-    const STATIC_ALBUMS = [
-  {
+    const STATIC_ALBUMS = [{
     "id": "project-shiksha",
     "name": "Project Shiksha",
     "description": "Education support, tutoring sessions, and learning material distribution for underprivileged students.",
@@ -511,8 +510,79 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       }
     ]
-  }
-];
+  }, {
+    "id": "daan-utsav",
+    "name": "Daan Utsav",
+    "description": "Celebration of giving and compassion through various donation drives and community initiatives.",
+    "folder": "Projects/ProjectDaanUtsav",
+    "mediaCount": 9,
+    "coverUrl": "/images/Projects/ProjectDaanUtsav/1.jpeg",
+    "images": [
+      {
+        "id": "daan-utsav-1.jpeg",
+        "title": "Daan Utsav - Photo 1",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/1.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/1.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-2.jpeg",
+        "title": "Daan Utsav - Photo 2",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/2.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/2.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-3.jpeg",
+        "title": "Daan Utsav - Photo 3",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/3.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/3.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-4.jpeg",
+        "title": "Daan Utsav - Photo 4",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/4.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/4.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-5.jpeg",
+        "title": "Daan Utsav - Photo 5",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/5.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/5.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-6.jpeg",
+        "title": "Daan Utsav - Photo 6",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/6.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/6.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-7.jpeg",
+        "title": "Daan Utsav - Photo 7",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/7.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/7.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-8.jpeg",
+        "title": "Daan Utsav - Photo 8",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/8.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/8.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-9.jpeg",
+        "title": "Daan Utsav - Photo 9",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/9.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/9.jpeg",
+        "mediaType": "image"
+      }
+    ]
+  }];
 
     let activeApiBase = cleanBase(
         container.dataset.galleryApiBase ||
@@ -927,6 +997,7 @@ import { API_BASE_URL } from './api-client.js';
             if (s.includes('manthan')) return 'project-manthan';
             if (s.includes('udaan')) return 'project-udaan';
             if (s.includes('pravah')) return 'project-pravah';
+            if (s.includes('daan') && s.includes('utsav')) return 'daan-utsav';
             return s;
         }
 
