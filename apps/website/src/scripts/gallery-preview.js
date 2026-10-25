@@ -6,16 +6,19 @@ export async function initGalleryPreview() {
     if (!trackWrap) return;
 
     try {
-        // API fetch disabled: using static images from HTML
-        const staticImagesHtml = trackWrap.innerHTML;
-        
-        // Duplicate the static HTML to keep the infinite scroll CSS animation working
-        trackWrap.innerHTML = `
-            <!-- First set of images -->
-            ${staticImagesHtml}
-            <!-- Duplicated set of images for seamless infinite scroll (-50% transform) -->
-            ${staticImagesHtml}
-        `;
+        if (trackWrap.dataset.duplicated) return;
+        trackWrap.dataset.duplicated = 'true';
+
+        // If the HTML doesn't already have the duplicated set, duplicate it for seamless infinite scroll
+        if (!trackWrap.innerHTML.includes('Duplicated set of images')) {
+            const staticImagesHtml = trackWrap.innerHTML;
+            trackWrap.innerHTML = `
+                <!-- First set of images -->
+                ${staticImagesHtml}
+                <!-- Duplicated set of images for seamless infinite scroll (-50% transform) -->
+                ${staticImagesHtml}
+            `;
+        }
     } catch (error) {
         console.warn("[gallery-preview] Failed to initialize gallery preview.", error);
     }

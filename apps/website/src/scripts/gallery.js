@@ -582,6 +582,134 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       }
     ]
+  }, {
+    "id": "sarai-kale-khan-education-drive",
+    "name": "Sarai Kale Khan Education Drive",
+    "description": "Outdoor literacy drive, mentoring, and handwriting practice with children in Sarai Kale Khan on September 6, 2026.",
+    "folder": "SaraiKaleKhan",
+    "mediaCount": 17,
+    "coverUrl": "/images/SaraiKaleKhan/IMG20260906155522.jpg",
+    "images": [
+      {
+        "id": "skk-1",
+        "title": "Sarai Kale Khan - Volunteer Teaching Session",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155522.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155522.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-2",
+        "title": "Sarai Kale Khan - Children Engaged in Learning",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155546.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155546.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-3",
+        "title": "Sarai Kale Khan - Student Writing Practice",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155623.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155623.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-4",
+        "title": "Sarai Kale Khan - Outdoor Literacy Circle",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155625.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155625.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-5",
+        "title": "Sarai Kale Khan - One-on-One Mentorship",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155638.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155638.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-6",
+        "title": "Sarai Kale Khan - Group Study in the Park",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155640.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155640.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-7",
+        "title": "Sarai Kale Khan - Community Learning Drive",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155710.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155710.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-8",
+        "title": "Sarai Kale Khan - Volunteer Guiding Students",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155717.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155717.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-9",
+        "title": "Sarai Kale Khan - Focused Study Session",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160601.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160601.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-10",
+        "title": "Sarai Kale Khan - Education in the Park",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160610.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160610.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-11",
+        "title": "Sarai Kale Khan - Children with Notebooks",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160613.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160613.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-12",
+        "title": "Sarai Kale Khan - Reading & Handwriting Practice",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160616.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160616.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-13",
+        "title": "Sarai Kale Khan - Interactive Teaching Session",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160620.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160620.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-14",
+        "title": "Sarai Kale Khan - Student Learning with Joy",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161208.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161208.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-15",
+        "title": "Sarai Kale Khan - Writing in Exercise Books",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161215.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161215.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-16",
+        "title": "Sarai Kale Khan - Inspiring Future Leaders",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161218.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161218.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-17",
+        "title": "Sarai Kale Khan - Dedicated Volunteers & Children",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161220.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161220.jpg",
+        "mediaType": "image"
+      }
+    ]
   }];
 
     let activeApiBase = cleanBase(
