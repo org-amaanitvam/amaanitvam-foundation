@@ -2220,6 +2220,12 @@ body:has(.app-shell) .side-nav a {
     transition: .2s ease;
 }
 
+body:has(.app-shell) .side-nav a:hover,
+body:has(.app-shell) .side-nav a.active {
+    background: rgba(255, 255, 255, .13);
+    color: var(--white);
+}
+
 body:has(.app-shell) .side-nav b {
     padding: 4px 7px;
     border-radius: 999px;
