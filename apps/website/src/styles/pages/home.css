@@ -1530,6 +1530,13 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     right: 0;
 }
 
+.prg-nav-btn:hover {
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gold-dark);
+    color: var(--white);
+}
+
 .prg-nav-btn:active {
     transform: translateY(-50%) scale(0.95);
 }
