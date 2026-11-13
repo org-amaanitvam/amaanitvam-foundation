@@ -595,6 +595,80 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       }
     ]
+  },
+
+  {
+    "id": "gallery",
+    "name": "Project Sampoorna",
+    "description": "Photo gallery — moments of impact, community transformation, and volunteer action.",
+    "folder": "Gallery",
+    "mediaCount": 9,
+    "coverUrl": "/images/Gallery/1.jpeg",
+    "images": [
+      {
+        "id": "gallery-1.jpeg",
+        "title": "Project Sampoorna Photo 1",
+        "imageUrl": "/images/Gallery/1.jpeg",
+        "url": "/images/Gallery/1.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-2.jpeg",
+        "title": "Project Sampoorna Photo 2",
+        "imageUrl": "/images/Gallery/2.jpeg",
+        "url": "/images/Gallery/2.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-3.jpeg",
+        "title": "Project Sampoorna Photo 3",
+        "imageUrl": "/images/Gallery/3.jpeg",
+        "url": "/images/Gallery/3.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-4.jpeg",
+        "title": "Project Sampoorna Photo 4",
+        "imageUrl": "/images/Gallery/4.jpeg",
+        "url": "/images/Gallery/4.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-5.jpeg",
+        "title": "Project Sampoorna Photo 5",
+        "imageUrl": "/images/Gallery/5.jpeg",
+        "url": "/images/Gallery/5.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-6.jpeg",
+        "title": "Project Sampoorna Photo 6",
+        "imageUrl": "/images/Gallery/6.jpeg",
+        "url": "/images/Gallery/6.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-7.jpeg",
+        "title": "Project Sampoorna Photo 7",
+        "imageUrl": "/images/Gallery/7.jpeg",
+        "url": "/images/Gallery/7.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-8.jpeg",
+        "title": "Project Sampoorna Photo 8",
+        "imageUrl": "/images/Gallery/8.jpeg",
+        "url": "/images/Gallery/8.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "gallery-9.jpeg",
+        "title": "Project Sampoorna Photo 9",
+        "imageUrl": "/images/Gallery/9.jpeg",
+        "url": "/images/Gallery/9.jpeg",
+        "mediaType": "image"
+      }
+    ]
   }
 ];
 
@@ -794,6 +868,7 @@ import { API_BASE_URL } from './api-client.js';
         if (s.includes('clothes') || s.includes('cloth')) return 'clothes-donation';
         if (s.includes('webinar') || s.includes('competition')) return 'webinars';
         if (s.includes('award')) return 'awards';
+        if (s.includes('gallery')) return 'gallery';
         if (s.includes('shiksha')) return 'project-shiksha';
         if (s.includes('manthan')) return 'project-manthan';
         if (s.includes('udaan')) return 'project-udaan';
