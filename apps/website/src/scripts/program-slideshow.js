@@ -1,10 +1,5 @@
-const slideshow = document.querySelector('[data-slideshow="daan-utsav"]');
-
-if (slideshow) {
-    const image = slideshow.querySelector("img");
-    const previousButton = slideshow.querySelector(".project-slideshow-arrow-previous");
-    const nextButton = slideshow.querySelector(".project-slideshow-arrow-next");
-    const images = [
+const slideshowImages = {
+    "daan-utsav": [
         {
             src: "/images/Projects/ProjectDaanUtsav/1.jpeg",
             alt: "Daan Utsav open donation drive poster for Delhi Metro stations",
@@ -21,7 +16,29 @@ if (slideshow) {
             src: "/images/Projects/ProjectDaanUtsav/4.jpeg",
             alt: "Daan Utsav volunteers and young changemakers at the event",
         },
-    ];
+    ],
+    sampoorna: [
+        {
+            src: "/images/Projects/ProjectSampoorna/1.jpeg",
+            alt: "Project Sampoorna school initiative photo 1",
+        },
+        {
+            src: "/images/Projects/ProjectSampoorna/2.jpeg",
+            alt: "Project Sampoorna school initiative photo 2",
+        },
+    ],
+};
+
+document.querySelectorAll("[data-slideshow]").forEach((slideshow) => {
+    const slideshowId = slideshow.dataset.slideshow;
+    const images = slideshowImages[slideshowId];
+    if (!images) {
+        return;
+    }
+
+    const image = slideshow.querySelector("img");
+    const previousButton = slideshow.querySelector(".project-slideshow-arrow-previous");
+    const nextButton = slideshow.querySelector(".project-slideshow-arrow-next");
     let activeImage = 0;
 
     const showImage = (index, direction = "next") => {
@@ -58,4 +75,4 @@ if (slideshow) {
     }, { threshold: 0.25 });
 
     visibilityObserver.observe(slideshow);
-}
+});
