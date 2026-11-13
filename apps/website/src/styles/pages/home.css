@@ -1430,26 +1430,12 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     z-index: 1;
 }
 
-.prg-carousel {
-    position: relative;
-    max-width: 1140px;
-    margin: 0 auto;
-    padding: 0 var(--sp-8);
-}
-
 .prg-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--sp-3);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
     max-width: 1140px;
     margin: 0 auto;
-    padding-bottom: var(--sp-2);
-}
-
-.prg-grid::-webkit-scrollbar {
-    display: none;
 }
 
 .prg-card {
@@ -1463,17 +1449,15 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     box-shadow: var(--shadow);
     overflow: hidden;
     transition: transform var(--dur-slow) var(--ease), box-shadow var(--dur-slow) var(--ease), border-color var(--dur-slow) var(--ease);
-    flex: 0 0 auto;
-    width: calc((100% - (2 * var(--sp-3))) / 3);
-    scroll-snap-align: start;
+    animation: hp-fadeUp .6s var(--ease) both;
 }
 
 .prg-card:nth-child(2) {
-    animation-delay: 0s;
+    animation-delay: .08s;
 }
 
 .prg-card:nth-child(3) {
-    animation-delay: 0s;
+    animation-delay: .16s;
 }
 
 .prg-card::before {
@@ -1497,76 +1481,6 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 
 .prg-card:hover::before {
     opacity: 1;
-}
-
-/* Navigation buttons */
-.prg-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: none;
-    background: var(--primary);
-    color: var(--white);
-    font-size: 1.75rem;
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-lg);
-    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
-    line-height: 1;
-    will-change: transform;
-}
-
-.prg-nav-btn.prg-nav-prev {
-    left: 0;
-}
-
-.prg-nav-btn.prg-nav-next {
-    right: 0;
-}
-
-.prg-nav-btn:hover {
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--gold-dark);
-    color: var(--white);
-}
-
-.prg-nav-btn:active {
-    transform: translateY(-50%) scale(0.95);
-}
-
-.prg-nav-btn:focus-visible {
-    outline: 3px solid var(--gold-dark);
-    outline-offset: 2px;
-}
-
-@media (max-width: 900px) {
-    .prg-card {
-        width: calc((100% - var(--sp-3)) / 2);
-    }
-    .prg-nav-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1.5rem;
-    }
-    .prg-nav-btn.prg-nav-prev {
-        left: 0;
-    }
-    .prg-nav-btn.prg-nav-next {
-        right: 0;
-    }
-}
-
-@media (max-width: 600px) {
-    .prg-card {
-        width: 100%;
-    }
 }
 
 .prg-card__media {
@@ -1677,11 +1591,6 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     display: flex;
     justify-content: center;
     margin-top: var(--sp-6);
-}
-
-.prg-footer.prg-footer-split {
-    justify-content: space-between;
-    gap: var(--sp-3);
 }
 
 @media (max-width: 900px) {

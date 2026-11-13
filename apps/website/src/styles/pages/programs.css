@@ -263,19 +263,6 @@ body[data-page="programs"] .project-text {
     text-align: left !important;
 }
 
-body[data-page="programs"] .focus-areas-list {
-    margin: 1rem 0 1.5rem 1.5rem !important;
-    padding: 0 !important;
-    list-style: disc !important;
-    color: var(--muted) !important;
-    font-size: 1.02rem !important;
-    line-height: 1.85 !important;
-}
-
-body[data-page="programs"] .focus-areas-list li {
-    margin-bottom: 0.85rem !important;
-}
-
 body[data-page="impact"] .project-divider,
 body[data-page="programs"] .project-divider {
     width: 100% !important;
