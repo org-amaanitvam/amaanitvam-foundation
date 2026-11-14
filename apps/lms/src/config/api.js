@@ -148,7 +148,14 @@ export async function fetchDoubtById(doubtId, token) {
   const { data } = await api.get(`/doubts/${doubtId}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
-  return unwrapDocument(data, ['doubt']);
+  const detail = unwrapData(data);
+  if (!detail?.doubt) return detail;
+
+  return {
+    ...detail.doubt,
+    responses: detail.responses || [],
+    rating: detail.rating || null,
+  };
 }
 
 export async function createDoubt(payload, token) {
@@ -240,6 +247,21 @@ export async function markAllNotificationsRead(token) {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
   return data;
+}
+
+// Resources ─────────────────────────────────────────────────────────
+export async function fetchPublishedResources() {
+  const { data } = await api.get('/digital-library/resources');
+  return data;
+}
+
+export async function fetchResourceById(id){
+  const {data} = await api.get(`/digital-library/resources/${id}`);
+  return data;
+}
+
+export async function incrementViewCountOfResource(id){
+  await api.get(`/digital-library/resources/${id}/view`);
 }
 
 export default api;

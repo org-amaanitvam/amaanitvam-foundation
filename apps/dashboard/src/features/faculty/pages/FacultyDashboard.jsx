@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BookOpen,
   Users,
@@ -23,6 +23,7 @@ import {
   useRecentAnnouncements,
   usePendingApplicationsCount,
 } from '../hooks/useFacultyDashboardWidgets';
+import { fetchFacultyStats } from '../services/facultyApi';
 
 export default function FacultyDashboard() {
   const { userProfile } = useAuth();
@@ -31,6 +32,13 @@ export default function FacultyDashboard() {
   const { isPunchedIn } = useTodayPunchStatus(userProfile?.uid);
   const { announcements, loading: loadingAnnouncements } = useRecentAnnouncements();
   const { count: pendingCount } = usePendingApplicationsCount();
+  const [facultyStats, setFacultyStats] = useState(null);
+
+  useEffect(() => {
+    fetchFacultyStats('me').then((res) => {
+      if (res.success && res.stats) setFacultyStats(res.stats);
+    });
+  }, []);
 
   const handleLaunchMeeting = (meetingUrl) => {
     if (meetingUrl) {
@@ -116,11 +124,13 @@ export default function FacultyDashboard() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-4xl font-black text-gray-900 tracking-tight">128</h3>
+            <h3 className="text-4xl font-black text-gray-900 tracking-tight">
+                {facultyStats != null ? facultyStats.total_doubts ?? '—' : '—'}
+              </h3>
             <p className="text-xs font-extrabold text-indigo-600 mt-1 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-indigo-500" />
-              98.2% Avg Attendance Rate
-            </p>
+                <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                Total doubts assigned
+              </p>
           </div>
         </div>
 
@@ -134,11 +144,13 @@ export default function FacultyDashboard() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-4xl font-black text-[#5d0f2d] tracking-tight">{sessions.length || 3}</h3>
+            <h3 className="text-4xl font-black text-[#5d0f2d] tracking-tight">{sessions.length}</h3>
             <p className="text-xs font-extrabold text-amber-600 mt-1 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              Next session in 2 hours
-            </p>
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                {sessions.length > 0
+                  ? `Next: ${new Date(sessions[0]?.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                  : 'No upcoming sessions'}
+              </p>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import Candidate from "../candidates/candidate.model.js";
+import { ensureResumeUrl } from "../../services/resumeUrl.service.js";
 import { uploadApplicationResume } from "../../services/resumeUpload.service.js";
 
 const clean = (value, max = 4000) =>
@@ -66,6 +67,8 @@ export const submitVolunteerApplication = async (req, res, next) => {
       motivation,
       resumeUrl: resume.url,
       resumePublicId: resume.publicId,
+      resumeStorage: resume.storage,
+      resumeData: resume.storage === "mongodb" ? resume.buffer : undefined,
       resumeOriginalName: req.file.originalname || "",
       resumeMimeType: req.file.mimetype || "",
       metadata: {
@@ -73,6 +76,8 @@ export const submitVolunteerApplication = async (req, res, next) => {
         forwardedFor: clean(req.get("x-forwarded-for"), 300),
       },
     });
+    await ensureResumeUrl(candidate);
+
 
     return res.status(201).json({
       success: true,

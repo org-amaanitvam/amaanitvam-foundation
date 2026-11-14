@@ -15,19 +15,36 @@ const cloudinaryConfigured = () =>
     process.env.CLOUDINARY_API_SECRET,
   );
 
+/**
+ * Uploads a public application resume.
+ *
+ * Cloudinary is used when it is fully configured and reachable. When it is not
+ * (missing env vars on the host, bad credentials, network failure) we DO NOT
+ * fail the application: the file is kept in MongoDB by the caller and served
+ * back through /api/candidates/:id/resume.
+ */
 export const uploadApplicationResume = async (file, applicationType) => {
   if (!file?.buffer?.length) {
     const error = new Error("A resume file is required.");
     error.statusCode = 400;
+    error.isOperational = true;
     throw error;
   }
 
+  const fallback = {
+    url: "",
+    publicId: "",
+    storage: "mongodb",
+    buffer: file.buffer,
+    mimeType: file.mimetype || "application/octet-stream",
+    originalName: file.originalname || "resume",
+  };
+
   if (!cloudinaryConfigured()) {
-    const error = new Error(
-      "Resume storage is not configured. Add the Cloudinary environment variables.",
+    console.warn(
+      "[resumeUpload] Cloudinary env vars are missing — storing resume in MongoDB instead.",
     );
-    error.statusCode = 503;
-    throw error;
+    return fallback;
   }
 
   const extension = path.extname(file.originalname || "").toLowerCase();
@@ -37,27 +54,36 @@ export const uploadApplicationResume = async (file, applicationType) => {
     safeName(file.originalname),
   ].join("-");
 
-  const result = await new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder: "amaanitvam/applications/resumes",
-        public_id: publicId,
-        resource_type: "raw",
-        type: "upload",
-        overwrite: false,
-        filename_override: `${safeName(file.originalname)}${extension}`,
-      },
-      (error, uploaded) => {
-        if (error) return reject(error);
-        resolve(uploaded);
-      },
+  try {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "amaanitvam/applications/resumes",
+          public_id: publicId,
+          resource_type: "raw",
+          type: "upload",
+          overwrite: false,
+          filename_override: `${safeName(file.originalname)}${extension}`,
+        },
+        (error, uploaded) => (error ? reject(error) : resolve(uploaded)),
+      );
+      stream.end(file.buffer);
+    });
+
+    return {
+      url: result.secure_url || result.url || "",
+      publicId: result.public_id || "",
+      storage: "cloudinary",
+      buffer: file.buffer,
+      mimeType: file.mimetype || "application/octet-stream",
+      originalName: file.originalname || "resume",
+    };
+  } catch (error) {
+    // Log the REAL reason (previously masked as a generic 500) and continue.
+    console.error(
+      "[resumeUpload] Cloudinary upload failed, falling back to MongoDB:",
+      error?.message || error,
     );
-
-    stream.end(file.buffer);
-  });
-
-  return {
-    url: result.secure_url || result.url,
-    publicId: result.public_id || "",
-  };
+    return fallback;
+  }
 };

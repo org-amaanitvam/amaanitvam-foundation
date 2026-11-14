@@ -10,14 +10,14 @@ export async function fetchFacultyAssignments(params = {}) {
     const assignments = res.data?.tasks || res.data?.assignments || res.data?.data || (Array.isArray(res.data) ? res.data : []);
     return {
       success: true,
-      assignments: assignments.length > 0 ? assignments : MOCK_ASSIGNMENTS,
+      assignments,
     };
   } catch (error) {
-    console.warn('[assignmentsApi] Fetch assignments fallback (demo mode):', error?.message);
+    console.error('[assignmentsApi] Fetch assignments error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      assignments: MOCK_ASSIGNMENTS,
-      isMock: true,
+      success: false,
+      assignments: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -34,19 +34,10 @@ export async function createAssignment(data) {
       assignment: res.data?.task || res.data?.assignment || res.data,
     };
   } catch (error) {
-    console.warn('[assignmentsApi] Create assignment fallback (demo mode):', error?.message);
+    console.error('[assignmentsApi] Create assignment error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      assignment: {
-        ...data,
-        _id: 'asg-' + Date.now(),
-        id: 'asg-' + Date.now(),
-        submittedCount: 0,
-        pendingReviewCount: 0,
-        status: data.status || 'Published',
-        created_at: new Date().toISOString(),
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -61,14 +52,14 @@ export async function fetchAssignmentSubmissions(assignmentId) {
     const submissions = res.data?.submissions || res.data?.data || (Array.isArray(res.data) ? res.data : []);
     return {
       success: true,
-      submissions: submissions.length > 0 ? submissions : MOCK_SUBMISSIONS,
+      submissions,
     };
   } catch (error) {
-    console.warn('[assignmentsApi] Fetch submissions fallback (demo mode):', error?.message);
+    console.error('[assignmentsApi] Fetch submissions error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      submissions: MOCK_SUBMISSIONS,
-      isMock: true,
+      success: false,
+      submissions: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -87,13 +78,10 @@ export async function gradeStudentSubmission(submissionId, grade, feedback = '')
       submission: res.data?.submission || res.data,
     };
   } catch (error) {
-    console.warn('[assignmentsApi] Grade submission fallback (demo mode):', error?.message);
+    console.error('[assignmentsApi] Grade submission error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      submissionId,
-      grade,
-      feedback,
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }

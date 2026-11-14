@@ -95,12 +95,14 @@ export default function PortalSelector({ user, sessionData, setSessionData }) {
   const buildPortalUrl = (portal, customToken) => {
     try {
       const url = new URL(portal.url);
+      if (portal.path) url.pathname = portal.path;
       if (customToken) url.searchParams.set('authToken', customToken);
       return url.toString();
     } catch {
+      const base = `${portal.url}${portal.path || ''}`;
       return customToken
-        ? `${portal.url}?authToken=${encodeURIComponent(customToken)}`
-        : portal.url;
+        ? `${base}?authToken=${encodeURIComponent(customToken)}`
+        : base;
     }
   };
 

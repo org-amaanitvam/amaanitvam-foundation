@@ -9,13 +9,12 @@ import { API_BASE_URL } from './api-client.js';
     if (!container || !isGalleryPage) return;
 
     // Optimized static project albums dataset (capped at max 30 images per album)
-    const STATIC_ALBUMS = [
-  {
+    const STATIC_ALBUMS = [{
     "id": "project-shiksha",
     "name": "Project Shiksha",
     "description": "Education support, tutoring sessions, and learning material distribution for underprivileged students.",
     "folder": "Projects/ProjectShiksha",
-    "mediaCount": 30,
+    "mediaCount": 26,
     "coverUrl": "/images/Projects/ProjectShiksha/1.jpg",
     "images": [
       {
@@ -82,148 +81,120 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-10.jpg",
-        "title": "Project Shiksha - Photo 10",
-        "imageUrl": "/images/Projects/ProjectShiksha/10.jpg",
-        "url": "/images/Projects/ProjectShiksha/10.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-11.jpg",
-        "title": "Project Shiksha - Photo 11",
+        "title": "Project Shiksha - Photo 10",
         "imageUrl": "/images/Projects/ProjectShiksha/11.jpg",
         "url": "/images/Projects/ProjectShiksha/11.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-12.png",
-        "title": "Project Shiksha - Photo 12",
+        "title": "Project Shiksha - Photo 11",
         "imageUrl": "/images/Projects/ProjectShiksha/12.png",
         "url": "/images/Projects/ProjectShiksha/12.png",
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-13.jpg",
-        "title": "Project Shiksha - Photo 13",
-        "imageUrl": "/images/Projects/ProjectShiksha/13.jpg",
-        "url": "/images/Projects/ProjectShiksha/13.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-14.jpg",
-        "title": "Project Shiksha - Photo 14",
+        "title": "Project Shiksha - Photo 12",
         "imageUrl": "/images/Projects/ProjectShiksha/14.jpg",
         "url": "/images/Projects/ProjectShiksha/14.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-15.jpg",
-        "title": "Project Shiksha - Photo 15",
+        "title": "Project Shiksha - Photo 13",
         "imageUrl": "/images/Projects/ProjectShiksha/15.jpg",
         "url": "/images/Projects/ProjectShiksha/15.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-16.jpg",
-        "title": "Project Shiksha - Photo 16",
+        "title": "Project Shiksha - Photo 14",
         "imageUrl": "/images/Projects/ProjectShiksha/16.jpg",
         "url": "/images/Projects/ProjectShiksha/16.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-17.jpg",
-        "title": "Project Shiksha - Photo 17",
+        "title": "Project Shiksha - Photo 15",
         "imageUrl": "/images/Projects/ProjectShiksha/17.jpg",
         "url": "/images/Projects/ProjectShiksha/17.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-18.png",
-        "title": "Project Shiksha - Photo 18",
+        "title": "Project Shiksha - Photo 16",
         "imageUrl": "/images/Projects/ProjectShiksha/18.png",
         "url": "/images/Projects/ProjectShiksha/18.png",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-19.jpg",
-        "title": "Project Shiksha - Photo 19",
+        "title": "Project Shiksha - Photo 17",
         "imageUrl": "/images/Projects/ProjectShiksha/19.jpg",
         "url": "/images/Projects/ProjectShiksha/19.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-20.jpg",
-        "title": "Project Shiksha - Photo 20",
+        "title": "Project Shiksha - Photo 18",
         "imageUrl": "/images/Projects/ProjectShiksha/20.jpg",
         "url": "/images/Projects/ProjectShiksha/20.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-21.png",
-        "title": "Project Shiksha - Photo 21",
+        "title": "Project Shiksha - Photo 19",
         "imageUrl": "/images/Projects/ProjectShiksha/21.png",
         "url": "/images/Projects/ProjectShiksha/21.png",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-22.jpg",
-        "title": "Project Shiksha - Photo 22",
+        "title": "Project Shiksha - Photo 20",
         "imageUrl": "/images/Projects/ProjectShiksha/22.jpg",
         "url": "/images/Projects/ProjectShiksha/22.jpg",
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-23.png",
-        "title": "Project Shiksha - Photo 23",
-        "imageUrl": "/images/Projects/ProjectShiksha/23.png",
-        "url": "/images/Projects/ProjectShiksha/23.png",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-24.jpg",
-        "title": "Project Shiksha - Photo 24",
+        "title": "Project Shiksha - Photo 21",
         "imageUrl": "/images/Projects/ProjectShiksha/24.jpg",
         "url": "/images/Projects/ProjectShiksha/24.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-25.jpg",
-        "title": "Project Shiksha - Photo 25",
+        "title": "Project Shiksha - Photo 22",
         "imageUrl": "/images/Projects/ProjectShiksha/25.jpg",
         "url": "/images/Projects/ProjectShiksha/25.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-26.png",
-        "title": "Project Shiksha - Photo 26",
+        "title": "Project Shiksha - Photo 23",
         "imageUrl": "/images/Projects/ProjectShiksha/26.png",
         "url": "/images/Projects/ProjectShiksha/26.png",
         "mediaType": "image"
       },
       {
-        "id": "project-shiksha-27.jpg",
-        "title": "Project Shiksha - Photo 27",
-        "imageUrl": "/images/Projects/ProjectShiksha/27.jpg",
-        "url": "/images/Projects/ProjectShiksha/27.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-shiksha-28.jpg",
-        "title": "Project Shiksha - Photo 28",
+        "title": "Project Shiksha - Photo 24",
         "imageUrl": "/images/Projects/ProjectShiksha/28.jpg",
         "url": "/images/Projects/ProjectShiksha/28.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-29.jpg",
-        "title": "Project Shiksha - Photo 29",
+        "title": "Project Shiksha - Photo 25",
         "imageUrl": "/images/Projects/ProjectShiksha/29.jpg",
         "url": "/images/Projects/ProjectShiksha/29.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-shiksha-30.jpg",
-        "title": "Project Shiksha - Photo 30",
+        "title": "Project Shiksha - Photo 26",
         "imageUrl": "/images/Projects/ProjectShiksha/30.jpg",
         "url": "/images/Projects/ProjectShiksha/30.jpg",
         "mediaType": "image"
@@ -235,7 +206,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Project Manthan",
     "description": "Awareness campaigns, mental health workshops, and community counselling drives.",
     "folder": "Projects/ProjectManthan",
-    "mediaCount": 16,
+    "mediaCount": 13,
     "coverUrl": "/images/Projects/ProjectManthan/1.jpg",
     "images": [
       {
@@ -302,50 +273,29 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "project-manthan-10.jpg",
-        "title": "Project Manthan - Photo 10",
-        "imageUrl": "/images/Projects/ProjectManthan/10.jpg",
-        "url": "/images/Projects/ProjectManthan/10.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-manthan-11.jpg",
-        "title": "Project Manthan - Photo 11",
+        "title": "Project Manthan - Photo 10",
         "imageUrl": "/images/Projects/ProjectManthan/11.jpg",
         "url": "/images/Projects/ProjectManthan/11.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-manthan-12.jpg",
-        "title": "Project Manthan - Photo 12",
+        "title": "Project Manthan - Photo 11",
         "imageUrl": "/images/Projects/ProjectManthan/12.jpg",
         "url": "/images/Projects/ProjectManthan/12.jpg",
         "mediaType": "image"
       },
       {
-        "id": "project-manthan-13.jpg",
-        "title": "Project Manthan - Photo 13",
-        "imageUrl": "/images/Projects/ProjectManthan/13.jpg",
-        "url": "/images/Projects/ProjectManthan/13.jpg",
-        "mediaType": "image"
-      },
-      {
-        "id": "project-manthan-14.jpg",
-        "title": "Project Manthan - Photo 14",
-        "imageUrl": "/images/Projects/ProjectManthan/14.jpg",
-        "url": "/images/Projects/ProjectManthan/14.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-manthan-15.jpg",
-        "title": "Project Manthan - Photo 15",
+        "title": "Project Manthan - Photo 12",
         "imageUrl": "/images/Projects/ProjectManthan/15.jpg",
         "url": "/images/Projects/ProjectManthan/15.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-manthan-16.jpg",
-        "title": "Project Manthan - Photo 16",
+        "title": "Project Manthan - Photo 13",
         "imageUrl": "/images/Projects/ProjectManthan/16.jpg",
         "url": "/images/Projects/ProjectManthan/16.jpg",
         "mediaType": "image"
@@ -357,7 +307,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Project Udaan",
     "description": "Community outreach, youth empowerment, and career orientation programs.",
     "folder": "Projects/ProjectUdaan",
-    "mediaCount": 12,
+    "mediaCount": 9,
     "coverUrl": "/images/Projects/ProjectUdaan/1.jpg",
     "images": [
       {
@@ -389,61 +339,40 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "project-udaan-5.jpg",
-        "title": "Project Udaan - Photo 5",
-        "imageUrl": "/images/Projects/ProjectUdaan/5.jpg",
-        "url": "/images/Projects/ProjectUdaan/5.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-udaan-6.jpg",
-        "title": "Project Udaan - Photo 6",
+        "title": "Project Udaan - Photo 5",
         "imageUrl": "/images/Projects/ProjectUdaan/6.jpg",
         "url": "/images/Projects/ProjectUdaan/6.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-udaan-7.jpg",
-        "title": "Project Udaan - Photo 7",
+        "title": "Project Udaan - Photo 6",
         "imageUrl": "/images/Projects/ProjectUdaan/7.jpg",
         "url": "/images/Projects/ProjectUdaan/7.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-udaan-8.jpg",
-        "title": "Project Udaan - Photo 8",
+        "title": "Project Udaan - Photo 7",
         "imageUrl": "/images/Projects/ProjectUdaan/8.jpg",
         "url": "/images/Projects/ProjectUdaan/8.jpg",
         "mediaType": "image"
       },
       {
-        "id": "project-udaan-9.jpg",
-        "title": "Project Udaan - Photo 9",
-        "imageUrl": "/images/Projects/ProjectUdaan/9.jpg",
-        "url": "/images/Projects/ProjectUdaan/9.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "project-udaan-10.jpg",
-        "title": "Project Udaan - Photo 10",
+        "title": "Project Udaan - Photo 8",
         "imageUrl": "/images/Projects/ProjectUdaan/10.jpg",
         "url": "/images/Projects/ProjectUdaan/10.jpg",
         "mediaType": "image"
       },
       {
         "id": "project-udaan-11.jpg",
-        "title": "Project Udaan - Photo 11",
+        "title": "Project Udaan - Photo 9",
         "imageUrl": "/images/Projects/ProjectUdaan/11.jpg",
         "url": "/images/Projects/ProjectUdaan/11.jpg",
         "mediaType": "image"
       },
-      {
-        "id": "project-udaan-12.jpg",
-        "title": "Project Udaan - Photo 12",
-        "imageUrl": "/images/Projects/ProjectUdaan/12.jpg",
-        "url": "/images/Projects/ProjectUdaan/12.jpg",
-        "mediaType": "image"
-      }
     ]
   },
  
@@ -452,7 +381,7 @@ import { API_BASE_URL } from './api-client.js';
     "name": "Clothes Donation Drive",
     "description": "Cloth collection and distribution drives for families in need.",
     "folder": "ClothesDonation",
-    "mediaCount": 11,
+    "mediaCount": 9,
     "coverUrl": "/images/ClothesDonation/1.jpg",
     "images": [
       {
@@ -477,57 +406,43 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       },
       {
-        "id": "clothes-donation-4.jpg",
-        "title": "Clothes Donation Drive - Photo 4",
-        "imageUrl": "/images/ClothesDonation/4.jpg",
-        "url": "/images/ClothesDonation/4.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "clothes-donation-5.jpg",
-        "title": "Clothes Donation Drive - Photo 5",
+        "title": "Clothes Donation Drive - Photo 4",
         "imageUrl": "/images/ClothesDonation/5.jpg",
         "url": "/images/ClothesDonation/5.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-6.jpg",
-        "title": "Clothes Donation Drive - Photo 6",
+        "title": "Clothes Donation Drive - Photo 5",
         "imageUrl": "/images/ClothesDonation/6.jpg",
         "url": "/images/ClothesDonation/6.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-7.jpg",
-        "title": "Clothes Donation Drive - Photo 7",
+        "title": "Clothes Donation Drive - Photo 6",
         "imageUrl": "/images/ClothesDonation/7.jpg",
         "url": "/images/ClothesDonation/7.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-8.jpg",
-        "title": "Clothes Donation Drive - Photo 8",
+        "title": "Clothes Donation Drive - Photo 7",
         "imageUrl": "/images/ClothesDonation/8.jpg",
         "url": "/images/ClothesDonation/8.jpg",
         "mediaType": "image"
       },
       {
-        "id": "clothes-donation-9.jpg",
-        "title": "Clothes Donation Drive - Photo 9",
-        "imageUrl": "/images/ClothesDonation/9.jpg",
-        "url": "/images/ClothesDonation/9.jpg",
-        "mediaType": "image"
-      },
-      {
         "id": "clothes-donation-10.jpg",
-        "title": "Clothes Donation Drive - Photo 10",
+        "title": "Clothes Donation Drive - Photo 8",
         "imageUrl": "/images/ClothesDonation/10.jpg",
         "url": "/images/ClothesDonation/10.jpg",
         "mediaType": "image"
       },
       {
         "id": "clothes-donation-11.jpg",
-        "title": "Clothes Donation Drive - Photo 11",
+        "title": "Clothes Donation Drive - Photo 9",
         "imageUrl": "/images/ClothesDonation/11.jpg",
         "url": "/images/ClothesDonation/11.jpg",
         "mediaType": "image"
@@ -595,8 +510,179 @@ import { API_BASE_URL } from './api-client.js';
         "mediaType": "image"
       }
     ]
-  }
-];
+  }, {
+    "id": "daan-utsav",
+    "name": "Daan Utsav",
+    "description": "Celebration of giving and compassion through various donation drives and community initiatives.",
+    "folder": "Projects/ProjectDaanUtsav",
+    "mediaCount": 9,
+    "coverUrl": "/images/Projects/ProjectDaanUtsav/1.jpeg",
+    "images": [
+      {
+        "id": "daan-utsav-1.jpeg",
+        "title": "Daan Utsav - Photo 1",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/1.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/1.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-2.jpeg",
+        "title": "Daan Utsav - Photo 2",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/2.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/2.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-3.jpeg",
+        "title": "Daan Utsav - Photo 3",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/3.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/3.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-4.jpeg",
+        "title": "Daan Utsav - Photo 4",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/4.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/4.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-5.jpeg",
+        "title": "Daan Utsav - Photo 5",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/5.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/5.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-6.jpeg",
+        "title": "Daan Utsav - Photo 6",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/6.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/6.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-7.jpeg",
+        "title": "Daan Utsav - Photo 7",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/7.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/7.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-8.jpeg",
+        "title": "Daan Utsav - Photo 8",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/8.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/8.jpeg",
+        "mediaType": "image"
+      },
+      {
+        "id": "daan-utsav-9.jpeg",
+        "title": "Daan Utsav - Photo 9",
+        "imageUrl": "/images/Projects/ProjectDaanUtsav/9.jpeg",
+        "url": "/images/Projects/ProjectDaanUtsav/9.jpeg",
+        "mediaType": "image"
+      }
+    ]
+  }, {
+    "id": "sarai-kale-khan-education-drive",
+    "name": "Sarai Kale Khan Education Drive",
+    "description": "Outdoor literacy drive, mentoring, and handwriting practice with children in Sarai Kale Khan on September 6, 2026.",
+    "folder": "SaraiKaleKhan",
+    "mediaCount": 13,
+    "coverUrl": "/images/SaraiKaleKhan/IMG20260906155522.jpg",
+    "images": [
+      {
+        "id": "skk-1",
+        "title": "Sarai Kale Khan - Volunteer Teaching Session",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155522.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155522.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-2",
+        "title": "Sarai Kale Khan - Children Engaged in Learning",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155546.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155546.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-3",
+        "title": "Sarai Kale Khan - One-on-One Mentorship",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155638.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155638.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-4",
+        "title": "Sarai Kale Khan - Community Learning Drive",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155710.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155710.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-5",
+        "title": "Sarai Kale Khan - Volunteer Guiding Students",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906155717.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906155717.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-6",
+        "title": "Sarai Kale Khan - Focused Study Session",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160601.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160601.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-7",
+        "title": "Sarai Kale Khan - Education in the Park",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160610.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160610.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-8",
+        "title": "Sarai Kale Khan - Reading & Handwriting Practice",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160616.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160616.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-9",
+        "title": "Sarai Kale Khan - Interactive Teaching Session",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906160620.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906160620.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-10",
+        "title": "Sarai Kale Khan - Student Learning with Joy",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161208.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161208.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-11",
+        "title": "Sarai Kale Khan - Writing in Exercise Books",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161215.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161215.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-12",
+        "title": "Sarai Kale Khan - Inspiring Future Leaders",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161218.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161218.jpg",
+        "mediaType": "image"
+      },
+      {
+        "id": "skk-13",
+        "title": "Sarai Kale Khan - Dedicated Volunteers & Children",
+        "imageUrl": "/images/SaraiKaleKhan/IMG20260906161220.jpg",
+        "url": "/images/SaraiKaleKhan/IMG20260906161220.jpg",
+        "mediaType": "image"
+      }
+    ]
+  }];
 
     let activeApiBase = cleanBase(
         container.dataset.galleryApiBase ||
@@ -1011,6 +1097,7 @@ import { API_BASE_URL } from './api-client.js';
             if (s.includes('manthan')) return 'project-manthan';
             if (s.includes('udaan')) return 'project-udaan';
             if (s.includes('pravah')) return 'project-pravah';
+            if (s.includes('daan') && s.includes('utsav')) return 'daan-utsav';
             return s;
         }
 

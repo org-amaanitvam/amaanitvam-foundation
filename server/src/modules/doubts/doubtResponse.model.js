@@ -21,6 +21,10 @@ const doubtResponseSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  is_ai_generated: {
+    type: Boolean,
+    default: false,
+  },
   is_solution: {
     type: Boolean,
     default: false,

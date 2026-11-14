@@ -13,12 +13,13 @@ const PROD_URLS = {
   admin: 'https://admin.amaanitvam.org',
   dashboard: 'https://dashboard.amaanitvam.org',
   website: 'https://www.amaanitvam.org',
-  lms: 'https://lms.amaanitvam.org',
   login: 'https://login.amaanitvam.org',
   lms: 'https://learn.amaanitvam.org',
 };
 
 const urls = import.meta.env.DEV ? DEV_URLS : PROD_URLS;
+
+const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL || urls.dashboard;
 
 export const PORTAL_CONFIG = {
   admin: {
@@ -30,7 +31,7 @@ export const PORTAL_CONFIG = {
   },
   dashboard: {
     name: 'Dashboard',
-    url: import.meta.env.VITE_DASHBOARD_URL || urls.dashboard,
+    url: DASHBOARD_URL,
     description: 'Team workspace, tasks & meetings',
     icon: '📊',
     roles: [
@@ -44,12 +45,21 @@ export const PORTAL_CONFIG = {
       'volunteer',
     ],
   },
+  // The faculty workspace lives inside the dashboard app under /faculty.
+  faculty: {
+    name: 'Faculty Portal',
+    url: import.meta.env.VITE_FACULTY_PORTAL_URL || DASHBOARD_URL,
+    path: '/faculty/dashboard',
+    description: 'Sessions, submissions & mentee reviews',
+    icon: '🎓',
+    roles: ['faculty', 'mentor', 'trainer'],
+  },
   lms: {
     name: 'Learning Portal',
     url: import.meta.env.VITE_LMS_URL || urls.lms,
     description: 'Courses, resources & assignments',
     icon: '📚',
-    roles: ['faculty', 'student', 'content_manager'],
+    roles: ['student', 'learner', 'content_manager'],
   },
 };
 

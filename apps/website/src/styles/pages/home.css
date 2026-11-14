@@ -1631,7 +1631,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     display: flex;
     gap: var(--sp-2);
     width: max-content;
-    animation: gal-scroll 38s linear infinite;
+    animation: gal-scroll 70s linear infinite;
 }
 
 .gal-track:hover {
@@ -1653,10 +1653,6 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
 }
 
 @keyframes gal-scroll {
-    from {
-        transform: translateX(0);
-    }
-
     to {
         transform: translateX(-50%);
     }
@@ -1675,7 +1671,7 @@ body[data-page="home"] section[aria-labelledby="why-us-title"] .card p {
     }
 
     .gal-track {
-        animation-duration: 28s;
+        animation-duration: 50s;
     }
 }
 

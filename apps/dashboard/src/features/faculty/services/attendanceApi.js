@@ -19,16 +19,10 @@ export async function punchInFaculty(userId) {
         alreadyPunchedIn: true,
       };
     }
-    console.warn('[attendanceApi] Punch in fallback trigger:', error?.message);
+    console.error('[attendanceApi] Punch in error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      record: {
-        _id: 'punch-' + Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        punchIn: new Date().toISOString(),
-        status: 'active',
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -52,16 +46,10 @@ export async function punchOutFaculty(userId) {
         alreadyPunchedOut: true,
       };
     }
-    console.warn('[attendanceApi] Punch out fallback trigger:', error?.message);
+    console.error('[attendanceApi] Punch out error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      record: {
-        _id: 'punch-out-' + Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        punchOut: new Date().toISOString(),
-        totalHours: '8.00',
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -78,11 +66,11 @@ export async function fetchFacultyPunchHistory(userId) {
       history: res.data?.history || res.data?.records || [],
     };
   } catch (error) {
-    console.warn('[attendanceApi] Fetch punch history fallback:', error?.message);
+    console.error('[attendanceApi] Fetch punch history error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      history: MOCK_FACULTY_PUNCH_LOGS,
-      isMock: true,
+      success: false,
+      history: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -105,11 +93,10 @@ export async function submitStudentAttendance(courseId, date, records) {
       data: res.data,
     };
   } catch (error) {
-    console.warn('[attendanceApi] Submit student attendance fallback:', error?.message);
+    console.error('[attendanceApi] Submit student attendance error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      message: 'Student attendance saved successfully (Simulated mode).',
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -126,11 +113,11 @@ export async function fetchStudentRoster(courseId) {
       students: res.data?.students || res.data?.data || [],
     };
   } catch (error) {
-    console.warn('[attendanceApi] Fetch roster fallback:', error?.message);
+    console.error('[attendanceApi] Fetch roster error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      students: MOCK_STUDENT_ROSTER,
-      isMock: true,
+      success: false,
+      students: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }

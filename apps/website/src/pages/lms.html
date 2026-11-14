@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta
+        content="Amaanitvam Foundation Learning Portal — structured courses in Web Development, App Development, UI/UX, HR, CSR, Leadership and more, with video lectures, notes, quizzes, progress tracking and certificates."
+        name="description" />
+    <title>Courses — Learning Portal | Amaanitvam Foundation</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="/images/Logo/logo.jpg" rel="icon" type="image/jpeg" />
+    <link href="../styles/styles.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="../styles/pages/lms.css" rel="stylesheet" />
+</head>
+
+<body data-page="lms-courses">
+
+    <!-- ============ NAVBAR ============ -->
+    <div id="navbar-placeholder"></div>
+
+    <main id="main-content">
+
+        <!-- ============ HERO ============ -->
+        <section aria-labelledby="lms-hero-title" class="page-hero">
+            <div class="hero-grid-lines"></div>
+            <div class="container">
+                <span class="section-label">Learning Portal</span>
+                <h1 class="section-title" id="lms-hero-title">Courses</h1>
+                <p class="section-desc">
+                    Structured, self-paced learning for interns, volunteers and members — video lectures, notes,
+                    assignments and quizzes, tracked from enrollment to certificate.
+                </p>
+                <div class="hero-cta-row">
+                    <button class="btn btn-hero-pill hero-btn" id="heroBrowseBtn">
+                        <i class="fa-solid fa-layer-group"></i> Browse Catalog
+                    </button>
+                    <button class="btn btn-hero-pill hero-btn" id="heroMyLearningBtn">
+                        <i class="fa-solid fa-graduation-cap"></i> My Learning
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="icon"><i class="fa-solid fa-book-open"></i></div>
+                <div class="num" id="statCourses">14</div>
+                <div class="label">Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fa-solid fa-circle-play"></i></div>
+                <div class="num" id="statLectures">0</div>
+                <div class="label">Video Lectures</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fa-solid fa-user-graduate"></i></div>
+                <div class="num" id="statEnrolled">0</div>
+                <div class="label">Your Enrollments</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fa-solid fa-award"></i></div>
+                <div class="num" id="statCerts">0</div>
+                <div class="label">Certificates Earned</div>
+            </div>
+        </div>
+
+        <!-- ============ LEARNING PATH RAIL ============ -->
+        <section aria-labelledby="lms-rail-title" class="section rail-section" id="railSection">
+            <div class="container">
+                <header class="section-header">
+                    <span class="section-label is-tech">Domain Map</span>
+                    <h2 class="section-title" id="lms-rail-title">Your Learning Path</h2>
+                    <p class="section-desc">Every domain is a station on the line. Tap one to jump straight to its
+                        courses — the signal shows where the catalog is active.</p>
+                </header>
+                <div class="rail-track" id="railTrack">
+                    <div class="rail-line"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ CATEGORY TOGGLE + CATALOG ============ -->
+        <section aria-labelledby="lms-catalog-title" class="section section-alt" id="catalogSection">
+            <div class="container">
+                <header class="section-header">
+                    <span class="section-label">Course Catalog</span>
+                    <h2 class="section-title" id="lms-catalog-title">Explore Courses</h2>
+                    <p class="section-desc">Technical and non-technical tracks across every domain the Foundation
+                        runs — filter, search, enroll, and pick up right where you left off.</p>
+                </header>
+
+                <div style="display:flex;justify-content:center;margin-bottom:2rem;">
+                    <div class="type-toggle" id="typeToggle">
+                        <button type="button" class="active" data-type="all">All Tracks</button>
+                        <button type="button" data-type="technical">Technical</button>
+                        <button type="button" data-type="non-technical">Non-Technical</button>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="browse">Browse Courses <span class="tab-count"
+                            id="countBrowse">0</span></button>
+                    <button class="tab-btn" data-tab="mylearning">My Learning <span class="tab-count"
+                            id="countMyLearning">0</span></button>
+                    <button class="tab-btn" data-tab="certificates">Certificates <span class="tab-count"
+                            id="countCerts">0</span></button>
+                </div>
+
+                <!-- ---- Browse tab ---- -->
+                <div class="tab-panel active" id="tabBrowse">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass" style="color:var(--ink-400);"></i>
+                            <input type="text" id="searchInput" placeholder="Search courses, instructors, skills...">
+                        </div>
+
+                        <div class="filter-dropdown" id="categoryFilterDropdown" data-value="all">
+                            <button type="button" class="filter-dropdown-btn" id="categoryFilterBtn">
+                                <span id="categoryFilterLabel">All Domains</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu" id="categoryFilterMenu"></div>
+                        </div>
+
+                        <div class="filter-dropdown" id="levelFilterDropdown" data-value="all">
+                            <button type="button" class="filter-dropdown-btn" id="levelFilterBtn">
+                                <span id="levelFilterLabel">Any Level</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu" id="levelFilterMenu">
+                                <button type="button" class="filter-dropdown-item selected" data-value="all"><i
+                                        class="fa-solid fa-check"></i><span>Any Level</span></button>
+                                <button type="button" class="filter-dropdown-item" data-value="Beginner"><i
+                                        class="fa-solid fa-check"></i><span>Beginner</span></button>
+                                <button type="button" class="filter-dropdown-item" data-value="Intermediate"><i
+                                        class="fa-solid fa-check"></i><span>Intermediate</span></button>
+                                <button type="button" class="filter-dropdown-item" data-value="Advanced"><i
+                                        class="fa-solid fa-check"></i><span>Advanced</span></button>
+                            </div>
+                        </div>
+
+                        <div class="filter-dropdown" id="sortDropdown" data-value="popular">
+                            <button type="button" class="filter-dropdown-btn" id="sortBtn">
+                                <span id="sortLabel">Most Popular</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu" id="sortMenu">
+                                <button type="button" class="filter-dropdown-item selected" data-value="popular"><i
+                                        class="fa-solid fa-check"></i><span>Most Popular</span></button>
+                                <button type="button" class="filter-dropdown-item" data-value="newest"><i
+                                        class="fa-solid fa-check"></i><span>Newest</span></button>
+                                <button type="button" class="filter-dropdown-item" data-value="duration"><i
+                                        class="fa-solid fa-check"></i><span>Shortest Duration</span></button>
+                                <button type="button" class="filter-dropdown-item" data-value="az"><i
+                                        class="fa-solid fa-check"></i><span>A–Z</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chip-row" id="activeCategoryChip"></div>
+
+                    <div class="course-grid" id="courseGrid"></div>
+                    <p class="empty-state" id="noResults" style="display:none;">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                        No courses match your search. Try a different keyword, domain or level.
+                    </p>
+                </div>
+
+                <!-- ---- My Learning tab ---- -->
+                <div class="tab-panel" id="tabMyLearning">
+                    <div class="course-grid" id="myLearningGrid"></div>
+                    <p class="empty-state" id="myLearningEmpty" style="display:none;">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        You haven't enrolled in anything yet. Browse the catalog and hit Enroll to start tracking
+                        progress here.
+                    </p>
+                </div>
+
+                <!-- ---- Certificates tab ---- -->
+                <div class="tab-panel" id="tabCertificates">
+                    <div class="cert-list-grid" id="certGrid"></div>
+                    <p class="empty-state" id="certEmpty" style="display:none;">
+                        <i class="fa-solid fa-award"></i>
+                        No certificates yet — complete every lecture and pass the final quiz of a course to earn one.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============ ADMIN FAB ============ -->
+    <button class="admin-fab" id="adminFab" title="Admin Panel" aria-label="Open admin panel">
+        <i class="fa-solid fa-user-shield"></i>
+    </button>
+
+    <!-- ============ FOOTER ============ -->
+    <div id="footer"></div>
+    <a class="floating-donate" href="contact.html#donate">
+        ❤ <span>Donate Now</span>
+    </a>
+
+    <script src="../scripts/app.js" type="module"></script>
+    <script src="../scripts/lms.js"></script>
+</body>
+
+</html>

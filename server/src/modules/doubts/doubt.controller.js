@@ -5,6 +5,7 @@ import Faculty from '../faculty/faculty.model.js';
 import { sendSuccess, sendList } from '../../shared/response/index.js';
 import { NotFoundError, BadRequestError } from '../../shared/errors/AppError.js';
 import { notifyUser } from '../notifications/notification.service.js';
+import { triggerAiDoubtResolution } from './aiDoubt.service.js';
 
 export const list = async (req, res, next) => {
   try {
@@ -77,6 +78,7 @@ export const create = async (req, res, next) => {
       ...req.body,
       student_id: req.user.id,
     });
+    void triggerAiDoubtResolution(doubt, req.user);
     sendSuccess(res, 201, { doubt }, 'Doubt created');
   } catch (error) {
     next(error);

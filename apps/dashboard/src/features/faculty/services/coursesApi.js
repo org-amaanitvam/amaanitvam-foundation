@@ -7,23 +7,16 @@ export async function fetchAssignedCourses() {
   try {
     const res = await api.get('/courses');
     const courses = res.data?.courses || res.data?.data || (Array.isArray(res.data) ? res.data : []);
-    if (courses && courses.length > 0) {
-      return {
-        success: true,
-        courses,
-      };
-    }
     return {
       success: true,
-      courses: MOCK_COURSES,
-      isMock: true,
+      courses,
     };
   } catch (error) {
-    console.warn('[coursesApi] Fetch courses fallback (demo mode):', error?.message);
+    console.error('[coursesApi] Fetch courses error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      courses: MOCK_COURSES,
-      isMock: true,
+      success: false,
+      courses: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -40,12 +33,11 @@ export async function fetchCourseById(courseId) {
       course: res.data?.course || res.data,
     };
   } catch (error) {
-    console.warn('[coursesApi] Fetch course by ID fallback:', error?.message);
-    const mock = MOCK_COURSES.find((c) => String(c.id) === String(courseId) || c._id === courseId) || MOCK_COURSES[0];
+    console.error('[coursesApi] Fetch course by ID error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      course: mock,
-      isMock: true,
+      success: false,
+      course: null,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -63,11 +55,11 @@ export async function fetchCourseModules(courseId) {
       modules,
     };
   } catch (error) {
-    console.warn('[coursesApi] Fetch modules fallback (demo mode):', error?.message);
+    console.error('[coursesApi] Fetch modules error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      modules: MOCK_MODULES,
-      isMock: true,
+      success: false,
+      modules: [],
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -85,18 +77,10 @@ export async function createCourseModule(courseId, data) {
       module: res.data?.module || res.data,
     };
   } catch (error) {
-    console.warn('[coursesApi] Create module fallback (demo mode):', error?.message);
+    console.error('[coursesApi] Create module error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      module: {
-        _id: 'mod-' + Date.now(),
-        id: Date.now(),
-        title: data.title || 'New Module',
-        items: [],
-        lessonsCount: 0,
-        duration: '0h',
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -115,14 +99,10 @@ export async function createModuleLesson(courseId, moduleId, data) {
       lesson: res.data?.lesson || res.data,
     };
   } catch (error) {
-    console.warn('[coursesApi] Create lesson fallback (demo mode):', error?.message);
+    console.error('[coursesApi] Create lesson error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      lesson: {
-        _id: 'les-' + Date.now(),
-        title: data.title || 'New Lesson',
-      },
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }

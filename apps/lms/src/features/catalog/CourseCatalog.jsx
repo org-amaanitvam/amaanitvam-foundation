@@ -1,18 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Search,
-  BookOpen,
-  SquarePlay,
-  Clock,
-  Languages,
-  Tags,
-  CloudOff,
-  RefreshCw,
-  School,
-  ArrowRight,
-  BookMarked,
-} from 'lucide-react';
+import { Search, BookOpen, SquarePlay, Clock, Languages, Tags, CloudOff, RefreshCw, School, ArrowRight, BookMarked } from 'lucide-react';
 import { fetchPublishedCourses } from '../../config/api';
 
 const CATEGORY_LABELS = {

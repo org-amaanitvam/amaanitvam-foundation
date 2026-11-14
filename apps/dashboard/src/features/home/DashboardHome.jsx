@@ -35,7 +35,7 @@ export default function DashboardHome() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [userProfile?.role]);
 
   const fetchDashboardData = useCallback(async () => {
     try {

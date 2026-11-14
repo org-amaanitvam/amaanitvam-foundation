@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import StudentSidebar from './StudentSidebar';
 import StudentHeader from './StudentHeader';
+import ChatbotWidget from './chatbot/ChatbotWidget';
 import { useAuth } from '../../../contexts/AuthContext';
 
 export default function StudentLayout({ children }) {
@@ -14,7 +15,7 @@ export default function StudentLayout({ children }) {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50/50 overflow-hidden font-[family-name:var(--font-body)] text-[#3d2b2b]">
+    <div className="flex h-screen bg-gray-50/50 overflow-hidden font-(family-name:--font-body) text-[#3d2b2b]">
       <div
         className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity lg:hidden ${
           sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -41,6 +42,8 @@ export default function StudentLayout({ children }) {
           {children({ searchQuery, isPunchedIn })}
         </main>
       </div>
+
+      <ChatbotWidget />
     </div>
   );
 }

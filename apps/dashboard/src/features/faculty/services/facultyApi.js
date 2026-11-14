@@ -9,14 +9,14 @@ export async function fetchFacultyProfile(facultyId) {
     const res = await api.get(`/faculty/${facultyId || 'me'}`);
     return {
       success: true,
-      profile: res.data?.profile || res.data,
+      profile: res.data?.faculty || res.data?.profile || res.data,
     };
   } catch (error) {
-    console.warn('[facultyApi] Fetch profile fallback (demo mode):', error?.message);
+    console.error('[facultyApi] Fetch profile error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      profile: MOCK_FACULTY_PROFILE,
-      isMock: true,
+      success: false,
+      profile: null,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -33,11 +33,11 @@ export async function fetchFacultyStats(facultyId) {
       stats: res.data?.stats || res.data,
     };
   } catch (error) {
-    console.warn('[facultyApi] Fetch stats fallback (demo mode):', error?.message);
+    console.error('[facultyApi] Fetch stats error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      stats: MOCK_FACULTY_STATS,
-      isMock: true,
+      success: false,
+      stats: null,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }
@@ -52,14 +52,13 @@ export async function updateFacultyProfile(facultyId, data) {
     const res = await api.put(`/faculty/${facultyId || 'me'}`, data);
     return {
       success: true,
-      profile: res.data?.profile || res.data,
+      profile: res.data?.faculty || res.data?.profile || res.data,
     };
   } catch (error) {
-    console.warn('[facultyApi] Update profile fallback (demo mode):', error?.message);
+    console.error('[facultyApi] Update profile error:', error?.response?.data?.message || error?.message);
     return {
-      success: true,
-      profile: data,
-      isMock: true,
+      success: false,
+      error: error?.response?.data?.message || error?.message,
     };
   }
 }

@@ -183,6 +183,31 @@ body[data-page="contact"] .contact-info-link {
     transition: color 0.2s var(--contact-ease);
 }
 
+@media (max-width: 768px) {
+    body[data-page="contact"] .contact-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    body[data-page="contact"] .contact-right {
+        grid-template-rows: none;
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    body[data-page="contact"] .contact-form-card {
+        padding: 20px !important;
+    }
+
+    body[data-page="contact"] .contact-info-card {
+        padding: 20px !important;
+    }
+
+    body[data-page="contact"] .contact-info-title {
+        font-size: 1.25rem;
+    }
+}
+
 /* --------------------------------------------------------------------------
     FAQ layout on contact page
     -------------------------------------------------------------------------- */

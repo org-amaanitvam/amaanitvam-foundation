@@ -15,8 +15,10 @@ router.get('/', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/ai-notifications?page=${page}&limit=${limit}&unread_only=${unread_only}&firebase_uid=${firebase_uid}`,
-      'GET'
+      `/api/ai-notifications?page=${page}&limit=${limit}&unread_only=${unread_only}`,
+      'GET',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {
@@ -36,8 +38,10 @@ router.patch('/:id/read', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/ai-notifications/${req.params.id}/read?firebase_uid=${firebase_uid}`,
-      'PATCH'
+      `/api/ai-notifications/${req.params.id}/read`,
+      'PATCH',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {
@@ -57,8 +61,10 @@ router.patch('/read-all', authenticate, async (req, res, next) => {
     }
 
     const data = await proxyToAI(
-      `/api/ai-notifications/read-all?firebase_uid=${firebase_uid}`,
-      'PATCH'
+      `/api/ai-notifications/read-all`,
+      'PATCH',
+      {},
+      firebase_uid
     );
     res.json(data);
   } catch (err) {

@@ -375,6 +375,7 @@ const getRoleBadge = (role) => {
       super_admin: 'bg-indigo-50 text-indigo-700',
       admin: 'bg-indigo-50 text-indigo-700',
       department_head: 'bg-violet-50 text-violet-700',
+      faculty: 'bg-rose-50 text-rose-700 border border-rose-200',
       member: 'bg-blue-50 text-blue-700',
       team_member: 'bg-blue-50 text-blue-700',
       intern: 'bg-slate-100 text-slate-600',
@@ -384,6 +385,7 @@ const getRoleBadge = (role) => {
       super_admin: 'Super Admin',
       admin: 'Super Admin',
       department_head: 'Department Head',
+      faculty: 'Faculty Member',
       member: 'Team Member',
       team_member: 'Team Member',
       intern: 'Intern',
@@ -586,9 +588,10 @@ const getRoleBadge = (role) => {
                   onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56051a]/20 focus:border-[#56051a]/30"
                 >
-                  <option value="super_admin">Super Admin</option>
-                  <option value="department_head">Department Head</option>
                   <option value="member">Team Member</option>
+                  <option value="faculty">Faculty Member</option>
+                  <option value="department_head">Department Head</option>
+                  <option value="super_admin">Super Admin</option>
                   <option value="intern">Intern</option>
                   <option value="volunteer">Volunteer</option>
                 </select>
@@ -755,6 +758,7 @@ const getRoleBadge = (role) => {
           >
             <option value="super_admin">Super Admin</option>
             <option value="department_head">Department Head</option>
+            <option value="faculty">Faculty Member</option>
             <option value="member">Team Member</option>
             <option value="intern">Intern</option>
             <option value="volunteer">Volunteer</option>

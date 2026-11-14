@@ -1,6 +1,6 @@
 // Single source of truth for the common-login portal URL.
 const DEV_LOGIN_URL = 'http://localhost:5176';
-const PROD_LOGIN_URL = 'https://amaanitvam-common-login.onrender.com';
+const PROD_LOGIN_URL = 'https://login.amaanitvam.org';
 
 export const COMMON_LOGIN_URL = (
   import.meta.env.VITE_COMMON_LOGIN_URL ||

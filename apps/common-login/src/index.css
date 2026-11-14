@@ -11,7 +11,8 @@
   --color-brand-muted: #8a7468;
   --color-brand-border: #e3d6c8;
   --font-heading: 'Playfair Display', serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-ui: 'Playfair Display', serif;
+  --font-body: 'Playfair Display', serif;
 }
 
 * {

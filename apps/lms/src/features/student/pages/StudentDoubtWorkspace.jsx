@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Star, Loader2, MessageSquare, CheckCircle2, User } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { useAuth } from '../../../contexts/AuthContext';
 import { fetchDoubtById, rateDoubt } from '../../../config/api';
 
@@ -43,7 +48,10 @@ export default function StudentDoubtWorkspace() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    let pollTimer;
+    let pollAttempts = 0;
+
+    const loadDoubt = async (showLoading = false) => {
       try {
         const token = await user?.getIdToken();
         const data = await fetchDoubtById(doubtId, token);
@@ -54,17 +62,26 @@ export default function StudentDoubtWorkspace() {
         }
         setDoubt(data);
         setRating(data.rating?.rating || 0);
+
+        const hasAiResponse = data.responses?.some((response) => response.is_ai_generated);
+        if (!hasAiResponse && !cancelled && pollAttempts < 8) {
+          pollAttempts += 1;
+          pollTimer = window.setTimeout(() => loadDoubt(false), 2500);
+        }
       } catch (err) {
         if (!cancelled) {
           console.error('[student] Doubt load error:', err?.message || err);
           setError(true);
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && showLoading) setLoading(false);
       }
-    })();
+    };
+
+    loadDoubt(true);
     return () => {
       cancelled = true;
+      window.clearTimeout(pollTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doubtId]);
@@ -171,16 +188,18 @@ export default function StudentDoubtWorkspace() {
             ) : (
               responses.map((response) => (
                 <div
-                  key={response._id}
+                  key={response.id || response._id}
                   className={`rounded-2xl border px-5 py-4 ${
                     response.is_faculty_response
                       ? 'border-[#d8a15f]/30 bg-[#d8a15f]/5'
+                      : response.is_ai_generated
+                        ? 'border-[#8a164b]/20 bg-[#8a164b]/5'
                       : 'border-gray-100 bg-white'
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-bold text-[#8a164b]">
-                      {response.is_faculty_response ? 'Faculty' : 'You'}
+                      {response.is_faculty_response ? 'Faculty' : response.is_ai_generated ? 'AI Assistant' : 'You'}
                     </p>
                     {response.is_solution && (
                       <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-700">
@@ -188,7 +207,18 @@ export default function StudentDoubtWorkspace() {
                       </span>
                     )}
                   </div>
-                  <p className="mt-1.5 text-sm text-gray-700 leading-relaxed">{response.message}</p>
+                  {response.is_ai_generated ? (
+                    <div className="mt-1.5 text-sm text-gray-700 leading-relaxed">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                      >
+                        {response.message}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="mt-1.5 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">{response.message}</p>
+                  )}
                   {response.created_at && (
                     <p className="mt-2 text-[11px] text-gray-400">{formatDate(response.created_at)}</p>
                   )}

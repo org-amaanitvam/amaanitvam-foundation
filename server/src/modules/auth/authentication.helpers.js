@@ -15,7 +15,7 @@ const ROLE_MAPPINGS = new Map([
   ["department_head", { userRole: "department_head", accessRole: "department_head" }],
   ["departmenthead", { userRole: "department_head", accessRole: "department_head" }],
   ["head", { userRole: "department_head", accessRole: "department_head" }],
-  ["faculty", { userRole: "faculty", accessRole: "department_head" }],
+  ["faculty", { userRole: "faculty", accessRole: "faculty" }],
   ["team_member", { userRole: "member", accessRole: "team_member" }],
   ["teammember", { userRole: "member", accessRole: "team_member" }],
   ["member", { userRole: "member", accessRole: "team_member" }],
