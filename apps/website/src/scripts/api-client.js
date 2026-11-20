@@ -5,25 +5,36 @@ export const API_BASE_URL =
     ? "http://localhost:5000/api"
     : "https://amaanitvam-foundation.onrender.com/api";
 
+export const API_BASE_URLS = [
+  "http://localhost:5000/api",
+  "https://amaanitvam-foundation.onrender.com/api",
+  "https://amaanitvam-foundation-1gjd.onrender.com/api",
+];
+
 export async function apiRequest(path, options = {}) {
-  let response;
+  let lastError;
 
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, options);
-  } catch (error) {
-    throw new Error(
-      error?.message || "Unable to connect to the Amaanitvam API.",
-    );
+  for (const baseUrl of API_BASE_URLS) {
+    try {
+      const response = await fetch(`${baseUrl}${path}`, options);
+
+      if (response.ok) {
+        const data =
+          response.status === 204
+            ? {}
+            : await response.json().catch(() => ({}));
+        return data;
+      }
+
+      lastError = new Error(
+        response?.data?.message || `Request failed: ${response.status}`,
+      );
+    } catch (error) {
+      lastError = error;
+    }
   }
 
-  const data =
-    response.status === 204
-      ? {}
-      : await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.message || `Request failed: ${response.status}`);
-  }
-
-  return data;
+  throw new Error(
+    lastError?.message || "Unable to connect to the Amaanitvam API.",
+  );
 }
