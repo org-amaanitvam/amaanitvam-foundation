@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './api-client.js';
+import { API_BASE_URL, API_BASE_URLS } from './api-client.js';
 
 function escapeHtml(value) {
     return String(value ?? '')
@@ -117,7 +117,7 @@ if (verifyForm) {
         const list = [];
         if (configured) list.push(configured.replace(/\/$/, ''));
 
-        list.push(API_BASE_URL);
+        list.push(...API_BASE_URLS);
 
         return [...new Set(list.filter(Boolean))];
     }
