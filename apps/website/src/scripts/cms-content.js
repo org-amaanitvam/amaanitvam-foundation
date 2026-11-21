@@ -1,6 +1,5 @@
-import { API_BASE_URL } from './api-client.js';
+import { apiRequest } from './api-client.js';
 
-const CMS_URL = `${API_BASE_URL}/cms`;
 const POLL_INTERVAL_MS = 30000;
 
 let timer = null;
@@ -157,8 +156,8 @@ export async function refreshCmsContent({
   force = false,
 } = {}) {
   try {
-    const response = await fetch(
-      `${CMS_URL}?t=${Date.now()}`,
+    const payload = await apiRequest(
+      `/cms?t=${Date.now()}`,
       {
         method: 'GET',
         headers: {
@@ -169,12 +168,10 @@ export async function refreshCmsContent({
       },
     );
 
-    const payload = await response.json().catch(() => ({}));
-
-    if (!response.ok || payload?.success === false) {
+    if (payload?.success === false) {
       throw new Error(
         payload?.message ||
-        `CMS request failed with status ${response.status}.`,
+        'CMS request failed.',
       );
     }
 
