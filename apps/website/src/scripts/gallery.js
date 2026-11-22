@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './api-client.js';
+import { API_BASE_URLS } from './api-client.js';
 
 /* ===== Amaanitvam Optimized Gallery Album Loader & Lightbox ===== */
 (function () {
@@ -687,7 +687,6 @@ import { API_BASE_URL } from './api-client.js';
     let activeApiBase = cleanBase(
         container.dataset.galleryApiBase ||
         window.GALLERY_API_BASE ||
-        (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api$/, '') : '') ||
         localStorage.getItem('GALLERY_API_BASE') ||
         localStorage.getItem('API_BASE_URL') ||
         localStorage.getItem('backendUrl') ||
@@ -698,7 +697,7 @@ import { API_BASE_URL } from './api-client.js';
     const folderMediaCache = new Map();
 
     function cleanBase(value) {
-        return String(value || '').trim().replace(/\/+$/, '');
+        return String(value || '').trim().replace(/\/+$/, '').replace(/\/api$/, '');
     }
 
     function apiBaseCandidates() {
@@ -707,7 +706,9 @@ import { API_BASE_URL } from './api-client.js';
         if (window.location.hostname.includes('github.dev')) {
             candidates.push(window.location.origin.replace(/-\d+\.github\.dev$/, '-5000.github.dev'));
         }
-        candidates.push('https://amaanitvam-foundation.onrender.com');
+        candidates.push(
+            ...API_BASE_URLS.map((base) => base.replace(/\/api\/?$/, ''))
+        );
         if (!['5500', '5501'].includes(window.location.port) && window.location.protocol !== 'file:') {
             candidates.push(window.location.origin);
         }
@@ -716,7 +717,7 @@ import { API_BASE_URL } from './api-client.js';
 
     function backendBase() {
         const candidates = apiBaseCandidates();
-        return cleanBase(activeApiBase || candidates[0] || 'https://amaanitvam-foundation.onrender.com');
+        return cleanBase(activeApiBase || candidates[0] || API_BASE_URLS[0] || '');
     }
 
     async function fetchGalleryJson(path) {
@@ -724,7 +725,7 @@ import { API_BASE_URL } from './api-client.js';
         for (const base of apiBaseCandidates()) {
             try {
                 const controller = new AbortController();
-                const timeout = window.setTimeout(() => controller.abort(), 5000);
+                const timeout = window.setTimeout(() => controller.abort(), 20000);
                 const response = await fetch(`${base}${path}`, { signal: controller.signal }).finally(() => window.clearTimeout(timeout));
                 const data = await response.json().catch(() => ({}));
 

@@ -1,12 +1,4 @@
-const LOCAL_API_BASE = 'http://localhost:5000/api';
-const PRODUCTION_API_BASE =
-  'https://amaanitvam-foundation.onrender.com/api';
-
-const API_BASE_URL =
-  ['localhost', '127.0.0.1'].includes(window.location.hostname) ||
-    window.location.protocol === 'file:'
-    ? LOCAL_API_BASE
-    : PRODUCTION_API_BASE;
+import { apiFetch } from './api-client.js';
 
 const FORM_CONFIG = {
   volunteerForm: {
@@ -156,21 +148,19 @@ const setStatus = (element, message, type = 'info') => {
   }
 };
 
-const readResponse = async (response) => {
-  const contentType =
-    response.headers.get('content-type') || '';
+const formErrorMessage = (error, fallback) => {
+  const message = String(error?.message || '').trim();
 
-  if (contentType.includes('application/json')) {
-    try {
-      return await response.json();
-    } catch {
-      return {};
-    }
+  if (
+    !message ||
+    /failed to fetch|networkerror|load failed|fetch failed|timed out|timeout/i.test(
+      message,
+    )
+  ) {
+    return fallback;
   }
 
-  return {
-    message: await response.text(),
-  };
+  return professionalMessage(message, fallback);
 };
 
 const validateResume = (form) => {
@@ -277,21 +267,12 @@ const submitPublicForm = async (form, config) => {
       );
     }
 
-    const response = await fetch(
-      `${API_BASE_URL}${config.endpoint}`,
+    options.timeoutMs = config.multipart ? 60000 : 30000;
+
+    const { data: result } = await apiFetch(
+      config.endpoint,
       options,
     );
-
-    const result = await readResponse(response);
-
-    if (!response.ok) {
-      throw new Error(
-        professionalMessage(
-          result?.message,
-          'The form could not be submitted. Please review your information and try again.',
-        ),
-      );
-    }
 
     setStatus(
       statusElement,
@@ -316,8 +297,10 @@ const submitPublicForm = async (form, config) => {
 
     setStatus(
       statusElement,
-      error?.message ||
-      'The form could not be submitted. Please try again.',
+      formErrorMessage(
+        error,
+        'The form could not be submitted. Please try again.',
+      ),
       'error',
     );
   } finally {
@@ -431,25 +414,15 @@ const initContactOtpButton = () => {
     sendBtn.textContent = 'Sending...';
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/contact/request-otp`,
+      const { data: result } = await apiFetch(
+        '/contact/request-otp',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
+          timeoutMs: 30000,
         },
       );
-
-      const result = await readResponse(response);
-
-      if (!response.ok) {
-        throw new Error(
-          professionalMessage(
-            result?.message,
-            'Could not send a verification code. Please try again.',
-          ),
-        );
-      }
 
       otpField.hidden = false;
       const otpInput = document.getElementById('contact-otp');
@@ -471,7 +444,10 @@ const initContactOtpButton = () => {
       sendBtn.textContent = originalLabel;
       setStatus(
         statusElement,
-        error?.message || 'Could not send a verification code. Please try again.',
+        formErrorMessage(
+          error,
+          'Could not send a verification code. Please try again.',
+        ),
         'error',
       );
     }

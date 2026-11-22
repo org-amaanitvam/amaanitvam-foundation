@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Administrator or Director Email',
       placeholder: 'director@amaanitvam.org',
       submitBtn: 'Sign In to Dashboard Portal',
-      footerNote: `Don't have portal credentials? <a href="../pages/contact.html" class="portal-link">Contact System Administrator</a>`,
+      footerNote: `Don't have portal credentials? <a href="/src/pages/contact.html" class="portal-link">Contact System Administrator</a>`,
       redirectUrl: `${PORTAL_BASE_URLS.dashboard}/`
     },
     faculty: {
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Faculty Email or Staff ID',
       placeholder: 'faculty@amaanitvam.org',
       submitBtn: 'Sign In to Faculty Portal',
-      footerNote: `Need faculty access provisioned? <a href="../pages/contact.html" class="portal-link">Contact Administration</a>`,
+      footerNote: `Need faculty access provisioned? <a href="/src/pages/contact.html" class="portal-link">Contact Administration</a>`,
       redirectUrl: `${PORTAL_BASE_URLS.dashboard}/faculty`
     },
     lms: {
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Learner / LMS Account Email',
       placeholder: 'learner@amaanitvam.org',
       submitBtn: 'Launch LMS Workspace',
-      footerNote: `Looking for digital resources? <a href="../pages/programs.html" class="portal-link">View Digital Library</a>`,
+      footerNote: `Looking for digital resources? <a href="/src/pages/programs.html" class="portal-link">View Digital Library</a>`,
       redirectUrl: `${PORTAL_BASE_URLS.lms}/student/dashboard`
     },
     admin: {
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Super Admin Email',
       placeholder: 'admin@amaanitvam.org',
       submitBtn: 'Sign In to Admin Portal',
-      footerNote: `Admin accounts are restricted. Require access? <a href="../pages/contact.html" class="portal-link">Contact Super Admin</a>`,
+      footerNote: `Admin accounts are restricted. Require access? <a href="/src/pages/contact.html" class="portal-link">Contact Super Admin</a>`,
       redirectUrl: `${PORTAL_BASE_URLS.admin}/`
     }
   };
