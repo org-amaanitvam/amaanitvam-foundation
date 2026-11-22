@@ -1,4 +1,4 @@
-import { API_BASE_URL, API_BASE_URLS } from './api-client.js';
+import { API_BASE_URLS, apiRequest } from './api-client.js';
 
 function escapeHtml(value) {
     return String(value ?? '')
@@ -56,11 +56,10 @@ if (verifyForm) {
         result.innerHTML = "Verifying...";
 
         try {
-            const response = await fetch(`${API_BASE_URL}/certificates/verify/${encodeURIComponent(id)}`);
-            const data = await response.json();
+            const data = await apiRequest(`/certificates/verify/${encodeURIComponent(id)}`);
 
-            if (!response.ok || !data.success) {
-                throw new Error(data.message || "Certificate not found");
+            if (!data?.success) {
+                throw new Error(data?.message || "Certificate not found");
             }
 
             const cert = data.certificate;
@@ -103,6 +102,7 @@ if (verifyForm) {
     window.__amaanitvamCampaignFundsFixLoaded = true;
 
     const MIN_AMOUNT = 1;
+    const CONTACT_PAGE = '/src/pages/contact.html';
     let activeCampaigns = [];
     let selectedCampaignId = 'organization';
     let workingApiBase = null;
@@ -148,11 +148,19 @@ if (verifyForm) {
                 });
 
                 const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.message || `Request failed: ${response.status}`);
+                if (!response.ok) {
+                    const error = new Error(data.message || `Request failed: ${response.status}`);
+                    error.status = response.status;
+                    throw error;
+                }
 
                 workingApiBase = base;
                 return data;
             } catch (error) {
+                if (error?.status && error.status >= 400 && error.status < 500 && error.status !== 404) {
+                    throw error;
+                }
+
                 if (error?.name === 'AbortError' || /aborted|timeout|timed out/i.test(error?.message || '')) {
                     lastError = new Error('Request timed out while confirming your payment. Please check the Donations admin panel before trying again.');
                 } else {
@@ -221,7 +229,7 @@ if (verifyForm) {
         <p class="campaign-eyebrow">Active Fundraising Campaigns</p>
         <h2>Support Amaanitvam Foundation</h2>
         <p>No active campaigns are live right now. You can still make a direct organization donation.</p>
-        <a class="campaign-donate-link" href="contact.html#donate">Donate Now</a>
+        <a class="campaign-donate-link" href="${CONTACT_PAGE}#donate">Donate Now</a>
       </div>`;
             return;
         }
@@ -240,7 +248,7 @@ if (verifyForm) {
               <p>${escapeHtml(campaign.description || 'Support this active campaign.')}</p>
               <div class="campaign-progress"><span style="width:${pct}%"></span></div>
               <div class="campaign-meta">${rupees(campaign.raisedAmount)} raised / ${rupees(campaign.goalAmount)} goal</div>
-              <a class="campaign-donate-link" href="contact.html?campaign=${encodeURIComponent(id)}#donate">Donate to this campaign</a>
+              <a class="campaign-donate-link" href="${CONTACT_PAGE}?campaign=${encodeURIComponent(id)}#donate">Donate to this campaign</a>
             </article>`;
         }).join('')}
       </div>
@@ -498,29 +506,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(this);
 
         try {
-            const API_URL = `${API_BASE_URL}/volunteers/apply`;
-
-            const response = await fetch(API_URL, {
+            const result = await apiRequest('/volunteers/apply', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                timeoutMs: 60000
             });
 
-            const result = await response.json().catch(() => ({}));
-
-            if (response.ok) {
-                // Success State
-                alert("Success! Your volunteer application has been submitted successfully. We will review your application and get back to you soon!");
-                if (status) {
-                    status.textContent = result.message || "Application submitted successfully!";
-                    status.style.color = "green";
-                }
-                this.reset();
-                setTimeout(() => {
-                    if (status) status.textContent = "";
-                }, 5000);
-            } else {
-                throw new Error(result.message || "Failed to submit application.");
+            // Success State
+            alert("Success! Your volunteer application has been submitted successfully. We will review your application and get back to you soon!");
+            if (status) {
+                status.textContent = result.message || "Application submitted successfully!";
+                status.style.color = "green";
             }
+            this.reset();
+            setTimeout(() => {
+                if (status) status.textContent = "";
+            }, 5000);
         } catch (err) {
             // Error State
             alert("Error: " + err.message);
@@ -589,11 +590,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error("Please enter the event name.");
             }
 
-            // 3. Dynamic API URL
-            const API_URL = `${API_BASE_URL}/learning-hub/register`;
-
-            // 4. Send the Request
-            const response = await fetch(API_URL, {
+            // 3. Send the Request
+            const result = await apiRequest('/learning-hub/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -601,19 +599,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json().catch(() => ({}));
-
-            if (response.ok) {
-                // 5. Success State
-                alert("Registration successful! We look forward to seeing you.");
-                if (statusDiv) {
-                    statusDiv.textContent = "Successfully registered!";
-                    statusDiv.style.color = "green";
-                }
-                this.reset();
-            } else {
-                throw new Error(result.message || "Failed to register.");
+            // 4. Success State
+            alert("Registration successful! We look forward to seeing you.");
+            if (statusDiv) {
+                statusDiv.textContent = "Successfully registered!";
+                statusDiv.style.color = "green";
             }
+            this.reset();
         } catch (error) {
             // 6. Error State
             console.error(error);
@@ -641,27 +633,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!trackDropdown) return;
 
         try {
-            // Dynamic URL for fetching departments (Port 5500 will ask Port 5000)
-            const DEPT_API_URL = `${API_BASE_URL}/public/departments`;
+            const result = await apiRequest('/public/departments');
 
-            const response = await fetch(DEPT_API_URL);
-            const result = await response.json().catch(() => ({}));
+            // Clear existing hardcoded HTML options and set the default placeholder
+            trackDropdown.innerHTML = '<option value="" disabled selected>Select a domain/track</option>';
 
-            if (response.ok) {
-                // Clear existing hardcoded HTML options and set the default placeholder
-                trackDropdown.innerHTML = '<option value="" disabled selected>Select a domain/track</option>';
+            const departments = result.departments || result.data || result;
 
-                const departments = result.departments || result.data || result;
-
-                if (Array.isArray(departments)) {
-                    departments.forEach(dept => {
-                        const option = document.createElement('option');
-                        const deptName = dept.departmentName || dept;
-                        option.value = deptName;
-                        option.textContent = deptName;
-                        trackDropdown.appendChild(option);
-                    });
-                }
+            if (Array.isArray(departments)) {
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    const deptName = dept.departmentName || dept;
+                    option.value = deptName;
+                    option.textContent = deptName;
+                    trackDropdown.appendChild(option);
+                });
             }
         } catch (error) {
             console.error("Failed to load departments:", error);
@@ -712,40 +698,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(this);
 
         try {
-            const API_URL = `${API_BASE_URL}/internships/apply`;
-
-            const response = await fetch(API_URL, {
+            const result = await apiRequest('/internships/apply', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                timeoutMs: 60000
             });
 
-            const result = await response.json().catch(() => ({}));
-
-            if (response.ok) {
-                // Success State
-                if (btnSpinner) btnSpinner.style.display = 'none';
-                if (btnSuccess) btnSuccess.style.display = 'inline-flex';
-                if (btn) {
-                    btn.classList.remove('is-loading');
-                    btn.classList.add('is-success');
-                }
-                if (status) {
-                    status.textContent = result.message || "Application submitted successfully!";
-                    status.style.color = "#22c55e";
-                }
-
-                alert("Success! Your internship application has been submitted.");
-                this.reset();
-
-                setTimeout(() => {
-                    if (btnSuccess) btnSuccess.style.display = 'none';
-                    if (btnText) btnText.style.display = 'inline';
-                    if (btn) btn.classList.remove('is-success');
-                }, 3000);
-
-            } else {
-                throw new Error(result.message || "Submission failed.");
+            // Success State
+            if (btnSpinner) btnSpinner.style.display = 'none';
+            if (btnSuccess) btnSuccess.style.display = 'inline-flex';
+            if (btn) {
+                btn.classList.remove('is-loading');
+                btn.classList.add('is-success');
             }
+            if (status) {
+                status.textContent = result.message || "Application submitted successfully!";
+                status.style.color = "#22c55e";
+            }
+
+            alert("Success! Your internship application has been submitted.");
+            this.reset();
+
+            setTimeout(() => {
+                if (btnSuccess) btnSuccess.style.display = 'none';
+                if (btnText) btnText.style.display = 'inline';
+                if (btn) btn.classList.remove('is-success');
+            }, 3000);
+
         } catch (err) {
             // Error State
             if (btnSpinner) btnSpinner.style.display = 'none';
@@ -790,11 +769,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            // 3. Dynamic API URL (Matches your server.js setup)
-            const API_URL = `${API_BASE_URL}/contact`;
-
-            // 4. Send the Request
-            const response = await fetch(API_URL, {
+            // 3. Send the Request
+            const result = await apiRequest('/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -802,19 +778,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json().catch(() => ({}));
-
-            if (response.ok) {
-                // 5. Success State
-                alert("Message sent successfully! We will get back to you soon.");
-                if (statusDiv) {
-                    statusDiv.textContent = "Message sent successfully!";
-                    statusDiv.style.color = "green";
-                }
-                this.reset();
-            } else {
-                throw new Error(result.message || "Failed to send message.");
+            // 4. Success State
+            alert("Message sent successfully! We will get back to you soon.");
+            if (statusDiv) {
+                statusDiv.textContent = "Message sent successfully!";
+                statusDiv.style.color = "green";
             }
+            this.reset();
         } catch (error) {
             // 6. Error State
             console.error(error);
