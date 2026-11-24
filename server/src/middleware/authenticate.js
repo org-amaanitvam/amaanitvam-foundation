@@ -1,3 +1,4 @@
+import { getAuth } from "firebase-admin/auth";
 import admin, { firebaseReady } from "../config/firebase.js";
 import { UnauthorizedError } from "../shared/errors/AppError.js";
 import User from "../modules/users/user.model.js";
@@ -7,14 +8,12 @@ export const authenticate = async (req, _res, next) => {
     if (!firebaseReady) {
       throw new UnauthorizedError("Firebase Admin is not configured");
     }
-    // Log incoming authorization headers for debugging (temporary)
-    // Some proxies/platforms may move or strip Authorization; check common fallbacks.
+
     const incomingAuth =
       req.headers.authorization ||
       (req.get && req.get("authorization")) ||
       req.headers["x-forwarded-authorization"] ||
       (req.get && req.get("x-forwarded-authorization"));
-    console.log("[authenticate] incoming authorization header present:", !!incomingAuth);
 
     const authHeader = incomingAuth;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -24,8 +23,11 @@ export const authenticate = async (req, _res, next) => {
     const token = authHeader.split(" ")[1];
     let decodedToken;
     try {
-      decodedToken = await admin.auth().verifyIdToken(token);
+      const authClient =
+        typeof admin?.auth === "function" ? admin.auth() : getAuth();
+      decodedToken = await authClient.verifyIdToken(token);
     } catch (err) {
+      console.error("[authenticate] verifyIdToken failed:", err.code, err.message);
       throw new UnauthorizedError("Invalid or expired token", "AUTH_TOKEN_INVALID");
     }
 

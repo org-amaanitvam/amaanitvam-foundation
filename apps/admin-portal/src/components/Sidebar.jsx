@@ -4,6 +4,7 @@ import {
   UserCog,
   Heart,
   Award,
+  CreditCard,
   Globe,
   LogOut,
   Image,
@@ -134,6 +135,11 @@ export default function Sidebar() {
             <NavLink to="/certificates" className={navLinkClass}>
               <Award className="w-[18px] h-[18px]" />
               <span>Certificates</span>
+            </NavLink>
+
+            <NavLink to="/id-cards" className={navLinkClass}>
+              <CreditCard className="w-[18px] h-[18px]" />
+              <span>ID Cards</span>
             </NavLink>
 
             <NavLink to="/cms" className={navLinkClass}>

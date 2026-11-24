@@ -35,6 +35,7 @@ import reportRoutes from "./modules/reports/report.routes.js";
 import notificationRoutes from "./modules/notifications/notification.routes.js";
 import attendanceRoutes from './modules/attendance/attendance.routes.js'; // Check your exact path!
 import libraryRoutes from "./modules/library-resources/library.routes.js";
+import idCardRoutes from "./modules/id-cards/idCard.routes.js";
 
 const app = express();
 
@@ -136,6 +137,7 @@ app.use("/api", publicFormRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/digital-library", libraryRoutes);
+app.use("/api/admin/id-cards", idCardRoutes);
 
 
 // Unhandled routes & errors
