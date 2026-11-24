@@ -1,17 +1,30 @@
 import rateLimit from "express-rate-limit";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+// Every dashboard user reaches the API through the gateway, so all traffic
+// shares ONE source IP. Key on the authenticated user when we have one,
+// and never throttle local development.
+const keyByUser = (req) =>
+  req.user?.uid ||
+  req.headers.authorization?.slice(-32) ||
+  req.ip;
+
 export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  message: "Too many requests from this IP, please try again after 15 minutes",
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 15 * 60 * 1000,
+  max: Number(process.env.API_RATE_LIMIT_MAX || (isProduction ? 1200 : 100000)),
+  keyGenerator: keyByUser,
+  skip: () => !isProduction && process.env.ENABLE_DEV_RATE_LIMIT !== "true",
+  message: "Too many requests, please try again in a few minutes.",
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 export const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 20, // Limit each IP to 20 login/signup requests per hour
-  message: "Too many authentication attempts, please try again after an hour",
+  windowMs: 60 * 60 * 1000,
+  max: Number(process.env.AUTH_RATE_LIMIT_MAX || (isProduction ? 60 : 1000)),
+  keyGenerator: keyByUser,
+  message: "Too many authentication attempts, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
 });

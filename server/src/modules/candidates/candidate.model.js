@@ -38,7 +38,9 @@ const candidateSchema = new mongoose.Schema(
       required: true,
       maxlength: 4000,
     },
-    resumeUrl: { type: String, required: true, trim: true },
+    resumeUrl: { type: String, trim: true, default: "" },
+    resumeStorage: { type: String, trim: true, default: "cloudinary" },
+    resumeData: { type: Buffer, select: false },
     resumePublicId: { type: String, trim: true, default: "" },
     resumeOriginalName: {
       type: String,

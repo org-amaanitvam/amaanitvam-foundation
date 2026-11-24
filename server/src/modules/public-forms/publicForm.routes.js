@@ -8,11 +8,13 @@ import {
   listContacts,
   listEventRegistrations,
   registerForEvent,
+  requestContactOtp,
   submitContact,
 } from "./publicForm.controller.js";
 
 const router = express.Router();
 
+router.post("/contact/request-otp", requestContactOtp);
 router.post("/contact", submitContact);
 router.post("/contacts", submitContact);
 router.post("/learning-hub/register", registerForEvent);

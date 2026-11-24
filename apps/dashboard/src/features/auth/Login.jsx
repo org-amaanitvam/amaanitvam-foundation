@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from "../../services/api";
@@ -19,9 +19,59 @@ export default function Login() {
   const [show2FA, setShow2FA] = useState(false);
   const [code2fa, setCode2fa] = useState('');
   const [tempCredentials, setTempCredentials] = useState(null);
+  const [ssoInProgress, setSsoInProgress] = useState(false);
 
   const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const ssoAttempted = useRef(false);
+
+  // ── SSO Auto-Login ────────────────────────────────────────────────
+  // When redirected from the Learning Portal dashboard login, credentials
+  // are passed in the URL hash (#sso_email=...&sso_pwd=...).
+  // This effect reads them, cleans the URL immediately, and auto-signs
+  // in using Firebase client SDK on THIS origin.
+  // ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (ssoAttempted.current) return;
+
+    const hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash);
+    const ssoEmail = params.get('sso_email');
+    const ssoPwd = params.get('sso_pwd');
+
+    // Clean the hash immediately — credentials must never linger in browser history
+    window.history.replaceState(null, '', window.location.pathname);
+
+    if (!ssoEmail || !ssoPwd) return;
+
+    ssoAttempted.current = true;
+    setSsoInProgress(true);
+    setIsLoading(true);
+    setError('');
+
+    const targetPath = params.get('target');
+
+    login(ssoEmail, ssoPwd)
+      .then((res) => {
+        const userRole = res?.session?.user?.role || res?.session?.user?.userRole;
+        if (targetPath) {
+          navigate(targetPath, { replace: true });
+        } else if (userRole === 'faculty') {
+          navigate('/faculty/dashboard', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
+      })
+      .catch((err) => {
+        console.error('[SSO Auto-Login] Failed:', err);
+        setEmail(ssoEmail);
+        setError(err?.message || 'SSO auto-login failed. Please try again manually.');
+        setSsoInProgress(false);
+        setIsLoading(false);
+      });
+  }, [login, navigate]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -40,7 +90,21 @@ export default function Login() {
 
     fetchSettings();
   }, []);
-const handleLogin = async (e) => {
+
+  if (ssoInProgress) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#5d0f2d] px-3 sm:px-4 py-6 sm:py-8 relative overflow-hidden font-[family-name:var(--font-body)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(216,161,95,0.22),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(93,15,45,0.35),transparent_45%)]" />
+        <div className="relative z-10 text-center">
+          <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg font-semibold">Signing you into the Dashboard Portal...</p>
+          <p className="text-white/60 text-sm mt-2">Credentials verified. Please wait.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -66,11 +130,14 @@ const handleLogin = async (e) => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      await login(formEmail, formPassword);
-      navigate('/dashboard');
+      const res = await login(formEmail, formPassword);
+      const userRole = res?.session?.user?.role || res?.session?.user?.userRole;
+      if (userRole === 'faculty') {
+        navigate('/faculty/dashboard', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (err) {
       setError(err.message || 'Failed to sign in.');
     } finally {

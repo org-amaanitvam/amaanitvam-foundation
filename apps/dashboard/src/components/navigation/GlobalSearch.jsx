@@ -130,7 +130,7 @@ export default function GlobalSearch() {
   };
 
   return (
-    <div className="relative w-full max-w-md" ref={dropdownRef}>
+    <div className="relative w-full max-w-md mb-6" ref={dropdownRef}>
       <div className="relative flex items-center">
         <Search className="absolute left-3 w-4 h-4 text-slate-400" />
         <input

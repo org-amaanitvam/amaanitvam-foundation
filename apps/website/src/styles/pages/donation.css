@@ -1213,68 +1213,7 @@ body.dashboard-page .donation-meter span {
     text-align: center !important;
 }
 
-/* Flat rows with divider lines — no card box, no shadow */
-.trust-faq-item {
-    text-align: left !important;
-    background: transparent !important;
-    border: 0 !important;
-    border-bottom: 1px solid var(--border, #dcc8b6) !important;
-    border-radius: 0 !important;
-    padding: 20px 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    transition: none !important;
-}
-
-.trust-faq-item:last-child {
-    border-bottom: none !important;
-}
-
-.trust-faq-item:hover {
-    transform: none !important;
-    border-color: var(--border, #dcc8b6) !important;
-    box-shadow: none !important;
-}
-
-.trust-faq-item summary {
-    cursor: pointer !important;
-    font-weight: 700 !important;
-    font-size: 1.02rem !important;
-    color: var(--primary) !important;
-    list-style: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 16px !important;
-    padding: 0 !important;
-}
-
-.trust-faq-item summary::-webkit-details-marker {
-    display: none;
-}
-
-.trust-faq-item summary::after {
-    content: "";
-    flex: 0 0 auto;
-    width: 12px;
-    height: 12px;
-    border-right: 2px solid var(--primary);
-    border-bottom: 2px solid var(--primary);
-    transform: rotate(45deg);
-    transition: transform .2s ease;
-    margin-top: -4px;
-}
-
-.trust-faq-item[open] summary::after {
-    transform: rotate(-135deg);
-    margin-top: 4px;
-}
-
-.trust-faq-item p {
-    margin: 14px 0 0 !important;
-    color: var(--muted, #7a7a7a) !important;
-    line-height: 1.65 !important;
-}
+/* Flat rows with divider lines — no card box, no shadow (Now styled as beautiful cards under faq.css) */
 
 .trust-cta-wrap {
     text-align: center !important;

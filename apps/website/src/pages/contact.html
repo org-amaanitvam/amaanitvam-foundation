@@ -54,8 +54,17 @@
             </div>
             <div class="contact-field">
               <label class="form-label" for="contact-email">Email Address <span aria-hidden="true">*</span></label>
-              <input autocomplete="email" class="form-input" id="contact-email" name="email"
-                placeholder="jane@example.com" required type="email" />
+              <div class="contact-email-row">
+                <input autocomplete="email" class="form-input" id="contact-email" name="email"
+                  placeholder="jane@example.com" required type="email" />
+                <button class="btn btn-secondary contact-otp-send-btn" id="contact-send-otp" type="button">Send Code</button>
+              </div>
+            </div>
+            <div class="contact-field" id="contact-otp-field" hidden>
+              <label class="form-label" for="contact-otp">Verification Code <span aria-hidden="true">*</span></label>
+              <input autocomplete="one-time-code" class="form-input" id="contact-otp" name="otp"
+                placeholder="6-digit code" inputmode="numeric" maxlength="6" type="text" />
+              <p class="text-muted contact-otp-hint" id="contact-otp-hint"></p>
             </div>
             <div class="contact-field">
               <label class="form-label" for="contact-subject">Subject <span aria-hidden="true">*</span></label>

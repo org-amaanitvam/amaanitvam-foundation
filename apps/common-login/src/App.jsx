@@ -6,10 +6,35 @@ import LoginPage from './pages/LoginPage.jsx';
 import PortalSelector from './pages/PortalSelector.jsx';
 import ChangePassword from './pages/ChangePassword.jsx';
 
+// v11 portal-switch handoff
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState(null);
+
+  // A portal bounced the user back here after signing out of that portal.
+  // We deliberately KEEP the session on this origin: a super_admin must land
+  // on the portal chooser, not on the login form. Single-portal roles are
+  // signed out by the selector once their role is known.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('switch') === '1' || params.get('loggedOut') === '1') {
+        sessionStorage.setItem('af.suppressAutoPortal', '1');
+        params.delete('switch');
+        params.delete('loggedOut');
+        params.delete('reason');
+        const qs = params.toString();
+        window.history.replaceState(
+          {},
+          '',
+          window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash,
+        );
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -24,37 +49,17 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#5d0f2d]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-3 border-[#d8a15f] border-t-transparent rounded-full animate-spin" />
-          <p className="text-[#e9c9a3] text-sm font-medium tracking-wider">Loading...</p>
-        </div>
+      <div className="af-splash">
+        <div className="af-spinner" />
+        <p>Loading…</p>
       </div>
     );
   }
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          user ? (
-            <Navigate to="/select-portal" replace />
-          ) : (
-            <LoginPage />
-          )
-        }
-      />
-      <Route
-        path="/login"
-        element={
-          user ? (
-            <Navigate to="/select-portal" replace />
-          ) : (
-            <LoginPage />
-          )
-        }
-      />
+      <Route path="/" element={user ? <Navigate to="/select-portal" replace /> : <LoginPage />} />
+      <Route path="/login" element={user ? <Navigate to="/select-portal" replace /> : <LoginPage />} />
       <Route
         path="/select-portal"
         element={
@@ -71,13 +76,7 @@ export default function App() {
       />
       <Route
         path="/change-password"
-        element={
-          user ? (
-            <ChangePassword user={user} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
+        element={user ? <ChangePassword user={user} /> : <Navigate to="/login" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

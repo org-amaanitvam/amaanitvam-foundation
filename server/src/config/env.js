@@ -3,6 +3,8 @@ import Joi from "joi";
 const envSchema = Joi.object({
   PORT: Joi.number().default(5000),
   MONGO_URI: Joi.string().required(),
+  AI_SERVICE_URL: Joi.string().uri({ scheme: ['http', 'https'] }).required(),
+  INTERNAL_SHARED_SECRET: Joi.string().trim().min(1).required(),
   CLOUDINARY_CLOUD_NAME: Joi.string().optional(),
   CLOUDINARY_API_KEY: Joi.string().optional(),
   CLOUDINARY_API_SECRET: Joi.string().optional(),

@@ -57,6 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const cardTitle3 = document.getElementById('cardTitle3');
   const cardDesc3 = document.getElementById('cardDesc3');
 
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  const PORTAL_BASE_URLS = {
+    admin: isLocalhost ? 'http://localhost:5173' : 'https://admin.amaanitvam.org',
+    dashboard: isLocalhost ? 'http://localhost:5174' : 'https://dashboard.amaanitvam.org',
+    website: isLocalhost ? 'http://localhost:5175' : 'https://www.amaanitvam.org',
+    login: isLocalhost ? 'http://localhost:5176' : 'https://login.amaanitvam.org',
+    lms: isLocalhost ? 'http://localhost:5177' : 'https://learn.amaanitvam.org',
+  };
+
   // Unified Portal Data Configuration Model
   const portalData = {
     dashboard: {
@@ -74,8 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Administrator or Director Email',
       placeholder: 'director@amaanitvam.org',
       submitBtn: 'Sign In to Dashboard Portal',
-      footerNote: `Don't have portal credentials? <a href="../pages/contact.html" class="portal-link">Contact System Administrator</a>`,
-      redirectUrl: 'http://localhost:5174/'
+      footerNote: `Don't have portal credentials? <a href="/src/pages/contact.html" class="portal-link">Contact System Administrator</a>`,
+      redirectUrl: `${PORTAL_BASE_URLS.dashboard}/`
     },
     faculty: {
       index: 1,
@@ -92,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Faculty Email or Staff ID',
       placeholder: 'faculty@amaanitvam.org',
       submitBtn: 'Sign In to Faculty Portal',
-      footerNote: `Need faculty access provisioned? <a href="../pages/contact.html" class="portal-link">Contact Administration</a>`,
-      redirectUrl: 'http://localhost:5174/faculty'
+      footerNote: `Need faculty access provisioned? <a href="/src/pages/contact.html" class="portal-link">Contact Administration</a>`,
+      redirectUrl: `${PORTAL_BASE_URLS.dashboard}/faculty`
     },
     lms: {
       index: 2,
@@ -110,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Learner / LMS Account Email',
       placeholder: 'learner@amaanitvam.org',
       submitBtn: 'Launch LMS Workspace',
-      footerNote: `Looking for digital resources? <a href="../pages/programs.html" class="portal-link">View Digital Library</a>`,
-      redirectUrl: 'http://localhost:5174/lms'
+      footerNote: `Looking for digital resources? <a href="/src/pages/programs.html" class="portal-link">View Digital Library</a>`,
+      redirectUrl: `${PORTAL_BASE_URLS.lms}/student/dashboard`
     },
     admin: {
       index: 3,
@@ -128,8 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
       identifierLabel: 'Super Admin Email',
       placeholder: 'admin@amaanitvam.org',
       submitBtn: 'Sign In to Admin Portal',
-      footerNote: `Admin accounts are restricted. Require access? <a href="../pages/contact.html" class="portal-link">Contact Super Admin</a>`,
-      redirectUrl: 'http://localhost:5173/'
+      footerNote: `Admin accounts are restricted. Require access? <a href="/src/pages/contact.html" class="portal-link">Contact Super Admin</a>`,
+      redirectUrl: `${PORTAL_BASE_URLS.admin}/`
     }
   };
 
@@ -238,26 +248,18 @@ document.addEventListener('DOMContentLoaded', () => {
       setLoading(true);
       hideAlert();
 
-      // IF ADMIN EMAIL OR ADMIN PORTAL: Validate credentials & SSO into Super Admin Portal (http://localhost:5173/)
-      if (portal === 'admin' || identifier.toLowerCase() === 'tech.amaanitvam@gmail.com') {
+      // IF ADMIN PORTAL: Validate credentials & SSO into Super Admin Portal
+      if (portal === 'admin') {
         try {
           showAlert('Verifying Super Admin credentials...', 'info');
 
           // Step 1: Validate credentials with Firebase client SDK on this origin
-          const userCredential = await signInWithEmailAndPassword(firebaseAuth, identifier, password);
-          // Sign out on this origin — we only needed to verify credentials are correct
+          await signInWithEmailAndPassword(firebaseAuth, identifier, password);
           await firebaseAuth.signOut();
 
           showAlert('Credentials verified! Launching Super Admin Portal...', 'info');
 
-          // Step 2: Redirect to admin portal login page with credentials in URL hash.
-          // The hash fragment is never sent to the server (safe for transport).
-          // Login.jsx on the admin portal will read these, auto-login via Firebase
-          // client SDK on its own origin (port 5173), and immediately clean the URL.
-          const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:5173'
-            : 'https://admin.amaanitvam.org';
-
+          const baseUrl = PORTAL_BASE_URLS.admin;
           const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}`;
 
           setTimeout(() => {
@@ -268,6 +270,62 @@ document.addEventListener('DOMContentLoaded', () => {
           console.warn('Firebase Sign-In Error:', fbErr);
           const msg = fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-email'
             ? 'Invalid Super Admin email or password.'
+            : (fbErr.message || 'Unable to authenticate with Firebase.');
+          showAlert(msg, 'error');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // IF DASHBOARD PORTAL: Validate credentials & SSO into Main Dashboard Portal
+      if (portal === 'dashboard') {
+        try {
+          showAlert('Verifying Dashboard credentials...', 'info');
+
+          await signInWithEmailAndPassword(firebaseAuth, identifier, password);
+          await firebaseAuth.signOut();
+
+          showAlert('Credentials verified! Launching Dashboard Portal...', 'info');
+
+          const baseUrl = PORTAL_BASE_URLS.dashboard;
+          const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}`;
+
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 400);
+          return;
+        } catch (fbErr) {
+          console.warn('Firebase Sign-In Error:', fbErr);
+          const msg = fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-email'
+            ? 'Invalid Dashboard email or password.'
+            : (fbErr.message || 'Unable to authenticate with Firebase.');
+          showAlert(msg, 'error');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // IF FACULTY PORTAL: Validate credentials & SSO into Faculty Portal Workspace
+      if (portal === 'faculty') {
+        try {
+          showAlert('Verifying Faculty credentials...', 'info');
+
+          await signInWithEmailAndPassword(firebaseAuth, identifier, password);
+          await firebaseAuth.signOut();
+
+          showAlert('Credentials verified! Launching Faculty Portal...', 'info');
+
+          const baseUrl = PORTAL_BASE_URLS.dashboard;
+          const targetUrl = `${baseUrl}/login#sso_email=${encodeURIComponent(identifier)}&sso_pwd=${encodeURIComponent(password)}&target=/faculty/dashboard`;
+
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 400);
+          return;
+        } catch (fbErr) {
+          console.warn('Firebase Sign-In Error:', fbErr);
+          const msg = fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password' || fbErr.code === 'auth/invalid-email'
+            ? 'Invalid Faculty email or password.'
             : (fbErr.message || 'Unable to authenticate with Firebase.');
           showAlert(msg, 'error');
           setLoading(false);

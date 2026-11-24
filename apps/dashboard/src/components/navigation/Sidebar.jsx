@@ -142,10 +142,8 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
+      // logout() redirects to the common login portal.
       await logout();
-      navigate("/login", {
-        replace: true,
-      });
     } catch (error) {
       console.error(
         "Logout failed:",

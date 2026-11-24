@@ -6,7 +6,8 @@ import Session from './session.model.js';
 import { sendSuccess } from '../../shared/response/index.js';
 import { UnauthorizedError } from '../../shared/errors/AppError.js';
 import { authenticate } from '../../middleware/authenticate.js';
-import admin, { firebaseReady } from '../../config/firebase.js';
+import { getAuth } from 'firebase-admin/auth';
+import { firebaseReady } from '../../config/firebase.js';
 
 import accountAccessRoutes from "./accountAccess.routes.js";
 const router = express.Router();
@@ -81,17 +82,6 @@ router.post('/logout', authenticate, async (req, res, next) => {
   }
 });
 
-router.get('/session', authenticate, async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user.id).select('-__v');
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
-    }
-    return sendSuccess(res, 200, { user: user.toJSON() });
-  } catch (error) {
-    next(error);
-  }
-});
 
 /**
  * POST /api/auth/sso-token
@@ -114,7 +104,7 @@ router.post('/sso-token', async (req, res) => {
     // Verify the incoming ID token
     let decodedToken;
     try {
-      decodedToken = await admin.auth().verifyIdToken(idToken);
+      decodedToken = await getAuth().verifyIdToken(idToken);
     } catch {
       return res.status(401).json({ success: false, message: 'Invalid or expired Firebase token.' });
     }
@@ -127,7 +117,7 @@ router.post('/sso-token', async (req, res) => {
 
     // Create a custom token for the same UID — the client can use this
     // to signInWithCustomToken on any portal origin
-    const customToken = await admin.auth().createCustomToken(decodedToken.uid, {
+    const customToken = await getAuth().createCustomToken(decodedToken.uid, {
       role: user.role,
       dbId: String(user._id),
     });

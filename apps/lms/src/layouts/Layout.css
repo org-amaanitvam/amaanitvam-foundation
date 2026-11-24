@@ -1,0 +1,15 @@
+/* LMS shell — Tailwind handles the layout; this holds small additions */
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

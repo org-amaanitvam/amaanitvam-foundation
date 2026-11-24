@@ -1,5 +1,19 @@
 import mongoose from "mongoose";
 
+const teamMemberSchema = new mongoose.Schema(
+  {
+    name: { type: String, default: "", maxlength: 120 },
+    role: { type: String, default: "", maxlength: 160 },
+    email: { type: String, default: "", maxlength: 160 },
+    bio: { type: String, default: "", maxlength: 1200 },
+    group: { type: Number, default: 1, min: 1, max: 2 },
+    avatar: { type: String, default: "a", enum: ["a", "b", "c", "d"] },
+    order: { type: Number, default: 0 },
+    visible: { type: Boolean, default: true },
+  },
+  { _id: false },
+);
+
 const cmsContentSchema = new mongoose.Schema(
   {
     homepage: {
@@ -35,6 +49,11 @@ const cmsContentSchema = new mongoose.Schema(
         default: "",
         maxlength: 10000,
       },
+    },
+    team: {
+      heading: { type: String, default: "", maxlength: 200 },
+      subheading: { type: String, default: "", maxlength: 500 },
+      members: { type: [teamMemberSchema], default: [] },
     },
   },
   { _id: false },

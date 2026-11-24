@@ -46,6 +46,10 @@ const doubtSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Faculty',
   },
+  ai_conversation_id: {
+    type: String,
+    trim: true,
+  },
   attachments: [{ type: String }],
   tags: [{ type: String, trim: true }],
   resolved_at: {

@@ -1,4 +1,4 @@
-import { Category, Domain, Resource, Subject } from "./library.model.js"
+import { Category, Domain, Resource, ResourceAccessHistory, Subject } from "./library.model.js"
 
 //CATEGORY
 export async function createCategory(data) {

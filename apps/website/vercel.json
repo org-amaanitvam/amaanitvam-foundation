@@ -1,7 +1,106 @@
 {
-    "cleanUrls": true,
     "trailingSlash": false,
+    "redirects": [
+        {
+            "source": "/about.html",
+            "destination": "/src/pages/about.html",
+            "permanent": false
+        },
+        {
+            "source": "/collaborations.html",
+            "destination": "/src/pages/collaborations.html",
+            "permanent": false
+        },
+        {
+            "source": "/contact.html",
+            "destination": "/src/pages/contact.html",
+            "permanent": false
+        },
+        {
+            "source": "/faq.html",
+            "destination": "/src/pages/faq.html",
+            "permanent": false
+        },
+        {
+            "source": "/gallery.html",
+            "destination": "/src/pages/gallery.html",
+            "permanent": false
+        },
+        {
+            "source": "/impact.html",
+            "destination": "/src/pages/impact.html",
+            "permanent": false
+        },
+        {
+            "source": "/internship.html",
+            "destination": "/src/pages/internship.html",
+            "permanent": false
+        },
+        {
+            "source": "/lms.html",
+            "destination": "/src/pages/lms.html",
+            "permanent": false
+        },
+        {
+            "source": "/login.html",
+            "destination": "/src/pages/login.html",
+            "permanent": false
+        },
+        {
+            "source": "/programs.html",
+            "destination": "/src/pages/programs.html",
+            "permanent": false
+        },
+        {
+            "source": "/verify.html",
+            "destination": "/src/pages/verify.html",
+            "permanent": false
+        },
+        {
+            "source": "/volunteer.html",
+            "destination": "/src/pages/volunteer.html",
+            "permanent": false
+        },
+        {
+            "source": "/webinars-competitions.html",
+            "destination": "/src/pages/webinars-competitions.html",
+            "permanent": false
+        },
+        {
+            "source": "/legal/privacy-policy.html",
+            "destination": "/src/pages/legal/privacy-policy.html",
+            "permanent": false
+        },
+        {
+            "source": "/legal/refund-policy.html",
+            "destination": "/src/pages/legal/refund-policy.html",
+            "permanent": false
+        },
+        {
+            "source": "/legal/terms-conditions.html",
+            "destination": "/src/pages/legal/terms-conditions.html",
+            "permanent": false
+        },
+        {
+            "source": "/pages/contact.html",
+            "destination": "/src/pages/contact.html",
+            "permanent": false
+        },
+        {
+            "source": "/pages/programs.html",
+            "destination": "/src/pages/programs.html",
+            "permanent": false
+        }
+    ],
     "rewrites": [
+        {
+            "source": "/styles/:path*",
+            "destination": "/src/styles/:path*"
+        },
+        {
+            "source": "/scripts/:path*",
+            "destination": "/src/scripts/:path*"
+        },
         {
             "source": "/images/:path*",
             "destination": "/public/images/:path*"
@@ -69,6 +168,14 @@
         {
             "source": "/legal/terms-conditions",
             "destination": "/src/pages/legal/terms-conditions.html"
+        },
+        {
+            "source": "/login",
+            "destination": "/src/pages/login.html"
+        },
+        {
+            "source": "/pages/login",
+            "destination": "/src/pages/login.html"
         }
     ]
 }

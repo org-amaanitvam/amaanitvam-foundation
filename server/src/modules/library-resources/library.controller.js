@@ -280,9 +280,7 @@ export async function getResources(req, res, next) {
 // Get Resource By ID
 export async function getResourceById(req, res, next) {
   try {
-    const resource = await getResourceByIdService(
-      req.params.id
-    );
+    const resource = await getResourceByIdService(req.params.id);
 
     return successResponse(
       res,
@@ -333,10 +331,7 @@ export async function deleteResource(req, res, next) {
 // View Resource
 export async function viewResource(req, res, next) {
   try {
-    const resource = await viewResourceService(
-      req.params.id,
-      req.user?._id
-    );
+    const resource = await viewResourceService(req.params.id, req.user?.id);
 
     return successResponse(
       res,
@@ -352,10 +347,7 @@ export async function viewResource(req, res, next) {
 // Download Resource
 export async function downloadResource(req, res, next) {
   try {
-    const resource = await downloadResourceService(
-      req.params.id,
-      req.user?._id
-    );
+    const resource = await downloadResourceService(req.params.id, req.user?.id);
 
     return successResponse(
       res,

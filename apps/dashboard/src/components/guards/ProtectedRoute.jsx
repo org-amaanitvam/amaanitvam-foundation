@@ -1,3 +1,4 @@
+import { buildCommonLoginUrl, redirectToCommonLogin } from '../../config/portal';
 import {
   Navigate,
   useLocation,
@@ -29,13 +30,22 @@ export default function ProtectedRoute({
   }
 
   if (!user) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ from: location }}
-      />
-    );
+    // A hand-off token is present (or being consumed) — never redirect yet.
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get('authToken') || sp.get('token')) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="spinner" />
+        </div>
+      );
+    }
+
+
+    const target = new URL(buildCommonLoginUrl('session-expired'));
+    target.searchParams.set('returnTo', window.location.href);
+    window.location.replace(target.toString());
+    return null;
+
   }
 
   if (
