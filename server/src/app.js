@@ -54,7 +54,7 @@ import idCardRoutes from "./modules/id-cards/idCard.routes.js";
 const app = express();
 
 // 1. Proxy Setup (Trust only local gateway)
-app.set("trust proxy", "1");
+app.set("trust proxy", 1);
 
 // 2. CORS Configuration
 const allowedOrigins = [
