@@ -14,6 +14,7 @@ import CMS from './features/cms/pages/CMS';
 import Profile from './features/profile/pages/Profile';
 import LearningHub from './features/digital-library/pages/LearningHub';
 import ContactMessages from './features/contact/pages/ContactMessages'; // <-- Added import
+import IdCardGenerator from "./features/id-cards/pages/IdCardGenerator";
 
 export default function App() {
   return (
@@ -144,6 +145,16 @@ export default function App() {
           <ProtectedRoute>
             <AdminLayout>
               <Profile />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/id-cards"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <IdCardGenerator />
             </AdminLayout>
           </ProtectedRoute>
         }

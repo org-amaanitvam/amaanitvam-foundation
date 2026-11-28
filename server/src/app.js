@@ -49,11 +49,12 @@ import assignmentSubmissionRoutes from "./modules/assignment_submissions/assignm
 import quizAttemptRoutes from "./modules/quiz-attempts/quiz_attempt.routes.js";
 import enrollmentRoutes from "./modules/enrollments/enrollment.routes.js";
 import libraryRoutes from "./modules/library-resources/library.routes.js";
+import idCardRoutes from "./modules/id-cards/idCard.routes.js";
 
 const app = express();
 
 // 1. Proxy Setup (Trust only local gateway)
-app.set("trust proxy", "loopback");
+app.set("trust proxy", 1);
 
 // 2. CORS Configuration
 const allowedOrigins = [
@@ -174,7 +175,7 @@ app.use("/api/doubts", doubtRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/ai-notifications", aiNotificationRoutes);
 app.use("/internal", internalRoutes);
-
+app.use("/api/admin/id-cards", idCardRoutes);
 
 // Unhandled routes & errors
 app.use(notFound);
